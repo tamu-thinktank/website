@@ -1,0 +1,18 @@
+# example at https://geshan.com.np/blog/2022/02/mysql-docker-compose/
+
+services:
+  ttt-mysql:
+    container_name: ttt-mysql # prevents numbers from being appended to the container name
+    cap_add:
+      - SYS_NICE # suppress not useful error messages
+    image: mysql
+    environment:
+      MYSQL_DATABASE: review
+      MYSQL_ROOT_PASSWORD: review
+    ports:
+      - "3306:3306" # MySQL port
+    volumes:
+      - db:/var/lib/mysql # MySQL data directory
+volumes:
+  db: # automatically managed by docker
+    driver: local

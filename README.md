@@ -1,28 +1,131 @@
-# Create T3 App
+# Local setup
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+**Recommended editor: [VSCode](https://code.visualstudio.com/)**  
 
-## What's next? How do I make an app with this?
+- Install all the recommended extensions
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Install [pnpm](https://pnpm.io/installation)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- Installation in Windows Powershell (see website for other OS):
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+  ```pwsh
+  iwr https://get.pnpm.io/install.ps1 -useb | iex
+  ```
 
-## Learn More
+  - Test if installed with `pnpm -v`, else restart computer
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- Install nodejs (if not already installed):
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+  ```pwsh
+  pnpm env use --global lts
+  ```
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+  - Should be using LTS version `18.16.1` or higher
+  - Install nodejs from its website if this command doesn't work
 
-## How do I deploy this?
+- Install node-gyp (if you installed nodejs from pnpm):
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+  ```pwsh
+  pnpm i -g node-gyp
+  ```
+
+- Install dependencies:
+
+  ```pwsh
+  pnpm i
+  ```
+
+## Filling up environment variables
+
+- Create empty .env file from .env.example template:
+
+  ```pwsh
+  cp .env.example .env
+  ```
+
+- Below sections are steps for populating variables in .env file with your unique values
+
+### DATABASE_URL
+
+- the connection string to SQL database
+
+#### Option 1: Local database
+
+- using Docker (recommended for development b/c fast and easy to reset database)
+- Install [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
+- Create an account on [Docker Hub](https://hub.docker.com/)
+- Launch Docker Desktop and login
+- Open terminal in the 'dashboard' folder, run command to start database:
+
+  ```pwsh
+  docker-compose up
+  ```
+
+  - (stays open until you close it in terminal)
+  - can add `-d` at the end for detached mode, which runs in background so you can keep using terminal
+  - it finds the `docker-compose.yml` file in the working directory and runs it
+  - will install mysql image if not already installed and run it in a container
+  - can see installed image, running container, and volume (storage) in Docker Desktop or CLI
+- can stop container with `docker-compose stop`
+- can start existing container with `docker-compose start` (detached mode by default)
+- `DATABASE_URL`: already copied from .env.example for docker database
+- to reset database:
+  - delete container: `docker-compose down`
+  - delete the volume (storage) with `docker volume rm dashboard_db`
+- can also delete mysql image with `docker rmi mysql` (will need to delete all containers using it first)
+
+#### Option 2: [PlanetScale](https://planetscale.com/)
+
+- Create account (login w/ GitHub) → [Create a database](https://www.youtube.com/watch?v=rCIoXrn58PA) → wait to initialize
+- Create new branch → name `dev` → `Connect` button → new password → select `Prisma` from `Connect with` dropdown → copy `DATABASE_URL` and paste in .env
+  - Can delete branch and create new one to reset database
+    - remember to update .env with new `DATABASE_URL`
+
+### NEXTAUTH_SECRET
+
+- Follow instructions in comments for that variable in .env file
+
+### Auth0 variables
+
+- Create account on [Auth0](https://auth0.com/)
+- Create regular web app → nextjs app
+  - If you're already on the homepage, Sidebar: Applications → Applications → create new app → select regular web applications
+- Sidebar: Applications → Applications → your app
+- Copy `Domain` to `AUTH0_ISSUER`, add `https://` in front of the URL
+- Copy `Client ID` to `AUTH0_CLIENT_ID`
+- Copy `Client Secret` to `AUTH0_CLIENT_SECRET`
+- Go back to Auth0 website
+- Paste `http://localhost:3000/api/auth/callback/auth0` in `Allowed Callback URLs` textbox
+- Paste `http://localhost:3000/` in `Allowed Logout URLs` textbox (below `Allowed Callback URLs`)
+- Save changes button at the bottom
+
+## Project database setup
+
+- Push our database schema to your database server:
+  - Have Docker container running (`docker-compose start`) or PlanetScale database initialized
+
+  ```pwsh
+  pnpm prisma db push
+  ```
+
+- If weird type/syntax errors (VSCode):
+  - ctrl+shift+p → restart ts server
+  - ctrl+shift+p → restart eslint server
+
+- If prisma CLI errors, close dev server and retry command
+
+- To view database locally:
+
+  ```pwsh
+  pnpm prisma studio --browser "your browser (e.g. Firefox)"
+  ```
+
+  - (stays open until you close it in terminal)
+
+## Running website locally
+
+  ```pwsh
+  pnpm dev
+  ```
+
+- URL to view site: `http://localhost:3000/`
