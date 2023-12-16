@@ -83,7 +83,8 @@
 
 ### NEXTAUTH_SECRET
 
-- Follow instructions in comments for that variable in .env file
+- Generate a random string
+  - Run `openssl rand -base64 32` in Ubuntu to generate a random string or use [this website](https://generate-secret.now.sh/32)
 
 ### Auth0 variables
 
@@ -97,7 +98,7 @@
 - Go back to Auth0 website
 - Paste `http://localhost:3000/api/auth/callback/auth0` in `Allowed Callback URLs` textbox
 - Paste `http://localhost:3000/` in `Allowed Logout URLs` textbox (below `Allowed Callback URLs`)
-- Save changes button at the bottom
+- Save changes button
 
 ## Project database setup
 
