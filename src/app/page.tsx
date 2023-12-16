@@ -32,6 +32,8 @@ export default function Home() {
               },
               {
                 connection: "google-oauth2",
+                prompt: "login",
+                response_type: "code",
               },
             )
           }
