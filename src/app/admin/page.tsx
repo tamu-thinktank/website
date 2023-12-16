@@ -1,8 +1,8 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { getBaseUrl } from "@/trpc/shared";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const { data: session } = useSession();
@@ -28,7 +28,7 @@ export default function Home() {
               "auth0",
               {
                 redirect: true,
-                callbackUrl: getBaseUrl(),
+                callbackUrl: getBaseUrl() + "/admin",
               },
               {
                 connection: "google-oauth2",
