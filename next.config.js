@@ -8,6 +8,9 @@ await import("./src/env.js");
 const config = {
   eslint: {
     ignoreDuringBuilds: true,
+  },
+  images: {
+    unoptimized: true,
   }
 };
 
