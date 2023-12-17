@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from 'next/link';
 import Container from "./Container";
 
 const clientLogos = [
@@ -93,22 +94,17 @@ export default function HeroSection() {
           <div className="grid grid-cols-3 md:grid-cols-6 gap-10 items-center justify-center h-full">
             {
               clientLogos.map((logo, index) => (
-                <a
-                  key={index}
-                  href={logo.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <Image
-                    key={index}
-                    src={logo.src}
-                    className={`mx-auto ${index === 0 ? "h-24" : "h-auto"} w-auto`}
-                    loading="lazy"
-                    alt="client logo"
-                    width={0}
-                    height={0}
-                  />
-                </a>
+                <Link href={logo.link} key={index}>
+                    <Image
+                      key={index}
+                      src={logo.src}
+                      className={`mx-auto ${index === 0 ? 'h-24' : 'h-auto'} w-auto`}
+                      loading="lazy"
+                      alt="client logo"
+                      width={0}
+                      height={0}
+                    />
+                </Link>
               ))
             }
           </div>
