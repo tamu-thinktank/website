@@ -37,11 +37,11 @@ export default function Carousel() {
   }, [index]);
 
   return (
-    <div className="w-screen flex justify-center items-center">
-      <div className="h-80 w-2/3 whitespace-nowrap transition-all ease-in-out duration-1000" style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}>
-        {clientLogos.map((img, index) => (
-          <div key={index} className={`inline-block w-full`}>
-            <Image src={img} alt="client logo" className="h-80 w-full" width={0} height={0} />
+    <div className="mx-auto w-2/3 flex overflow-hidden">
+      <div className="w-screen whitespace-nowrap transition-all ease-in-out duration-1000" style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}>
+        {clientLogos.map((img, idx) => (
+          <div key={idx} className={`inline-block h-full w-full`}>
+            <Image src={img} alt="client logo" className="h-auto w-auto" width={0} height={0} />
           </div>
         ))}
       </div>
