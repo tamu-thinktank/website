@@ -24,7 +24,7 @@ export default function Header() {
                   <div className="bg-primary h-6 w-2"></div>
                 </div>
                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Astrolus
+                  TAMU ThinkTank
                 </span>
               </a>
 
@@ -98,11 +98,11 @@ export default function Header() {
 
               <div className="mt-12 lg:mt-0">
                 <a
-                  href="#"
+                  href="apply"
                   className="before:bg-primary relative flex h-9 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
                 >
                   <span className="relative text-sm font-semibold text-white">
-                    Get Started
+                    Apply
                   </span>
                 </a>
               </div>
