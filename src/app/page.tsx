@@ -7,6 +7,7 @@ import HeroSection from "@/components/home/HeroSection";
 import Stats from "@/components/home/Stats";
 import Testimonials from "@/components/home/Testimonials";
 import { type NextPage } from "next";
+import Carousel from "./_components/home/Carousel";
 
 const Home: NextPage = () => {
   return (
@@ -15,6 +16,7 @@ const Home: NextPage = () => {
       <main className="mb-40 space-y-40">
         <HeroSection />
         <Features />
+        <Carousel />
         <Stats />
         <Testimonials />
         <CallToAction />

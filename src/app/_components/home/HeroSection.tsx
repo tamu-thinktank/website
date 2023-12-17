@@ -1,9 +1,18 @@
 import Image from "next/image";
 import Container from "./Container";
 
+const clientLogos = [
+  "/images/clients/ntl.png",
+  "/images/clients/tsgc.png",
+  "/images/clients/herox.png",
+  "/images/clients/rascal.png",
+  "/images/clients/aiaa.png",
+  "/images/clients/aero.png",
+]
+
 export default function HeroSection() {
   return (
-    <div className="relative" id="home">
+    <div className=" relative" id="home">
       <div
         aria-hidden="true"
         className="absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20"
@@ -12,7 +21,7 @@ export default function HeroSection() {
         <div className="h-32 bg-gradient-to-r from-cyan-400 to-sky-300 blur-[106px] dark:to-indigo-600"></div>
       </div>
       <Container>
-        <div className="relative ml-auto pt-36">
+        <div className="relative ml-auto pt-36 flex flex-col h-screen">
           <div className="mx-auto text-center lg:w-2/3">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white md:text-6xl xl:text-7xl">
               TAMU ThinkTank
@@ -63,67 +72,20 @@ export default function HeroSection() {
               </div>
             </div>
           </div>
-          <div className="mt-12 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
-            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
-              <Image
-                src="/images/clients/ntl.png"
-                className="mx-auto h-12 w-auto"
-                loading="lazy"
-                alt="client logo"
-                width={0}
-                height={0}
-              />
-            </div>
-            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
-              <Image
-                src="/images/clients/tsgc.png"
-                className="mx-auto h-12 w-auto"
-                loading="lazy"
-                alt="client logo"
-                width={0}
-                height={0}
-              />
-            </div>
-            <div className="flex p-4 grayscale transition duration-200 hover:grayscale-0">
-              <Image
-                src="/images/clients/herox.png"
-                className="m-auto h-12 w-auto"
-                loading="lazy"
-                alt="client logo"
-                width={0}
-                height={0}
-              />
-            </div>
-            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
-              <Image
-                src="/images/clients/rascal.png"
-                className="mx-auto h-12 w-auto"
-                loading="lazy"
-                alt="client logo"
-                width={0}
-                height={0}
-              />
-            </div>
-            <div className="flex p-4 grayscale transition duration-200 hover:grayscale-0">
-              <Image
-                src="/images/clients/aiaa.png"
-                className="m-auto h-8 w-auto"
-                loading="lazy"
-                alt="client logo"
-                width={0}
-                height={0}
-              />
-            </div>
-            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
-              <Image
-                src="/images/clients/aero.png"
-                className="mx-auto h-12 w-auto"
-                loading="lazy"
-                alt="client logo"
-                width={0}
-                height={0}
-              />
-            </div>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-10 items-center justify-center h-full">
+            {
+              clientLogos.map((logo, index) => (
+                <Image
+                  key={index}
+                  src={logo}
+                  className={`mx-auto ${index == 0 ? "h-24" : "h-auto"} w-auto`}
+                  loading="lazy"
+                  alt="client logo"
+                  width={0}
+                  height={0}
+                />
+              ))
+            }
           </div>
         </div>
       </Container>
