@@ -2,13 +2,31 @@ import Image from "next/image";
 import Container from "./Container";
 
 const clientLogos = [
-  "/images/clients/ntl.png",
-  "/images/clients/tsgc.png",
-  "/images/clients/herox.png",
-  "/images/clients/rascal.png",
-  "/images/clients/aiaa.png",
-  "/images/clients/aero.png",
-]
+  {
+    src: "/images/clients/ntl.png",
+    link: 'https://www.nasa.gov/general/nasa-tournament-lab/',
+  },
+  {
+    src: "/images/clients/tsgc.png",
+    link: 'https://ig.utexas.edu/tsgc/design-challenge/',
+  },
+  {
+    src: "/images/clients/herox.png",
+    link: 'https://www.herox.com/crowdsourcing-projects',
+  },
+  {
+    src: "/images/clients/rascal.png",
+    link: 'https://rascal.nianet.org/',
+  },
+  {
+    src: "/images/clients/aiaa.png",
+    link: 'https://www.aiaa.org/get-involved/students-educators/Design-Competitions',
+  },
+  {
+    src: "/images/clients/aero.png",
+    link: 'https://engineering.tamu.edu/aerospace/index.html',
+  },
+];
 
 export default function HeroSection() {
   return (
@@ -75,15 +93,22 @@ export default function HeroSection() {
           <div className="grid grid-cols-3 md:grid-cols-6 gap-10 items-center justify-center h-full">
             {
               clientLogos.map((logo, index) => (
-                <Image
+                <a
                   key={index}
-                  src={logo}
-                  className={`mx-auto ${index == 0 ? "h-24" : "h-auto"} w-auto`}
-                  loading="lazy"
-                  alt="client logo"
-                  width={0}
-                  height={0}
-                />
+                  href={logo.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Image
+                    key={index}
+                    src={logo.src}
+                    className={`mx-auto ${index === 0 ? "h-24" : "h-auto"} w-auto`}
+                    loading="lazy"
+                    alt="client logo"
+                    width={0}
+                    height={0}
+                  />
+                </a>
               ))
             }
           </div>
