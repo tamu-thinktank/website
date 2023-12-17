@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   return (
     <>
       <AppHeader />
-      <main className="mb-40 space-y-40">
+      <main className="mb-40 space-y-20">
         <HeroSection />
         <Features />
         <Carousel />

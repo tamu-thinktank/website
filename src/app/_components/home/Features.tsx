@@ -20,13 +20,17 @@ export default function Features() {
           </svg>
 
           <h2 className="my-8 text-2xl font-bold text-gray-700 dark:text-white md:text-4xl">
-            A technology-first approach to payments and finance
+            Hands-On Project Experience
           </h2>
           <p className="text-gray-600 dark:text-gray-300">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus ad
-            ipsum pariatur autem, fugit laborum in atque amet obcaecati? Nisi
-            minima aspernatur, quidem nulla cupiditate nam consequatur eligendi
-            magni adipisci.
+          Design challenges provide an excellent starting point for aspiring engineers. 
+          By participating in these challenges, you will have the chance to develop specialized skills, 
+          practice engineering documentation, work with a team on real projects, 
+          develop your presentation skills, and receive guidance from faculty advisors. 
+          This practical experience is a great way to build a strong foundation for your engineering 
+          career and help you stand out to potential employers. With the hands-on experience and 
+          mentorship provided through design challenges, you'll gain valuable experience that 
+          can help you succeed in your future engineering endeavors. 
           </p>
         </div>
         
