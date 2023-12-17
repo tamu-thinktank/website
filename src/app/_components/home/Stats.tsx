@@ -5,28 +5,20 @@ export default function Stats() {
   return (
     <div id="solution">
       <Container>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="h-6 w-6 text-sky-500"
-        >
-          <path
-            fillRule="evenodd"
-            d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z"
-            clipRule="evenodd"
-          />
-          <path
-            fillRule="evenodd"
-            d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z"
-            clipRule="evenodd"
-          />
-        </svg>
+      <svg 
+        width="90pt" height="90pt" version="1.1" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg" fill="#ffffff"
+      >
+        <g>
+          <path d="m1199.1 461.83c-8.5938-31.273-88.465-33.961-120.6-23.258-116.87 38.867-233.75 77.746-350.64 116.63l-405.72-162.02-42.816 45.637 173.62 208.51c-111.91 38.688-316.88 110.12-354.09 122.48-32.027 10.668 206.96 44.578 261.76 35.473 0 0 420.98-137.32 607.12-199.25 47.844-15.91 95.711-31.824 143.55-47.746 32.016-10.648 97.141-62.523 87.816-96.461z"/>
+          <path d="m32.52 621.5-32.52 30.047 86.242 100.61 124.98-44.016z"/>
+        </g>
+      </svg>
+
 
         <div className="flex-row-reverse justify-between space-y-6 text-gray-600 md:flex md:gap-6 md:space-y-0 lg:items-center lg:gap-12">
           <div className="md:5/12 lg:w-1/2">
             <Image
-              src="/images/pie.svg"
+              src="/images/photos/IMG_6121.jpg"
               alt="image"
               loading="lazy"
               className="w-full"
@@ -36,62 +28,36 @@ export default function Stats() {
           </div>
           <div className="md:7/12 lg:w-1/2">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
-              Nuxt development is carried out by passionate developers
+              Travel Opportunities!
             </h2>
             <p className="my-8 text-gray-600 dark:text-gray-300">
-              Nobis minus voluptatibus pariatur dignissimos libero quaerat iure
-              expedita at? Asperiores nemo possimus nesciunt dicta veniam
-              aspernatur quam mollitia. <br /> <br /> Vitae error, quaerat
-              officia delectus voluptatibus explicabo quo pariatur impedit, at
-              reprehenderit aliquam a ipsum quas voluptatem. Quo pariatur
-              asperiores eum amet.
+              At TAMU ThinkTank, students can showcase their design projects at industry 
+              events with the help of various programs and services. Attending these events 
+              offers a chance to meet industry professionals, receive valuable feedback, 
+              and gain insight into current industry trends. Additionally, networking at 
+              project showcases can create meaningful connections and open up opportunities 
+              for future career growth.
             </p>
             <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
               <div className="mt-8 flex gap-4 md:items-center">
-                <div className="flex h-12 w-12 gap-4 rounded-full bg-indigo-100 dark:bg-indigo-900/20">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="m-auto h-6 w-6 text-indigo-500 dark:text-indigo-400"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.848 2.771A49.144 49.144 0 0112 2.25c2.43 0 4.817.178 7.152.52 1.978.292 3.348 2.024 3.348 3.97v6.02c0 1.946-1.37 3.678-3.348 3.97a48.901 48.901 0 01-3.476.383.39.39 0 00-.297.17l-2.755 4.133a.75.75 0 01-1.248 0l-2.755-4.133a.39.39 0 00-.297-.17 48.9 48.9 0 01-3.476-.384c-1.978-.29-3.348-2.024-3.348-3.97V6.741c0-1.946 1.37-3.68 3.348-3.97zM6.75 8.25a.75.75 0 01.75-.75h9a.75.75 0 010 1.5h-9a.75.75 0 01-.75-.75zm.75 2.25a.75.75 0 000 1.5H12a.75.75 0 000-1.5H7.5z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
+
                 <div className="w-5/6">
                   <h4 className="text-lg font-semibold text-gray-700 dark:text-indigo-300">
-                    Chat Anytime
+                  Texas Space Grant Consortium Showcase
                   </h4>
                   <p className="text-gray-500 dark:text-gray-400">
-                    Asperiores nemo possimus nesciunt quam mollitia.
+                    Johnson Space Center, Houston, TX
                   </p>
                 </div>
               </div>
               <div className="flex gap-4 pt-4 md:items-center">
-                <div className="flex h-12 w-12 gap-4 rounded-full bg-teal-100 dark:bg-teal-900/20">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    className="m-auto h-6 w-6 text-teal-600 dark:text-teal-400"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
+
                 <div className="w-5/6">
                   <h4 className="text-lg font-semibold text-gray-700 dark:text-teal-300">
-                    Real Time Location
+                    Engineering Project Showcase
                   </h4>
                   <p className="text-gray-500 dark:text-gray-400">
-                    Asperiores nemo possimus nesciunt quam mollitia.
+                    Zachry Engineering Education Complex, College Station, TX
                   </p>
                 </div>
               </div>
