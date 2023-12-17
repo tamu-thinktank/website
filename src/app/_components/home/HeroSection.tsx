@@ -66,7 +66,7 @@ export default function HeroSection() {
           <div className="mt-12 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
               <Image
-                src="/images/clients/microsoft.svg"
+                src="/images/clients/ntl.png"
                 className="mx-auto h-12 w-auto"
                 loading="lazy"
                 alt="client logo"
@@ -76,7 +76,7 @@ export default function HeroSection() {
             </div>
             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
               <Image
-                src="/images/clients/airbnb.svg"
+                src="/images/clients/tsgc.png"
                 className="mx-auto h-12 w-auto"
                 loading="lazy"
                 alt="client logo"
@@ -86,8 +86,8 @@ export default function HeroSection() {
             </div>
             <div className="flex p-4 grayscale transition duration-200 hover:grayscale-0">
               <Image
-                src="/images/clients/google.svg"
-                className="m-auto h-9 w-auto"
+                src="/images/clients/herox.png"
+                className="m-auto h-12 w-auto"
                 loading="lazy"
                 alt="client logo"
                 width={0}
@@ -96,7 +96,7 @@ export default function HeroSection() {
             </div>
             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
               <Image
-                src="/images/clients/ge.svg"
+                src="/images/clients/rascal.png"
                 className="mx-auto h-12 w-auto"
                 loading="lazy"
                 alt="client logo"
@@ -106,7 +106,7 @@ export default function HeroSection() {
             </div>
             <div className="flex p-4 grayscale transition duration-200 hover:grayscale-0">
               <Image
-                src="/images/clients/netflix.svg"
+                src="/images/clients/aiaa.png"
                 className="m-auto h-8 w-auto"
                 loading="lazy"
                 alt="client logo"
@@ -116,7 +116,7 @@ export default function HeroSection() {
             </div>
             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
               <Image
-                src="/images/clients/google-cloud.svg"
+                src="/images/clients/aero.png"
                 className="mx-auto h-12 w-auto"
                 loading="lazy"
                 alt="client logo"
