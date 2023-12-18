@@ -13,63 +13,30 @@ export default function CallToAction() {
       </div>
       <Container>
         <div className="relative">
-          <div className="flex items-center justify-center -space-x-2">
-            <Image
-              loading="lazy"
-              width="400"
-              height="400"
-              src="/images/avatars/avatar.webp"
-              alt="member photo"
-              className="h-8 w-8 rounded-full object-cover"
-            />
-            <Image
-              loading="lazy"
-              width="200"
-              height="200"
-              src="/images/avatars/avatar-2.webp"
-              alt="member photo"
-              className="h-12 w-12 rounded-full object-cover"
-            />
-            <Image
-              loading="lazy"
-              width="200"
-              height="200"
-              src="/images/avatars/avatar-3.webp"
-              alt="member photo"
-              className="z-10 h-16 w-16 rounded-full object-cover"
-            />
-            <Image
-              loading="lazy"
-              width="200"
-              height="200"
-              src="/images/avatars/avatar-4.webp"
-              alt="member photo"
-              className="relative h-12 w-12 rounded-full object-cover"
-            />
-            <Image
-              loading="lazy"
-              width="200"
-              height="200"
-              src="/images/avatars/avatar-1.webp"
-              alt="member photo"
-              className="h-8 w-8 rounded-full object-cover"
-            />
-          </div>
+          <Image
+            className="mx-auto h-auto w-32 rounded-full"
+            src="ttt.png"
+            alt="user avatar"
+            width={0}
+            height={0}
+            loading="lazy"
+          />
+
           <div className="m-auto mt-6 space-y-6 md:w-8/12 lg:w-7/12">
             <h1 className="text-center text-4xl font-bold text-gray-800 dark:text-white md:text-5xl">
-              Get Started now
+              Join Us Today!
             </h1>
             <p className="text-center text-xl text-gray-600 dark:text-gray-300">
-              Be part of millions people around the world using tailus in modern
-              User Interfaces.
+            Join our design challenges to gain hands-on experience, specialized skills, 
+            and faculty mentorship.
             </p>
             <div className="flex flex-wrap justify-center gap-6">
               <a
-                href="#"
+                href="/apply"
                 className="relative flex h-12 w-full items-center justify-center px-8 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
               >
                 <span className="dark:text-dark relative text-base font-semibold text-white">
-                  Get Started
+                  Apply
                 </span>
               </a>
               <a
