@@ -1,7 +1,7 @@
 "use client";
 
 import FormLayout from "@/components/FormLayout";
-import { toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { ApplyFormSchema } from "@/lib/z.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
@@ -15,6 +15,8 @@ import PersonalInfo from "./_sections/personal";
 import ResumeUpload from "./_sections/resume";
 
 export default function Apply() {
+  const { toast } = useToast();
+
   const form = usePersistForm<z.infer<typeof ApplyFormSchema>>("apply-form", {
     resolver: zodResolver(ApplyFormSchema),
     defaultValues: {
@@ -25,7 +27,7 @@ export default function Apply() {
       conflictsAnswer: null,
       presentation: 0,
       timeManagement: null,
-      resumeLink: "",
+      resumeLink: "l",
     },
   });
 

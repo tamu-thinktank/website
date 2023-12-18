@@ -1,9 +1,9 @@
 import "@/styles/globals.css";
 
+import { Toaster } from "@/components/ui/toaster";
+import { TRPCReactProvider } from "@/lib/trpc/react";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
-
-import { TRPCReactProvider } from "@/lib/trpc/react";
 import { ToggleTheme } from "./_components/toggle-theme";
 import { Providers } from "./providers";
 
@@ -29,6 +29,7 @@ export default function RootLayout({
           <Providers>
             {children}
             <div className="fixed bottom-5 right-5">
+              <Toaster />
               <ToggleTheme />
             </div>
           </Providers>

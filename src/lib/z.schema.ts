@@ -1,9 +1,14 @@
 import { Availability, Challenge, Year } from "@prisma/client";
 import { z } from "zod";
+import { type dbApplicationType } from "./types";
 
 const challengeSchema = z.nativeEnum(Challenge);
 
-export const ApplyFormSchema = z
+export const ApplyFormSchema: z.ZodType<
+  dbApplicationType,
+  z.ZodTypeDef,
+  unknown
+> = z
   .object({
     id: z.string().cuid2(),
     fullName: z.string(),
@@ -63,26 +68,35 @@ export const ApplyFormSchema = z
     timeManagement: z.string().max(1000).nullable(),
     resumeLink: z.string(),
   })
-  .refine(
-    (data) => {
-      if (data.isLeadership) {
-        return (
-          data.skillsAnswer &&
-          data.conflictsAnswer &&
-          data.presentation &&
-          data.timeManagement
-        );
+  .superRefine((data, ctx) => {
+    if (data.isLeadership) {
+      if (!data.skillsAnswer) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["skillsAnswer"],
+          message: "Required for leadership",
+        });
       }
-
-      return true;
-    },
-    {
-      path: [
-        "skillsAnswer",
-        "conflictsAnswer",
-        "presentation",
-        "timeManagement",
-      ],
-      message: "Required for leadership",
-    },
-  );
+      if (!data.conflictsAnswer) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["conflictsAnswer"],
+          message: "Required for leadership",
+        });
+      }
+      if (!data.presentation) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["presentation"],
+          message: "Required for leadership",
+        });
+      }
+      if (!data.timeManagement) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["timeManagement"],
+          message: "Required for leadership",
+        });
+      }
+    }
+  });
