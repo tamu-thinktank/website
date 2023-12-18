@@ -10,15 +10,14 @@ export default function Blog() {
             Latest Articles
           </h2>
           <p className="text-gray-600 dark:text-gray-300 lg:mx-auto lg:w-6/12">
-            Quam hic dolore cumque voluptate rerum beatae et quae, tempore sunt,
-            debitis dolorum officia aliquid explicabo? Excepturi, voluptate?
+            Read about all of the things we've done so far!
           </p>
         </div>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
           <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
             <div className="relative overflow-hidden rounded-xl">
               <Image
-                src="https://images.unsplash.com/photo-1661749711934-492cd19a25c3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80"
+                src="https://d253pvgap36xx8.cloudfront.net/challenges/thumbnail/8d50149c82f611ec8d16862fe09b0a86/8c0628a682f611eca2ab8a8fe6f2b952.webp"
                 alt="art cover"
                 loading="lazy"
                 width="1000"
@@ -28,13 +27,15 @@ export default function Blog() {
             </div>
             <div className="relative mt-6">
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                De fuga fugiat lorem ispum laboriosam expedita.
+                NASA's Waste Jettison Mechanism Challenge Winners
               </h3>
               <p className="mt-6 mb-8 text-gray-600 dark:text-gray-300">
-                Voluptates harum aliquam totam, doloribus eum impedit atque!
-                Temporibus...
+              The team developed the Spring Loaded Ejection Mechanism (SLEM) 
+              to eject waste out of the Orion capsule during long-distance missions. 
+              The SLEM was TAMU ThinkTank's first project, and the team won 4th Place 
+              overall and a $1000 cash prize.
               </p>
-              <a className="inline-block" href="#">
+              <a className="inline-block" target="_blank" href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch">
                 <span className="text-info dark:text-blue-300">Read more</span>
               </a>
             </div>
@@ -42,7 +43,7 @@ export default function Blog() {
           <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
             <div className="relative overflow-hidden rounded-xl">
               <Image
-                src="https://images.unsplash.com/photo-1491895200222-0fc4a4c35e18?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1674&q=80"
+                src="https://engineering.tamu.edu/news/2023/07/_news-images/AERO-news-Vestigo-06July2023.jpg"
                 alt="art cover"
                 loading="lazy"
                 width="1000"
@@ -52,37 +53,15 @@ export default function Blog() {
             </div>
             <div className="relative mt-6">
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                De fuga fugiat lorem ispum laboriosam expedita.
+                Texas A&M team wins Texas Space Grant Consortium Design Challenge
               </h3>
               <p className="mt-6 mb-8 text-gray-600 dark:text-gray-300">
-                Voluptates harum aliquam totam, doloribus eum impedit atque!
-                Temporibus...
+                Texas A&M University's and ThinkTank's very own Team Vestigo, 
+                composed of freshmen, took first place against 16 other university 
+                teams for their creation of a wearable device to track crew member 
+                location and orientation while in space.
               </p>
-              <a className="inline-block" href="#">
-                <span className="text-info dark:text-blue-300">Read more</span>
-              </a>
-            </div>
-          </div>
-          <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-            <div className="relative overflow-hidden rounded-xl">
-              <Image
-                src="https://images.unsplash.com/photo-1620121692029-d088224ddc74?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2832&q=80"
-                alt="art cover"
-                loading="lazy"
-                width="1000"
-                height="667"
-                className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </div>
-            <div className="relative mt-6">
-              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                De fuga fugiat lorem ispum laboriosam expedita.
-              </h3>
-              <p className="mt-6 mb-8 text-gray-600 dark:text-gray-300">
-                Voluptates harum aliquam totam, doloribus eum impedit atque!
-                Temporibus...
-              </p>
-              <a className="inline-block" href="#">
+              <a className="inline-block" target="_blank" href="https://engineering.tamu.edu/news/2023/07/texas-am-team-wins-texas-space-grant-consortium-design-challenge.html">
                 <span className="text-info dark:text-blue-300">Read more</span>
               </a>
             </div>
