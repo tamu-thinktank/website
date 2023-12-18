@@ -2,6 +2,7 @@
 
 import { SessionProvider } from "next-auth/react";
 import { Next13ProgressBar } from "next13-progressbar";
+import { ThemeProvider } from "@/components/theme-provider";
 
 type Props = {
   children?: React.ReactNode;
@@ -16,7 +17,9 @@ export const Providers = ({ children }: Props) => {
         options={{ showSpinner: false }}
         showOnShallow
       />
-      {children}
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        {children}
+      </ThemeProvider>
     </SessionProvider>
   );
 };

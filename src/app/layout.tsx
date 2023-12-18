@@ -3,7 +3,8 @@ import "@/styles/globals.css";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 
-import { TRPCReactProvider } from "@/trpc/react";
+import { TRPCReactProvider } from "@/lib/trpc/react";
+import { ToggleTheme } from "./_components/toggle-theme";
 import { Providers } from "./providers";
 
 const inter = Inter({
@@ -24,11 +25,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${inter.variable} bg-white dark:bg-gray-900`}>
-        <Providers>
-          <TRPCReactProvider cookies={cookies().toString()}>
+        <TRPCReactProvider cookies={cookies().toString()}>
+          <Providers>
             {children}
-          </TRPCReactProvider>
-        </Providers>
+            <div className="fixed bottom-5 right-5">
+              <ToggleTheme />
+            </div>
+          </Providers>
+        </TRPCReactProvider>
       </body>
     </html>
   );

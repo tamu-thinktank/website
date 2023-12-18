@@ -15,19 +15,6 @@ datasource db {
     relationMode = "prisma" // for PlanetScale
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-    @@index([createdById])
-}
-
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -66,7 +53,6 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
 }
 
 model VerificationToken {
@@ -75,4 +61,57 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+enum Year {
+    FRESHMAN
+    SOPHOMORE
+    JUNIOR
+    SENIOR
+    GRADUATE
+}
+
+enum Availability {
+    PART_TIME // 6 - 12 hours
+    FULL_TIME // >12 hours
+}
+
+enum Challenge {
+    AIAA
+    RASC_AL
+    Blue_Skies
+}
+
+// table for relation
+model ChallengeTable {
+    challenge    Challenge     @id
+    applications Application[] // the applications that selected this challenge
+}
+
+model Application {
+    id           String       @id @default(cuid())
+    fullName     String
+    email        String       @unique
+    uin          Int          @unique
+    altEmail     String?
+    phone        String
+    year         Year
+    major        String
+    availability Availability
+
+    // Interests and Motivation section
+    interestedAnswer    String           @db.Text
+    challenges          ChallengeTable[]
+    interestedChallenge Challenge
+    passionAnswer       String           @db.Text
+    isLeadership        Boolean // Yes or No
+
+    // Leadership section, empty if `isLeadership` is false
+    skillsAnswer    String? @db.Text
+    conflictsAnswer String? @db.Text
+    presentation    Int? // 1-5
+    timeManagement  String? @db.Text
+
+    // Resume section
+    resumeLink String @db.Text
 }

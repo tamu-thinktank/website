@@ -40,22 +40,21 @@ export default function HeroSection() {
         <div className="h-32 bg-gradient-to-r from-cyan-400 to-sky-300 blur-[106px] dark:to-indigo-600"></div>
       </div>
       <Container>
-        <div className="relative ml-auto pt-36 flex flex-col h-screen">
+        <div className="relative ml-auto flex h-screen flex-col pt-36">
           <div className="mx-auto text-center lg:w-2/3">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white md:text-6xl xl:text-7xl">
               TAMU ThinkTank
             </h1>
             <p className="mt-8 text-gray-700 dark:text-gray-300">
-              
-            We provide a platform for students to compete in real engineering 
-            crowdsourcing competitions and present to professionals in industry-leading 
-            companies while teaching the leadership and self-discipline needed to run a completely independent team.
-
+              We provide a platform for students to compete in real engineering
+              crowdsourcing competitions and present to professionals in
+              industry-leading companies while teaching the leadership and
+              self-discipline needed to run a completely independent team.
             </p>
-            <div className="mt-16 flex flex-wrap justify-center gap-y-4 gap-x-6">
+            <div className="mt-16 flex flex-wrap justify-center gap-x-6 gap-y-4">
               <a
                 href="#overview"
-                className="relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
+                className="dark:before:bg-primary-foreground before:bg-primary relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
               >
                 <span className="relative text-base font-semibold text-white">
                   Learn more
@@ -85,7 +84,7 @@ export default function HeroSection() {
               </div>
               <div className="text-center">
                 <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
-                Personal Empowerment
+                  Personal Empowerment
                 </h6>
                 <p className="mt-2 text-gray-500">Internship Opportunities</p>
               </div>

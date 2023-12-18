@@ -20,14 +20,14 @@ export default function Header() {
                 aria-label="logo"
                 className="flex items-center space-x-2"
               >
-                <Image
-                  src="/ttt.png"
-                  alt="art cover"
-                  loading="lazy"
-                  width={0}
-                  height={0}
-                  className="h-auto w-10 object-cover object-top transition duration-500 group-hover:scale-105"
-                />
+              <Image
+                src="/ttt.png"
+                alt="art cover"
+                loading="lazy"
+                width={0}
+                height={0}
+                className="h-auto w-10 object-cover object-top transition duration-500 group-hover:scale-105"
+              />
                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
                   TAMU ThinkTank
                 </span>
@@ -69,7 +69,7 @@ export default function Header() {
                   <li>
                     <a
                       href="#overview"
-                      className="block transition hover:text-primary md:px-4"
+                      className="hover:text-primary block transition md:px-4"
                     >
                       <span>Overview</span>
                     </a>
@@ -77,7 +77,7 @@ export default function Header() {
                   <li>
                     <a
                       href="#travel"
-                      className="block transition hover:text-primary md:px-4"
+                      className="hover:text-primary block transition md:px-4"
                     >
                       <span>Travel</span>
                     </a>
@@ -85,15 +85,12 @@ export default function Header() {
                   <li>
                     <a
                       href="#officers"
-                      className="block transition hover:text-primary md:px-4"
+                      className="hover:text-primary block transition md:px-4"
                     >
-                      <span>Officers</span>
-                    </a>
-                  </li>
                   <li>
                     <a
                       href="#articles"
-                      className="block transition hover:text-primary md:px-4"
+                      className="hover:text-primary block transition md:px-4"
                     >
                       <span>Articles</span>
                     </a>

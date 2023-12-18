@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const orgImages = [
   "/images/photos/20230119_180722.webp",
@@ -36,30 +36,25 @@ const orgImages = [
   "/images/photos/IMG_6119.webp",
   "/images/photos/IMG_6121.webp",
 ]
-const delay = 3000;
 
-function shuffleArray<T>(array: (T | undefined)[]): void {
-  for (let i = array.length - 1; i > 0; i--) {
+function shuffleArray(array: (string | undefined)[]) {
+  const shuffled: typeof array = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    if (array[i] !== undefined && array[j] !== undefined) {
-      [array[i], array[j]] = [array[j], array[i]];
-    }
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
   }
+  return shuffled.filter(Boolean);
 }
 
 export default function Carousel() {
   const [index, setIndex] = useState(0);
   const timeoutRef = useRef<NodeJS.Timeout>();
-  
+  const images = useMemo(() => shuffleArray(orgImages), []);
+
   const resetTimeout = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
-  }, [])
-
-  // Shuffle the array when the component mounts
-  useEffect(() => {
-    shuffleArray(orgImages);
   }, []);
 
   useEffect(() => {
@@ -67,23 +62,32 @@ export default function Carousel() {
     timeoutRef.current = setTimeout(
       () =>
         setIndex((prevIndex) =>
-          prevIndex === orgImages.length - 1 ? 0 : prevIndex + 1
+          prevIndex === images.length - 1 ? 0 : prevIndex + 1,
         ),
-      delay
+      3000,
     );
 
     return () => resetTimeout();
   }, [index]);
 
   return (
-    <div className="mx-auto w-2/3 flex overflow-hidden">
-      <div className="w-screen whitespace-nowrap transition-all ease-in-out duration-1000" style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}>
-        {orgImages.map((img, idx) => (
+    <div className="mx-auto flex overflow-hidden">
+      <div
+        className="whitespace-nowrap transition-all duration-1000 ease-in-out"
+        style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}
+      >
+        {images.map((img, idx) => (
           <div key={idx} className={`inline-block h-full w-full`}>
-            <Image src={img} alt="client logo" className="mx-auto h-auto w-9/12" width={0} height={0}/>
+            <Image
+              src={img}
+              alt="client logo"
+              className="mx-auto h-auto w-11/12"
+              width={0}
+              height={0}
+            />
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
