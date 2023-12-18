@@ -18,7 +18,7 @@ export default function Travel() {
         <div className="flex-row-reverse justify-between space-y-6 text-gray-600 md:flex md:gap-6 md:space-y-0 lg:items-center lg:gap-12">
           <div className="md:5/12 lg:w-1/2">
             <Image
-              src="/images/photos/IMG_6121.jpg"
+              src="/images/photos/IMG_6121.webp"
               alt="image"
               loading="lazy"
               className="w-full"
