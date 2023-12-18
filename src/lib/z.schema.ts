@@ -1,10 +1,9 @@
 import { Availability, Challenge, Year } from "@prisma/client";
 import { z } from "zod";
-import { type dbApplicationType } from "./types";
 
 const challengeSchema = z.nativeEnum(Challenge);
 
-export const ApplyFormSchema: z.ZodType<dbApplicationType> = z
+export const ApplyFormSchema = z
   .object({
     id: z.string().cuid2(),
     fullName: z.string(),
