@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Container from "./Container";
 
-export default function Testimonials() {
+export default function Officers() {
   return (
-    <div className="text-gray-600 dark:text-gray-300" id="testimonials">
+    <div className="text-gray-600 dark:text-gray-300" id="officers">
       <Container>
         <div className="mb-20 space-y-4 px-6 md:px-0">
           <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-white md:text-4xl">

@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Container from "./Container";
 
-export default function Features() {
+export default function Overview() {
   return (
-    <div id="features">
+    <div id="overview">
       <Container>
         <div className="md:w-2/3 lg:w-1/2">
           <svg

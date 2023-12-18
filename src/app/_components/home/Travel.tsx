@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Container from "./Container";
 
-export default function Stats() {
+export default function Travel() {
   return (
-    <div id="solution">
+    <div id="travel">
       <Container>
       <svg 
         width="90pt" height="90pt" version="1.1" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg" fill="#ffffff"

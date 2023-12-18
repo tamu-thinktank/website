@@ -1,4 +1,5 @@
 import Container from "./Container";
+import Image from "next/image";
 
 export default function Header() {
   return (
@@ -19,10 +20,14 @@ export default function Header() {
                 aria-label="logo"
                 className="flex items-center space-x-2"
               >
-                <div aria-hidden="true" className="flex space-x-1">
-                  <div className="h-4 w-4 rounded-full bg-gray-900 dark:bg-white"></div>
-                  <div className="bg-primary h-6 w-2"></div>
-                </div>
+              <Image
+                src="/ttt.png"
+                alt="art cover"
+                loading="lazy"
+                width={0}
+                height={0}
+                className="h-auto w-10 object-cover object-top transition duration-500 group-hover:scale-105"
+              />
                 <span className="text-2xl font-bold text-gray-900 dark:text-white">
                   TAMU ThinkTank
                 </span>
@@ -63,34 +68,34 @@ export default function Header() {
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
                     <a
-                      href="#features"
+                      href="#overview"
                       className="hover:text-primary block transition md:px-4"
                     >
-                      <span>Features</span>
+                      <span>Overview</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="#solution"
+                      href="#travel"
                       className="hover:text-primary block transition md:px-4"
                     >
-                      <span>Solution</span>
+                      <span>Travel</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="#testimonials"
+                      href="#officers"
                       className="hover:text-primary block transition md:px-4"
                     >
-                      <span>Testimonials</span>
+                      <span>Officers</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="#blog"
+                      href="#articles"
                       className="hover:text-primary block transition md:px-4"
                     >
-                      <span>Blog</span>
+                      <span>Articles</span>
                     </a>
                   </li>
                 </ul>

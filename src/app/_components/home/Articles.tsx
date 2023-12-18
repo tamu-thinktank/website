@@ -1,9 +1,9 @@
 import Image from "next/image";
 import Container from "./Container";
 
-export default function Blog() {
+export default function Articles() {
   return (
-    <div id="blog">
+    <div id="articles">
       <Container>
         <div className="mb-12 space-y-2 text-center">
           <h2 className="text-3xl font-bold text-gray-800 dark:text-white md:text-4xl">

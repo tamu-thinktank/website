@@ -1,11 +1,11 @@
 import AppFooter from "@/components/home/AppFooter";
 import AppHeader from "@/components/home/AppHeader";
-import Blog from "@/components/home/Blog";
+import Articles from "@/app/_components/home/Articles";
 import CallToAction from "@/components/home/CallToAction";
-import Features from "@/components/home/Features";
+import Overview from "@/app/_components/home/Overview";
 import HeroSection from "@/components/home/HeroSection";
-import Stats from "@/components/home/Stats";
-import Testimonials from "@/components/home/Testimonials";
+import Travel from "@/app/_components/home/Travel";
+import Offciers from "@/app/_components/home/Officers";
 import { type NextPage } from "next";
 import Carousel from "./_components/home/Carousel";
 
@@ -15,12 +15,12 @@ const Home: NextPage = () => {
       <AppHeader />
       <main className="mb-40 space-y-20">
         <HeroSection />
-        <Features />
+        <Overview />
         <Carousel />
-        <Stats />
-        <Testimonials />
+        <Travel />
+        <Offciers />
         <CallToAction />
-        <Blog />
+        <Articles />
       </main>
       <AppFooter />
     </>
