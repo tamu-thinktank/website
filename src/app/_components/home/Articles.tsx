@@ -19,7 +19,6 @@ export default function Articles() {
               <Image
                 src="https://d253pvgap36xx8.cloudfront.net/challenges/thumbnail/8d50149c82f611ec8d16862fe09b0a86/8c0628a682f611eca2ab8a8fe6f2b952.webp"
                 alt="art cover"
-                loading="lazy"
                 width="1000"
                 height="667"
                 className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
@@ -29,13 +28,17 @@ export default function Articles() {
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
                 NASA's Waste Jettison Mechanism Challenge Winners
               </h3>
-              <p className="mt-6 mb-8 text-gray-600 dark:text-gray-300">
-              The team developed the Spring Loaded Ejection Mechanism (SLEM) 
-              to eject waste out of the Orion capsule during long-distance missions. 
-              The SLEM was TAMU ThinkTank's first project, and the team won 4th Place 
-              overall and a $1000 cash prize.
+              <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+                The team developed the Spring Loaded Ejection Mechanism (SLEM)
+                to eject waste out of the Orion capsule during long-distance
+                missions. The SLEM was TAMU ThinkTank's first project, and the
+                team won 4th Place overall and a $1000 cash prize.
               </p>
-              <a className="inline-block" target="_blank" href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch">
+              <a
+                className="inline-block"
+                target="_blank"
+                href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch"
+              >
                 <span className="text-info dark:text-blue-300">Read more</span>
               </a>
             </div>
@@ -45,7 +48,6 @@ export default function Articles() {
               <Image
                 src="https://engineering.tamu.edu/news/2023/07/_news-images/AERO-news-Vestigo-06July2023.jpg"
                 alt="art cover"
-                loading="lazy"
                 width="1000"
                 height="667"
                 className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
@@ -53,15 +55,20 @@ export default function Articles() {
             </div>
             <div className="relative mt-6">
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                Texas A&M team wins Texas Space Grant Consortium Design Challenge
+                Texas A&M team wins Texas Space Grant Consortium Design
+                Challenge
               </h3>
-              <p className="mt-6 mb-8 text-gray-600 dark:text-gray-300">
-                Texas A&M University's and ThinkTank's very own Team Vestigo, 
-                composed of freshmen, took first place against 16 other university 
-                teams for their creation of a wearable device to track crew member 
-                location and orientation while in space.
+              <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+                Texas A&M University's and ThinkTank's very own Team Vestigo,
+                composed of freshmen, took first place against 16 other
+                university teams for their creation of a wearable device to
+                track crew member location and orientation while in space.
               </p>
-              <a className="inline-block" target="_blank" href="https://engineering.tamu.edu/news/2023/07/texas-am-team-wins-texas-space-grant-consortium-design-challenge.html">
+              <a
+                className="inline-block"
+                target="_blank"
+                href="https://engineering.tamu.edu/news/2023/07/texas-am-team-wins-texas-space-grant-consortium-design-challenge.html"
+              >
                 <span className="text-info dark:text-blue-300">Read more</span>
               </a>
             </div>

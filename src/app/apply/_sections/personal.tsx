@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardContent,
@@ -15,19 +17,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { type ApplyFormSchema } from "@/lib/z.schema";
+import { type RouterInputs } from "@/lib/trpc/shared";
 import { Availability, Year } from "@prisma/client";
-import { type UseFormReturn } from "react-hook-form";
-import type * as z from "zod";
+import { useFormContext } from "react-hook-form";
 
-export default function PersonalInfo({
-  form,
-}: {
-  form: UseFormReturn<z.infer<typeof ApplyFormSchema>>;
-}) {
+export default function PersonalInfo() {
+  const form = useFormContext<RouterInputs["public"]["apply"]>();
+
   return (
-    <>
-      <Card className="w-full">
+    <div className="flex flex-col gap-4">
+      <Card>
         <CardHeader>
           <CardTitle>Personal Information</CardTitle>
           <Separator />
@@ -36,58 +35,66 @@ export default function PersonalInfo({
           Include contacts where you are mostly likely to response if notified
         </CardContent>
       </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Full Name</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="fullName"
-            render={({ field }) => (
-              <FormItem>
+
+      <FormField
+        control={form.control}
+        name="personal.fullName"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Full Name <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Input type="text" placeholder="John Doe" {...field} />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>TAMU Email</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="personal.email"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  TAMU Email <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Input type="text" placeholder="mail@tamu.edu" {...field} />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>UIN</CardTitle>
-          <CardDescription>
-            If you have a special UIN that doesn't match the format 123004567,
-            please contact us at: tamuthinktank@gmail.com
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="uin"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="personal.uin"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  UIN <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  If you have a special UIN that doesn't match the format
+                  123004567, please contact us at: tamuthinktank@gmail.com
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Input
                     type="number"
@@ -97,25 +104,25 @@ export default function PersonalInfo({
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Additional Email Contact</CardTitle>
-          <CardDescription>
-            Provide any other email that is a good point of contact in addition
-            to your TAMU email
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="altEmail"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="personal.altEmail"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>Additional Email Contact</CardTitle>
+                <CardDescription>
+                  Provide any other email that is a good point of contact in
+                  addition to your TAMU email
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Input
                     type="text"
@@ -125,41 +132,47 @@ export default function PersonalInfo({
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Contact Number</CardTitle>
-          <CardDescription>Enter phone number as 123-456-7890</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="phone"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="personal.phone"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Contact Number <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Enter phone number as 123-456-7890
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Input type="text" placeholder="123-456-7890" {...field} />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Current Year at TAMU</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="year"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="personal.year"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Current Year at TAMU <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
@@ -211,48 +224,52 @@ export default function PersonalInfo({
                   </RadioGroup>
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Major</CardTitle>
-          <CardDescription>
-            Use the four letter abbreviation of your major If in general
-            engineering, respond with intended major
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="major"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="personal.major"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Major <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Use the four letter abbreviation of your major If in general
+                  engineering, respond with intended major
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Input type="text" placeholder="AERO" {...field} />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Availability</CardTitle>
-          <CardDescription>
-            Provide the number of hours per week you are available to work on a
-            design challenge
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="availability"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="personal.availability"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Availability <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Provide the number of hours per week you are available to work
+                  on a design challenge
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
@@ -283,11 +300,11 @@ export default function PersonalInfo({
                   </RadioGroup>
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-    </>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+    </div>
   );
 }

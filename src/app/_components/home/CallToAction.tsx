@@ -15,11 +15,10 @@ export default function CallToAction() {
         <div className="relative">
           <Image
             className="mx-auto h-auto w-32 rounded-full"
-            src="ttt.png"
+            src="/ttt.png"
             alt="user avatar"
-            width={0}
-            height={0}
-            loading="lazy"
+            width={500}
+            height={500}
           />
 
           <div className="m-auto mt-6 space-y-6 md:w-8/12 lg:w-7/12">
@@ -27,8 +26,8 @@ export default function CallToAction() {
               Join Us Today!
             </h1>
             <p className="text-center text-xl text-gray-600 dark:text-gray-300">
-            Join our design challenges to gain hands-on experience, specialized skills, 
-            and faculty mentorship.
+              Join our design challenges to gain hands-on experience,
+              specialized skills, and faculty mentorship.
             </p>
             <div className="flex flex-wrap justify-center gap-6">
               <a
@@ -41,7 +40,7 @@ export default function CallToAction() {
               </a>
               <a
                 href="#overview"
-                className="dark:before:bg-primary-foreground before:bg-primary relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
+                className="relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground sm:w-max"
               >
                 <span className="relative text-base font-semibold text-white">
                   More about

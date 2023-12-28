@@ -44,6 +44,14 @@ export const authOptions: NextAuthOptions = {
         id: user.id,
       },
     }),
+
+    signIn: async ({ user }) => {
+      if (user.email && env.ALLOWED_EMAILS.includes(user.email)) {
+        return true;
+      } else {
+        return false;
+      }
+    },
   },
   adapter: PrismaAdapter(db),
   providers: [

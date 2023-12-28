@@ -1,100 +1,97 @@
 import { Availability, Challenge, Year } from "@prisma/client";
 import { z } from "zod";
-import { type dbApplicationType } from "./types";
 
 const challengeSchema = z.nativeEnum(Challenge);
+const charLimit = 1000;
 
-export const ApplyFormSchema: z.ZodType<
-  dbApplicationType,
-  z.ZodTypeDef,
-  unknown
-> = z
+export const ApplyFormSchema = z
   .object({
     id: z.string().cuid2(),
-    fullName: z.string(),
-    email: z.string().email(),
-    uin: z.coerce
-      .number()
-      .positive()
-      .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
-        message: "Invalid UIN",
-      }),
-    altEmail: z
-      .string()
-      .nullable()
-      .refine(
-        (input) => {
-          if (input?.length && input.length > 0) {
-            return z.string().email().safeParse(input).success;
-          }
 
-          return true;
-        },
-        {
-          message: "Invalid email",
-        },
-      ),
-    phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/),
-    year: z.nativeEnum(Year),
-    major: z
-      .string()
-      .length(4)
-      .refine((input) => /^[A-Za-z]{4}$/.test(input), {
-        message: "Not a valid major abbreviation",
-      }),
-    availability: z.nativeEnum(Availability),
-    interestedAnswer: z.string().max(1000),
-    challenges: z
-      .array(
-        z.object({
-          challenge: challengeSchema,
+    // Personal info section
+    personal: z.object({
+      fullName: z.string().min(1),
+      email: z.string().email(),
+      uin: z.coerce
+        .number()
+        .positive()
+        .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
+          message: "Invalid UIN",
         }),
-      )
-      .min(1),
-    interestedChallenge: challengeSchema,
-    passionAnswer: z.string().max(1000),
-    isLeadership: z.coerce.boolean(),
-    skillsAnswer: z.string().max(1000).nullable(),
-    conflictsAnswer: z.string().max(1000).nullable(),
-    presentation: z.preprocess((val) => {
-      if (!val) return 1;
+      altEmail: z
+        .string()
+        .nullable()
+        .refine(
+          (input) => {
+            // email check after to validate empty string
+            if (input?.length) {
+              return z.string().email().safeParse(input).success;
+            }
 
-      const casted = val as unknown as number[];
-      const lastElm = casted[casted.length - 1];
-      if (!lastElm) return 1;
+            return true;
+          },
+          {
+            message: "Invalid email",
+          },
+        ),
+      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/),
+      year: z.nativeEnum(Year),
+      major: z
+        .string()
+        .length(4)
+        .refine((input) => /^[A-Za-z]{4}$/.test(input), {
+          message: "Not a valid major abbreviation",
+        }),
+      availability: z.nativeEnum(Availability),
+    }),
 
-      return lastElm + 1;
-    }, z.number().min(1).max(5).nullable()),
-    timeManagement: z.string().max(1000).nullable(),
+    // Interests and Motivation section
+    interests: z.object({
+      interestedAnswer: z.string().max(charLimit),
+      challenges: z.array(challengeSchema).min(1),
+      interestedChallenge: challengeSchema,
+      passionAnswer: z.string().max(charLimit),
+      isLeadership: z.coerce.boolean(),
+    }),
+
+    // Leadership section
+    leadership: z.object({
+      skillsAnswer: z.string().max(charLimit).nullable(),
+      conflictsAnswer: z.string().max(charLimit).nullable(),
+      presentation: z.coerce.number().min(1).max(5).nullable(),
+      timeManagement: z.string().max(charLimit).nullable(),
+    }),
+
+    // Resume section
     resumeLink: z.string(),
   })
-  .superRefine((data, ctx) => {
-    if (data.isLeadership) {
-      if (!data.skillsAnswer) {
+  .superRefine(({ interests: { isLeadership }, leadership }, ctx) => {
+    if (isLeadership) {
+      if (!leadership.skillsAnswer) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["skillsAnswer"],
+          path: ["leadership.skillsAnswer"],
           message: "Required for leadership",
         });
       }
-      if (!data.conflictsAnswer) {
+      if (!leadership.conflictsAnswer) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["conflictsAnswer"],
+          path: ["leadership.conflictsAnswer"],
           message: "Required for leadership",
         });
       }
-      if (!data.presentation) {
+      if (!leadership.presentation) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["presentation"],
+          path: ["leadership.presentation"],
           message: "Required for leadership",
         });
       }
-      if (!data.timeManagement) {
+      if (!leadership.timeManagement) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["timeManagement"],
+          path: ["leadership.timeManagement"],
           message: "Required for leadership",
         });
       }

@@ -13,18 +13,15 @@ import {
 } from "@/components/ui/form";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { type ApplyFormSchema } from "@/lib/z.schema";
-import { type UseFormReturn } from "react-hook-form";
-import { type z } from "zod";
+import { type RouterInputs } from "@/lib/trpc/shared";
+import { useFormContext } from "react-hook-form";
 
-export default function Leadership({
-  form,
-}: {
-  form: UseFormReturn<z.infer<typeof ApplyFormSchema>>;
-}) {
+export default function Leadership() {
+  const form = useFormContext<RouterInputs["public"]["apply"]>();
+
   return (
-    <>
-      <Card className="w-full">
+    <div className="flex flex-col gap-4">
+      <Card>
         <CardHeader>
           <CardTitle>Leadership</CardTitle>
           <CardDescription>
@@ -32,18 +29,20 @@ export default function Leadership({
           </CardDescription>
         </CardHeader>
       </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            Describe a situation where you demonstrated leadership skills
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="skillsAnswer"
-            render={({ field }) => (
-              <FormItem>
+
+      <FormField
+        control={form.control}
+        name="leadership.skillsAnswer"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Describe a situation where you demonstrated leadership skills{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Textarea
                     placeholder="Long answer text"
@@ -52,26 +51,27 @@ export default function Leadership({
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            How do you handle conflicts within a team environment?
-          </CardTitle>
-          <CardDescription>
-            Provide a specific example if possible
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="conflictsAnswer"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="leadership.conflictsAnswer"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  How do you handle conflicts within a team environment?{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Provide a specific example if possible
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Textarea
                     placeholder="Long answer text"
@@ -80,23 +80,24 @@ export default function Leadership({
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            Rate your presentation skills on a scale from 1 to 5
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="presentation"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="leadership.presentation"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Rate your presentation skills on a scale from 1 to 5{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <div className="flex flex-col items-center justify-center gap-2">
                     <div className="flex w-1/2 justify-between">
@@ -109,39 +110,40 @@ export default function Leadership({
                     <div className="flex w-full items-center justify-center gap-4">
                       Novice{" "}
                       <Slider
-                        max={4}
+                        min={1}
+                        max={5}
                         step={1}
                         className="w-1/2"
                         onValueChange={field.onChange}
-                        value={field.value ? [field.value] : [0]}
+                        value={field.value ? [field.value] : [1]}
                       />{" "}
                       Expert
                     </div>
                   </div>
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            How would you rate your ability to meet deadlines and manage time
-            effectively?
-          </CardTitle>
-          <CardDescription>
-            Provide an example where you successfully managed your time under
-            pressure
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="timeManagement"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="leadership.timeManagement"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  How would you rate your ability to meet deadlines and manage
+                  time effectively? <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Provide an example where you successfully managed your time
+                  under pressure
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Textarea
                     placeholder="Long answer text"
@@ -150,11 +152,11 @@ export default function Leadership({
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-    </>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+    </div>
   );
 }

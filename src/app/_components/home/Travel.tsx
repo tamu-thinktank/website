@@ -19,18 +19,17 @@ export default function Travel() {
           </g>
         </svg>
 
-        <div className="flex-row-reverse justify-between space-y-6 text-gray-600 md:flex md:gap-6 md:space-y-0 lg:items-center lg:gap-12">
-          <div className="md:5/12 lg:w-1/2">
+        <div className="flex-row-reverse justify-between space-y-6 text-gray-600 lg:flex lg:items-center lg:gap-12 lg:space-y-0">
+          <div className="lg:w-1/2">
             <Image
               src="/images/photos/IMG_6121.webp"
               alt="image"
-              loading="lazy"
               className="w-full"
-              width={0}
-              height={0}
+              width={500}
+              height={500}
             />
           </div>
-          <div className="md:7/12 lg:w-1/2">
+          <div className="lg:w-1/2">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
               Travel Opportunities!
             </h2>

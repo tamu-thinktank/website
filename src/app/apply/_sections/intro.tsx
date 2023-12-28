@@ -3,7 +3,7 @@ import { Separator } from "@/components/ui/separator";
 
 export default function FormIntro() {
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
         <CardTitle>ThinkTank Membership Application Form</CardTitle>
         <Separator />

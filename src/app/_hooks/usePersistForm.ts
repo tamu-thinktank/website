@@ -6,6 +6,9 @@ import {
 } from "react-hook-form";
 import useFormPersist from "react-hook-form-persist";
 
+/**
+ * Prevents defaultValues from being set if form persisted in sessionStorage
+ */
 export const usePersistForm = <TFieldValues extends FieldValues = FieldValues>(
   name: string,
   props?: UseFormProps<TFieldValues>,

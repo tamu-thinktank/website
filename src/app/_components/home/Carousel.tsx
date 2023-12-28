@@ -1,7 +1,14 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 
 const orgImages = [
   "/images/photos/20230119_180722.webp",
@@ -35,7 +42,7 @@ const orgImages = [
   "/images/photos/IMG_6117.webp",
   "/images/photos/IMG_6119.webp",
   "/images/photos/IMG_6121.webp",
-]
+];
 
 function shuffleArray(array: (string | undefined)[]) {
   const shuffled: typeof array = [...array];
@@ -46,48 +53,37 @@ function shuffleArray(array: (string | undefined)[]) {
   return shuffled.filter(Boolean);
 }
 
-export default function Carousel() {
-  const [index, setIndex] = useState(0);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+export default function ProjectCarousel() {
   const images = useMemo(() => shuffleArray(orgImages), []);
 
-  const resetTimeout = useCallback(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-  }, []);
-
-  useEffect(() => {
-    resetTimeout();
-    timeoutRef.current = setTimeout(
-      () =>
-        setIndex((prevIndex) =>
-          prevIndex === images.length - 1 ? 0 : prevIndex + 1,
-        ),
-      3000,
-    );
-
-    return () => resetTimeout();
-  }, [index]);
-
   return (
-    <div className="mx-auto flex overflow-hidden">
-      <div
-        className="whitespace-nowrap transition-all duration-1000 ease-in-out"
-        style={{ transform: `translate3d(${-index * 100}%, 0, 0)` }}
-      >
-        {images.map((img, idx) => (
-          <div key={idx} className={`inline-block h-full w-full`}>
-            <Image
-              src={img}
-              alt="client logo"
-              className="mx-auto h-auto w-11/12"
-              width={0}
-              height={0}
-            />
-          </div>
+    <Carousel
+      opts={{
+        loop: true,
+      }}
+      plugins={[
+        Autoplay({
+          delay: 3000,
+        }),
+      ]}
+    >
+      <CarouselContent>
+        {images.map((img, index) => (
+          <CarouselItem key={index}>
+            <Card>
+              <CardContent className="p-1">
+                <Image
+                  src={img}
+                  alt="client logo"
+                  className="w-auto rounded-sm"
+                  width={0}
+                  height={0}
+                />
+              </CardContent>
+            </Card>
+          </CarouselItem>
         ))}
-      </div>
-    </div>
+      </CarouselContent>
+    </Carousel>
   );
 }

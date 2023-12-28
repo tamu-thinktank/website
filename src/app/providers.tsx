@@ -13,7 +13,7 @@ export const Providers = ({ children }: Props) => {
     <SessionProvider>
       <Next13ProgressBar
         height="4px"
-        // color="#03fc1c"
+        color="#95bed4"
         options={{ showSpinner: false }}
         showOnShallow
       />

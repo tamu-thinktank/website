@@ -1,31 +1,31 @@
 import Image from "next/image";
-import Link from 'next/link';
+import Link from "next/link";
 import Container from "./Container";
 
 const clientLogos = [
   {
     src: "/images/clients/ntl.png",
-    link: 'https://www.nasa.gov/general/nasa-tournament-lab/',
+    link: "https://www.nasa.gov/general/nasa-tournament-lab/",
   },
   {
     src: "/images/clients/tsgc.png",
-    link: 'https://ig.utexas.edu/tsgc/design-challenge/',
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
   },
   {
     src: "/images/clients/herox.png",
-    link: 'https://www.herox.com/crowdsourcing-projects',
+    link: "https://www.herox.com/crowdsourcing-projects",
   },
   {
     src: "/images/clients/rascal.png",
-    link: 'https://rascal.nianet.org/',
+    link: "https://rascal.nianet.org/",
   },
   {
     src: "/images/clients/aiaa.png",
-    link: 'https://www.aiaa.org/get-involved/students-educators/Design-Competitions',
+    link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
   },
   {
     src: "/images/clients/aero.png",
-    link: 'https://engineering.tamu.edu/aerospace/index.html',
+    link: "https://engineering.tamu.edu/aerospace/index.html",
   },
 ];
 
@@ -34,13 +34,13 @@ export default function HeroSection() {
     <div className=" relative" id="home">
       <div
         aria-hidden="true"
-        className="absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20"
+        className="absolute inset-0 grid grid-cols-2 -space-x-52 py-40 opacity-40 dark:opacity-20"
       >
         <div className="h-56 bg-gradient-to-br from-primary to-purple-400 blur-[106px] dark:from-blue-700"></div>
         <div className="h-32 bg-gradient-to-r from-cyan-400 to-sky-300 blur-[106px] dark:to-indigo-600"></div>
       </div>
       <Container>
-        <div className="relative ml-auto flex h-screen flex-col pt-36">
+        <div className="relative mx-auto flex h-screen flex-col pt-36">
           <div className="mx-auto text-center lg:w-2/3">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white md:text-6xl xl:text-7xl">
               TAMU ThinkTank
@@ -54,7 +54,7 @@ export default function HeroSection() {
             <div className="mt-16 flex flex-wrap justify-center gap-x-6 gap-y-4">
               <a
                 href="#overview"
-                className="dark:before:bg-primary-foreground before:bg-primary relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-max"
+                className="relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground sm:w-max"
               >
                 <span className="relative text-base font-semibold text-white">
                   Learn more
@@ -90,22 +90,22 @@ export default function HeroSection() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-10 items-center justify-center h-full">
-            {
-              clientLogos.map((logo, index) => (
-                <Link href={logo.link} key={index}>
-                    <Image
-                      key={index}
-                      src={logo.src}
-                      className={`mx-auto ${index === 0 ? 'h-24' : 'h-auto'} w-auto`}
-                      loading="lazy"
-                      alt="client logo"
-                      width={0}
-                      height={0}
-                    />
-                </Link>
-              ))
-            }
+          <div className="grid h-full grid-cols-3 items-center justify-center gap-10 md:grid-cols-6">
+            {clientLogos.map((logo, index) => (
+              <Link href={logo.link} key={index}>
+                <Image
+                  key={index}
+                  src={logo.src}
+                  className={`mx-auto ${
+                    index === 0 ? "h-24" : "h-auto"
+                  } w-auto`}
+                  alt="client logo"
+                  width={500}
+                  height={500}
+                  priority
+                />
+              </Link>
+            ))}
           </div>
         </div>
       </Container>

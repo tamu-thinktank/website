@@ -12,7 +12,7 @@ export const env = createEnv({
       .url()
       .refine(
         (str) => !str.includes("YOUR_MYSQL_URL_HERE"),
-        "You forgot to change the default URL"
+        "You forgot to change the default URL",
       ),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -26,13 +26,26 @@ export const env = createEnv({
       // Since NextAuth.js automatically uses the VERCEL_URL if present.
       (str) => process.env.VERCEL_URL ?? str,
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url()
+      process.env.VERCEL ? z.string() : z.string().url(),
     ),
     // Add ` on ID and SECRET if you want to make sure they're not empty
     AUTH0_CLIENT_ID: z.string(),
     AUTH0_CLIENT_SECRET: z.string(),
     AUTH0_ISSUER: z.string().url(),
     SITE_URL: z.string().url(),
+    ALLOWED_EMAILS: z
+      .string()
+      .transform((str) => str.split(" "))
+      .refine(
+        (emails) => {
+          return emails.every(
+            (email) => z.string().email().safeParse(email).success,
+          );
+        },
+        {
+          message: "All emails must be valid",
+        },
+      ),
   },
 
   /**
@@ -58,6 +71,7 @@ export const env = createEnv({
     AUTH0_ISSUER: process.env.AUTH0_ISSUER,
     SITE_URL: process.env.SITE_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    ALLOWED_EMAILS: process.env.ALLOWED_EMAILS,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

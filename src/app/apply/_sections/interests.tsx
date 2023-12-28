@@ -15,37 +15,38 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { type ApplyFormSchema } from "@/lib/z.schema";
+import { type RouterInputs } from "@/lib/trpc/shared";
 import { Challenge } from "@prisma/client";
-import { type UseFormReturn } from "react-hook-form";
-import type * as z from "zod";
+import { useFormContext } from "react-hook-form";
 
 const challenges: {
   id: Challenge;
   label: string;
+  link: string;
 }[] = [
   {
     id: Challenge.AIAA,
     label: "AIAA",
+    link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
   },
   {
     id: Challenge.RASC_AL,
     label: "RASC-AL",
+    link: "https://rascal.nianet.org/competition-details/",
   },
   {
     id: Challenge.Blue_Skies,
     label: "Blue Skies",
+    link: "https://blueskies.nianet.org/competition/",
   },
 ];
 
-export default function Interests({
-  form,
-}: {
-  form: UseFormReturn<z.infer<typeof ApplyFormSchema>>;
-}) {
+export default function Interests() {
+  const form = useFormContext<RouterInputs["public"]["apply"]>();
+
   return (
-    <>
-      <Card className="w-full">
+    <div className="flex flex-col gap-4">
+      <Card>
         <CardHeader>
           <CardTitle>Interests and Motivation</CardTitle>
           <CardDescription>
@@ -53,54 +54,54 @@ export default function Interests({
           </CardDescription>
         </CardHeader>
       </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Why are you interested in joining ThinkTank?</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="interestedAnswer"
-            render={({ field }) => (
-              <FormItem>
+
+      <FormField
+        control={form.control}
+        name="interests.interestedAnswer"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Why are you interested in joining ThinkTank?{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Textarea placeholder="Long answer text" {...field} />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Which Design Challenges are you interested in?</CardTitle>
-          <CardDescription>
-            Details can be found below: <br />- AIAA:
-            https://www.aiaa.org/get-involved/students-educators/Design-Competitions{" "}
-            <br />
-            - RASC-AL: https://rascal.nianet.org/competition-details/ <br />-
-            Blue Skies: https://blueskies.nianet.org/competition/
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          Details can be found below: <br />- AIAA:
-          https://www.aiaa.org/get-involved/students-educators/Design-Competitions{" "}
-          <br />
-          - RASC-AL: https://rascal.nianet.org/competition-details/ <br />- Blue
-          Skies: https://blueskies.nianet.org/competition/
-        </CardContent>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="challenges"
-            render={() => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name="interests.challenges"
+        render={() => (
+          <FormItem>
+            <Card>
+              <CardHeader className="gap-4">
+                <CardTitle>
+                  Which Design Challenges are you interested in?{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Details can be found below: <br />- AIAA:
+                  https://www.aiaa.org/get-involved/students-educators/Design-Competitions{" "}
+                  <br />- RASC-AL:
+                  https://rascal.nianet.org/competition-details/ <br />- Blue
+                  Skies: https://blueskies.nianet.org/competition/
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 {challenges.map((challenge) => (
                   <FormField
                     key={challenge.id}
                     control={form.control}
-                    name="challenges"
+                    name="interests.challenges"
                     render={({ field }) => {
                       return (
                         <FormItem
@@ -110,18 +111,17 @@ export default function Interests({
                           <FormControl>
                             <Checkbox
                               checked={field.value?.some(
-                                (value) => value.challenge === challenge.id,
+                                (value) => value === challenge.id,
                               )}
                               onCheckedChange={(checked) => {
                                 return checked
                                   ? field.onChange([
                                       ...field.value,
-                                      { challenge: challenge.id },
+                                      challenge.id,
                                     ])
                                   : field.onChange(
                                       field.value.filter(
-                                        (value) =>
-                                          value.challenge !== challenge.id,
+                                        (value) => value !== challenge.id,
                                       ),
                                     );
                               }}
@@ -136,27 +136,29 @@ export default function Interests({
                   />
                 ))}
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            Which Design Challenge are you most interested in?
-          </CardTitle>
-          <CardDescription>
-            This helps us more quickly match applicants with their desired
-            design challenge
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="interestedChallenge"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="interests.interestedChallenge"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Which Design Challenge are you most interested in?{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  This helps us more quickly match applicants with their desired
+                  design challenge
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
@@ -195,54 +197,55 @@ export default function Interests({
                   </RadioGroup>
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            Describe an instance where you demonstrated your passion for a
-            project, task, or subject matter
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="passionAnswer"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="interests.passionAnswer"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Describe an instance where you demonstrated your passion for a
+                  project, task, or subject matter{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
                   <Textarea placeholder="Long answer text" {...field} />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            Are you interested in a leadership position on a team?
-          </CardTitle>
-          <CardDescription>
-            These positions will vary from team to team in terms of number and
-            specific responsibilities.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField
-            control={form.control}
-            name="isLeadership"
-            render={({ field }) => (
-              <FormItem>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="interests.isLeadership"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  Are you interested in a leadership position on a team?{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  These positions will vary from team to team in terms of number
+                  and specific responsibilities.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value ? "true" : ""}
-                  >
+                  <RadioGroup onValueChange={field.onChange}>
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
@@ -262,11 +265,11 @@ export default function Interests({
                   </RadioGroup>
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
-        </CardContent>
-      </Card>
-    </>
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+    </div>
   );
 }

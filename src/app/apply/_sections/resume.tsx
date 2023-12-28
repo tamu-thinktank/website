@@ -9,9 +9,11 @@ import { Input } from "@/components/ui/input";
 
 export default function ResumeUpload() {
   return (
-    <Card className="w-full">
+    <Card>
       <CardHeader>
-        <CardTitle>Resume Submission</CardTitle>
+        <CardTitle>
+          Resume Submission <span className="text-red-500">*</span>
+        </CardTitle>
         <CardDescription>
           Please upload your resume as a PDF file. We do not expect applicants
           to have any prior official engineering experience. All we ask is for
@@ -19,8 +21,8 @@ export default function ResumeUpload() {
           out.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <Input type="file" accept=".pdf" />
+      <CardContent className="w-fit">
+        <Input type="file" className="hover:cursor-pointer" accept=".pdf" />
       </CardContent>
     </Card>
   );
