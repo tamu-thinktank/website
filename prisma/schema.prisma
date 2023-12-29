@@ -15,7 +15,8 @@ datasource db {
     relationMode = "prisma" // for PlanetScale
 }
 
-// Necessary for Next auth
+// ------------------ nextauth tables ------------------
+
 model Account {
     id                String  @id @default(cuid())
     userId            String
@@ -45,14 +46,16 @@ model Session {
     @@index([userId])
 }
 
+// officers
 model User {
-    id            String    @id @default(cuid())
+    id            String        @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?       @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
+    meetingTimes  MeetingTime[]
 }
 
 model VerificationToken {
@@ -62,6 +65,8 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
+
+// ------------------
 
 enum Year {
     FRESHMAN
@@ -82,14 +87,33 @@ enum Challenge {
     Blue_Skies
 }
 
+enum ApplicationStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
+}
+
 // table for relation
 model ChallengeTable {
     challenge    Challenge     @id
     applications Application[] // the applications that selected this challenge
 }
 
+model MeetingTime {
+    id           Int           @id @default(autoincrement())
+    start        DateTime
+    end          DateTime
+    officer      User          @relation(fields: [officerId], references: [id])
+    officerId    String
+    applications Application[] // the applications that selected this time range
+
+    @@index([officerId])
+}
+
 model Application {
-    id           String       @id @default(cuid())
+    id          String            @id @default(cuid())
+    submittedAt DateTime          @default(now())
+    status      ApplicationStatus @default(PENDING)
 
     // personal info section
     fullName     String
@@ -106,7 +130,7 @@ model Application {
     challenges          ChallengeTable[]
     interestedChallenge Challenge
     passionAnswer       String           @db.Text
-    isLeadership        Boolean // Yes or No
+    isLeadership        Boolean
 
     // Leadership section, empty if `isLeadership` is false
     skillsAnswer    String? @db.Text
@@ -114,6 +138,7 @@ model Application {
     presentation    Int? // 1-5
     timeManagement  String? @db.Text
 
-    // Resume section
-    resumeLink String @db.Text
+    // last section
+    meetingTimes MeetingTime[]
+    resumeLink   String        @db.Text
 }

@@ -19,7 +19,7 @@ import Interests from "./_sections/interests";
 import FormIntro from "./_sections/intro";
 import Leadership from "./_sections/leadership";
 import PersonalInfo from "./_sections/personal";
-import ResumeUpload from "./_sections/resume";
+import ResumeUpload from "./_sections/time-resume";
 
 export default function Apply() {
   const { toast } = useToast();
@@ -156,14 +156,20 @@ export default function Apply() {
               >
                 Back
               </TabsTrigger>
+              <TabsTrigger className="bg-white text-black" value="time">
+                Next
+              </TabsTrigger>
               <Button
                 type="submit"
                 disabled={
                   form.formState.isSubmitting || form.formState.isValidating
                 }
-                className="self-start"
               >
-                {form.formState.isSubmitting ? <Loader2 /> : "Submit"}
+                {form.formState.isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </TabsList>
           </TabsContent>

@@ -1,15 +1,12 @@
 # things
 
-## form
-
-- calendar features
-  - officers select times to set on form
-  - applicants select available times (added to db)
-- resumes to shared drive
-
-## applicant view
+## apply form
 
 - form at `/apply`
+- calendar features
+  - an officer selects times to set on form
+  - applicants select available times from all officers (added to db)
+- resumes to shared drive
 
 ## officer view
 
