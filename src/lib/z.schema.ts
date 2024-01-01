@@ -97,3 +97,13 @@ export const ApplyFormSchema = z
       }
     }
   });
+
+export const PersonResponse = z.object({
+  name: z.string(),
+  /**
+   * HHmm-ddMMyyyy (UTC)
+   */
+  availability: z.string().array(),
+  color: z.string(),
+});
+export type PersonResponse = z.infer<typeof PersonResponse>;

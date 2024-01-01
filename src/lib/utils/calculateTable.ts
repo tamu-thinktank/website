@@ -1,32 +1,22 @@
+import { Temporal } from "@js-temporal/polyfill";
 import { calculateColumns } from "./calculateColumns";
 import { calculateRows } from "./calculateRows";
-import { convertTimesToDates } from "./convertTimesToDates";
-import { serializeTime } from "./serializeTime";
 
 export interface CalculateTableArgs {
-  /** As `HHmm-DDMMYYYY` or `HHmm-d` strings */
-  times: string[];
-  locale: string;
-  timeFormat: "12h" | "24h";
+  /** range of times in UTC */
+  times: Temporal.ZonedDateTime[];
+  /** Timezone to display the table in */
   timezone: string;
 }
 
 /**
  * Take rows and columns and turn them into a data structure representing an availability table
  */
-export const calculateTable = ({
-  /** As `HHmm-DDMMYYYY` or `HHmm-d` strings */
-  times,
-  locale,
-  timeFormat,
-  timezone,
-}: CalculateTableArgs) => {
-  const dates = convertTimesToDates(times, timezone);
-  const rows = calculateRows(dates);
-  const columns = calculateColumns(dates);
-
-  // Is specific dates or just days of the week
-  const isSpecificDates = times[0]?.length === 13;
+export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
+  const locale = "en-US";
+  const userDateTimes = times.map((time) => time.withTimeZone(timezone));
+  const rows = calculateRows(userDateTimes);
+  const columns = calculateColumns(userDateTimes);
 
   return {
     rows: rows.map((row) =>
@@ -34,9 +24,8 @@ export const calculateTable = ({
         ? {
             label: row.toLocaleString(locale, {
               hour: "numeric",
-              hourCycle: timeFormat === "12h" ? "h12" : "h24",
+              hourCycle: "h12",
             }),
-            string: row.toString(),
           }
         : null,
     ),
@@ -45,39 +34,38 @@ export const calculateTable = ({
       column
         ? {
             header: {
-              dateLabel: isSpecificDates
-                ? column.toLocaleString(locale, {
-                    month: "short",
-                    day: "numeric",
-                  })
-                : undefined,
+              dateLabel: column.toLocaleString(locale, {
+                month: "short",
+                day: "numeric",
+              }),
               weekdayLabel: column.toLocaleString(locale, { weekday: "short" }),
-              string: column.toString(),
             },
             cells: rows.map((row) => {
               if (!row) return null;
-              const date = column.toZonedDateTime({
-                timeZone: timezone,
+
+              const cellDateTime = column.toZonedDateTime({
                 plainTime: row,
+                timeZone: timezone,
               });
-              const serialized = serializeTime(date, isSpecificDates);
+              const cellInUTC = cellDateTime.withTimeZone("UTC");
 
               // Cell not in dates
-              if (!times.includes(serialized)) return null;
+              if (
+                !times.some(
+                  (time) =>
+                    Temporal.ZonedDateTime.compare(cellInUTC, time) === 0,
+                )
+              )
+                return null;
 
               return {
-                serialized,
-                minute: date.minute,
-                label: isSpecificDates
-                  ? date.toLocaleString(locale, {
-                      dateStyle: "long",
-                      timeStyle: "short",
-                      hourCycle: timeFormat === "12h" ? "h12" : "h24",
-                    })
-                  : `${date.toLocaleString(locale, {
-                      timeStyle: "short",
-                      hourCycle: timeFormat === "12h" ? "h12" : "h24",
-                    })}, ${date.toLocaleString(locale, { weekday: "long" })}`,
+                cellInUTC,
+                minute: cellDateTime.minute,
+                label: cellDateTime.toLocaleString(locale, {
+                  dateStyle: "long",
+                  timeStyle: "short",
+                  hourCycle: "h12",
+                }),
               };
             }),
           }

@@ -21,10 +21,10 @@ export const calculateRows = (
   // Partition by distance
   const partitionedDates = splitArrayBy(
     sortedDates,
-    (a, b) => !a.add({ minutes: 15 }).equals(b),
+    (a, b) => !(Temporal.PlainTime.compare(a.add({ minutes: 15 }), b) === 0),
   );
 
-  // Add end cap time and join
+  // Add end cap time to each partition and join
   return partitionedDates.reduce(
     (rows, partition, i) => [
       ...rows,

@@ -16,12 +16,12 @@ export const calculateColumns = (
         return [plain.toString(), plain];
       }),
     ).values(),
-  ).sort(Temporal.PlainDate.compare);
+  ).sort((a, b) => Temporal.PlainDate.compare(a, b));
 
   // Partition by distance
   const partitionedDates = splitArrayBy(
     sortedDates,
-    (a, b) => !a.add({ days: 1 }).equals(b),
+    (a, b) => !(Temporal.PlainDate.compare(a.add({ days: 1 }), b) === 0),
   );
 
   // Join

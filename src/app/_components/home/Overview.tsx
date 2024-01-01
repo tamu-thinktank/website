@@ -1,5 +1,5 @@
 import Container from "./Container";
-import ProjectCarousel from "@/components/home/Carousel";
+import ProjectCarousel from "@/components/home/ProjectCarousel";
 
 export default function Overview() {
   return (

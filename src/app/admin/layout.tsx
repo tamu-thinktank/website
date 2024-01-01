@@ -12,13 +12,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <PurpleLayout>
-      {session ? (
-        <>
-          <section className="h-[90vh] w-11/12 space-y-4 md:w-3/4 lg:w-2/3">
-            <AdminHeader />
-            {children}
-          </section>
-        </>
+      {/* {session ? (
+        <> */}
+      <section className="h-[90vh] w-11/12 space-y-4 md:w-3/4 lg:w-2/3">
+        <AdminHeader />
+        {children}
+      </section>
+
+      {/* </>
       ) : (
         <Button
           disabled={authStatus === "loading"}
@@ -44,7 +45,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             "Sign in"
           )}
         </Button>
-      )}
+      )} */}
     </PurpleLayout>
   );
 }

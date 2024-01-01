@@ -6,6 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
+import { shuffleArray } from "@/lib/utils";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import { useMemo } from "react";
@@ -43,15 +44,6 @@ const orgImages = [
   "/images/photos/IMG_6119.webp",
   "/images/photos/IMG_6121.webp",
 ];
-
-function shuffleArray(array: (string | undefined)[]) {
-  const shuffled: typeof array = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled.filter(Boolean);
-}
 
 export default function ProjectCarousel() {
   const images = useMemo(() => shuffleArray(orgImages), []);

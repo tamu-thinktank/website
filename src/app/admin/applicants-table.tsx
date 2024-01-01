@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { fakeApplicants } from "@/lib/utils/fakeData";
+import { fakeApplicants } from "@/mocks/applicants";
 import { ApplicationStatus } from "@prisma/client";
 import {
   createColumnHelper,
@@ -70,6 +70,7 @@ export default function ApplicantsTable() {
               onClick={() =>
                 column.toggleSorting(column.getIsSorted() === "asc")
               }
+              title="Timezone: America/Chicago"
             >
               Date
               {getSort ? (
@@ -86,7 +87,7 @@ export default function ApplicantsTable() {
         },
         cell: ({ row }) => (
           <p>
-            {Intl.DateTimeFormat(navigator.language, {
+            {Intl.DateTimeFormat("en-US", {
               dateStyle: "short",
               timeStyle: "short",
               timeZone: "America/Chicago",

@@ -2,19 +2,25 @@ import "@/styles/globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
 import { TRPCReactProvider } from "@/lib/trpc/react";
+import { type Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
-import { ToggleTheme } from "./_components/toggle-theme";
 import { Providers } from "./providers";
 
-const inter = Inter({
+const font = Inter({
   subsets: ["latin"],
-  variable: "--font-sans",
 });
 
-export const metadata = {
+export const metadata: Metadata = {
+  metadataBase: new URL("https://thinktank.tech"),
   title: "TAMU ThinkTank",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  keywords: ["thinktank"],
+  icons: {
+    icon: "/favicon.ico",
+  },
+  openGraph: {
+    title: "TAMU ThinkTank",
+  },
 };
 
 export default function RootLayout({
@@ -24,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`font-sans ${inter.variable} bg-white dark:bg-gray-900`}>
+      <body className={`${font.className} bg-white dark:bg-gray-900`}>
         <Providers>
           <TRPCReactProvider cookies={cookies().toString()}>
             {children}
