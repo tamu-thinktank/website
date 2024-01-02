@@ -1,8 +1,13 @@
 import { Toggle } from "@/components/ui/toggle";
-import { calculateAvailability, calculateTable, cn } from "@/lib/utils";
+import {
+  calculateAvailability,
+  calculateTable,
+  cn,
+  type CalculateTableArgs,
+} from "@/lib/utils";
 import { fakePeopleTimes } from "@/mocks/peopleTimes";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { expandedTimes } from "../_consts";
 import Skeleton from "./table-skeleton";
 
@@ -10,26 +15,26 @@ interface AvailabilityViewerProps {
   userTimezone: string;
 }
 
-const people = fakePeopleTimes();
-
 export default function AvailabilityGrid({
   userTimezone,
 }: AvailabilityViewerProps) {
   const [tempFocus, setTempFocus] = useState<string>(); // focus on a single person in list
-  const [filteredPeople, setFilteredPeople] = useState(
-    people.map((p) => ({
-      name: p.name,
-      color: p.color,
-    })),
+
+  const people = useMemo(() => fakePeopleTimes(), []);
+  const [peopleToFilter, setPeopleToFilter] = useState<string[]>([]);
+  const filteredPeople = useMemo(
+    () =>
+      people
+        .map((p) => ({
+          name: p.name,
+          color: p.color,
+        }))
+        .filter((p) => !peopleToFilter.includes(p.name)),
+    [people, peopleToFilter],
   );
   // Reselect everyone if the amount of people changes
   useEffect(() => {
-    setFilteredPeople(
-      people.map((p) => ({
-        name: p.name,
-        color: p.color,
-      })),
-    );
+    setPeopleToFilter([]);
   }, [people.length]);
 
   const [tooltip, setTooltip] = useState<{
@@ -45,22 +50,36 @@ export default function AvailabilityGrid({
     elements: { reference: tooltip?.anchor },
   });
 
-  const table = useMemo(
-    () =>
-      calculateTable({
+  // calculate table in a web worker if possible
+  const tableWorker = useRef<Worker>();
+  const [table, setTable] = useState<ReturnType<typeof calculateTable>>();
+  useEffect(() => {
+    if (expandedTimes.length > 0) {
+      if (!tableWorker.current) {
+        tableWorker.current = window.Worker
+          ? new Worker(new URL("src/workers/calculateTable", import.meta.url))
+          : undefined;
+      }
+
+      const args = {
         times: expandedTimes,
         timezone: userTimezone,
-      }),
-    [userTimezone],
-  );
+      } satisfies CalculateTableArgs;
+      if (tableWorker.current) {
+        tableWorker.current.onmessage = (
+          e: MessageEvent<ReturnType<typeof calculateTable>>,
+        ) => setTable(e.data);
+        tableWorker.current.postMessage(args);
+        setTable(undefined);
+      } else {
+        setTable(calculateTable(args));
+      }
+    }
+  }, [userTimezone]);
 
   const availabilities = useMemo(
-    () =>
-      calculateAvailability(
-        expandedTimes,
-        people.filter((p) => filteredPeople.some((fp) => fp.name === p.name)),
-      ),
-    [filteredPeople, people],
+    () => calculateAvailability(expandedTimes, people),
+    [people],
   );
 
   const grid = useMemo(
@@ -104,8 +123,9 @@ export default function AvailabilityGrid({
                       />
                     );
 
-                  let peopleHere =
-                    availabilities.get(cell.cellInUTC.toString()) ?? [];
+                  let peopleHere = (
+                    availabilities.get(cell.cellInUTC) ?? []
+                  ).filter((p) => !peopleToFilter.includes(p.name));
                   if (tempFocus) {
                     peopleHere = peopleHere.filter((p) => p.name === tempFocus);
                   }
@@ -143,13 +163,13 @@ export default function AvailabilityGrid({
           )}
         </Fragment>
       )) ?? <Skeleton />,
-    [availabilities, table?.columns, tempFocus, filteredPeople],
+    [availabilities, table?.columns, tempFocus, peopleToFilter],
   );
 
   return (
     <>
       {/* List of people */}
-      {people.length > 1 && (
+      {table && people.length > 1 && (
         <div className="flex flex-wrap justify-center gap-1.5">
           {people.map((person) => (
             <Toggle
@@ -167,15 +187,12 @@ export default function AvailabilityGrid({
               key={person.name}
               onClick={() => {
                 setTempFocus(undefined);
-                if (filteredPeople.some((fp) => fp.name === person.name)) {
-                  setFilteredPeople(
-                    filteredPeople.filter((n) => n.name !== person.name),
-                  );
+                if (!peopleToFilter.includes(person.name)) {
+                  setPeopleToFilter((prev) => [...prev, person.name]);
                 } else {
-                  setFilteredPeople([
-                    ...filteredPeople,
-                    { name: person.name, color: person.color },
-                  ]);
+                  setPeopleToFilter((prev) =>
+                    prev.filter((p) => p !== person.name),
+                  );
                 }
               }}
               onMouseOver={() => setTempFocus(person.name)}
@@ -191,32 +208,27 @@ export default function AvailabilityGrid({
         <div className="overflow-x-auto">
           {/* The table */}
           <div className="inline-flex min-w-full items-end justify-center">
-            {useMemo(
-              () => (
-                <div className="sticky left-1.5 z-10 flex flex-col overflow-hidden pr-2.5 pt-[1em]">
-                  {table?.rows.map((row, i) => (
-                    <div className="relative h-2.5 text-right" key={i}>
-                      {row && (
-                        <label
-                          className="inline-block whitespace-nowrap rounded-[0.3em] bg-background px-[0.2em] py-[0.1em] text-xs
+            <div className="sticky left-1.5 z-10 flex flex-col overflow-hidden pr-2.5 pt-[1em]">
+              {table?.rows.map((row, i) => (
+                <div className="relative h-2.5 text-right" key={i}>
+                  {row && (
+                    <label
+                      className="inline-block whitespace-nowrap rounded-[0.3em] bg-background px-[0.2em] py-[0.1em] text-xs
                           [transform:translateY(-85%)]"
-                        >
-                          {row.label}
-                        </label>
-                      )}
-                    </div>
-                  )) ?? null}
+                    >
+                      {row.label}
+                    </label>
+                  )}
                 </div>
-              ),
-              [table?.rows],
-            )}
+              )) ?? null}
+            </div>
             {grid}
           </div>
 
           {/* Floating tooltip */}
           {tooltip && (
             <div
-              className="absolute z-10 max-w-[200px] rounded-sm border-[1px] border-primary bg-background px-2 py-1"
+              className="absolute z-10 w-fit rounded-sm border-[1px] border-primary bg-background px-2 py-1"
               ref={refs.setFloating}
               style={floatingStyles}
             >

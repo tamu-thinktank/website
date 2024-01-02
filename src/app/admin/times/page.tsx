@@ -26,8 +26,7 @@ import { eventTimezone, timezones } from "./_consts";
 export default function MeetingTimes() {
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [userTimezone, setUserTimezone] = useState(
-    // Intl.DateTimeFormat().resolvedOptions().timeZone,
-    "UTC",
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
   const [openTimezone, setOpenTimezone] = useState(false);
 

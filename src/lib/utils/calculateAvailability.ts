@@ -1,39 +1,46 @@
-import { type Temporal } from "@js-temporal/polyfill";
 import { type PersonResponse } from "../z.schema";
 import { convertTimesToDates } from "./convertTimesToDates";
+
+/**
+ * Map of UTC date strings to people who are available at that time.
+ */
+type AvailabilityMap = Map<
+  string,
+  {
+    name: string;
+    color: string;
+  }[]
+>;
 
 /**
  * Takes an array of UTC dates and an array of people,
  * where each person has a name and availability array (UTC), and returns the group availability for each date passed in.
  */
 export const calculateAvailability = (
-  times: Temporal.ZonedDateTime[],
+  times: string[],
   people: PersonResponse[],
-) => {
+): AvailabilityMap => {
   const peopleDates = people.map((p) => ({
     name: p.name,
     dates: convertTimesToDates(p.availability),
     color: p.color,
   }));
 
-  const availabilities = new Map<
-    string,
-    {
-      name: string;
-      color: string;
-    }[]
-  >();
+  const availabilities: AvailabilityMap = new Map();
 
-  times.forEach((utcTime) => {
+  times.forEach((utcTimeString) => {
+    const utcTime = convertTimesToDates([utcTimeString])[0]!;
     const peopleHere = peopleDates.flatMap((person) => {
-      return person.dates.some((date) => date.equals(utcTime))
-        ? [
-            {
-              name: person.name,
-              color: person.color,
-            },
-          ]
-        : [];
+      if (person.dates.some((date) => date.equals(utcTime))) {
+        return [
+          {
+            name: person.name,
+            color: person.color,
+          },
+        ];
+      }
+
+      return [];
     });
 
     availabilities.set(utcTime.toString(), peopleHere);

@@ -1,10 +1,11 @@
 import { Temporal } from "@js-temporal/polyfill";
+import { convertTimesToDates } from ".";
 import { calculateColumns } from "./calculateColumns";
 import { calculateRows } from "./calculateRows";
 
 export interface CalculateTableArgs {
-  /** range of times in UTC */
-  times: Temporal.ZonedDateTime[];
+  /** times in table in UTC */
+  times: string[];
   /** Timezone to display the table in */
   timezone: string;
 }
@@ -14,7 +15,7 @@ export interface CalculateTableArgs {
  */
 export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
   const locale = "en-US";
-  const userDateTimes = times.map((time) => time.withTimeZone(timezone));
+  const userDateTimes = convertTimesToDates(times, "UTC", timezone);
   const rows = calculateRows(userDateTimes);
   const columns = calculateColumns(userDateTimes);
 
@@ -47,13 +48,13 @@ export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
                 plainTime: row,
                 timeZone: timezone,
               });
-              const cellInUTC = cellDateTime.withTimeZone("UTC");
+              const cellInUTC = cellDateTime.withTimeZone("UTC").toString();
 
               // Cell not in dates
               if (
-                !times.some(
+                !userDateTimes.some(
                   (time) =>
-                    Temporal.ZonedDateTime.compare(cellInUTC, time) === 0,
+                    Temporal.ZonedDateTime.compare(cellDateTime, time) === 0,
                 )
               )
                 return null;

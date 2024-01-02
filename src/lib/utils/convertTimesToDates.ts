@@ -1,14 +1,16 @@
 import { Temporal } from "@js-temporal/polyfill";
 
 /**
- * Take times as strings in UTC and convert to ZonedDateTime objects in the timezone supplied (default UTC)
+ * Take times as strings and convert to ZonedDateTime objects in the timezone supplied
  * @param times An array of strings in `HHmm-DDMMYYYY` format
- * @param timezone The target timezone
+ * @param fromTimezone The timezone the `times` are currently in (default UTC)
+ * @param toTimezone The target timezone to convert to (default UTC)
  */
 export const convertTimesToDates = (
   times: string[],
-  timezone = "UTC",
-): Temporal.ZonedDateTime[] => {
+  fromTimezone = "UTC",
+  toTimezone = "UTC",
+) => {
   return times.map((time) => {
     if (time.length !== 13) {
       throw new Error("String must be in HHmm-DDMMYYYY format");
@@ -31,7 +33,7 @@ export const convertTimesToDates = (
       day,
       month,
       year,
-      timeZone: timezone,
-    });
+      timeZone: fromTimezone,
+    }).withTimeZone(toTimezone);
   });
 };

@@ -30,7 +30,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${font.className} bg-white dark:bg-gray-900`}>
+      <body className={`${font.className} bg-gray-900`}>
         <Providers>
           <TRPCReactProvider cookies={cookies().toString()}>
             {children}
