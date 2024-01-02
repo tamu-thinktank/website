@@ -2,6 +2,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import { convertTimesToDates } from ".";
 import { calculateColumns } from "./calculateColumns";
 import { calculateRows } from "./calculateRows";
+import { serializeTime } from "./serializeTime";
 
 export interface CalculateTableArgs {
   /** times in table in UTC */
@@ -11,7 +12,7 @@ export interface CalculateTableArgs {
 }
 
 /**
- * Take rows and columns and turn them into a data structure representing an availability table
+ * Take time range and turn them into a data structure representing an availability table
  */
 export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
   const locale = "en-US";
@@ -48,7 +49,7 @@ export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
                 plainTime: row,
                 timeZone: timezone,
               });
-              const cellInUTC = cellDateTime.withTimeZone("UTC").toString();
+              const cellInUTC = serializeTime(cellDateTime);
 
               // Cell not in dates
               if (
@@ -60,6 +61,9 @@ export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
                 return null;
 
               return {
+                /**
+                 * `HHmm-DDMMYYYY`format
+                 */
                 cellInUTC,
                 minute: cellDateTime.minute,
                 label: cellDateTime.toLocaleString(locale, {

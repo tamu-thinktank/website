@@ -1,10 +1,9 @@
 import { type PersonResponse } from "../z.schema";
-import { convertTimesToDates } from "./convertTimesToDates";
 
 /**
  * Map of UTC date strings to people who are available at that time.
  */
-type AvailabilityMap = Map<
+export type AvailabilityMap = Map<
   string,
   {
     name: string;
@@ -14,24 +13,21 @@ type AvailabilityMap = Map<
 
 /**
  * Takes an array of UTC dates and an array of people,
- * where each person has a name and availability array (UTC), and returns the group availability for each date passed in.
+ * where each person has a name and availability array (UTC), and returns the availability for each date passed in.
+ * `HHmm-DDMMYYYY` format in UTC for the map keys.
  */
 export const calculateAvailability = (
+  /**
+   * Times of table in UTC (`HHmm-DDMMYYYY` format)
+   */
   times: string[],
   people: PersonResponse[],
 ): AvailabilityMap => {
-  const peopleDates = people.map((p) => ({
-    name: p.name,
-    dates: convertTimesToDates(p.availability),
-    color: p.color,
-  }));
-
   const availabilities: AvailabilityMap = new Map();
 
-  times.forEach((utcTimeString) => {
-    const utcTime = convertTimesToDates([utcTimeString])[0]!;
-    const peopleHere = peopleDates.flatMap((person) => {
-      if (person.dates.some((date) => date.equals(utcTime))) {
+  times.forEach((utcTime) => {
+    const peopleHere = people.flatMap((person) => {
+      if (person.availability.some((date) => date === utcTime)) {
         return [
           {
             name: person.name,
@@ -43,7 +39,7 @@ export const calculateAvailability = (
       return [];
     });
 
-    availabilities.set(utcTime.toString(), peopleHere);
+    availabilities.set(utcTime, peopleHere);
   });
 
   return availabilities;

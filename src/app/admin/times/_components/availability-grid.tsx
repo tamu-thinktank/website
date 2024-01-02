@@ -1,14 +1,18 @@
 import { Toggle } from "@/components/ui/toggle";
-import {
-  calculateAvailability,
-  calculateTable,
-  cn,
-  type CalculateTableArgs,
-} from "@/lib/utils";
+import { calculateAvailability, cn, type AvailabilityMap } from "@/lib/utils";
 import { fakePeopleTimes } from "@/mocks/peopleTimes";
+import { type NoUndefined } from "@/types";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
-import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { expandedTimes } from "../_consts";
+import useCalculateTable from "../_hooks/useCalculateTable";
 import Skeleton from "./table-skeleton";
 
 interface AvailabilityViewerProps {
@@ -40,49 +44,50 @@ export default function AvailabilityGrid({
   const [tooltip, setTooltip] = useState<{
     anchor: HTMLDivElement;
     date: string;
-    peopleHere: {
-      name: string;
-      color: string;
-    }[];
+    peopleHere: NoUndefined<ReturnType<AvailabilityMap["get"]>>;
   }>();
   const { refs, floatingStyles } = useFloating({
     middleware: [offset(6), flip(), shift()],
     elements: { reference: tooltip?.anchor },
   });
 
-  // calculate table in a web worker if possible
-  const tableWorker = useRef<Worker>();
-  const [table, setTable] = useState<ReturnType<typeof calculateTable>>();
-  useEffect(() => {
-    if (expandedTimes.length > 0) {
-      if (!tableWorker.current) {
-        tableWorker.current = window.Worker
-          ? new Worker(new URL("src/workers/calculateTable", import.meta.url))
-          : undefined;
-      }
+  const table = useCalculateTable(userTimezone);
+  const [availabilities, setAvailabilities] = useState(
+    calculateAvailability(expandedTimes, people),
+  );
 
-      const args = {
-        times: expandedTimes,
-        timezone: userTimezone,
-      } satisfies CalculateTableArgs;
-      if (tableWorker.current) {
-        tableWorker.current.onmessage = (
-          e: MessageEvent<ReturnType<typeof calculateTable>>,
-        ) => setTable(e.data);
-        tableWorker.current.postMessage(args);
-        setTable(undefined);
-      } else {
-        setTable(calculateTable(args));
-      }
-    }
-  }, [userTimezone]);
+  // Editing user's availability
 
-  const availabilities = useMemo(
-    () => calculateAvailability(expandedTimes, people),
+  const [userAvailability, setUserAvailability] = useState(
+    people.find((p) => p.name === "e")?.availability ?? [],
+  );
+  const userColor = useMemo(
+    () => people.find((p) => p.name === "e")!.color,
     [people],
   );
 
-  const grid = useMemo(
+  /**
+   * Callback for when the user selects a range of times to add/remove
+   */
+  const onSelected = (newAvailability: string[]) => {
+    setUserAvailability([...newAvailability]);
+  };
+
+  // Ref and state required to rerender but also access static version in callbacks
+  const selectingRef = useRef<string[]>([]);
+  const [selecting, _setSelecting] = useState<string[]>([]);
+  const setSelecting = useCallback((v: string[]) => {
+    selectingRef.current = v;
+    _setSelecting(v);
+  }, []);
+
+  const startPos = useRef({ x: 0, y: 0 });
+  const mode = useRef<"add" | "remove">();
+
+  /**
+   * Render columns
+   */
+  const gridCols = useMemo(
     () =>
       table?.columns.map((column, colIdx) => (
         <Fragment key={colIdx}>
@@ -106,6 +111,7 @@ export default function AvailabilityGrid({
                 )}
               >
                 {column.cells.map((cell, cellIdx) => {
+                  // last cell time is excluded
                   if (cellIdx === column.cells.length - 1) return null;
 
                   if (!cell)
@@ -130,6 +136,34 @@ export default function AvailabilityGrid({
                     peopleHere = peopleHere.filter((p) => p.name === tempFocus);
                   }
 
+                  const isCellSelected =
+                    (mode.current === "add" || mode.current === "remove") &&
+                    selecting.includes(cell.cellInUTC);
+
+                  let backgroundColor = "transparent";
+                  if (isCellSelected) {
+                    if (mode.current === "add") {
+                      backgroundColor = userColor;
+                    } else if (mode.current === "remove") {
+                      backgroundColor = "transparent";
+                    }
+                  } else if (
+                    userAvailability.includes(cell.cellInUTC) &&
+                    (tempFocus === "e" || !tempFocus) &&
+                    !peopleToFilter.includes("e")
+                  ) {
+                    // show user if not focused on someone else or filtered out
+                    backgroundColor = userColor;
+                  } else if (
+                    peopleHere[0] &&
+                    ((peopleHere[0].name === "e" &&
+                      userAvailability.includes(cell.cellInUTC)) ||
+                      peopleHere[0].name !== "e")
+                  ) {
+                    // show other people and optimistically show user if they're also there
+                    backgroundColor = peopleHere[0].color;
+                  }
+
                   return (
                     <div
                       key={cellIdx}
@@ -141,10 +175,9 @@ export default function AvailabilityGrid({
                         cell.minute === 30 && "[border-top-style:dotted]",
                       )}
                       style={{
-                        backgroundColor: peopleHere[0]
-                          ? peopleHere[0].color
-                          : "transparent",
+                        backgroundColor,
                       }}
+                      // Tooltip ----
                       onMouseEnter={(e) => {
                         setTooltip({
                           anchor: e.currentTarget,
@@ -153,6 +186,66 @@ export default function AvailabilityGrid({
                         });
                       }}
                       onMouseLeave={() => setTooltip(undefined)}
+                      // Editing availability ----
+                      onPointerDown={(e) => {
+                        e.preventDefault();
+                        startPos.current = { x: colIdx, y: cellIdx };
+                        mode.current = userAvailability.includes(cell.cellInUTC)
+                          ? "remove"
+                          : "add";
+                        setSelecting([cell.cellInUTC]);
+                        e.currentTarget.releasePointerCapture(e.pointerId);
+                      }}
+                      onPointerUp={() => {
+                        if (mode.current === "add") {
+                          onSelected([
+                            ...userAvailability,
+                            ...selectingRef.current.filter(
+                              (selected) =>
+                                !userAvailability.includes(selected),
+                            ),
+                          ]);
+                        } else if (mode.current === "remove") {
+                          onSelected(
+                            userAvailability.filter(
+                              (t) => !selectingRef.current.includes(t),
+                            ),
+                          );
+                        }
+                        setSelecting([]);
+                        mode.current = undefined;
+                      }}
+                      onPointerEnter={() => {
+                        if (mode.current) {
+                          const found = [];
+                          for (
+                            let cy = Math.min(startPos.current.y, cellIdx);
+                            cy < Math.max(startPos.current.y, cellIdx) + 1;
+                            cy++
+                          ) {
+                            for (
+                              let cx = Math.min(startPos.current.x, colIdx);
+                              cx < Math.max(startPos.current.x, colIdx) + 1;
+                              cx++
+                            ) {
+                              found.push({ y: cy, x: cx });
+                            }
+                          }
+                          setSelecting(
+                            found.flatMap((d) => {
+                              const serialized =
+                                table.columns[d.x]?.cells[d.y]?.cellInUTC;
+                              if (
+                                serialized &&
+                                expandedTimes.includes(serialized)
+                              ) {
+                                return [serialized];
+                              }
+                              return [];
+                            }),
+                          );
+                        }
+                      }}
                     />
                   );
                 })}
@@ -163,7 +256,14 @@ export default function AvailabilityGrid({
           )}
         </Fragment>
       )) ?? <Skeleton />,
-    [availabilities, table?.columns, tempFocus, peopleToFilter],
+    [
+      availabilities,
+      table?.columns,
+      tempFocus,
+      peopleToFilter,
+      selecting,
+      userAvailability,
+    ],
   );
 
   return (
@@ -222,7 +322,7 @@ export default function AvailabilityGrid({
                 </div>
               )) ?? null}
             </div>
-            {grid}
+            {gridCols}
           </div>
 
           {/* Floating tooltip */}
