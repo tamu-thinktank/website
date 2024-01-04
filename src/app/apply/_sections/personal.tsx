@@ -21,17 +21,18 @@ import { type RouterInputs } from "@/lib/trpc/shared";
 import { Availability, Year } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 
+
 export default function PersonalInfo() {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>Personal Information</CardTitle>
           <Separator />
         </CardHeader>
-        <CardContent>
+        <CardContent className="text-center">
           Include contacts where you are mostly likely to response if notified
         </CardContent>
       </Card>

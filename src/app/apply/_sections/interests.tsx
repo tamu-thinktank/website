@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { Challenge } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
+import { Separator } from "@/components/ui/separator";
 
 const challenges: {
   id: Challenge;
@@ -47,12 +48,13 @@ export default function Interests() {
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle>Interests and Motivation</CardTitle>
-          <CardDescription>
-            Responses must be within 1000 characters
-          </CardDescription>
+          <Separator />
         </CardHeader>
+        <CardContent className="text-center">
+          Responses must be within 1000 characters
+        </CardContent>
       </Card>
 
       <FormField
