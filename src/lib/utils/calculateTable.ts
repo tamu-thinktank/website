@@ -3,6 +3,12 @@ import { Temporal } from "@js-temporal/polyfill";
 import { calculateColumns } from "./calculateColumns";
 import { calculateRows } from "./calculateRows";
 
+export interface CellData {
+  cellInUTC: string;
+  minute: number;
+  label: string;
+}
+
 /**
  * Take times in availability grid and turn them into a data structure representing an availability table
  */
@@ -65,7 +71,7 @@ export const calculateTable = (timezone: string) => {
                   timeStyle: "short",
                   hourCycle: "h12",
                 }),
-              };
+              } satisfies CellData;
             }),
           }
         : null,

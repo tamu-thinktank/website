@@ -55,8 +55,8 @@ export const adminRouter = createTRPCRouter({
       const { gridTimes, mode } = input;
 
       if (mode === "add") {
-        for (const gridTime of gridTimes) {
-          await ctx.db.timeSection.upsert({
+        const operations = gridTimes.map((gridTime) => {
+          return ctx.db.timeSection.upsert({
             where: {
               gridTime_officerId: {
                 gridTime,
@@ -72,13 +72,14 @@ export const adminRouter = createTRPCRouter({
               selectedAt: input.selectedAt,
             },
           });
-        }
+        });
+        await ctx.db.$transaction(operations);
       } else if (mode === "remove") {
         await ctx.db.timeSection.deleteMany({
           where: {
             officerId: ctx.session.user.id,
             gridTime: {
-              notIn: gridTimes,
+              in: gridTimes,
             },
           },
         });

@@ -4,7 +4,6 @@ import { palette, times } from "@/consts/availability-grid";
 import useOfficerTimes from "@/hooks/useOfficerTimes";
 import { cn } from "@/lib/utils";
 import { type AvailabilityMap } from "@/lib/z.schema";
-import { type NoUndefined } from "@/types";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
 import { Temporal } from "@js-temporal/polyfill";
 import { useSession } from "next-auth/react";
@@ -63,7 +62,7 @@ export default function AvailabilityGrid({
   const [tooltip, setTooltip] = useState<{
     anchor: HTMLDivElement;
     date: string;
-    peopleHere: NoUndefined<ReturnType<AvailabilityMap["get"]>>;
+    peopleHere: NonNullable<ReturnType<AvailabilityMap["get"]>>;
   }>();
   const { refs, floatingStyles } = useFloating({
     middleware: [offset(6), flip(), shift()],
@@ -80,6 +79,7 @@ export default function AvailabilityGrid({
 
   const startPos = useRef({ x: 0, y: 0 });
   const mode = useRef<"add" | "remove">();
+
   const userColor = useMemo(
     () => officersColorMap.get(userId)!,
     [officersColorMap.size],
@@ -109,9 +109,16 @@ export default function AvailabilityGrid({
    */
   const onSelected = (
     newTimes: string[],
-    selectMode: NoUndefined<(typeof mode)["current"]>,
+    selectMode: NonNullable<(typeof mode)["current"]>,
   ) => {
-    setSessionTimes([...newTimes]);
+    if (selectMode === "add") {
+      setSessionTimes((prev) => [
+        ...prev,
+        ...newTimes.filter((t) => !prev.includes(t)),
+      ]);
+    } else if (selectMode === "remove") {
+      setSessionTimes((prev) => prev.filter((t) => !newTimes.includes(t)));
+    }
 
     mutate({
       gridTimes: [...newTimes],
@@ -270,19 +277,11 @@ export default function AvailabilityGrid({
                       }}
                       onPointerUp={() => {
                         if (mode.current === "add") {
-                          onSelected(
-                            [
-                              ...sessionTimes,
-                              ...selectingRef.current.filter(
-                                (selected) => !sessionTimes.includes(selected),
-                              ),
-                            ],
-                            mode.current,
-                          );
+                          onSelected([...selectingRef.current], mode.current);
                         } else if (mode.current === "remove") {
                           onSelected(
-                            sessionTimes.filter(
-                              (t) => !selectingRef.current.includes(t),
+                            selectingRef.current.filter((t) =>
+                              sessionTimes.includes(t),
                             ),
                             mode.current,
                           );
