@@ -3,7 +3,6 @@ import { type AppRouter } from "@/server/api/root";
 import { type TRPCClientErrorLike } from "@trpc/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import colors from "tailwindcss/colors";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -45,40 +44,3 @@ export function capitalizeFirstLetter(str: string | string[] | undefined) {
 
   return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }
-
-/**
- * default tailwind colors (minus gray-ish colors) at 400 - 700 into array
- * */
-export const palette = (
-  Object.keys(colors).filter(
-    (c) =>
-      c !== "inherit" &&
-      c !== "current" &&
-      c !== "transparent" &&
-      c !== "black" &&
-      c !== "white" &&
-      c !== "gray" &&
-      c !== "slate" &&
-      c !== "neutral" &&
-      c !== "stone" &&
-      c !== "zinc" &&
-      c !== "lightBlue" &&
-      c !== "warmGray" &&
-      c !== "trueGray" &&
-      c !== "coolGray" &&
-      c !== "blueGray",
-  ) as (keyof typeof colors)[]
-).flatMap((color: keyof typeof colors) => [
-  colors[color][400],
-  colors[color][500],
-  colors[color][600],
-  colors[color][700],
-]);
-
-export * from "./calculateAvailability";
-export * from "./calculateColumns";
-export * from "./calculateRows";
-export * from "./calculateTable";
-export * from "./convertTimesToDates";
-export * from "./expandTimes";
-export * from "./shuffleArray";

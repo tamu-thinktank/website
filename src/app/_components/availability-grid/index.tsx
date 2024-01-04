@@ -1,8 +1,13 @@
+import useCalculateTable from "@/app/_hooks/useCalculateTable";
 import { Toggle } from "@/components/ui/toggle";
-import { calculateAvailability, cn, type AvailabilityMap } from "@/lib/utils";
-import { fakePeopleTimes } from "@/mocks/peopleTimes";
+import { palette, times } from "@/consts/availability-grid";
+import useOfficerTimes from "@/hooks/useOfficerTimes";
+import { cn } from "@/lib/utils";
+import { type AvailabilityMap } from "@/lib/z.schema";
 import { type NoUndefined } from "@/types";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
+import { Temporal } from "@js-temporal/polyfill";
+import { useSession } from "next-auth/react";
 import {
   Fragment,
   useCallback,
@@ -10,9 +15,8 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
 } from "react";
-import { expandedTimes } from "../_consts";
-import useCalculateTable from "../_hooks/useCalculateTable";
 import Skeleton from "./table-skeleton";
 
 interface AvailabilityViewerProps {
@@ -22,24 +26,39 @@ interface AvailabilityViewerProps {
 export default function AvailabilityGrid({
   userTimezone,
 }: AvailabilityViewerProps) {
-  const [tempFocus, setTempFocus] = useState<string>(); // focus on a single person in list
+  const { data: session } = useSession();
+  if (!session?.user.name) return null;
+  const userId = session.user.id;
 
-  const people = useMemo(() => fakePeopleTimes(), []);
-  const [peopleToFilter, setPeopleToFilter] = useState<string[]>([]);
-  const filteredPeople = useMemo(
-    () =>
-      people
-        .map((p) => ({
-          name: p.name,
-          color: p.color,
-        }))
-        .filter((p) => !peopleToFilter.includes(p.name)),
-    [people, peopleToFilter],
-  );
-  // Reselect everyone if the amount of people changes
+  const table = useCalculateTable(userTimezone);
+  const {
+    data,
+    isDataFetched,
+    isDataFetching,
+    isDataLoading,
+    isMutateLoading,
+    mutate,
+  } = useOfficerTimes();
+
+  /**
+   * Map officer.id to color
+   */
+  const officersColorMap = useMemo(() => {
+    const map = new Map<string, string>();
+    data?.officers.forEach((officer) => {
+      const color = palette[Math.floor(Math.random() * palette.length)]!;
+      map.set(officer.id, color);
+    });
+    return map;
+  }, [data?.officers.length]);
+
+  const [officersToFilter, setOfficersToFilter] = useState<string[]>([]);
+  const [tempFocus, setTempFocus] = useState<string>(); // focus on a single officer in the grid
+
+  // Reselect everyone if # of officers changes
   useEffect(() => {
-    setPeopleToFilter([]);
-  }, [people.length]);
+    setOfficersToFilter([]);
+  }, [data?.officers.length]);
 
   const [tooltip, setTooltip] = useState<{
     anchor: HTMLDivElement;
@@ -51,28 +70,6 @@ export default function AvailabilityGrid({
     elements: { reference: tooltip?.anchor },
   });
 
-  const table = useCalculateTable(userTimezone);
-  const [availabilities, setAvailabilities] = useState(
-    calculateAvailability(expandedTimes, people),
-  );
-
-  // Editing user's availability
-
-  const [userAvailability, setUserAvailability] = useState(
-    people.find((p) => p.name === "e")?.availability ?? [],
-  );
-  const userColor = useMemo(
-    () => people.find((p) => p.name === "e")!.color,
-    [people],
-  );
-
-  /**
-   * Callback for when the user selects a range of times to add/remove
-   */
-  const onSelected = (newAvailability: string[]) => {
-    setUserAvailability([...newAvailability]);
-  };
-
   // Ref and state required to rerender but also access static version in callbacks
   const selectingRef = useRef<string[]>([]);
   const [selecting, _setSelecting] = useState<string[]>([]);
@@ -83,6 +80,45 @@ export default function AvailabilityGrid({
 
   const startPos = useRef({ x: 0, y: 0 });
   const mode = useRef<"add" | "remove">();
+  const userColor = useMemo(
+    () => officersColorMap.get(userId)!,
+    [officersColorMap.size],
+  );
+
+  /**
+   * For optimistic UI updates, keep track of the times changed in session
+   */
+  const [firstFetchDone, setFirstFetchDone] = useState(false);
+  const [sessionTimes, setSessionTimes] = useState<string[]>([]);
+  useEffect(() => {
+    if (!isDataFetched) return;
+    if (firstFetchDone) return;
+
+    const userTimes: string[] = [];
+    data?.availabilities.forEach((officers, gridTime) => {
+      if (officers.some((o) => o.id === userId)) {
+        userTimes.push(gridTime);
+      }
+    });
+    setFirstFetchDone(true);
+    setSessionTimes([...userTimes]);
+  }, [isDataFetched]);
+
+  /**
+   * Callback for when the user selects a range of times to add/remove.
+   */
+  const onSelected = (
+    newTimes: string[],
+    selectMode: NoUndefined<(typeof mode)["current"]>,
+  ) => {
+    setSessionTimes([...newTimes]);
+
+    mutate({
+      gridTimes: [...newTimes],
+      selectedAt: Temporal.Now.zonedDateTimeISO().toString(),
+      mode: selectMode,
+    });
+  };
 
   /**
    * Render columns
@@ -129,39 +165,77 @@ export default function AvailabilityGrid({
                       />
                     );
 
-                  let peopleHere = (
-                    availabilities.get(cell.cellInUTC) ?? []
-                  ).filter((p) => !peopleToFilter.includes(p.name));
-                  if (tempFocus) {
-                    peopleHere = peopleHere.filter((p) => p.name === tempFocus);
-                  }
+                  /**
+                   * People who are available at this time, sorted by selectedAt in descending order
+                   */
+                  const peopleHere = (
+                    data?.availabilities.get(cell.cellInUTC) ?? []
+                  )
+                    .filter(
+                      // keep officers that are not filtered out and are in focus
+                      (p) =>
+                        !officersToFilter.includes(p.id) &&
+                        (!tempFocus || (!!tempFocus && p.id === tempFocus)),
+                    )
+                    .sort((a, b) => {
+                      const aSelectedAt = Temporal.ZonedDateTime.from(
+                        a.selectedAt,
+                      );
+                      const bSelectedAt = Temporal.ZonedDateTime.from(
+                        b.selectedAt,
+                      );
+
+                      return (
+                        Temporal.ZonedDateTime.compare(
+                          aSelectedAt,
+                          bSelectedAt,
+                        ) * -1
+                      );
+                    });
 
                   const isCellSelected =
                     (mode.current === "add" || mode.current === "remove") &&
                     selecting.includes(cell.cellInUTC);
 
-                  let backgroundColor = "transparent";
+                  const userHere = sessionTimes.includes(cell.cellInUTC);
+
+                  const firstOfficerColor = officersColorMap.get(
+                    peopleHere[0]?.id ?? "",
+                  );
+                  const secondOfficerColor = officersColorMap.get(
+                    peopleHere[1]?.id ?? "",
+                  );
+                  let backgroundColor: CSSProperties["backgroundColor"];
                   if (isCellSelected) {
                     if (mode.current === "add") {
+                      // show user if adding
                       backgroundColor = userColor;
                     } else if (mode.current === "remove") {
-                      backgroundColor = "transparent";
+                      if (peopleHere[0]?.id === userId) {
+                        // show 2nd latest officer if removing userColor
+                        backgroundColor = secondOfficerColor;
+                      } else {
+                        // show latest officer if removing elsewhere
+                        backgroundColor = firstOfficerColor;
+                      }
                     }
                   } else if (
-                    userAvailability.includes(cell.cellInUTC) &&
-                    (tempFocus === "e" || !tempFocus) &&
-                    !peopleToFilter.includes("e")
+                    (isDataFetching || isDataLoading || isMutateLoading) &&
+                    userHere &&
+                    !officersToFilter.includes(userId) &&
+                    (!tempFocus || (!!tempFocus && userId === tempFocus))
                   ) {
-                    // show user if not focused on someone else or filtered out
                     backgroundColor = userColor;
                   } else if (
                     peopleHere[0] &&
-                    ((peopleHere[0].name === "e" &&
-                      userAvailability.includes(cell.cellInUTC)) ||
-                      peopleHere[0].name !== "e")
+                    ((peopleHere[0].id === userId && userHere) ||
+                      peopleHere[0].id !== userId)
                   ) {
-                    // show other people and optimistically show user if they're also there
-                    backgroundColor = peopleHere[0].color;
+                    // show latest person
+                    backgroundColor = firstOfficerColor;
+                  } else if (peopleHere[1]) {
+                    // show 2nd latest person
+                    backgroundColor = secondOfficerColor;
                   }
 
                   return (
@@ -182,7 +256,7 @@ export default function AvailabilityGrid({
                         setTooltip({
                           anchor: e.currentTarget,
                           date: cell.label,
-                          peopleHere: peopleHere,
+                          peopleHere,
                         });
                       }}
                       onMouseLeave={() => setTooltip(undefined)}
@@ -190,26 +264,27 @@ export default function AvailabilityGrid({
                       onPointerDown={(e) => {
                         e.preventDefault();
                         startPos.current = { x: colIdx, y: cellIdx };
-                        mode.current = userAvailability.includes(cell.cellInUTC)
-                          ? "remove"
-                          : "add";
+                        mode.current = userHere ? "remove" : "add";
                         setSelecting([cell.cellInUTC]);
                         e.currentTarget.releasePointerCapture(e.pointerId);
                       }}
                       onPointerUp={() => {
                         if (mode.current === "add") {
-                          onSelected([
-                            ...userAvailability,
-                            ...selectingRef.current.filter(
-                              (selected) =>
-                                !userAvailability.includes(selected),
-                            ),
-                          ]);
+                          onSelected(
+                            [
+                              ...sessionTimes,
+                              ...selectingRef.current.filter(
+                                (selected) => !sessionTimes.includes(selected),
+                              ),
+                            ],
+                            mode.current,
+                          );
                         } else if (mode.current === "remove") {
                           onSelected(
-                            userAvailability.filter(
+                            sessionTimes.filter(
                               (t) => !selectingRef.current.includes(t),
                             ),
+                            mode.current,
                           );
                         }
                         setSelecting([]);
@@ -235,10 +310,7 @@ export default function AvailabilityGrid({
                             found.flatMap((d) => {
                               const serialized =
                                 table.columns[d.x]?.cells[d.y]?.cellInUTC;
-                              if (
-                                serialized &&
-                                expandedTimes.includes(serialized)
-                              ) {
+                              if (serialized && times.includes(serialized)) {
                                 return [serialized];
                               }
                               return [];
@@ -257,48 +329,49 @@ export default function AvailabilityGrid({
         </Fragment>
       )) ?? <Skeleton />,
     [
-      availabilities,
+      officersColorMap,
+      data?.availabilities,
       table?.columns,
       tempFocus,
-      peopleToFilter,
+      officersToFilter,
       selecting,
-      userAvailability,
+      sessionTimes,
     ],
   );
 
   return (
     <>
       {/* List of people */}
-      {table && people.length > 1 && (
+      {table && !!data?.officers.length && (
         <div className="flex flex-wrap justify-center gap-1.5">
-          {people.map((person) => (
+          {data.officers.map((officer) => (
             <Toggle
               variant={"outline"}
               className={cn("hover:bg-inherit", "h-7")}
               style={
-                filteredPeople.some((fp) => fp.name === person.name)
+                !officersToFilter.includes(officer.id)
                   ? {
-                      backgroundColor: person.color,
+                      backgroundColor: officersColorMap.get(officer.id),
                     }
                   : {
                       borderColor: "hsl(var(--primary))",
                     }
               }
-              key={person.name}
+              key={officer.id}
               onClick={() => {
                 setTempFocus(undefined);
-                if (!peopleToFilter.includes(person.name)) {
-                  setPeopleToFilter((prev) => [...prev, person.name]);
+                if (!officersToFilter.includes(officer.id)) {
+                  setOfficersToFilter((prev) => [...prev, officer.id]);
                 } else {
-                  setPeopleToFilter((prev) =>
-                    prev.filter((p) => p !== person.name),
+                  setOfficersToFilter((prev) =>
+                    prev.filter((p) => p !== officer.id),
                   );
                 }
               }}
-              onMouseOver={() => setTempFocus(person.name)}
+              onMouseOver={() => setTempFocus(officer.id)}
               onMouseOut={() => setTempFocus(undefined)}
             >
-              {person.name}
+              {officer.name}
             </Toggle>
           ))}
         </div>
@@ -335,16 +408,16 @@ export default function AvailabilityGrid({
               <span className="block text-xs font-semibold opacity-80">
                 {tooltip.date}
               </span>
-              {!!filteredPeople.length && (
+              {officersToFilter.length !== data?.officers.length && (
                 <div className="px-0 py-1 text-xs">
                   {tooltip.peopleHere.map((person) => (
                     <span
                       className={cn(
                         `m-0.5 inline-block rounded-sm border-[1px] px-1 py-[1px]`,
                       )}
-                      key={person.name}
+                      key={person.id}
                       style={{
-                        borderColor: person.color,
+                        borderColor: officersColorMap.get(person.id),
                       }}
                     >
                       {person.name}

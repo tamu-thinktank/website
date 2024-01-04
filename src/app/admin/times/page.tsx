@@ -1,5 +1,6 @@
 "use client";
 
+import AvailabilityGrid from "@/components/availability-grid";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import {
@@ -17,11 +18,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { eventTimezone, timezones } from "@/consts/availability-grid";
 import useMediaQuery from "@/hooks/use-media-query";
 import { ChevronsUpDown } from "lucide-react";
 import { useState } from "react";
-import AvailabilityGrid from "./_components/availability-grid";
-import { eventTimezone, timezones } from "./_consts";
 
 export default function MeetingTimes() {
   const isDesktop = useMediaQuery("(min-width: 768px)");

@@ -98,12 +98,17 @@ export const ApplyFormSchema = z
     }
   });
 
-export const PersonResponse = z.object({
-  name: z.string(),
-  /**
-   * HHmm-ddMMyyyy (UTC)
-   */
-  availability: z.string().array(),
-  color: z.string(),
-});
-export type PersonResponse = z.infer<typeof PersonResponse>;
+/**
+ * Map of gridTimes from db to officers available at that time
+ */
+export const AvailabilityMapSchema = z.map(
+  z.string(),
+  z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      selectedAt: z.string(),
+    }),
+  ),
+);
+export type AvailabilityMap = z.infer<typeof AvailabilityMapSchema>;

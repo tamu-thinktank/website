@@ -1,16 +1,16 @@
-import { type TimeRange } from "@/types";
 import { Temporal } from "@js-temporal/polyfill";
-import { convertTimesToDates } from ".";
-import { serializeTime } from "./serializeTime";
+
+type TimeRange = {
+  /** DateTime at beginning of table in UTC */
+  startDateTime: Temporal.ZonedDateTime;
+  /** DateTime at end of table in UTC */
+  endDateTime: Temporal.ZonedDateTime;
+};
 
 /**
- * Takes timeRange and its timezone and as adds 15, 30 and 45 minute variants for every hour in every day, converted to UTC
+ * Takes timeRange and its timezone and as adds 15, 30 and 45 minute variants for every hour in every day
  */
-export const expandTimes = (timeRange: TimeRange, currTimezone: string) => {
-  const [startDateTime, endDateTime] = [
-    convertTimesToDates([timeRange.startDateTime], currTimezone, "UTC")[0]!,
-    convertTimesToDates([timeRange.endDateTime], currTimezone, "UTC")[0]!,
-  ];
+export const expandTimes = ({ startDateTime, endDateTime }: TimeRange) => {
   const startHour = startDateTime.hour;
   const endHour = endDateTime.hour;
   const hourRange =
@@ -31,10 +31,10 @@ export const expandTimes = (timeRange: TimeRange, currTimezone: string) => {
       }
 
       times.push(
-        serializeTime(dateTime.with({ hour: hour % 24, minute: 0 })),
-        serializeTime(dateTime.with({ hour: hour % 24, minute: 15 })),
-        serializeTime(dateTime.with({ hour: hour % 24, minute: 30 })),
-        serializeTime(dateTime.with({ hour: hour % 24, minute: 45 })),
+        dateTime.with({ hour: hour % 24, minute: 0 }).toString(),
+        dateTime.with({ hour: hour % 24, minute: 15 }).toString(),
+        dateTime.with({ hour: hour % 24, minute: 30 }).toString(),
+        dateTime.with({ hour: hour % 24, minute: 45 }).toString(),
       );
     }
   }

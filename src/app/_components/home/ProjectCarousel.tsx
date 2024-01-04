@@ -6,7 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-import { shuffleArray } from "@/lib/utils";
+import { shuffleArray } from "@/lib/utils/shuffleArray";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
 import { useMemo } from "react";

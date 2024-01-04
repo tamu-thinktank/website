@@ -1,22 +1,21 @@
 # things
 
-## apply form
+## apply form at `/apply`
 
-- form at `/apply`
 - calendar features
-  - an officer selects times to set on form
-  - applicants select available times from all officers (added to db)
+  - an officer selects times to set on form at `/admin/times`
+  - applicants select available times from all officers in availability grid view
 - resumes to shared drive
 
-## officer view
+## officer view at `/admin`
 
-- signin at `/admin`
-  - only `allowedEmails` from `.env` can signin
+- requires signin with google
+  - only `ALLOWED_EMAILS` from `.env` can signin
   - only users with access to the shared drive can see resumes
 
 - view all applicants
-
-- when clicked on applicant, show app form, render resume pdf on website
+- click on applicant -> go to page
+  - show app form, render resume pdf on website
   - reject button
     - remove their available times (from db)
   - accept button
@@ -27,3 +26,8 @@
       - send manual email to applicant
     - send interview email
     - book zach rooms manually
+
+- `/admin/times`: availability grid for officers
+  - each user is assigned a random color on page load
+  - User can select times over someone else's time section, with the color of a section representing the most recent officer who selected that time. Unselecting a section shows any other most recent user's availability in that section (if any).
+  - Can't select times if user is filtered out of view

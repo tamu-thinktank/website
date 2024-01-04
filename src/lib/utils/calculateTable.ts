@@ -1,22 +1,16 @@
+import { times } from "@/consts/availability-grid";
 import { Temporal } from "@js-temporal/polyfill";
-import { convertTimesToDates } from ".";
 import { calculateColumns } from "./calculateColumns";
 import { calculateRows } from "./calculateRows";
-import { serializeTime } from "./serializeTime";
-
-export interface CalculateTableArgs {
-  /** times in table in UTC */
-  times: string[];
-  /** Timezone to display the table in */
-  timezone: string;
-}
 
 /**
- * Take time range and turn them into a data structure representing an availability table
+ * Take times in availability grid and turn them into a data structure representing an availability table
  */
-export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
+export const calculateTable = (timezone: string) => {
   const locale = "en-US";
-  const userDateTimes = convertTimesToDates(times, "UTC", timezone);
+  const userDateTimes = times.map((time) =>
+    Temporal.ZonedDateTime.from(time).withTimeZone(timezone),
+  );
   const rows = calculateRows(userDateTimes);
   const columns = calculateColumns(userDateTimes);
 
@@ -49,7 +43,7 @@ export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
                 plainTime: row,
                 timeZone: timezone,
               });
-              const cellInUTC = serializeTime(cellDateTime);
+              const cellInUTC = cellDateTime.withTimeZone("UTC").toString();
 
               // Cell not in dates
               if (
@@ -62,7 +56,7 @@ export const calculateTable = ({ times, timezone }: CalculateTableArgs) => {
 
               return {
                 /**
-                 * `HHmm-DDMMYYYY`format
+                 * ZonedDateTime ISO
                  */
                 cellInUTC,
                 minute: cellDateTime.minute,

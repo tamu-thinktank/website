@@ -49,13 +49,13 @@ model Session {
 // officers
 model User {
     id            String        @id @default(cuid())
-    name          String?
+    name          String
     email         String?       @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    meetingTimes  MeetingTime[]
+    availability  TimeSection[]
 }
 
 model VerificationToken {
@@ -87,27 +87,36 @@ enum Challenge {
     Blue_Skies
 }
 
+model ChallengeTable {
+    challenge  Challenge     @id
+    applicants Application[] // the applicants that selected this challenge
+}
+
 enum ApplicationStatus {
     PENDING
     ACCEPTED
     REJECTED
 }
 
-// table for relation
-model ChallengeTable {
-    challenge    Challenge     @id
-    applications Application[] // the applications that selected this challenge
+// Availabilities of officers for each time section in availability grid
+model TimeSection {
+    gridTime   String // Temporal.ZonedDateTime ISO in UTC
+    officerId  String
+    officer    User   @relation(fields: [officerId], references: [id], onDelete: Cascade)
+    selectedAt String // Temporal.ZonedDateTime ISO in UTC
+
+    @@id([gridTime, officerId])
+    @@index([officerId])
 }
 
-model MeetingTime {
-    id           Int           @id @default(autoincrement())
-    start        DateTime
-    end          DateTime
-    officer      User          @relation(fields: [officerId], references: [id])
-    officerId    String
-    applications Application[] // the applications that selected this time range
+// Availabilities of applicants
+model MeetingTimes {
+    gridTime    String // Temporal.ZonedDateTime ISO in UTC
+    applicant   Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+    applicantId String
 
-    @@index([officerId])
+    @@id([gridTime, applicantId])
+    @@index([applicantId])
 }
 
 model Application {
@@ -139,6 +148,6 @@ model Application {
     timeManagement  String? @db.Text
 
     // last section
-    meetingTimes MeetingTime[]
-    resumeLink   String        @db.Text
+    resumeLink   String         @db.Text
+    meetingTimes MeetingTimes[] // the time sections that the applicant selected
 }
