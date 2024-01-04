@@ -15,7 +15,6 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
-import { Separator } from "@/components/ui/separator";
 
 export default function Leadership() {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
@@ -23,13 +22,12 @@ export default function Leadership() {
   return (
     <div className="flex flex-col gap-4">
       <Card>
-        <CardHeader className="text-center">
+        <CardHeader>
           <CardTitle>Leadership</CardTitle>
-          <Separator />
+          <CardDescription>
+            Responses must be within 1000 characters
+          </CardDescription>
         </CardHeader>
-        <CardContent className="text-center">
-          Responses must be within 1000 characters
-        </CardContent>
       </Card>
 
       <FormField
