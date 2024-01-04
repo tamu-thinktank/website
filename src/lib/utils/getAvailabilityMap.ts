@@ -9,13 +9,11 @@ export const getAvailabilityMap = (dbAvailabilities: dbAvailabilitiesType) => {
       ...officer,
       selectedAt,
     };
+    const officersHere = availabilities.has(gridTime)
+      ? availabilities.get(gridTime)!
+      : [];
 
-    const officersHere = availabilities.get(gridTime);
-    if (officersHere) {
-      officersHere.push(newOfficerHere);
-    } else {
-      availabilities.set(gridTime, [newOfficerHere]);
-    }
+    availabilities.set(gridTime, [...officersHere, newOfficerHere]);
   });
 
   return availabilities;
