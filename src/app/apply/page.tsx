@@ -13,7 +13,7 @@ import { ApplyFormSchema } from "@/lib/z.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { Loader2 } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePersistForm } from "../_hooks/usePersistForm";
 import Interests from "./_sections/interests";
 import FormIntro from "./_sections/intro";
@@ -65,6 +65,55 @@ export default function Apply() {
     mutate(data);
   }, []);
 
+  // Validate input in personal section before allowing user to move on
+
+  const [isPersonalValid, setIsPersonalValid] = useState(false);
+  const [isPersonalChecked, setIsPersonalChecked] = useState(false);
+  const [personalValue, setPersonalValue] = useState<"interests" | "personal">(
+    "personal",
+  );
+
+  const handlePersonalNext = useCallback(async () => {
+    const isValid = await form.trigger("personal", {
+      shouldFocus: true,
+    });
+
+    if (isValid) {
+      setIsPersonalValid(true);
+      setPersonalValue("interests");
+    } else {
+      setIsPersonalValid(false);
+      setPersonalValue("personal");
+    }
+
+    setIsPersonalChecked(true);
+  }, [form.trigger]);
+
+  useEffect(() => {
+    if (!isPersonalChecked) return;
+
+    const sub = form.watch((values, { name }) => {
+      if (name?.startsWith("personal")) {
+        form
+          .trigger("personal")
+          .then((isValid) => {
+            if (isValid) {
+              setIsPersonalValid(true);
+              setPersonalValue("interests");
+            } else {
+              setIsPersonalValid(false);
+              setPersonalValue("personal");
+            }
+          })
+          .catch(() => setIsPersonalValid(false));
+      }
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [form.watch, isPersonalChecked]);
+
   return (
     <Form {...form}>
       <form
@@ -101,7 +150,12 @@ export default function Apply() {
               <TabsTrigger className="bg-white text-black" value="intro">
                 Back
               </TabsTrigger>
-              <TabsTrigger className="bg-white text-black" value="interests">
+              <TabsTrigger
+                onMouseDown={handlePersonalNext}
+                value={personalValue}
+                disabled={isPersonalChecked && !isPersonalValid}
+                className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
+              >
                 Next
               </TabsTrigger>
             </TabsList>
@@ -117,7 +171,7 @@ export default function Apply() {
                 Back
               </TabsTrigger>
               <TabsTrigger
-                className="bg-white text-black"
+                className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
                 value={
                   Boolean(form.watch("interests.isLeadership"))
                     ? "leadership"
@@ -138,7 +192,10 @@ export default function Apply() {
               <TabsTrigger className="bg-white text-black" value="interests">
                 Back
               </TabsTrigger>
-              <TabsTrigger className="bg-white text-black" value="resume">
+              <TabsTrigger
+                className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
+                value="resume"
+              >
                 Next
               </TabsTrigger>
             </TabsList>
@@ -155,9 +212,6 @@ export default function Apply() {
                 }
               >
                 Back
-              </TabsTrigger>
-              <TabsTrigger className="bg-white text-black" value="time">
-                Next
               </TabsTrigger>
               <Button
                 type="submit"
