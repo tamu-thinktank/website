@@ -6,6 +6,7 @@ import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import useApplyFormTab, { type ApplyTabType } from "@/hooks/useApplyFormTab";
 import { api } from "@/lib/trpc/react";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { clientErrorHandler } from "@/lib/utils";
@@ -13,10 +14,10 @@ import { ApplyFormSchema } from "@/lib/z.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { Loader2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 import { usePersistForm } from "../_hooks/usePersistForm";
-import Interests from "./_sections/interests";
-import FormIntro from "./_sections/intro";
+import InterestsTab from "./_sections/interests";
+import FormIntroTab from "./_sections/intro";
 import Leadership from "./_sections/leadership";
 import PersonalInfo from "./_sections/personal";
 import ResumeUpload from "./_sections/time-resume";
@@ -63,56 +64,15 @@ export default function Apply() {
 
   const onFormSubmit = useCallback((data: RouterInputs["public"]["apply"]) => {
     mutate(data);
+    // toast({
+    //   title: "Form submitted!",
+    //   description: (
+    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //     </pre>
+    //   ),
+    // });
   }, []);
-
-  // Validate input in personal section before allowing user to move on
-
-  const [isPersonalValid, setIsPersonalValid] = useState(false);
-  const [isPersonalChecked, setIsPersonalChecked] = useState(false);
-  const [personalValue, setPersonalValue] = useState<"interests" | "personal">(
-    "personal",
-  );
-
-  const handlePersonalNext = useCallback(async () => {
-    const isValid = await form.trigger("personal", {
-      shouldFocus: true,
-    });
-
-    if (isValid) {
-      setIsPersonalValid(true);
-      setPersonalValue("interests");
-    } else {
-      setIsPersonalValid(false);
-      setPersonalValue("personal");
-    }
-
-    setIsPersonalChecked(true);
-  }, [form.trigger]);
-
-  useEffect(() => {
-    if (!isPersonalChecked) return;
-
-    const sub = form.watch((values, { name }) => {
-      if (name?.startsWith("personal")) {
-        form
-          .trigger("personal")
-          .then((isValid) => {
-            if (isValid) {
-              setIsPersonalValid(true);
-              setPersonalValue("interests");
-            } else {
-              setIsPersonalValid(false);
-              setPersonalValue("personal");
-            }
-          })
-          .catch(() => setIsPersonalValid(false));
-      }
-    });
-
-    return () => {
-      sub.unsubscribe();
-    };
-  }, [form.watch, isPersonalChecked]);
 
   return (
     <Form {...form}>
@@ -131,76 +91,31 @@ export default function Apply() {
         }}
         className="flex w-full items-center justify-center"
       >
-        <Tabs defaultValue="intro" className="w-11/12 md:w-3/4 lg:w-1/2">
-          <TabsContent className="space-y-2" value="intro">
-            <FormIntro />
-            <TabsList className="float-right bg-transparent">
-              <TabsTrigger className="bg-white text-black" value="personal">
-                Next
-              </TabsTrigger>
-            </TabsList>
-          </TabsContent>
-          <TabsContent className="h-[90vh] space-y-2" value="personal">
-            <Card className="h-5/6">
-              <ScrollArea className="h-full p-4">
-                <PersonalInfo />
-              </ScrollArea>
-            </Card>
-            <TabsList className="flex w-full justify-between bg-transparent">
-              <TabsTrigger className="bg-white text-black" value="intro">
-                Back
-              </TabsTrigger>
-              <TabsTrigger
-                onMouseDown={handlePersonalNext}
-                value={personalValue}
-                disabled={isPersonalChecked && !isPersonalValid}
-                className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
-              >
-                Next
-              </TabsTrigger>
-            </TabsList>
-          </TabsContent>
-          <TabsContent className="h-[90vh] space-y-2" value="interests">
-            <Card className="h-5/6">
-              <ScrollArea className="h-full p-4">
-                <Interests />
-              </ScrollArea>
-            </Card>
-            <TabsList className="flex w-full justify-between  bg-transparent">
-              <TabsTrigger className="bg-white text-black" value="personal">
-                Back
-              </TabsTrigger>
-              <TabsTrigger
-                className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
-                value={
-                  Boolean(form.watch("interests.isLeadership"))
-                    ? "leadership"
-                    : "resume"
-                }
-              >
-                Next
-              </TabsTrigger>
-            </TabsList>
-          </TabsContent>
-          <TabsContent className="h-[90vh] space-y-2" value="leadership">
-            <Card className="h-5/6">
-              <ScrollArea className="h-full p-4">
-                <Leadership />
-              </ScrollArea>
-            </Card>
-            <TabsList className="flex w-full justify-between bg-transparent">
-              <TabsTrigger className="bg-white text-black" value="interests">
-                Back
-              </TabsTrigger>
-              <TabsTrigger
-                className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
-                value="resume"
-              >
-                Next
-              </TabsTrigger>
-            </TabsList>
-          </TabsContent>
-          <TabsContent className="h-[90vh] space-y-2" value="resume">
+        <Tabs defaultValue="id" className="w-11/12 md:w-3/4 lg:w-1/2">
+          <FormIntroTab />
+          <ApplyTab
+            tabPage={<PersonalInfo />}
+            previousTab="id"
+            currentTab="personal"
+            nextTab="interests"
+          />
+          <ApplyTab
+            tabPage={<InterestsTab />}
+            previousTab="personal"
+            currentTab="interests"
+            nextTab={
+              Boolean(form.watch("interests.isLeadership"))
+                ? "leadership"
+                : "resumeLink"
+            }
+          />
+          <ApplyTab
+            tabPage={<Leadership />}
+            previousTab="interests"
+            currentTab="leadership"
+            nextTab="resumeLink"
+          />
+          <TabsContent className="h-[90vh] space-y-2" value="resumeLink">
             <ResumeUpload />
             <TabsList className="flex w-full justify-between bg-transparent">
               <TabsTrigger
@@ -230,5 +145,43 @@ export default function Apply() {
         </Tabs>
       </form>
     </Form>
+  );
+}
+
+function ApplyTab({
+  tabPage,
+  previousTab,
+  currentTab,
+  nextTab,
+}: {
+  tabPage: JSX.Element;
+  previousTab: ApplyTabType;
+  currentTab: ApplyTabType;
+  nextTab: ApplyTabType;
+}) {
+  const [isValid, isChecked, value, handleNext] = useApplyFormTab(
+    currentTab,
+    nextTab,
+  );
+
+  return (
+    <TabsContent className="h-[90vh] space-y-2" value={currentTab}>
+      <Card className="h-5/6">
+        <ScrollArea className="h-full p-4">{tabPage}</ScrollArea>
+      </Card>
+      <TabsList className="flex w-full justify-between bg-transparent">
+        <TabsTrigger className="bg-white text-black" value={previousTab}>
+          Back
+        </TabsTrigger>
+        <TabsTrigger
+          onMouseDown={handleNext}
+          value={value}
+          disabled={isChecked && !isValid}
+          className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
+        >
+          Next
+        </TabsTrigger>
+      </TabsList>
+    </TabsContent>
   );
 }
