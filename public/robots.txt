@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://thinktank.tech
+
+# Sitemaps
+Sitemap: https://thinktank.tech/sitemap.xml
