@@ -6,7 +6,6 @@ import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import useApplyFormTab, { type ApplyTabType } from "@/hooks/useApplyFormTab";
 import { api } from "@/lib/trpc/react";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { clientErrorHandler } from "@/lib/utils";
@@ -14,7 +13,13 @@ import { ApplyFormSchema } from "@/lib/z.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { Loader2 } from "lucide-react";
-import { useCallback } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  type PropsWithChildren,
+} from "react";
+import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../_hooks/usePersistForm";
 import InterestsTab from "./_sections/interests";
 import FormIntroTab from "./_sections/intro";
@@ -93,14 +98,10 @@ export default function Apply() {
       >
         <Tabs defaultValue="id" className="w-11/12 md:w-3/4 lg:w-1/2">
           <FormIntroTab />
+          <ApplyTab previousTab="id" currentTab="personal" nextTab="interests">
+            <PersonalInfo />
+          </ApplyTab>
           <ApplyTab
-            tabPage={<PersonalInfo />}
-            previousTab="id"
-            currentTab="personal"
-            nextTab="interests"
-          />
-          <ApplyTab
-            tabPage={<InterestsTab />}
             previousTab="personal"
             currentTab="interests"
             nextTab={
@@ -108,13 +109,16 @@ export default function Apply() {
                 ? "leadership"
                 : "resumeLink"
             }
-          />
+          >
+            <InterestsTab />
+          </ApplyTab>
           <ApplyTab
-            tabPage={<Leadership />}
             previousTab="interests"
             currentTab="leadership"
             nextTab="resumeLink"
-          />
+          >
+            <Leadership />
+          </ApplyTab>
           <TabsContent className="h-[90vh] space-y-2" value="resumeLink">
             <ResumeUpload />
             <TabsList className="flex w-full justify-between bg-transparent">
@@ -148,26 +152,80 @@ export default function Apply() {
   );
 }
 
+/**
+ * Tab names match with object sections in the form schema
+ */
+type ApplyTabType =
+  | "id"
+  | "personal"
+  | "interests"
+  | "leadership"
+  | "resumeLink";
+
+/**
+ * Validate input in section before allowing user to move on to next
+ */
 function ApplyTab({
-  tabPage,
   previousTab,
   currentTab,
   nextTab,
+  children,
 }: {
-  tabPage: JSX.Element;
   previousTab: ApplyTabType;
   currentTab: ApplyTabType;
   nextTab: ApplyTabType;
-}) {
-  const [isValid, isChecked, value, handleNext] = useApplyFormTab(
-    currentTab,
-    nextTab,
-  );
+} & PropsWithChildren) {
+  const form = useFormContext<RouterInputs["public"]["apply"]>();
+
+  const [isValid, setIsValid] = useState(false);
+  const [isChecked, setIsChecked] = useState(false);
+  const [value, setValue] = useState<ApplyTabType>(currentTab);
+
+  const handleNext = useCallback(async () => {
+    const isValid = await form.trigger(currentTab, {
+      shouldFocus: true,
+    });
+
+    if (isValid) {
+      setIsValid(true);
+      setValue(nextTab);
+    } else {
+      setIsValid(false);
+      setValue(currentTab);
+    }
+
+    setIsChecked(true);
+  }, [form.trigger]);
+
+  useEffect(() => {
+    if (!isChecked) return;
+
+    const sub = form.watch((values, { name }) => {
+      if (name?.startsWith(currentTab)) {
+        form
+          .trigger(currentTab)
+          .then((isValid) => {
+            if (isValid) {
+              setIsValid(true);
+              setValue(nextTab);
+            } else {
+              setIsValid(false);
+              setValue(currentTab);
+            }
+          })
+          .catch(() => setIsValid(false));
+      }
+    });
+
+    return () => {
+      sub.unsubscribe();
+    };
+  }, [form.watch, isChecked]);
 
   return (
     <TabsContent className="h-[90vh] space-y-2" value={currentTab}>
       <Card className="h-5/6">
-        <ScrollArea className="h-full p-4">{tabPage}</ScrollArea>
+        <ScrollArea className="h-full p-4">{children}</ScrollArea>
       </Card>
       <TabsList className="flex w-full justify-between bg-transparent">
         <TabsTrigger className="bg-white text-black" value={previousTab}>
