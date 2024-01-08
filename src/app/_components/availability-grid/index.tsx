@@ -4,7 +4,6 @@ import { palette, times } from "@/consts/availability-grid";
 import useOfficerTimes from "@/hooks/useOfficerTimes";
 import { cn } from "@/lib/utils";
 import { type AvailabilityMap } from "@/lib/z.schema";
-import { type NoUndefined } from "@/types";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
 import { Temporal } from "@js-temporal/polyfill";
 import { useSession } from "next-auth/react";
@@ -16,12 +15,19 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type SetStateAction,
 } from "react";
 import Skeleton from "./table-skeleton";
 
 interface AvailabilityViewerProps {
   userTimezone: string;
 }
+
+type Mode = "add" | "remove";
+type SessionTime = {
+  gridTime: string;
+  selectedAt: string;
+};
 
 export default function AvailabilityGrid({
   userTimezone,
@@ -63,7 +69,7 @@ export default function AvailabilityGrid({
   const [tooltip, setTooltip] = useState<{
     anchor: HTMLDivElement;
     date: string;
-    peopleHere: NoUndefined<ReturnType<AvailabilityMap["get"]>>;
+    peopleHere: NonNullable<ReturnType<AvailabilityMap["get"]>>;
   }>();
   const { refs, floatingStyles } = useFloating({
     middleware: [offset(6), flip(), shift()],
@@ -79,7 +85,8 @@ export default function AvailabilityGrid({
   }, []);
 
   const startPos = useRef({ x: 0, y: 0 });
-  const mode = useRef<"add" | "remove">();
+  const mode = useRef<Mode>();
+
   const userColor = useMemo(
     () => officersColorMap.get(userId)!,
     [officersColorMap.size],
@@ -89,15 +96,19 @@ export default function AvailabilityGrid({
    * For optimistic UI updates, keep track of the times changed in session
    */
   const [firstFetchDone, setFirstFetchDone] = useState(false);
-  const [sessionTimes, setSessionTimes] = useState<string[]>([]);
+  const [sessionTimes, setSessionTimes] = useState<SessionTime[]>([]);
   useEffect(() => {
     if (!isDataFetched) return;
     if (firstFetchDone) return;
 
-    const userTimes: string[] = [];
+    const userTimes: SessionTime[] = [];
     data?.availabilities.forEach((officers, gridTime) => {
-      if (officers.some((o) => o.id === userId)) {
-        userTimes.push(gridTime);
+      const userOfficer = officers.find((o) => o.id === userId);
+      if (userOfficer) {
+        userTimes.push({
+          gridTime,
+          selectedAt: userOfficer.selectedAt,
+        });
       }
     });
     setFirstFetchDone(true);
@@ -108,14 +119,21 @@ export default function AvailabilityGrid({
    * Callback for when the user selects a range of times to add/remove.
    */
   const onSelected = (
+    /**
+     * The times to update
+     */
     newTimes: string[],
-    selectMode: NoUndefined<(typeof mode)["current"]>,
+    /**
+     * Updated sessionTimes
+     */
+    newSessionTimes: SetStateAction<SessionTime[]>,
+    selectMode: Mode,
   ) => {
-    setSessionTimes([...newTimes]);
+    setSessionTimes(newSessionTimes);
 
     mutate({
-      gridTimes: [...newTimes],
-      selectedAt: Temporal.Now.zonedDateTimeISO().toString(),
+      gridTimes: newTimes,
+      selectedAt: Temporal.Now.zonedDateTimeISO("UTC").toString(),
       mode: selectMode,
     });
   };
@@ -197,7 +215,9 @@ export default function AvailabilityGrid({
                     (mode.current === "add" || mode.current === "remove") &&
                     selecting.includes(cell.cellInUTC);
 
-                  const userHere = sessionTimes.includes(cell.cellInUTC);
+                  const userHere = sessionTimes.find(
+                    (sT) => sT.gridTime === cell.cellInUTC,
+                  );
 
                   const firstOfficerColor = officersColorMap.get(
                     peopleHere[0]?.id ?? "",
@@ -221,19 +241,26 @@ export default function AvailabilityGrid({
                     }
                   } else if (
                     (isDataFetching || isDataLoading || isMutateLoading) &&
-                    userHere &&
+                    !!userHere &&
+                    (!!peopleHere[0] && peopleHere[0].id !== userId
+                      ? Temporal.ZonedDateTime.compare(
+                          Temporal.ZonedDateTime.from(userHere.selectedAt),
+                          Temporal.ZonedDateTime.from(peopleHere[0].selectedAt),
+                        ) === 1
+                      : true) &&
                     !officersToFilter.includes(userId) &&
                     (!tempFocus || (!!tempFocus && userId === tempFocus))
                   ) {
+                    // optimistic UI update
                     backgroundColor = userColor;
                   } else if (
-                    peopleHere[0] &&
-                    ((peopleHere[0].id === userId && userHere) ||
+                    !!peopleHere[0] &&
+                    ((peopleHere[0].id === userId && !!userHere) ||
                       peopleHere[0].id !== userId)
                   ) {
                     // show latest person
                     backgroundColor = firstOfficerColor;
-                  } else if (peopleHere[1]) {
+                  } else if (!!peopleHere[1]) {
                     // show 2nd latest person
                     backgroundColor = secondOfficerColor;
                   }
@@ -264,31 +291,56 @@ export default function AvailabilityGrid({
                       onPointerDown={(e) => {
                         e.preventDefault();
                         startPos.current = { x: colIdx, y: cellIdx };
-                        mode.current = userHere ? "remove" : "add";
+                        mode.current = !!userHere ? "remove" : "add";
                         setSelecting([cell.cellInUTC]);
                         e.currentTarget.releasePointerCapture(e.pointerId);
                       }}
                       onPointerUp={() => {
                         if (mode.current === "add") {
-                          onSelected(
-                            [
-                              ...sessionTimes,
-                              ...selectingRef.current.filter(
-                                (selected) => !sessionTimes.includes(selected),
-                              ),
-                            ],
-                            mode.current,
-                          );
+                          const newTimes = [...selectingRef.current];
+                          const newSessionTimes = [
+                            // update existing times in the selection
+                            ...sessionTimes.map((sT) => {
+                              if (selectingRef.current.includes(sT.gridTime)) {
+                                return {
+                                  gridTime: sT.gridTime,
+                                  selectedAt:
+                                    Temporal.Now.zonedDateTimeISO(
+                                      "UTC",
+                                    ).toString(),
+                                };
+                              }
+
+                              return sT;
+                            }),
+                            // add new times in the selection
+                            ...selectingRef.current
+                              .filter(
+                                (t) =>
+                                  !sessionTimes.some((sT) => sT.gridTime === t),
+                              )
+                              .map((t) => ({
+                                gridTime: t,
+                                selectedAt:
+                                  Temporal.Now.zonedDateTimeISO(
+                                    "UTC",
+                                  ).toString(),
+                              })),
+                          ];
+                          onSelected(newTimes, newSessionTimes, mode.current);
                         } else if (mode.current === "remove") {
-                          onSelected(
-                            sessionTimes.filter(
-                              (t) => !selectingRef.current.includes(t),
-                            ),
-                            mode.current,
+                          const newTimes = selectingRef.current.filter((t) =>
+                            sessionTimes.some((sT) => sT.gridTime === t),
                           );
+                          const newSessionTimes = sessionTimes.filter(
+                            (t) => !selectingRef.current.includes(t.gridTime),
+                          );
+                          onSelected(newTimes, newSessionTimes, mode.current);
                         }
-                        setSelecting([]);
+
+                        // reset selection
                         mode.current = undefined;
+                        setSelecting([]);
                       }}
                       onPointerEnter={() => {
                         if (mode.current) {
@@ -306,16 +358,15 @@ export default function AvailabilityGrid({
                               found.push({ y: cy, x: cx });
                             }
                           }
-                          setSelecting(
-                            found.flatMap((d) => {
-                              const serialized =
-                                table.columns[d.x]?.cells[d.y]?.cellInUTC;
-                              if (serialized && times.includes(serialized)) {
-                                return [serialized];
-                              }
-                              return [];
-                            }),
-                          );
+                          const foundCell = found.flatMap((d) => {
+                            const serialized =
+                              table.columns[d.x]?.cells[d.y]?.cellInUTC;
+                            if (serialized && times.includes(serialized)) {
+                              return [serialized];
+                            }
+                            return [];
+                          });
+                          setSelecting(foundCell);
                         }
                       }}
                     />
@@ -329,13 +380,13 @@ export default function AvailabilityGrid({
         </Fragment>
       )) ?? <Skeleton />,
     [
-      officersColorMap,
+      officersColorMap.size,
+      table?.columns.length,
       data?.availabilities,
-      table?.columns,
+      officersToFilter.length,
       tempFocus,
-      officersToFilter,
-      selecting,
-      sessionTimes,
+      sessionTimes.length,
+      selecting.length,
     ],
   );
 

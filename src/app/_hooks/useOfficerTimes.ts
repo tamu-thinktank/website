@@ -7,8 +7,8 @@ import { clientErrorHandler } from "@/lib/utils";
  */
 export default function useOfficerTimes() {
   const { toast } = useToast();
-
   const apiUtils = api.useUtils();
+
   const {
     data,
     isFetched: isDataFetched,
@@ -16,16 +16,17 @@ export default function useOfficerTimes() {
     isLoading: isDataLoading,
   } = api.admin.getAvailabities.useQuery(undefined);
 
-  const { mutate, isLoading: isMutateLoading  } = api.admin.updateAvailabilities.useMutation({
-    onSettled: async (newData, err) => {
-      if (err) {
-        clientErrorHandler(err, toast);
-      }
+  const { mutate, isLoading: isMutateLoading } =
+    api.admin.updateAvailabilities.useMutation({
+      onSettled: async (newData, err) => {
+        if (err) {
+          clientErrorHandler(err, toast);
+        }
 
-      // refetch
-      void apiUtils.admin.getAvailabities.invalidate();
-    },
-  });
+        // refetch
+        void apiUtils.admin.getAvailabities.invalidate();
+      },
+    });
 
   return {
     data,

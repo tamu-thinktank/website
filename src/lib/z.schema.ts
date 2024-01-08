@@ -23,7 +23,7 @@ export const ApplyFormSchema = z
         .nullable()
         .refine(
           (input) => {
-            // email check after to validate empty string
+            // email check here to allow empty string
             if (input?.length) {
               return z.string().email().safeParse(input).success;
             }
