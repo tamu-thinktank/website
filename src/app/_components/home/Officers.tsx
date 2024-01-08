@@ -15,7 +15,7 @@ export default function Officers() {
             <div className="flex items-center justify-center gap-4">
               <Image
                 className="h-auto w-32 rounded-full"
-                src="/images/avatars/avatar.webp"
+                src="/images/avatars/president.webp"
                 alt="user avatar"
                 width={500}
                 height={500}
@@ -32,7 +32,7 @@ export default function Officers() {
             <div className="flex items-center justify-center gap-4">
               <Image
                 className="h-auto w-32 rounded-full"
-                src="/images/avatars/avatar-1.webp"
+                src="/images/avatars/vp.webp"
                 alt="user avatar"
                 width="400"
                 height="400"
@@ -49,7 +49,7 @@ export default function Officers() {
             <div className="flex items-center justify-center gap-4">
               <Image
                 className="h-auto w-32 rounded-full"
-                src="/images/avatars/avatar-2.webp"
+                src="/images/avatars/ctc.webp"
                 alt="user avatar"
                 width="400"
                 height="400"
@@ -66,7 +66,7 @@ export default function Officers() {
             <div className="flex items-center justify-center gap-4">
               <Image
                 className="h-auto w-32 rounded-full"
-                src="/images/avatars/avatar-3.webp"
+                src="/images/avatars/pr.webp"
                 alt="user avatar"
                 width="400"
                 height="400"
@@ -83,7 +83,7 @@ export default function Officers() {
             <div className="flex items-center justify-center gap-4">
               <Image
                 className="h-auto w-32 rounded-full"
-                src="/images/avatars/avatar-4.webp"
+                src="/images/avatars/treasurer.webp"
                 alt="user avatar"
                 width="400"
                 height="400"
