@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import * as nodemailer from "nodemailer";
+import { createTransport } from "nodemailer";
 
 // Nodemailer docs: // https://nodemailer.com/about/
 export default async function handler(
@@ -7,7 +7,7 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   // https://nodemailer.com/smtp/
-  const transporter = nodemailer.createTransport({
+  const transporter = createTransport({
     service: "SendinBlue",
     auth: {
       user: process.env.email,

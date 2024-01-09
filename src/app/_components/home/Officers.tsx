@@ -34,8 +34,8 @@ export default function Officers() {
                 className="h-auto w-32 rounded-full"
                 src="/images/avatars/vp.webp"
                 alt="user avatar"
-                width="400"
-                height="400"
+                width={500}
+                height={500}
               />
             </div>
             <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
@@ -51,8 +51,8 @@ export default function Officers() {
                 className="h-auto w-32 rounded-full"
                 src="/images/avatars/ctc.webp"
                 alt="user avatar"
-                width="400"
-                height="400"
+                width={500}
+                height={500}
               />
             </div>
             <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
@@ -68,8 +68,8 @@ export default function Officers() {
                 className="h-auto w-32 rounded-full"
                 src="/images/avatars/pr.webp"
                 alt="user avatar"
-                width="400"
-                height="400"
+                width={500}
+                height={500}
               />
             </div>
             <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
@@ -85,8 +85,8 @@ export default function Officers() {
                 className="h-auto w-32 rounded-full"
                 src="/images/avatars/treasurer.webp"
                 alt="user avatar"
-                width="400"
-                height="400"
+                width={500}
+                height={500}
               />
             </div>
             <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">

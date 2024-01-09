@@ -4,6 +4,7 @@ import colors from "tailwindcss/colors";
 
 export const eventTimezone = "America/Chicago";
 export const timezones = Intl.supportedValuesOf("timeZone");
+export type Mode = "add" | "remove";
 
 /** Range of table: (12/3/2023 9 AM to 12/16/23 9 PM CT) coverted to UTC.
  * Last hour in last day is exclusive, so `endDateTime` is 8 PM CT.

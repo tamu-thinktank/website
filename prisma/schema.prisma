@@ -55,7 +55,7 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
-    availability  TimeSection[]
+    availability  OfficerTime[]
 }
 
 model VerificationToken {
@@ -99,7 +99,7 @@ enum ApplicationStatus {
 }
 
 // Availabilities of officers for each time section in availability grid
-model TimeSection {
+model OfficerTime {
     gridTime   String // Temporal.ZonedDateTime ISO in UTC
     officerId  String
     officer    User   @relation(fields: [officerId], references: [id], onDelete: Cascade)
@@ -110,7 +110,7 @@ model TimeSection {
 }
 
 // Availabilities of applicants
-model MeetingTimes {
+model ApplicantTime {
     gridTime    String // Temporal.ZonedDateTime ISO in UTC
     applicant   Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
     applicantId String
@@ -147,7 +147,6 @@ model Application {
     presentation    Int? // 1-5
     timeManagement  String? @db.Text
 
-    // last section
+    meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeLink   String         @db.Text
-    meetingTimes MeetingTimes[] // the time sections that the applicant selected
 }

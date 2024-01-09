@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import { Availability, Challenge, Year } from "@prisma/client";
 import { z } from "zod";
 
@@ -62,7 +63,39 @@ export const ApplyFormSchema = z
       timeManagement: z.string().max(charLimit).nullable(),
     }),
 
-    // Resume section
+    meetingTimes: z
+      .array(z.string())
+      .min(4)
+      .refine(
+        (input) => {
+          // make sure an hour window exists in the selected times, where each selected time represents a 15 minute window
+
+          const sortedTimes = input
+            .map((time) => Temporal.ZonedDateTime.from(time))
+            .sort((a, b) => Temporal.ZonedDateTime.compare(a, b));
+
+          let toHourCount = 1;
+          for (let i = 0; i < sortedTimes.length - 1; i++) {
+            const curr = sortedTimes[i]!;
+            const next = sortedTimes[i + 1]!;
+
+            if (curr.add({ minutes: 15 }).equals(next)) {
+              toHourCount++;
+
+              if (toHourCount === 4) {
+                return true;
+              }
+            } else {
+              toHourCount = 1;
+            }
+          }
+
+          return false;
+        },
+        {
+          message: "Select at least an hour window",
+        },
+      ),
     resumeLink: z.string(),
   })
   .superRefine(({ interests: { isLeadership }, leadership }, ctx) => {

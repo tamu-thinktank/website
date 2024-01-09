@@ -4,7 +4,6 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { getAvailabities } from "@/server/db/queries";
 import { z } from "zod";
 
-// TODO: change to protectedProcedure
 export const adminRouter = createTRPCRouter({
   getAvailabities: protectedProcedure
     .output(
@@ -51,12 +50,12 @@ export const adminRouter = createTRPCRouter({
         ]),
       ),
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { gridTimes, mode } = input;
 
       if (mode === "add") {
         const addOperations = gridTimes.map((gridTime) => {
-          return ctx.db.timeSection.upsert({
+          return ctx.db.officerTime.upsert({
             where: {
               gridTime_officerId: {
                 gridTime,
@@ -75,7 +74,7 @@ export const adminRouter = createTRPCRouter({
         });
         await ctx.db.$transaction(addOperations);
       } else if (mode === "remove") {
-        await ctx.db.timeSection.deleteMany({
+        await ctx.db.officerTime.deleteMany({
           where: {
             officerId: ctx.session.user.id,
             gridTime: {

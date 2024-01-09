@@ -20,12 +20,14 @@ export function clientErrorHandler(
     if (msgContent?.[0])
       toastFn({
         title: "Error",
+        variant: "destructive",
         description: msgContent[0],
         duration: 5000,
       });
   } else {
     toastFn({
       title: "Error",
+      variant: "destructive",
       description: err.message,
       duration: 5000,
     });

@@ -6,13 +6,15 @@ import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { clientErrorHandler } from "@/lib/utils";
 import { ApplyFormSchema } from "@/lib/z.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
-import { Loader2 } from "lucide-react";
+import { ArrowUpRight, Loader2 } from "lucide-react";
+import Link from "next/link";
 import {
   useCallback,
   useEffect,
@@ -21,14 +23,19 @@ import {
 } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../_hooks/usePersistForm";
+import Availability from "./_sections/availability";
 import InterestsTab from "./_sections/interests";
 import FormIntroTab from "./_sections/intro";
 import Leadership from "./_sections/leadership";
 import PersonalInfo from "./_sections/personal";
-import ResumeUpload from "./_sections/time-resume";
+import ResumeUpload from "./_sections/resume";
 
 export default function Apply() {
   const { toast } = useToast();
+  const [userTimezone, setUserTimezone] = useState(
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+  );
+  const table = useCalculateTable(userTimezone);
 
   const form = usePersistForm<RouterInputs["public"]["apply"]>("apply-form", {
     resolver: zodResolver(ApplyFormSchema),
@@ -47,19 +54,23 @@ export default function Apply() {
         presentation: 1,
         timeManagement: null,
       },
+      meetingTimes: [],
       resumeLink: "l",
     },
   });
 
   const { mutate } = api.public.apply.useMutation({
-    onSuccess: (_, data) => {
+    onSuccess: () => {
       toast({
         title: "Form submitted!",
-        description: (
-          <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-          </pre>
+        action: (
+          <Button variant={"outline"} size={"sm"}>
+            <Link href={"/"} className="flex items-center justify-center gap-2">
+              Home <ArrowUpRight />
+            </Link>
+          </Button>
         ),
+        duration: 5000,
       });
     },
     onError: (err) => {
@@ -78,6 +89,8 @@ export default function Apply() {
     //   ),
     // });
   }, []);
+
+  console.log(form.formState.errors);
 
   return (
     <Form {...form}>
@@ -107,7 +120,7 @@ export default function Apply() {
             nextTab={
               Boolean(form.watch("interests.isLeadership"))
                 ? "leadership"
-                : "resumeLink"
+                : "meetingTimes"
             }
           >
             <InterestsTab />
@@ -115,21 +128,29 @@ export default function Apply() {
           <ApplyTab
             previousTab="interests"
             currentTab="leadership"
-            nextTab="resumeLink"
+            nextTab="meetingTimes"
           >
             <Leadership />
+          </ApplyTab>
+          <ApplyTab
+            previousTab={
+              Boolean(form.watch("interests.isLeadership"))
+                ? "leadership"
+                : "interests"
+            }
+            currentTab="meetingTimes"
+            nextTab="resumeLink"
+          >
+            <Availability
+              userTimezone={userTimezone}
+              setUserTimezone={setUserTimezone}
+              table={table}
+            />
           </ApplyTab>
           <TabsContent className="h-[90vh] space-y-2" value="resumeLink">
             <ResumeUpload />
             <TabsList className="flex w-full justify-between bg-transparent">
-              <TabsTrigger
-                className="bg-white text-black"
-                value={
-                  Boolean(form.watch("interests.isLeadership"))
-                    ? "leadership"
-                    : "interests"
-                }
-              >
+              <TabsTrigger className="bg-white text-black" value="meetingTimes">
                 Back
               </TabsTrigger>
               <Button
@@ -160,6 +181,7 @@ type ApplyTabType =
   | "personal"
   | "interests"
   | "leadership"
+  | "meetingTimes"
   | "resumeLink";
 
 /**
@@ -224,7 +246,7 @@ function ApplyTab({
 
   return (
     <TabsContent className="h-[90vh] space-y-2" value={currentTab}>
-      <Card className="h-5/6">
+      <Card className="h-[90%]">
         <ScrollArea className="h-full p-4">{children}</ScrollArea>
       </Card>
       <TabsList className="flex w-full justify-between bg-transparent">

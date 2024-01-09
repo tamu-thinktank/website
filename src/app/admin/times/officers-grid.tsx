@@ -1,6 +1,7 @@
 import useCalculateTable from "@/app/_hooks/useCalculateTable";
+import TableSkeleton from "@/components/table-skeleton";
 import { Toggle } from "@/components/ui/toggle";
-import { palette, times } from "@/consts/availability-grid";
+import { palette, times, type Mode } from "@/consts/availability-grid";
 import useOfficerTimes from "@/hooks/useOfficerTimes";
 import { cn } from "@/lib/utils";
 import { type AvailabilityMap } from "@/lib/z.schema";
@@ -17,19 +18,17 @@ import {
   type CSSProperties,
   type SetStateAction,
 } from "react";
-import Skeleton from "./table-skeleton";
 
 interface AvailabilityViewerProps {
   userTimezone: string;
 }
 
-type Mode = "add" | "remove";
 type SessionTime = {
   gridTime: string;
   selectedAt: string;
 };
 
-export default function AvailabilityGrid({
+export default function OfficersGrid({
   userTimezone,
 }: AvailabilityViewerProps) {
   const { data: session } = useSession();
@@ -116,7 +115,7 @@ export default function AvailabilityGrid({
   }, [isDataFetched]);
 
   /**
-   * Callback for when the user selects a range of times to add/remove.
+   * Submit the selected times to the server.
    */
   const onSelected = (
     /**
@@ -378,7 +377,7 @@ export default function AvailabilityGrid({
             <div className="w-3" />
           )}
         </Fragment>
-      )) ?? <Skeleton />,
+      )) ?? <TableSkeleton />,
     [
       officersColorMap.size,
       table?.columns.length,

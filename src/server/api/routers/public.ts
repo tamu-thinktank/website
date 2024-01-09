@@ -24,6 +24,13 @@ export const publicRouter = createTRPCRouter({
           },
           ...input.leadership,
           resumeLink: input.resumeLink,
+          meetingTimes: {
+            createMany: {
+              data: input.meetingTimes.map((gridTime) => ({
+                gridTime,
+              })),
+            },
+          },
         },
       });
     }),
