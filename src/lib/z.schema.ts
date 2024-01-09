@@ -44,7 +44,7 @@ export const ApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/),
+      phone: z.string().refine((input) => /^\d{3}-\d{3}-\d{4}$/.test(input), {message: "Invalid phone number"}),
       year: yearSchema,
       major: z
         .string()
