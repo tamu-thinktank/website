@@ -24,7 +24,7 @@ import {
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../_hooks/usePersistForm";
 import Availability from "./_sections/availability";
-import InterestsTab from "./_sections/interests";
+import Interests from "./_sections/interests";
 import FormIntroTab from "./_sections/intro";
 import Leadership from "./_sections/leadership";
 import PersonalInfo from "./_sections/personal";
@@ -46,7 +46,6 @@ export default function Apply() {
       },
       interests: {
         challenges: [],
-        isLeadership: false,
       },
       leadership: {
         skillsAnswer: null,
@@ -58,6 +57,7 @@ export default function Apply() {
       resumeLink: "l",
     },
   });
+  const isLeadershipSelected = form.getValues("interests.isLeadership");
 
   const { mutate } = api.public.apply.useMutation({
     onSuccess: () => {
@@ -90,8 +90,6 @@ export default function Apply() {
     // });
   }, []);
 
-  console.log(form.formState.errors);
-
   return (
     <Form {...form}>
       <form
@@ -107,67 +105,71 @@ export default function Apply() {
             e.preventDefault();
           }
         }}
-        className="flex w-full items-center justify-center"
+        className="h-full"
       >
-        <Tabs defaultValue="id" className="w-11/12 md:w-3/4 lg:w-1/2">
-          <FormIntroTab />
-          <ApplyTab previousTab="id" currentTab="personal" nextTab="interests">
-            <PersonalInfo />
-          </ApplyTab>
-          <ApplyTab
-            previousTab="personal"
-            currentTab="interests"
-            nextTab={
-              Boolean(form.watch("interests.isLeadership"))
-                ? "leadership"
-                : "meetingTimes"
-            }
-          >
-            <InterestsTab />
-          </ApplyTab>
-          <ApplyTab
-            previousTab="interests"
-            currentTab="leadership"
-            nextTab="meetingTimes"
-          >
-            <Leadership />
-          </ApplyTab>
-          <ApplyTab
-            previousTab={
-              Boolean(form.watch("interests.isLeadership"))
-                ? "leadership"
-                : "interests"
-            }
-            currentTab="meetingTimes"
-            nextTab="resumeLink"
-          >
-            <Availability
-              userTimezone={userTimezone}
-              setUserTimezone={setUserTimezone}
-              table={table}
-            />
-          </ApplyTab>
-          <TabsContent className="h-[90vh] space-y-2" value="resumeLink">
-            <ResumeUpload />
-            <TabsList className="flex w-full justify-between bg-transparent">
-              <TabsTrigger className="bg-white text-black" value="meetingTimes">
-                Back
-              </TabsTrigger>
-              <Button
-                type="submit"
-                disabled={
-                  form.formState.isSubmitting || form.formState.isValidating
-                }
+        <ScrollArea className="h-full">
+          <div className="flex w-screen items-center justify-center">
+            <Tabs defaultValue="id" className="my-4 w-11/12 md:w-3/4 lg:w-1/2">
+              <FormIntroTab />
+              <ApplyTab
+                previousTab="id"
+                currentTab="personal"
+                nextTab="interests"
               >
-                {form.formState.isSubmitting ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  "Submit"
-                )}
-              </Button>
-            </TabsList>
-          </TabsContent>
-        </Tabs>
+                <PersonalInfo />
+              </ApplyTab>
+              <ApplyTab
+                previousTab="personal"
+                currentTab="interests"
+                nextTab={isLeadershipSelected ? "leadership" : "meetingTimes"}
+              >
+                <Interests />
+              </ApplyTab>
+              <ApplyTab
+                previousTab="interests"
+                currentTab="leadership"
+                nextTab="meetingTimes"
+              >
+                <Leadership />
+              </ApplyTab>
+              <ApplyTab
+                previousTab={isLeadershipSelected ? "leadership" : "interests"}
+                currentTab="meetingTimes"
+                nextTab="resumeLink"
+              >
+                <Availability
+                  userTimezone={userTimezone}
+                  setUserTimezone={setUserTimezone}
+                  table={table}
+                />
+              </ApplyTab>
+              <TabsContent className="space-y-2" value="resumeLink">
+                <ResumeUpload />
+                <TabsList className="flex w-full justify-between bg-transparent">
+                  <TabsTrigger
+                    className="bg-white text-black"
+                    value="meetingTimes"
+                  >
+                    Back
+                  </TabsTrigger>
+                  <Button
+                    type="submit"
+                    disabled={
+                      form.formState.isSubmitting || form.formState.isValidating
+                    }
+                  >
+                    {form.formState.isSubmitting ||
+                    form.formState.isValidating ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
+                </TabsList>
+              </TabsContent>
+            </Tabs>
+          </div>
+        </ScrollArea>
       </form>
     </Form>
   );
@@ -201,7 +203,6 @@ function ApplyTab({
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
-  const [value, setValue] = useState<ApplyTabType>(currentTab);
 
   const handleNext = useCallback(async () => {
     const isValid = await form.trigger(currentTab, {
@@ -210,10 +211,8 @@ function ApplyTab({
 
     if (isValid) {
       setIsValid(true);
-      setValue(nextTab);
     } else {
       setIsValid(false);
-      setValue(currentTab);
     }
 
     setIsChecked(true);
@@ -229,10 +228,8 @@ function ApplyTab({
           .then((isValid) => {
             if (isValid) {
               setIsValid(true);
-              setValue(nextTab);
             } else {
               setIsValid(false);
-              setValue(currentTab);
             }
           })
           .catch(() => setIsValid(false));
@@ -245,17 +242,15 @@ function ApplyTab({
   }, [form.watch, isChecked]);
 
   return (
-    <TabsContent className="h-[90vh] space-y-2" value={currentTab}>
-      <Card className="h-[90%]">
-        <ScrollArea className="h-full p-4">{children}</ScrollArea>
-      </Card>
+    <TabsContent className="space-y-2" value={currentTab}>
+      <Card className="p-4">{children}</Card>
       <TabsList className="flex w-full justify-between bg-transparent">
         <TabsTrigger className="bg-white text-black" value={previousTab}>
           Back
         </TabsTrigger>
         <TabsTrigger
           onMouseDown={handleNext}
-          value={value}
+          value={isValid ? nextTab : currentTab}
           disabled={isChecked && !isValid}
           className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
         >

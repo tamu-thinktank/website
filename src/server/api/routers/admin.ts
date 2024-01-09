@@ -1,5 +1,9 @@
 import { getAvailabilityMap } from "@/lib/utils/getAvailabilityMap";
-import { AvailabilityMapSchema } from "@/lib/z.schema";
+import {
+  ApplicantSchema,
+  ApplicantsSchema,
+  AvailabilityMapSchema,
+} from "@/lib/z.schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { getAvailabities } from "@/server/db/queries";
 import { z } from "zod";
@@ -85,5 +89,71 @@ export const adminRouter = createTRPCRouter({
       }
 
       return true;
+    }),
+  getApplicants: protectedProcedure
+    .output(ApplicantsSchema)
+    .query(async ({ ctx }) => {
+      const applications = await ctx.db.application.findMany({
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          submittedAt: true,
+          status: true,
+        },
+      });
+
+      return applications;
+    }),
+  getApplicant: protectedProcedure
+    .input(z.string().cuid2())
+    .output(ApplicantSchema)
+    .query(async ({ input, ctx }) => {
+      const application = await ctx.db.application.findUnique({
+        where: {
+          id: input,
+        },
+        include: {
+          challenges: true,
+          meetingTimes: true,
+        },
+      });
+
+      if (!application) {
+        throw new Error("Application not found");
+      }
+
+      return {
+        ...application,
+        personal: {
+          fullName: application.fullName,
+          email: application.email,
+          uin: application.uin,
+          altEmail: application.altEmail,
+          phone: application.phone,
+          year: application.year,
+          major: application.major,
+          availability: application.availability,
+        },
+        interests: {
+          interestedAnswer: application.interestedAnswer,
+          challenges: application.challenges.map((challenge) => {
+            return challenge.challenge;
+          }),
+          interestedChallenge: application.interestedChallenge,
+          passionAnswer: application.passionAnswer,
+          isLeadership: application.isLeadership,
+        },
+        leadership: {
+          skillsAnswer: application.skillsAnswer,
+          conflictsAnswer: application.conflictsAnswer,
+          presentation: application.presentation,
+          timeManagement: application.timeManagement,
+        },
+        meetingTimes: application.meetingTimes.map((meetingTime) => {
+          return meetingTime.gridTime;
+        }),
+        resumeLink: application.resumeLink,
+      };
     }),
 });

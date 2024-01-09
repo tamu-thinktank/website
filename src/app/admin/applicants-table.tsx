@@ -15,8 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { api } from "@/lib/trpc/react";
+import { type RouterOutputs } from "@/lib/trpc/shared";
 import { capitalizeFirstLetter } from "@/lib/utils";
-import { fakeApplicants } from "@/mocks/applicants";
 import { ApplicationStatus } from "@prisma/client";
 import {
   createColumnHelper,
@@ -33,16 +34,22 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 export default function ApplicantsTable() {
   // api for fetching applicants
-  const applicants = useMemo(() => fakeApplicants(20), []);
+  const { data: applicants, isFetching } = api.admin.getApplicants.useQuery(
+    undefined,
+    {
+      initialData: [],
+    },
+  );
 
   // data table -----------
 
   const columnHelper = useMemo(
-    () => createColumnHelper<(typeof applicants)[number]>(),
+    () => createColumnHelper<RouterOutputs["admin"]["getApplicants"][number]>(),
     [],
   );
 
@@ -113,8 +120,9 @@ export default function ApplicantsTable() {
     getColumnCanGlobalFilter: (column) => {
       return (
         column.id ===
-          ("fullName" satisfies keyof (typeof applicants)[number]) ||
-        column.id === ("email" satisfies keyof (typeof applicants)[number])
+          ("fullName" satisfies keyof RouterOutputs["admin"]["getApplicants"][number]) ||
+        column.id ===
+          ("email" satisfies keyof RouterOutputs["admin"]["getApplicants"][number])
       );
     },
     onSortingChange: setSorting,
@@ -167,10 +175,12 @@ export default function ApplicantsTable() {
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      <Link href={`/admin/${row.original.id}`}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </Link>
                     </TableCell>
                   ))}
                 </TableRow>
@@ -181,7 +191,7 @@ export default function ApplicantsTable() {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No applicants.
+                  {isFetching ? "Loading..." : "No applicants."}
                 </TableCell>
               </TableRow>
             )}
