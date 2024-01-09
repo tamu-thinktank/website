@@ -18,8 +18,10 @@ import Link from "next/link";
 import {
   useCallback,
   useEffect,
+  useRef,
   useState,
   type PropsWithChildren,
+  type RefObject,
 } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../_hooks/usePersistForm";
@@ -58,6 +60,7 @@ export default function Apply() {
     },
   });
   const isLeadershipSelected = form.getValues("interests.isLeadership");
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const { mutate } = api.public.apply.useMutation({
     onSuccess: () => {
@@ -107,68 +110,78 @@ export default function Apply() {
         }}
         className="h-full"
       >
-        <ScrollArea className="h-full">
-          <div className="flex w-screen items-center justify-center">
-            <Tabs defaultValue="id" className="my-4 w-11/12 md:w-3/4 lg:w-1/2">
-              <FormIntroTab />
-              <ApplyTab
-                previousTab="id"
-                currentTab="personal"
-                nextTab="interests"
+        <ScrollArea viewportRef={viewportRef} className="h-full">
+            <div className="flex w-screen items-center justify-center">
+              <Tabs
+                defaultValue="id"
+                className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
               >
-                <PersonalInfo />
-              </ApplyTab>
-              <ApplyTab
-                previousTab="personal"
-                currentTab="interests"
-                nextTab={isLeadershipSelected ? "leadership" : "meetingTimes"}
-              >
-                <Interests />
-              </ApplyTab>
-              <ApplyTab
-                previousTab="interests"
-                currentTab="leadership"
-                nextTab="meetingTimes"
-              >
-                <Leadership />
-              </ApplyTab>
-              <ApplyTab
-                previousTab={isLeadershipSelected ? "leadership" : "interests"}
-                currentTab="meetingTimes"
-                nextTab="resumeLink"
-              >
-                <Availability
-                  userTimezone={userTimezone}
-                  setUserTimezone={setUserTimezone}
-                  table={table}
-                />
-              </ApplyTab>
-              <TabsContent className="space-y-2" value="resumeLink">
-                <ResumeUpload />
-                <TabsList className="flex w-full justify-between bg-transparent">
-                  <TabsTrigger
-                    className="bg-white text-black"
-                    value="meetingTimes"
-                  >
-                    Back
-                  </TabsTrigger>
-                  <Button
-                    type="submit"
-                    disabled={
-                      form.formState.isSubmitting || form.formState.isValidating
-                    }
-                  >
-                    {form.formState.isSubmitting ||
-                    form.formState.isValidating ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      "Submit"
-                    )}
-                  </Button>
-                </TabsList>
-              </TabsContent>
-            </Tabs>
-          </div>
+                <FormIntroTab />
+                <ApplyTab
+                  previousTab="id"
+                  currentTab="personal"
+                  nextTab="interests"
+                  viewportRef={viewportRef}
+                >
+                  <PersonalInfo />
+                </ApplyTab>
+                <ApplyTab
+                  previousTab="personal"
+                  currentTab="interests"
+                  nextTab={isLeadershipSelected ? "leadership" : "meetingTimes"}
+                  viewportRef={viewportRef}
+                >
+                  <Interests />
+                </ApplyTab>
+                <ApplyTab
+                  previousTab="interests"
+                  currentTab="leadership"
+                  nextTab="meetingTimes"
+                  viewportRef={viewportRef}
+                >
+                  <Leadership />
+                </ApplyTab>
+                <ApplyTab
+                  previousTab={
+                    isLeadershipSelected ? "leadership" : "interests"
+                  }
+                  currentTab="meetingTimes"
+                  nextTab="resumeLink"
+                  viewportRef={viewportRef}
+                >
+                  <Availability
+                    userTimezone={userTimezone}
+                    setUserTimezone={setUserTimezone}
+                    table={table}
+                  />
+                </ApplyTab>
+                <TabsContent className="space-y-2" value="resumeLink">
+                  <ResumeUpload />
+                  <TabsList className="flex w-full justify-between bg-transparent">
+                    <TabsTrigger
+                      className="bg-white text-black"
+                      value="meetingTimes"
+                    >
+                      Back
+                    </TabsTrigger>
+                    <Button
+                      type="submit"
+                      disabled={
+                        form.formState.isSubmitting ||
+                        form.formState.isValidating
+                      }
+                    >
+                      {form.formState.isSubmitting ||
+                      form.formState.isValidating ? (
+                        <Loader2 className="animate-spin" />
+                      ) : (
+                        "Submit"
+                      )}
+                    </Button>
+                  </TabsList>
+                </TabsContent>
+              </Tabs>
+            </div>
         </ScrollArea>
       </form>
     </Form>
@@ -193,16 +206,27 @@ function ApplyTab({
   previousTab,
   currentTab,
   nextTab,
+  viewportRef,
   children,
 }: {
   previousTab: ApplyTabType;
   currentTab: ApplyTabType;
   nextTab: ApplyTabType;
+  viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
+
+  const scrollToTop = () => {
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const handleNext = useCallback(async () => {
     const isValid = await form.trigger(currentTab, {
@@ -211,6 +235,7 @@ function ApplyTab({
 
     if (isValid) {
       setIsValid(true);
+      scrollToTop();
     } else {
       setIsValid(false);
     }
@@ -245,7 +270,11 @@ function ApplyTab({
     <TabsContent className="space-y-2" value={currentTab}>
       <Card className="p-4">{children}</Card>
       <TabsList className="flex w-full justify-between bg-transparent">
-        <TabsTrigger className="bg-white text-black" value={previousTab}>
+        <TabsTrigger
+          className="bg-white text-black"
+          value={previousTab}
+          onMouseDown={scrollToTop}
+        >
           Back
         </TabsTrigger>
         <TabsTrigger
