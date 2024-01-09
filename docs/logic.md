@@ -4,7 +4,7 @@
 
 - calendar features
   - an officer selects times to set on form at `/admin/times`
-  - applicants select available times from all officers in availability grid view
+  - applicants select their own available times in availability grid view
 - resumes to shared drive
 
 ## officer view at `/admin`

@@ -96,7 +96,7 @@ export default function Interests() {
                   Skies: https://blueskies.nianet.org/competition/
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
                 {challenges.map((challenge) => (
                   <FormField
                     key={challenge.id}
@@ -109,27 +109,29 @@ export default function Interests() {
                           className="flex flex-row items-start space-x-3 space-y-0"
                         >
                           <FormControl>
-                            <Checkbox
-                              checked={field.value?.some(
-                                (value) => value === challenge.id,
-                              )}
-                              onCheckedChange={(checked) => {
-                                return checked
-                                  ? field.onChange([
-                                      ...field.value,
-                                      challenge.id,
-                                    ])
-                                  : field.onChange(
-                                      field.value.filter(
-                                        (value) => value !== challenge.id,
-                                      ),
-                                    );
-                              }}
-                            />
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                checked={field.value?.some(
+                                  (value) => value === challenge.id,
+                                )}
+                                onCheckedChange={(checked) => {
+                                  return checked
+                                    ? field.onChange([
+                                        ...field.value,
+                                        challenge.id,
+                                      ])
+                                    : field.onChange(
+                                        field.value.filter(
+                                          (value) => value !== challenge.id,
+                                        ),
+                                      );
+                                }}
+                              />
+                              <FormLabel className="font-normal">
+                                {challenge.label}
+                              </FormLabel>
+                            </div>
                           </FormControl>
-                          <FormLabel className="font-normal">
-                            {challenge.label}
-                          </FormLabel>
                         </FormItem>
                       );
                     }}
@@ -245,11 +247,24 @@ export default function Interests() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <RadioGroup onValueChange={field.onChange}>
+                  <RadioGroup
+                    onValueChange={(value) => {
+                      if (value === "true") {
+                        field.onChange(true);
+                      } else {
+                        field.onChange(false);
+                      }
+                    }}
+                  >
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="true" id="yes" />
+                          <RadioGroupItem
+                            onBlur={field.onBlur}
+                            checked={field.value === true}
+                            value="true"
+                            id="yes"
+                          />
                           <FormLabel htmlFor="yes">Yes</FormLabel>
                         </div>
                       </FormControl>
@@ -257,7 +272,12 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="" id="no" />
+                          <RadioGroupItem
+                            onBlur={field.onBlur}
+                            checked={field.value === false}
+                            value="false"
+                            id="no"
+                          />
                           <FormLabel htmlFor="no">No</FormLabel>
                         </div>
                       </FormControl>

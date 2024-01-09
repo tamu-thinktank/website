@@ -1,9 +1,18 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { Availability, Challenge, Year } from "@prisma/client";
+import {
+  ApplicationStatus,
+  Availability,
+  Challenge,
+  Year,
+} from "@prisma/client";
 import { z } from "zod";
 
-const challengeSchema = z.nativeEnum(Challenge);
 const charLimit = 1000;
+
+const challengeSchema = z.nativeEnum(Challenge);
+const statusSchema = z.nativeEnum(ApplicationStatus);
+const yearSchema = z.nativeEnum(Year);
+const availabilitySchema = z.nativeEnum(Availability);
 
 export const ApplyFormSchema = z
   .object({
@@ -36,14 +45,14 @@ export const ApplyFormSchema = z
           },
         ),
       phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/),
-      year: z.nativeEnum(Year),
+      year: yearSchema,
       major: z
         .string()
         .length(4)
         .refine((input) => /^[A-Za-z]{4}$/.test(input), {
           message: "Not a valid major abbreviation",
         }),
-      availability: z.nativeEnum(Availability),
+      availability: availabilitySchema,
     }),
 
     // Interests and Motivation section
@@ -145,3 +154,26 @@ export const AvailabilityMapSchema = z.map(
   ),
 );
 export type AvailabilityMap = z.infer<typeof AvailabilityMapSchema>;
+
+/**
+ * For list of applicants in admin page
+ */
+export const ApplicantsSchema = z.array(
+  z.object({
+    id: z.string().cuid2(),
+    fullName: z.string(),
+    email: z.string().email(),
+    submittedAt: z.date(),
+    status: statusSchema,
+  }),
+);
+
+/**
+ * For applicant detail page
+ */
+export const ApplicantSchema = ApplyFormSchema.and(
+  z.object({
+    submittedAt: z.date(),
+    status: statusSchema,
+  }),
+);
