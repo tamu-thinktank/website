@@ -240,7 +240,7 @@ export default function PersonalInfo() {
                   Major <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Use the four letter abbreviation of your major If in general
+                  Use the four letter abbreviation of your major. If in general
                   engineering, respond with intended major
                 </CardDescription>
               </CardHeader>

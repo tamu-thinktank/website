@@ -12,13 +12,13 @@ export const ApplyFormSchema = z
     // Personal info section
     personal: z.object({
       fullName: z.string().min(1),
-      email: z.string().email(),
+      email: z.string().email("Invalid email").refine((input) => /@tamu.edu$/.test(input), {message: "Must end with @tamu.edu"}), 
       uin: z.coerce
-        .number()
-        .positive()
-        .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
-          message: "Invalid UIN",
-        }),
+      .number()
+      .refine((n) => !isNaN(n), { message: "Required" })
+      .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
+        message: "Invalid UIN",
+      }),
       altEmail: z
         .string()
         .nullable()
@@ -35,32 +35,31 @@ export const ApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/),
+      phone: z.string().refine((input) => /^\d{3}-\d{3}-\d{4}$/.test(input), {message: "Invalid phone number"}),
       year: z.nativeEnum(Year),
       major: z
         .string()
-        .length(4)
         .refine((input) => /^[A-Za-z]{4}$/.test(input), {
-          message: "Not a valid major abbreviation",
+          message: "Not a valid 4 letter major abbreviation",
         }),
       availability: z.nativeEnum(Availability),
     }),
 
     // Interests and Motivation section
     interests: z.object({
-      interestedAnswer: z.string().max(charLimit),
+      interestedAnswer: z.string().max(charLimit, "Responses must be within 1000 characters"),
       challenges: z.array(challengeSchema).min(1),
       interestedChallenge: challengeSchema,
-      passionAnswer: z.string().max(charLimit),
+      passionAnswer: z.string().max(charLimit, "Responses must be within 1000 characters"),
       isLeadership: z.coerce.boolean(),
     }),
 
     // Leadership section
     leadership: z.object({
-      skillsAnswer: z.string().max(charLimit).nullable(),
-      conflictsAnswer: z.string().max(charLimit).nullable(),
+      skillsAnswer: z.string().max(charLimit, "Responses must be within 1000 characters").nullable(),
+      conflictsAnswer: z.string().max(charLimit, "Responses must be within 1000 characters").nullable(),
       presentation: z.coerce.number().min(1).max(5).nullable(),
-      timeManagement: z.string().max(charLimit).nullable(),
+      timeManagement: z.string().max(charLimit, "Responses must be within 1000 characters").nullable(),
     }),
 
     meetingTimes: z
