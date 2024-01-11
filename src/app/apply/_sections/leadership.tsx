@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { q } from "@/consts/apply-questions";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
@@ -23,7 +24,7 @@ export default function Leadership() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Leadership</CardTitle>
+          <CardTitle>{q.leadership.title}</CardTitle>
           <CardDescription>
             Responses must be within 1000 characters
           </CardDescription>
@@ -38,7 +39,7 @@ export default function Leadership() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Describe a situation where you demonstrated leadership skills{" "}
+                  {q.leadership.skillsAnswer}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
@@ -64,7 +65,7 @@ export default function Leadership() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  How do you handle conflicts within a team environment?{" "}
+                  {q.leadership.conflictsAnswer}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -93,7 +94,7 @@ export default function Leadership() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Rate your presentation skills on a scale from 1 to 5{" "}
+                  {q.leadership.presentation}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
@@ -135,8 +136,8 @@ export default function Leadership() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  How would you rate your ability to meet deadlines and manage
-                  time effectively? <span className="text-red-500">*</span>
+                  {q.leadership.timeManagement}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Provide an example where you successfully managed your time

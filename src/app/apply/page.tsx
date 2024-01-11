@@ -111,77 +111,71 @@ export default function Apply() {
         className="h-full"
       >
         <ScrollArea viewportRef={viewportRef} className="h-full">
-            <div className="flex w-screen items-center justify-center">
-              <Tabs
-                defaultValue="id"
-                className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
+          <div className="flex w-screen items-center justify-center">
+            <Tabs defaultValue="id" className="my-4 w-11/12 md:w-3/4 lg:w-1/2">
+              <FormIntroTab />
+              <ApplyTab
+                previousTab="id"
+                currentTab="personal"
+                nextTab="interests"
+                viewportRef={viewportRef}
               >
-                <FormIntroTab />
-                <ApplyTab
-                  previousTab="id"
-                  currentTab="personal"
-                  nextTab="interests"
-                  viewportRef={viewportRef}
-                >
-                  <PersonalInfo />
-                </ApplyTab>
-                <ApplyTab
-                  previousTab="personal"
-                  currentTab="interests"
-                  nextTab={isLeadershipSelected ? "leadership" : "meetingTimes"}
-                  viewportRef={viewportRef}
-                >
-                  <Interests />
-                </ApplyTab>
-                <ApplyTab
-                  previousTab="interests"
-                  currentTab="leadership"
-                  nextTab="meetingTimes"
-                  viewportRef={viewportRef}
-                >
-                  <Leadership />
-                </ApplyTab>
-                <ApplyTab
-                  previousTab={
-                    isLeadershipSelected ? "leadership" : "interests"
-                  }
-                  currentTab="meetingTimes"
-                  nextTab="resumeLink"
-                  viewportRef={viewportRef}
-                >
-                  <Availability
-                    userTimezone={userTimezone}
-                    setUserTimezone={setUserTimezone}
-                    table={table}
-                  />
-                </ApplyTab>
-                <TabsContent className="space-y-2" value="resumeLink">
-                  <ResumeUpload />
-                  <TabsList className="flex w-full justify-between bg-transparent">
-                    <TabsTrigger
-                      className="bg-white text-black"
-                      value="meetingTimes"
-                    >
-                      Back
-                    </TabsTrigger>
-                    <Button
-                      type="submit"
-                      disabled={
-                        form.formState.isSubmitting ||
-                        form.formState.isValidating
-                      }
-                    >
-                      {form.formState.isSubmitting ||
-                      form.formState.isValidating ? (
-                        <Loader2 className="animate-spin" />
-                      ) : (
-                        "Submit"
-                      )}
-                    </Button>
-                  </TabsList>
-                </TabsContent>
-              </Tabs>
-            </div>
+                <PersonalInfo />
+              </ApplyTab>
+              <ApplyTab
+                previousTab="personal"
+                currentTab="interests"
+                nextTab={isLeadershipSelected ? "leadership" : "meetingTimes"}
+                viewportRef={viewportRef}
+              >
+                <Interests />
+              </ApplyTab>
+              <ApplyTab
+                previousTab="interests"
+                currentTab="leadership"
+                nextTab="meetingTimes"
+                viewportRef={viewportRef}
+              >
+                <Leadership />
+              </ApplyTab>
+              <ApplyTab
+                previousTab={isLeadershipSelected ? "leadership" : "interests"}
+                currentTab="meetingTimes"
+                nextTab="resumeLink"
+                viewportRef={viewportRef}
+              >
+                <Availability
+                  userTimezone={userTimezone}
+                  setUserTimezone={setUserTimezone}
+                  table={table}
+                />
+              </ApplyTab>
+              <TabsContent className="space-y-2" value="resumeLink">
+                <ResumeUpload />
+                <TabsList className="flex w-full justify-between bg-transparent">
+                  <TabsTrigger
+                    className="bg-white text-black"
+                    value="meetingTimes"
+                  >
+                    Back
+                  </TabsTrigger>
+                  <Button
+                    type="submit"
+                    disabled={
+                      form.formState.isSubmitting || form.formState.isValidating
+                    }
+                  >
+                    {form.formState.isSubmitting ||
+                    form.formState.isValidating ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      "Submit"
+                    )}
+                  </Button>
+                </TabsList>
+              </TabsContent>
+            </Tabs>
+          </div>
         </ScrollArea>
       </form>
     </Form>

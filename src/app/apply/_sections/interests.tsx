@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { q } from "@/consts/apply-questions";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { Challenge } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
@@ -48,7 +49,7 @@ export default function Interests() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Interests and Motivation</CardTitle>
+          <CardTitle>{q.interests.title}</CardTitle>
           <CardDescription>
             Responses must be within 1000 characters
           </CardDescription>
@@ -63,7 +64,7 @@ export default function Interests() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Why are you interested in joining ThinkTank?{" "}
+                  {q.interests.interestedAnswer}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
@@ -85,7 +86,7 @@ export default function Interests() {
             <Card>
               <CardHeader className="gap-4">
                 <CardTitle>
-                  Which Design Challenges are you interested in?{" "}
+                  {q.interests.challenges}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -152,7 +153,7 @@ export default function Interests() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Which Design Challenge are you most interested in?{" "}
+                  {q.interests.interestedChallenge}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -213,8 +214,7 @@ export default function Interests() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Describe an instance where you demonstrated your passion for a
-                  project, task, or subject matter{" "}
+                  {q.interests.passionAnswer}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
@@ -237,7 +237,7 @@ export default function Interests() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Are you interested in a leadership position on a team?{" "}
+                  {q.interests.isLeadership}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>

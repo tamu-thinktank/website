@@ -22,7 +22,7 @@
     "jsx": "preserve",
     "plugins": [{ "name": "next" }],
     "incremental": true,
-
+    "verbatimModuleSyntax": true,
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
