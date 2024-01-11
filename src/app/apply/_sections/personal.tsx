@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
+import { q } from "@/consts/apply-questions";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { Availability, Year } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
@@ -28,7 +29,7 @@ export default function PersonalInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Personal Information</CardTitle>
+          <CardTitle>{q.personal.title}</CardTitle>
           <Separator />
         </CardHeader>
         <CardContent>
@@ -44,7 +45,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Full Name <span className="text-red-500">*</span>
+                  {q.personal.fullName} <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -65,7 +66,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  TAMU Email <span className="text-red-500">*</span>
+                  {q.personal.email} <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -87,7 +88,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  UIN <span className="text-red-500">*</span>
+                  {q.personal.uin} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   If you have a special UIN that doesn't match the format
@@ -116,7 +117,7 @@ export default function PersonalInfo() {
           <FormItem>
             <Card>
               <CardHeader>
-                <CardTitle>Additional Email Contact</CardTitle>
+                <CardTitle>{q.personal.altEmail}</CardTitle>
                 <CardDescription>
                   Provide any other email that is a good point of contact in
                   addition to your TAMU email
@@ -145,7 +146,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Contact Number <span className="text-red-500">*</span>
+                  {q.personal.phone} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Enter phone number as 123-456-7890
@@ -169,7 +170,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Current Year at TAMU <span className="text-red-500">*</span>
+                  {q.personal.year} <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -237,7 +238,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Major <span className="text-red-500">*</span>
+                  {q.personal.major} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Use the four letter abbreviation of your major. If in general
@@ -262,7 +263,8 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  Availability <span className="text-red-500">*</span>
+                  {q.personal.availability}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Provide the number of hours per week you are available to work
