@@ -14,6 +14,7 @@ const font = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://thinktank.tech"),
   title: "TAMU ThinkTank",
+  description: "The official website for TAMU ThinkTank.",
   keywords: ["thinktank"],
   icons: {
     icon: "/favicon.ico",

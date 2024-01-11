@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import Container from "./Container";
 
 export default function Articles() {
@@ -34,13 +35,13 @@ export default function Articles() {
                 missions. The SLEM was TAMU ThinkTank's first project, and the
                 team won 4th Place overall and a $1000 cash prize.
               </p>
-              <a
+              <Link
                 className="inline-block"
                 target="_blank"
                 href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch"
               >
-                <span className="text-info dark:text-blue-300">Read more</span>
-              </a>
+                <span className="text-info dark:text-blue-300">Read more about Aggie Aeros</span>
+              </Link>
             </div>
           </div>
           <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
@@ -64,13 +65,13 @@ export default function Articles() {
                 university teams for their creation of a wearable device to
                 track crew member location and orientation while in space.
               </p>
-              <a
+              <Link
                 className="inline-block"
                 target="_blank"
                 href="https://engineering.tamu.edu/news/2023/07/texas-am-team-wins-texas-space-grant-consortium-design-challenge.html"
               >
-                <span className="text-info dark:text-blue-300">Read more</span>
-              </a>
+                <span className="text-info dark:text-blue-300">Read more about Team Vestigo</span>
+              </Link>
             </div>
           </div>
         </div>
