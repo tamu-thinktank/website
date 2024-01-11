@@ -17,7 +17,7 @@ export default function Header() {
             <div className="relative z-20 flex w-full justify-between md:px-0 lg:w-max">
               <a
                 href="#home"
-                aria-label="logo"
+                aria-label="TAMU ThinkTank"
                 className="flex items-center space-x-2"
               >
                 <Image
