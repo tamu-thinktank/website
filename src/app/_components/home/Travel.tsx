@@ -45,9 +45,9 @@ export default function Travel() {
             <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
               <div className="mt-8 flex gap-4 md:items-center">
                 <div className="w-5/6">
-                  <h4 className="text-lg font-semibold text-gray-700 dark:text-indigo-300">
+                  <h1 className="text-lg font-semibold text-gray-700 dark:text-indigo-300">
                     Texas Space Grant Consortium Showcase
-                  </h4>
+                  </h1>
                   <p className="text-gray-500 dark:text-gray-400">
                     Johnson Space Center, Houston, TX
                   </p>
@@ -55,9 +55,9 @@ export default function Travel() {
               </div>
               <div className="flex gap-4 pt-4 md:items-center">
                 <div className="w-5/6">
-                  <h4 className="text-lg font-semibold text-gray-700 dark:text-teal-300">
+                  <h1 className="text-lg font-semibold text-gray-700 dark:text-teal-300">
                     Engineering Project Showcase
-                  </h4>
+                  </h1>
                   <p className="text-gray-500 dark:text-gray-400">
                     Zachry Engineering Education Complex, College Station, TX
                   </p>

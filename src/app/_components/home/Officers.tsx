@@ -21,9 +21,9 @@ export default function Officers() {
                 height={500}
               />
             </div>
-            <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
+            <h1 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
               Krishnan Vellore
-            </h6>
+            </h1>
             <p className="text-sm text-gray-500 dark:text-gray-300">
               President
             </p>
@@ -38,9 +38,9 @@ export default function Officers() {
                 height={500}
               />
             </div>
-            <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
+            <h1 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
               Garrett Stevenson
-            </h6>
+            </h1>
             <p className="text-sm text-gray-500 dark:text-gray-300">
               Vice President
             </p>
@@ -55,9 +55,9 @@ export default function Officers() {
                 height={500}
               />
             </div>
-            <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
+            <h1 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
               Aiden Kampwerth
-            </h6>
+            </h1>
             <p className="text-sm text-gray-500 dark:text-gray-300">
               Competition Team Coordinator
             </p>
@@ -72,9 +72,9 @@ export default function Officers() {
                 height={500}
               />
             </div>
-            <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
+            <h1 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
               Jae-son Rivera
-            </h6>
+            </h1>
             <p className="text-sm text-gray-500 dark:text-gray-300">
               Public Outreach Officer
             </p>
@@ -89,9 +89,9 @@ export default function Officers() {
                 height={500}
               />
             </div>
-            <h6 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
+            <h1 className="mt-4 text-lg font-medium text-gray-700 dark:text-white">
               Landon Uelsmann
-            </h6>
+            </h1>
             <p className="text-sm text-gray-500 dark:text-gray-300">
               Treasurer
             </p>

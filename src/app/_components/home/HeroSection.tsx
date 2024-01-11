@@ -71,21 +71,21 @@ export default function HeroSection() {
             </div>
             <div className="mt-16 hidden justify-between border-y border-gray-100 py-8 dark:border-gray-800 sm:flex">
               <div className="text-center">
-                <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
+                <h1 className="text-lg font-semibold text-gray-700 dark:text-white">
                   Industry Experience
-                </h6>
+                </h1>
                 <p className="mt-2 text-gray-500">7 Project Teams</p>
               </div>
               <div className="text-center">
-                <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
+                <h1 className="text-lg font-semibold text-gray-700 dark:text-white">
                   Cooperative Atmosphere
-                </h6>
+                </h1>
                 <p className="mt-2 text-gray-500">150+ Members</p>
               </div>
               <div className="text-center">
-                <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
+                <h1 className="text-lg font-semibold text-gray-700 dark:text-white">
                   Personal Empowerment
-                </h6>
+                </h1>
                 <p className="mt-2 text-gray-500">Internship Opportunities</p>
               </div>
             </div>

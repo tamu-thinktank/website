@@ -15,11 +15,7 @@ export default function Header() {
               className="peer hidden"
             />
             <div className="relative z-20 flex w-full justify-between md:px-0 lg:w-max">
-              <a
-                href="#home"
-                aria-label="TAMU ThinkTank"
-                className="flex items-center space-x-2"
-              >
+              <a href="#home" className="flex items-center space-x-2">
                 <Image
                   src="/ttt.webp"
                   alt="art cover"
@@ -35,9 +31,7 @@ export default function Header() {
 
               <div className="relative flex max-h-10 items-center lg:hidden">
                 <label
-                  role="button"
                   htmlFor="toggle_nav"
-                  aria-label="humburger"
                   id="hamburger"
                   className="relative  -mr-6 p-6"
                 >
