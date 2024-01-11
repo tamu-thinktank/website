@@ -70,7 +70,7 @@ export default function ProjectCarousel() {
                   className="w-auto rounded-sm"
                   width={0}
                   height={0}
-                  loading="lazy"
+                  loading="eager"
                 />
               </CardContent>
             </Card>
