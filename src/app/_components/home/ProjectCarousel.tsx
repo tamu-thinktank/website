@@ -66,11 +66,11 @@ export default function ProjectCarousel() {
               <CardContent className="p-1">
                 <Image
                   src={img}
-                  alt="client logo"
+                  alt="org images"
                   className="w-auto rounded-sm"
                   width={0}
                   height={0}
-                  loading="eager"
+                  loading="lazy"
                 />
               </CardContent>
             </Card>

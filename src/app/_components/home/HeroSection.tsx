@@ -4,27 +4,27 @@ import Container from "./Container";
 
 const clientLogos = [
   {
-    src: "/images/clients/ntl.png",
+    src: "/images/clients/ntl.webp",
     link: "https://www.nasa.gov/general/nasa-tournament-lab/",
   },
   {
-    src: "/images/clients/tsgc.png",
+    src: "/images/clients/tsgc.webp",
     link: "https://ig.utexas.edu/tsgc/design-challenge/",
   },
   {
-    src: "/images/clients/herox.png",
+    src: "/images/clients/herox.webp",
     link: "https://www.herox.com/crowdsourcing-projects",
   },
   {
-    src: "/images/clients/rascal.png",
+    src: "/images/clients/rascal.webp",
     link: "https://rascal.nianet.org/",
   },
   {
-    src: "/images/clients/aiaa.png",
+    src: "/images/clients/aiaa.webp",
     link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
   },
   {
-    src: "/images/clients/aero.png",
+    src: "/images/clients/aero.webp",
     link: "https://engineering.tamu.edu/aerospace/index.html",
   },
 ];

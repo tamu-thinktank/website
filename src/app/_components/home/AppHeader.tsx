@@ -21,7 +21,7 @@ export default function Header() {
                 className="flex items-center space-x-2"
               >
                 <Image
-                  src="/ttt.png"
+                  src="/ttt.webp"
                   alt="art cover"
                   loading="lazy"
                   width={0}
