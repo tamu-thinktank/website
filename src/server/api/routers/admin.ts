@@ -1,3 +1,4 @@
+import { eventTimezone } from "@/consts/availability-grid";
 import { getAvailabilityMap } from "@/lib/utils/getAvailabilityMap";
 import {
   ApplicantSchema,
@@ -6,10 +7,14 @@ import {
 } from "@/lib/z.schema";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { getAvailabities } from "@/server/db/queries";
+import sendEmail from "@/server/service/email";
+import { addCalenderEvent } from "@/server/service/gcp";
+import { Temporal } from "@js-temporal/polyfill";
+import InterviewEmail from "emails/interview";
 import { z } from "zod";
 
 export const adminRouter = createTRPCRouter({
-  getAvailabities: protectedProcedure
+  getAvailabilities: protectedProcedure
     .output(
       z.object({
         officers: z.array(
@@ -18,6 +23,9 @@ export const adminRouter = createTRPCRouter({
             name: z.string(),
           }),
         ),
+        /**
+         * Map of gridTimes from db to officers (sorted by `selectedAt` in descending order) available at that time
+         */
         availabilities: AvailabilityMapSchema,
       }),
     )
@@ -150,10 +158,98 @@ export const adminRouter = createTRPCRouter({
           presentation: application.presentation,
           timeManagement: application.timeManagement,
         },
-        meetingTimes: application.meetingTimes.map((meetingTime) => {
-          return meetingTime.gridTime;
-        }),
+        meetingTimes: application.meetingTimes
+          .map((meetingTime) =>
+            Temporal.ZonedDateTime.from(meetingTime.gridTime),
+          )
+          .sort((a, b) => Temporal.ZonedDateTime.compare(a, b))
+          .map((meetingTime) => meetingTime.toString()),
         resumeLink: application.resumeLink,
       };
     }),
+  updateApplicant: protectedProcedure
+    .input(
+      z.object({
+        id: z.string().cuid2(),
+        status: z.enum(["ACCEPTED", "REJECTED"]),
+      }),
+    )
+    .mutation(async ({ input: { id, status }, ctx }) => {
+      await ctx.db.application.update({
+        where: {
+          id,
+        },
+        data: {
+          status,
+        },
+      });
+
+      return true;
+    }),
+  scheduleInterview: protectedProcedure
+    .input(
+      z.object({
+        officerId: z.string().cuid2(),
+        officerName: z.string(),
+        officerEmail: z.string().email(),
+        applicantName: z.string(),
+        applicantEmail: z.string().email(),
+        startTime: z.string(),
+      }),
+    )
+    .mutation(
+      async ({
+        input: {
+          officerId,
+          officerEmail,
+          applicantName,
+          applicantEmail,
+          startTime,
+        },
+        ctx,
+      }) => {
+        const startTimeObj = Temporal.ZonedDateTime.from(startTime);
+
+        // add meeting time to google calendar
+        const eventLink = await addCalenderEvent({
+          startTime: startTimeObj,
+          emails: [officerEmail, applicantEmail],
+        });
+
+        // remove meeting time from soonestOfficer's availabilities
+        const thirty = Array(2)
+          .fill(0)
+          .map((_, i) => i * 15)
+          .map((minutes) => {
+            return startTimeObj.add({ minutes }).toString();
+          });
+        await ctx.db.officerTime.deleteMany({
+          where: {
+            officerId,
+            gridTime: {
+              in: thirty,
+            },
+          },
+        });
+
+        // send email to interview attendees
+        await sendEmail({
+          to: [applicantEmail],
+          cc: [officerEmail],
+          subject: "Application accepted",
+          template: InterviewEmail({
+            userFirstname: applicantName.split(" ")[0] ?? "",
+            time: startTimeObj
+              .withTimeZone(eventTimezone)
+              .toLocaleString("en-US", {
+                dateStyle: "short",
+                timeStyle: "short",
+              }),
+            eventLink: eventLink ?? "",
+          }),
+        });
+
+        return true;
+      },
+    ),
 });

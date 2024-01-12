@@ -97,7 +97,6 @@ export default function ApplicantsTable() {
             {Intl.DateTimeFormat("en-US", {
               dateStyle: "short",
               timeStyle: "short",
-              timeZone: "America/Chicago",
             }).format(row.original.submittedAt)}
           </p>
         ),

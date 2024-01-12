@@ -21,13 +21,18 @@ export const ApplyFormSchema = z
     // Personal info section
     personal: z.object({
       fullName: z.string().min(1),
-      email: z.string().email("Invalid email").refine((input) => /@tamu.edu$/.test(input), {message: "Must end with @tamu.edu"}), 
+      email: z
+        .string()
+        .email("Invalid email")
+        .refine((input) => /@tamu.edu$/.test(input), {
+          message: "Must end with @tamu.edu",
+        }),
       uin: z.coerce
-      .number()
-      .refine((n) => !isNaN(n), { message: "Required" })
-      .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
-        message: "Invalid UIN",
-      }),
+        .number()
+        .refine((n) => !isNaN(n), { message: "Required" })
+        .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
+          message: "Invalid UIN",
+        }),
       altEmail: z
         .string()
         .nullable()
@@ -44,31 +49,44 @@ export const ApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().refine((input) => /^\d{3}-\d{3}-\d{4}$/.test(input), {message: "Invalid phone number"}),
+      phone: z.string().refine((input) => /^\d{3}-\d{3}-\d{4}$/.test(input), {
+        message: "Invalid phone number",
+      }),
       year: yearSchema,
-      major: z
-        .string()
-        .refine((input) => /^[A-Za-z]{4}$/.test(input), {
-          message: "Not a valid 4 letter major abbreviation",
-        }),
+      major: z.string().refine((input) => /^[A-Za-z]{4}$/.test(input), {
+        message: "Not a valid 4 letter major abbreviation",
+      }),
       availability: availabilitySchema,
     }),
 
     // Interests and Motivation section
     interests: z.object({
-      interestedAnswer: z.string().max(charLimit, "Responses must be within 1000 characters"),
+      interestedAnswer: z
+        .string()
+        .max(charLimit, "Responses must be within 1000 characters"),
       challenges: z.array(challengeSchema).min(1),
       interestedChallenge: challengeSchema,
-      passionAnswer: z.string().max(charLimit, "Responses must be within 1000 characters"),
+      passionAnswer: z
+        .string()
+        .max(charLimit, "Responses must be within 1000 characters"),
       isLeadership: z.coerce.boolean(),
     }),
 
     // Leadership section
     leadership: z.object({
-      skillsAnswer: z.string().max(charLimit, "Responses must be within 1000 characters").nullable(),
-      conflictsAnswer: z.string().max(charLimit, "Responses must be within 1000 characters").nullable(),
+      skillsAnswer: z
+        .string()
+        .max(charLimit, "Responses must be within 1000 characters")
+        .nullable(),
+      conflictsAnswer: z
+        .string()
+        .max(charLimit, "Responses must be within 1000 characters")
+        .nullable(),
       presentation: z.coerce.number().min(1).max(5).nullable(),
-      timeManagement: z.string().max(charLimit, "Responses must be within 1000 characters").nullable(),
+      timeManagement: z
+        .string()
+        .max(charLimit, "Responses must be within 1000 characters")
+        .nullable(),
     }),
 
     meetingTimes: z
@@ -76,32 +94,32 @@ export const ApplyFormSchema = z
       .min(4)
       .refine(
         (input) => {
-          // make sure an hour window exists in the selected times, where each selected time represents a 15 minute window
+          // make sure a 30 minute window exists in the selected times, where each selected time represents a 15 minute window
 
           const sortedTimes = input
             .map((time) => Temporal.ZonedDateTime.from(time))
             .sort((a, b) => Temporal.ZonedDateTime.compare(a, b));
 
-          let toHourCount = 1;
+          let gridsCount = 1;
           for (let i = 0; i < sortedTimes.length - 1; i++) {
             const curr = sortedTimes[i]!;
             const next = sortedTimes[i + 1]!;
 
             if (curr.add({ minutes: 15 }).equals(next)) {
-              toHourCount++;
+              gridsCount++;
 
-              if (toHourCount === 4) {
+              if (gridsCount === 2) {
                 return true;
               }
             } else {
-              toHourCount = 1;
+              gridsCount = 1;
             }
           }
 
           return false;
         },
         {
-          message: "Select at least an hour window",
+          message: "Select at least a 30 minute window",
         },
       ),
     resumeLink: z.string(),
@@ -148,6 +166,7 @@ export const AvailabilityMapSchema = z.map(
     z.object({
       id: z.string(),
       name: z.string(),
+      email: z.string(),
       selectedAt: z.string(),
     }),
   ),

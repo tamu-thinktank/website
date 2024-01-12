@@ -10,6 +10,7 @@ export async function getAvailabities() {
         select: {
           id: true,
           name: true,
+          email: true,
         },
       },
       selectedAt: true,

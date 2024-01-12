@@ -20,7 +20,7 @@
     - remove their available times (from db)
   - accept button
     - select first available time slot of applicant still in db
-      - remove all overlapping time slots from available times (from db)
+      - remove all overlapping time slots from available officer times (from db)
       - add selected time slot to officer's google calendar
     - if applicant time slot unavailable:
       - send manual email to applicant

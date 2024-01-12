@@ -1,6 +1,23 @@
 import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
+/**
+ * gcp service account credentials
+ */
+export const gcpCredentialsSchema = z.object({
+  type: z.string(),
+  project_id: z.string(),
+  private_key_id: z.string(),
+  private_key: z.string(),
+  client_email: z.string().email(),
+  client_id: z.string(),
+  auth_uri: z.string().url(),
+  token_uri: z.string().url(),
+  auth_provider_x509_cert_url: z.string().url(),
+  client_x509_cert_url: z.string().url(),
+  universe_domain: z.string(),
+});
+
 export const env = createEnv({
   /**
    * Specify your server-side environment variables schema here. This way you can ensure the app
@@ -17,6 +34,7 @@ export const env = createEnv({
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
+
     NEXTAUTH_SECRET:
       process.env.NODE_ENV === "production"
         ? z.string()
@@ -28,11 +46,14 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string() : z.string().url(),
     ),
+
     // Add ` on ID and SECRET if you want to make sure they're not empty
     AUTH0_CLIENT_ID: z.string(),
     AUTH0_CLIENT_SECRET: z.string(),
     AUTH0_ISSUER: z.string().url(),
+
     SITE_URL: z.string().url(),
+
     ALLOWED_EMAILS: z
       .string()
       .transform((str) => str.split(" "))
@@ -46,6 +67,26 @@ export const env = createEnv({
           message: "All emails must be valid",
         },
       ),
+
+    NODEMAILER_EMAIL: z.string().email(),
+    NODEMAILER_PW: z.string(),
+
+    GCP_CREDENTIALS: z.string().transform((input, ctx) => {
+      const creds = JSON.parse(Buffer.from(input, "base64").toString());
+      const parsedCreds = gcpCredentialsSchema.safeParse(creds);
+
+      if (!parsedCreds.success) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid service account credentials",
+        });
+
+        return z.NEVER;
+      }
+
+      return parsedCreds.data;
+    }),
+    CALENDAR_ID: z.string(),
   },
 
   /**
@@ -71,7 +112,11 @@ export const env = createEnv({
     AUTH0_ISSUER: process.env.AUTH0_ISSUER,
     SITE_URL: process.env.SITE_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NODEMAILER_EMAIL: process.env.NODEMAILER_EMAIL,
+    NODEMAILER_PW: process.env.NODEMAILER_PW,
     ALLOWED_EMAILS: process.env.ALLOWED_EMAILS,
+    GCP_CREDENTIALS: process.env.GCP_CREDENTIALS,
+    CALENDAR_ID: process.env.CALENDAR_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

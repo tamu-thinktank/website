@@ -183,32 +183,16 @@ export default function OfficersGrid({
                     );
 
                   /**
-                   * People who are available at this time, sorted by selectedAt in descending order
+                   * People who are available at this time
                    */
                   const peopleHere = (
                     data?.availabilities.get(cell.cellInUTC) ?? []
-                  )
-                    .filter(
-                      // keep officers that are not filtered out and are in focus
-                      (p) =>
-                        !officersToFilter.includes(p.id) &&
-                        (!tempFocus || (!!tempFocus && p.id === tempFocus)),
-                    )
-                    .sort((a, b) => {
-                      const aSelectedAt = Temporal.ZonedDateTime.from(
-                        a.selectedAt,
-                      );
-                      const bSelectedAt = Temporal.ZonedDateTime.from(
-                        b.selectedAt,
-                      );
-
-                      return (
-                        Temporal.ZonedDateTime.compare(
-                          aSelectedAt,
-                          bSelectedAt,
-                        ) * -1
-                      );
-                    });
+                  ).filter(
+                    // keep officers that are not filtered out and are in focus
+                    (p) =>
+                      !officersToFilter.includes(p.id) &&
+                      (!tempFocus || (!!tempFocus && p.id === tempFocus)),
+                  );
 
                   const isCellSelected =
                     (mode.current === "add" || mode.current === "remove") &&

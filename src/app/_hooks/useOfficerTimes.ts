@@ -14,7 +14,7 @@ export default function useOfficerTimes() {
     isFetched: isDataFetched,
     isFetching: isDataFetching,
     isLoading: isDataLoading,
-  } = api.admin.getAvailabities.useQuery(undefined);
+  } = api.admin.getAvailabilities.useQuery(undefined);
 
   const { mutate, isLoading: isMutateLoading } =
     api.admin.updateAvailabilities.useMutation({
@@ -24,7 +24,7 @@ export default function useOfficerTimes() {
         }
 
         // refetch
-        void apiUtils.admin.getAvailabities.invalidate();
+        void apiUtils.admin.getAvailabilities.invalidate();
       },
     });
 

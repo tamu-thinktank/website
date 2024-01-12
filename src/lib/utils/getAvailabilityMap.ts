@@ -1,4 +1,5 @@
 import { type dbAvailabilitiesType } from "@/server/db/queries";
+import { Temporal } from "@js-temporal/polyfill";
 import { type AvailabilityMap } from "../z.schema";
 
 export const getAvailabilityMap = (dbAvailabilities: dbAvailabilitiesType) => {
@@ -13,6 +14,12 @@ export const getAvailabilityMap = (dbAvailabilities: dbAvailabilitiesType) => {
     const officersHere = availabilities.get(gridTime);
     if (officersHere) {
       officersHere.push(officerHere);
+      officersHere.sort((a, b) => {
+        const aTemp = Temporal.ZonedDateTime.from(a.selectedAt);
+        const bTemp = Temporal.ZonedDateTime.from(b.selectedAt);
+
+        return Temporal.ZonedDateTime.compare(aTemp, bTemp) * -1;
+      });
     } else {
       availabilities.set(gridTime, [officerHere]);
     }

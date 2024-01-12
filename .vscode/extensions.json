@@ -30,7 +30,7 @@
     // formatted typescript errors
     "yoavbls.pretty-ts-errors",
 
-    // prisma
+    // prisma syntax
     "prisma.prisma",
 
     // searching through node_modules
