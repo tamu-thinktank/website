@@ -9,7 +9,7 @@ export default function Overview() {
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
           fill="white"
-          className="mb-6 h-6 w-6 text-secondary"
+          className="mb-1 h-6 w-6 text-secondary"
         >
           <path
             fillRule="evenodd"
@@ -19,7 +19,7 @@ export default function Overview() {
         </svg>
 
         <div className="flex-row-reverse justify-between space-y-6 text-gray-600 lg:flex lg:items-center lg:gap-12 lg:space-y-0">
-          <div className="lg:w-1/2">
+          <div className="lg:w-6/12">
             <ProjectCarousel />
           </div>
           <div className="lg:w-1/2">
@@ -28,18 +28,62 @@ export default function Overview() {
             </h2>
             <p className="my-8 text-gray-600 dark:text-gray-300">
               Design challenges provide an excellent starting point for aspiring
-              engineers. By participating in these challenges, you will have the
-              chance to develop specialized skills, practice engineering
-              documentation, work with a team on real projects, develop your
-              presentation skills, and receive guidance from faculty advisors.
-              This practical experience is a great way to build a strong
-              foundation for your engineering career and help you stand out to
-              potential employers. With the hands-on experience and mentorship
-              provided through design challenges, you'll gain valuable
-              experience that can help you succeed in your future engineering
-              endeavors.
+              engineers.
             </p>
+            <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
+            <div className="mt-8 flex gap-4 md:items-center">
+                <div className="w-5/6">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
+                    TSGC Crew Tracking for Space Analog Research
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Team Vestigo
+                  </p>
+                </div>
+              </div>
+              <div className="mt-8 flex gap-4 md:items-center">
+                <div className="w-5/6">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-teal-300">
+                    AIAA Human Enabled Venus Robotic Exploration
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Team Astraeus
+                  </p>
+                </div>
+              </div>
+              <div className="mt-8 flex gap-4 md:items-center">
+                <div className="w-5/6">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
+                    RASC-AL Large Scale Lunar Crater Prospector
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Team Selenis
+                  </p>
+                </div>
+              </div>
+              <div className="mt-8 flex gap-4 md:items-center">
+                <div className="w-5/6">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-teal-300">
+                    RASC-AL AI-Powered Self Replicating Probes
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Team Progredior
+                  </p>
+                </div>
+              </div>
+              <div className="mt-8 flex gap-4 md:items-center">
+                <div className="w-5/6">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
+                    Blue Skies Advancing Aviation for Natural Disasters
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Team Elementum
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
+          
         </div>
       </Container>
     </div>

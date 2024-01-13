@@ -11,10 +11,6 @@ const socials = [
     link: "https://www.linkedin.com/company/tamu-thinktank/",
   },
   {
-    src: "/images/social_media/linktree.svg",
-    link: "https://linktr.ee/tamuthinktank",
-  },
-  {
     src: "/images/social_media/tamu.svg",
     link: "https://stuactonline.tamu.edu/app/organization/index/index/id/2531",
   },
@@ -33,7 +29,7 @@ export default function Footer() {
             <Image
               key={index}
               src={logo.src}
-              className={`mx-auto h-5 w-auto`}
+              className={`mx-auto h-7 w-auto`}
               alt="client logo"
               width={0}
               height={0}
