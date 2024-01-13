@@ -12,7 +12,7 @@ const font = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://thinktank.tech"),
+  metadataBase: new URL("https://tamuthinktank.org"),
   title: "TAMU ThinkTank",
   description: "The official website for TAMU ThinkTank.",
   keywords: ["thinktank"],
