@@ -122,7 +122,10 @@ export const ApplyFormSchema = z
           message: "Select at least a 30 minute window",
         },
       ),
-    resumeLink: z.string(),
+    /**
+     * Drive link to resume, nullable to allow submitting form to upload file, then updating with link
+     */
+    resumeLink: z.string().nullable(),
   })
   .superRefine(({ interests: { isLeadership }, leadership }, ctx) => {
     if (isLeadership) {

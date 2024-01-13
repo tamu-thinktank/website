@@ -87,6 +87,7 @@ export const env = createEnv({
       return parsedCreds.data;
     }),
     CALENDAR_ID: z.string(),
+    RESUME_PENDING_ID: z.string(),
   },
 
   /**
@@ -117,6 +118,7 @@ export const env = createEnv({
     ALLOWED_EMAILS: process.env.ALLOWED_EMAILS,
     GCP_CREDENTIALS: process.env.GCP_CREDENTIALS,
     CALENDAR_ID: process.env.CALENDAR_ID,
+    RESUME_PENDING_ID: process.env.RESUME_PENDING_ID,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

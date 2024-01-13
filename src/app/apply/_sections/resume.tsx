@@ -7,7 +7,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-export default function ResumeUpload() {
+export default function ResumeUpload({
+  setResumeFile,
+}: {
+  setResumeFile: (file?: File) => void;
+}) {
   return (
     <Card>
       <CardHeader>
@@ -22,7 +26,15 @@ export default function ResumeUpload() {
         </CardDescription>
       </CardHeader>
       <CardContent className="w-fit">
-        <Input type="file" className="hover:cursor-pointer" accept=".pdf" />
+        <Input
+          type="file"
+          className="hover:cursor-pointer"
+          accept=".pdf"
+          onChange={(e) => {
+            const resume = e.target.files?.[0];
+            setResumeFile(resume);
+          }}
+        />
       </CardContent>
     </Card>
   );

@@ -6,6 +6,7 @@ import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
+import { type ResumeUploadResponse } from "@/consts/types";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import { type RouterInputs } from "@/lib/trpc/shared";
@@ -13,6 +14,7 @@ import { clientErrorHandler } from "@/lib/utils";
 import { ApplyFormSchema } from "@/lib/z.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
+import { useMutation } from "@tanstack/react-query";
 import { ArrowUpRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import {
@@ -56,13 +58,13 @@ export default function Apply() {
         timeManagement: null,
       },
       meetingTimes: [],
-      resumeLink: "l",
+      resumeLink: null,
     },
   });
   const isLeadershipSelected = form.getValues("interests.isLeadership");
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const { mutate } = api.public.apply.useMutation({
+  const { mutateAsync: submitForm } = api.public.apply.useMutation({
     onSuccess: () => {
       toast({
         title: "Form submitted!",
@@ -81,17 +83,47 @@ export default function Apply() {
     },
   });
 
-  const onFormSubmit = useCallback((data: RouterInputs["public"]["apply"]) => {
-    mutate(data);
-    // toast({
-    //   title: "Form submitted!",
-    //   description: (
-    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-    //     </pre>
-    //   ),
-    // });
-  }, []);
+  const [resumeFile, setResumeFile] = useState<File>();
+  const uploadResume = useMutation({
+    mutationFn: (formData: FormData) => {
+      return fetch("/api/resume-upload", {
+        method: "POST",
+        body: formData,
+      }).then((res) => res.json());
+    },
+  });
+
+  const onFormSubmit = useCallback(
+    async (data: RouterInputs["public"]["apply"]) => {
+      if (!resumeFile) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Resume is required.",
+        });
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("resume", resumeFile);
+
+      try {
+        const resumeLink = (
+          (await uploadResume.mutateAsync(formData)) as ResumeUploadResponse
+        ).resumeLink;
+        data.resumeLink = resumeLink;
+      } catch (err) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: (err as Error).message,
+        });
+      }
+
+      await submitForm(data);
+    },
+    [resumeFile, uploadResume, toast, submitForm],
+  );
 
   return (
     <Form {...form}>
@@ -151,7 +183,7 @@ export default function Apply() {
                 />
               </ApplyTab>
               <TabsContent className="space-y-2" value="resumeLink">
-                <ResumeUpload />
+                <ResumeUpload setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
                     className="bg-white text-black"

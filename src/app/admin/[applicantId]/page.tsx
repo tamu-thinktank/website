@@ -131,7 +131,7 @@ export default function ApplicantPage() {
             )) ?? null}
           </Card>
         ) : null}
-        <PdfViewer resumeLink={"/resume.pdf"} />
+        <PdfViewer resumeLink={applicant.resumeLink ?? ""} />
       </CardContent>
     </Card>
   );
