@@ -1,7 +1,9 @@
 import { eventTimezone } from "@/consts/availability-grid";
 import { env } from "@/env";
-import { auth as calenderAuth, calendar } from "@googleapis/calendar";
+import { calendar, auth as calenderAuth } from "@googleapis/calendar";
+import { drive, auth as driveAuth } from "@googleapis/drive";
 import { type Temporal } from "@js-temporal/polyfill";
+import { Readable } from "stream";
 
 /**
  * initialize google calendar client
@@ -51,4 +53,53 @@ export async function addCalenderEvent({
   });
 
   return res.data.htmlLink;
+}
+
+/**
+ * initialize google drive client
+ */
+function getDriveClient() {
+  const auth = new driveAuth.GoogleAuth({
+    credentials: env.GCP_CREDENTIALS,
+    scopes: [
+      "https://www.googleapis.com/auth/drive",
+      "https://www.googleapis.com/auth/drive.file",
+      "https://www.googleapis.com/auth/drive.metadata",
+    ],
+  });
+
+  return drive({ version: "v3", auth });
+}
+
+/**
+ * upload file to drive folder
+ */
+export async function uploadToFolder({
+  folderId,
+  filename,
+  mimeType,
+  file,
+}: {
+  folderId: string;
+  filename: string;
+  mimeType: string;
+  file: Buffer;
+}) {
+  const driveClient = getDriveClient();
+
+  const uploadedFile = await driveClient.files.create({
+    requestBody: {
+      name: filename,
+      parents: [folderId],},
+    media: {
+      mimeType,
+      body: Readable.from(file),
+    },
+    fields: "webViewLink",
+    supportsAllDrives: true,
+  });
+
+  const fileLink = uploadedFile.data.webViewLink;
+  // console.log(fileLink);
+  return fileLink;
 }
