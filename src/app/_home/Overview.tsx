@@ -1,5 +1,5 @@
+import ProjectCarousel from "@/app/_home/ProjectCarousel";
 import Container from "./Container";
-import ProjectCarousel from "@/components/home/ProjectCarousel";
 
 export default function Overview() {
   return (
@@ -31,7 +31,7 @@ export default function Overview() {
               engineers.
             </p>
             <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
-            <div className="mt-8 flex gap-4 md:items-center">
+              <div className="mt-8 flex gap-4 md:items-center">
                 <div className="w-5/6">
                   <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
                     TSGC Crew Tracking for Space Analog Research
@@ -83,7 +83,6 @@ export default function Overview() {
               </div>
             </div>
           </div>
-          
         </div>
       </Container>
     </div>
