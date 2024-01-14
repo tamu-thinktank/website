@@ -19,7 +19,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { q } from "@/consts/apply-questions";
 import { type RouterInputs } from "@/lib/trpc/shared";
-import { Availability, Year } from "@prisma/client";
+import { Year } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 
 export default function PersonalInfo() {

@@ -1,7 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import {
   ApplicationStatus,
-  Availability,
   Challenge,
   Year,
 } from "@prisma/client";
