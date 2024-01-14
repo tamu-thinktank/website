@@ -95,7 +95,7 @@ export default class DriveService {
       fileName: metadata.data.name,
       fileViewLink: metadata.data.webViewLink,
       // Because of the responseType, content.data is an ArrayBuffer
-      fileContent: Buffer.from(content.data as unknown as ArrayBuffer),
+      fileContent: Buffer.from(content.data as ArrayBuffer),
     };
   }
 

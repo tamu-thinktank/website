@@ -76,7 +76,7 @@ export default function Apply() {
       router.push("/");
     },
     onError: (err) => {
-      clientErrorHandler(err, toast);
+      clientErrorHandler({err, toastFn: toast});
     },
   });
 

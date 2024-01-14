@@ -7,6 +7,7 @@ import { Table } from "@/components/typography/Table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
   TooltipContent,
@@ -21,13 +22,11 @@ import type { RouterOutputs } from "@/lib/trpc/shared";
 import { clientErrorHandler } from "@/lib/utils";
 import { Temporal } from "@js-temporal/polyfill";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowUpRight } from "lucide-react";
 import { useSession } from "next-auth/react";
-import Link from "next/link";
-import { redirect, useParams } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
+import { toast as sonner } from "sonner";
 import PdfViewer from "./pdf-viewer";
-
 /**
  * @returns Array of string Q&A pairs for each section, make sure questions and answers object share the same key names
  */
@@ -112,7 +111,7 @@ export default function ApplicantPage() {
     enabled: !!applicant && !!session,
   });
 
-  if (isApplicantLoading || isResumeLoading || sessionStatus === "loading" ) {
+  if (isApplicantLoading || isResumeLoading || sessionStatus === "loading") {
     return <PageSkeleton />;
   }
   if (isApplicantError || isResumeError) {
@@ -179,6 +178,21 @@ export default function ApplicantPage() {
   );
 }
 
+function PageSkeleton() {
+  return (
+    <Card className="h-[95%] overflow-hidden">
+      <CardContent>
+        <div className="mt-4 flex gap-4">
+          <Skeleton className="h-10 w-1/12" />
+          <Skeleton className="h-10 w-1/12" />
+        </div>
+        <Skeleton className="my-6 h-[26rem] w-full" />
+        <Skeleton className="my-6 h-[26rem] w-full" />
+      </CardContent>
+    </Card>
+  );
+}
+
 function Buttons({
   applicantId,
   applicantName,
@@ -192,7 +206,7 @@ function Buttons({
   meetingTimes: RouterOutputs["admin"]["getApplicant"]["meetingTimes"];
   resumeId: string;
 }) {
-  const { toast } = useToast();
+  const router = useRouter();
   const apiUtils = api.useUtils();
   const { data: officerTimes } = api.admin.getAvailabilities.useQuery();
 
@@ -292,25 +306,21 @@ function Buttons({
         }
       }
 
-      toast({
-        title: input.status,
+      sonner.success(input.status, {
         description,
-        action: (
-          <Button variant={"outline"} size={"sm"}>
-            <Link
-              href={"/admin"}
-              className="flex items-center justify-center gap-2"
-            >
-              Admin <ArrowUpRight />
-            </Link>
-          </Button>
-        ),
+        action:
+          !soonestOfficer || input.status === "REJECTED"
+            ? {
+                label: "Admin",
+                onClick: () => router.push("/admin"),
+              }
+            : undefined,
         duration: 5000,
       });
     },
     onSettled: async (newData, err) => {
       if (err) {
-        clientErrorHandler(err, toast);
+        clientErrorHandler({ err, sonnerFn: sonner });
       }
 
       // refetch
@@ -322,25 +332,20 @@ function Buttons({
   const { mutate: scheduleInterview } = api.admin.scheduleInterview.useMutation(
     {
       onSuccess: (data, input) => {
-        toast({
-          title: "Interview scheduled",
-          description: `Interview has been scheduled for ${input.officerName}.`,
-          action: (
-            <Button variant={"outline"} size={"sm"}>
-              <Link
-                href={"/admin"}
-                className="flex items-center justify-center gap-2"
-              >
-                Admin <ArrowUpRight />
-              </Link>
-            </Button>
-          ),
+        sonner.success("Interview scheduled", {
+          description: `${
+            input.applicantName.split(" ")[0] ?? "Applicant"
+          }'s interview has been scheduled with ${input.officerName}.`,
+          action: {
+            label: "Admin",
+            onClick: () => router.push("/admin"),
+          },
           duration: 5000,
         });
       },
       onSettled: async (newData, err) => {
         if (err) {
-          clientErrorHandler(err, toast);
+          clientErrorHandler({ err, sonnerFn: sonner });
         }
 
         // refetch
@@ -356,7 +361,7 @@ function Buttons({
       resumeId: resumeId,
     });
 
-    if (soonestOfficer) {
+    if (!!soonestOfficer) {
       scheduleInterview({
         officerId: soonestOfficer.id,
         officerName: soonestOfficer.name,
@@ -393,8 +398,4 @@ function Buttons({
       </Button>
     </div>
   );
-}
-
-function PageSkeleton() {
-  return <Card className="h-[95%] overflow-auto"></Card>;
 }

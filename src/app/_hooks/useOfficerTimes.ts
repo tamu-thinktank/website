@@ -20,7 +20,7 @@ export default function useOfficerTimes() {
     api.admin.updateAvailabilities.useMutation({
       onSettled: async (newData, err) => {
         if (err) {
-          clientErrorHandler(err, toast);
+          clientErrorHandler({err, toastFn: toast});
         }
 
         // refetch

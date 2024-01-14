@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-export default function TableSkeleton() {
+export default function GridSkeleton() {
   return (
     <div className="opacity-50">
       <div className={cn("flex justify-around", "mb-[3px] text-xs")}>

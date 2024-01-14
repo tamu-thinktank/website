@@ -1,5 +1,5 @@
+import GridSkeleton from "@/components/grid-skeleton";
 import PickTimezone from "@/components/pick-timezone";
-import TableSkeleton from "@/components/table-skeleton";
 import {
   Card,
   CardContent,
@@ -281,7 +281,7 @@ export default function Availability({
                             <div className="w-3" />
                           )}
                         </Fragment>
-                      )) ?? <TableSkeleton />}
+                      )) ?? <GridSkeleton />}
                     </div>
                   </div>
                 </div>

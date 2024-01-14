@@ -10,7 +10,6 @@ export default class CalendarService {
       credentials: env.GCP_CREDENTIALS,
       scopes: [
         "https://www.googleapis.com/auth/calendar",
-        "https://www.googleapis.com/auth/calendar.events",
       ],
     });
 

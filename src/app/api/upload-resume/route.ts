@@ -5,7 +5,7 @@ import { Readable } from "stream";
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
-  const file: File | null = formData.get("resume") as unknown as File;
+  const file: File | null = formData.get("resume") as File;
 
   if (!file) {
     return new NextResponse("No resume uploaded", { status: 400 });
