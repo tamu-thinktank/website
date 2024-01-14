@@ -8,7 +8,7 @@ export default function PurpleLayout({
   return (
     <main
       className={cn(
-        `flex h-screen items-center justify-center bg-gradient-to-r from-[#2e026d] to-[#15162c]`,
+        `flex h-screen items-center justify-center bg-gradient-to-r from-[#06686D] to-[#083763]`,
         className,
       )}
     >
