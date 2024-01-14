@@ -267,24 +267,30 @@ export default function PersonalInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Provide the number of hours per week you are available to work
-                  on a design challenge
+                  Insert a description of the time commitment here
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
                   <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
+                    onValueChange={(value) => {
+                      if (value === "true") {
+                        field.onChange(true);
+                      } else {
+                        field.onChange(false);
+                      }
+                    }}
                   >
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={Availability.PART_TIME}
-                            id="less"
+                            onBlur={field.onBlur}
+                            checked={field.value === true}
+                            value="true"
+                            id="yes"
                           />
-                          <FormLabel htmlFor="less">6 - 12 hours</FormLabel>
+                          <FormLabel htmlFor="yes">Yes</FormLabel>
                         </div>
                       </FormControl>
                     </FormItem>
@@ -292,10 +298,12 @@ export default function PersonalInfo() {
                       <FormControl>
                         <div className="flex items-center space-x-2">
                           <RadioGroupItem
-                            value={Availability.FULL_TIME}
-                            id="more"
+                            onBlur={field.onBlur}
+                            checked={field.value === false}
+                            value="false"
+                            id="no"
                           />
-                          <FormLabel htmlFor="more"> {">12 hours"}</FormLabel>
+                          <FormLabel htmlFor="no">No</FormLabel>
                         </div>
                       </FormControl>
                     </FormItem>
@@ -306,7 +314,7 @@ export default function PersonalInfo() {
             </Card>
           </FormItem>
         )}
-      />
+     />
     </div>
   );
 }

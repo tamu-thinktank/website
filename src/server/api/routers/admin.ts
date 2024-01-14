@@ -163,6 +163,8 @@ export const adminRouter = createTRPCRouter({
           conflictsAnswer: application.conflictsAnswer,
           presentation: application.presentation,
           timeManagement: application.timeManagement,
+          relaventExperience: application.relaventExperience,
+          timeCommitment: application.timeCommitment,
         },
         meetingTimes: application.meetingTimes
           .map((meetingTime) =>

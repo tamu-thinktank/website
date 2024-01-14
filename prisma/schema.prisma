@@ -76,11 +76,6 @@ enum Year {
     GRADUATE
 }
 
-enum Availability {
-    PART_TIME // 6 - 12 hours
-    FULL_TIME // >12 hours
-}
-
 enum Challenge {
     AIAA
     RASC_AL
@@ -132,7 +127,7 @@ model Application {
     phone        String
     year         Year
     major        String
-    availability Availability
+    availability Boolean
 
     // Interests and Motivation section
     interestedAnswer    String           @db.Text
@@ -146,6 +141,8 @@ model Application {
     conflictsAnswer String? @db.Text
     presentation    Int? // 1-5
     timeManagement  String? @db.Text
+    relaventExperience String? @db.Text
+    timeCommitment  Boolean
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeId     String // the id of the resume file in the google drive

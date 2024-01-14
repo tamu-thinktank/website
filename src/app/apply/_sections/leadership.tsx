@@ -10,12 +10,14 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormLabel
 } from "@/components/ui/form";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { q } from "@/consts/apply-questions";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function Leadership() {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
@@ -158,6 +160,97 @@ export default function Leadership() {
           </FormItem>
         )}
       />
+
+<FormField
+        control={form.control}
+        name="leadership.relaventExperience"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {q.leadership.relaventExperience}{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Insert a description here
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FormControl>
+                  <Textarea
+                    placeholder="Long answer text"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="leadership.timeCommitment"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {q.leadership.timeCommitment}{" "}
+                  <span className="text-red-500">*</span>
+                </CardTitle>
+                <CardDescription>
+                  Insert a description of the time commitment here
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={(value) => {
+                      if (value === "true") {
+                        field.onChange(true);
+                      } else {
+                        field.onChange(false);
+                      }
+                    }}
+                  >
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            onBlur={field.onBlur}
+                            checked={field.value === true}
+                            value="true"
+                            id="yes"
+                          />
+                          <FormLabel htmlFor="yes">Yes</FormLabel>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem
+                            onBlur={field.onBlur}
+                            checked={field.value === false}
+                            value="false"
+                            id="no"
+                          />
+                          <FormLabel htmlFor="no">No</FormLabel>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                  </RadioGroup>
+                </FormControl>
+                <FormMessage />
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+     />
     </div>
   );
 }

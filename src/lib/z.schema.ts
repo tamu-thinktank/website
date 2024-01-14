@@ -12,7 +12,6 @@ const charLimit = 1000;
 const challengeSchema = z.nativeEnum(Challenge);
 const statusSchema = z.nativeEnum(ApplicationStatus);
 const yearSchema = z.nativeEnum(Year);
-const availabilitySchema = z.nativeEnum(Availability);
 
 export const ApplyFormSchema = z
   .object({
@@ -52,7 +51,7 @@ export const ApplyFormSchema = z
       major: z
         .string()
         .regex(/^[A-Za-z]{4}$/, "Not a valid 4 letter major abbreviation"),
-      availability: availabilitySchema,
+      availability: z.coerce.boolean({required_error: "Required"}),
     }),
 
     // Interests and Motivation section
@@ -83,6 +82,11 @@ export const ApplyFormSchema = z
         .string()
         .max(charLimit, "Responses must be within 1000 characters")
         .nullable(),
+      relaventExperience: z
+        .string()
+        .max(charLimit, "Responses must be within 1000 characters")
+        .nullable(),
+      timeCommitment: z.coerce.boolean(),
     }),
 
     meetingTimes: z
@@ -150,6 +154,20 @@ export const ApplyFormSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["leadership.timeManagement"],
+          message: "Required for leadership",
+        });
+      }
+      if (!leadership.relaventExperience) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["leadership.relaventExperience"],
+          message: "Required for leadership",
+        });
+      }
+      if (!leadership.timeCommitment) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["leadership.timeCommitment"],
           message: "Required for leadership",
         });
       }
