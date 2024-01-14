@@ -1,5 +1,5 @@
-import PurpleLayout from "@/components/PurpleLayout";
+import GradientLayout from "@/components/GradientLayout";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <PurpleLayout>{children}</PurpleLayout>;
+  return <GradientLayout>{children}</GradientLayout>;
 }

@@ -1,5 +1,5 @@
 import useCalculateTable from "@/app/_hooks/useCalculateTable";
-import TableSkeleton from "@/components/table-skeleton";
+import GridSkeleton from "@/components/grid-skeleton";
 import { Toggle } from "@/components/ui/toggle";
 import { palette, times, type Mode } from "@/consts/availability-grid";
 import useOfficerTimes from "@/hooks/useOfficerTimes";
@@ -361,7 +361,7 @@ export default function OfficersGrid({
             <div className="w-3" />
           )}
         </Fragment>
-      )) ?? <TableSkeleton />,
+      )) ?? <GridSkeleton />,
     [
       officersColorMap.size,
       table?.columns.length,
