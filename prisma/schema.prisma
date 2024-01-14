@@ -148,5 +148,5 @@ model Application {
     timeManagement  String? @db.Text
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
-    resumeLink   String          @db.Text
+    resumeId     String // the id of the resume file in the google drive
 }

@@ -6,7 +6,7 @@ import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { type ResumeUploadResponse } from "@/consts/types";
+import { type UploadResumeResponse } from "@/consts/api-types";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import { type RouterInputs } from "@/lib/trpc/shared";
@@ -15,8 +15,8 @@ import { ApplyFormSchema } from "@/lib/z.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { useMutation } from "@tanstack/react-query";
-import { ArrowUpRight, Loader2 } from "lucide-react";
-import Link from "next/link";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   useCallback,
   useEffect,
@@ -36,6 +36,7 @@ import ResumeUpload from "./_sections/resume";
 
 export default function Apply() {
   const { toast } = useToast();
+  const router = useRouter();
   const [userTimezone, setUserTimezone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
@@ -58,7 +59,7 @@ export default function Apply() {
         timeManagement: null,
       },
       meetingTimes: [],
-      resumeLink: null,
+      resumeId: "",
     },
   });
   const isLeadershipSelected = form.getValues("interests.isLeadership");
@@ -67,16 +68,12 @@ export default function Apply() {
   const { mutateAsync: submitForm } = api.public.apply.useMutation({
     onSuccess: () => {
       toast({
-        title: "Form submitted!",
-        action: (
-          <Button variant={"outline"} size={"sm"}>
-            <Link href={"/"} className="flex items-center justify-center gap-2">
-              Home <ArrowUpRight />
-            </Link>
-          </Button>
-        ),
-        duration: 5000,
+        title: "Form submitted! Redirecting home...",
+        duration: 3000,
       });
+
+      form.reset();
+      router.push("/");
     },
     onError: (err) => {
       clientErrorHandler(err, toast);
@@ -84,14 +81,15 @@ export default function Apply() {
   });
 
   const [resumeFile, setResumeFile] = useState<File>();
-  const uploadResume = useMutation({
-    mutationFn: (formData: FormData) => {
-      return fetch("/api/resume-upload", {
+  const {mutateAsync: uploadResume} = useMutation<UploadResumeResponse, unknown, FormData>({
+    mutationFn: (formData) => {
+      return fetch("/api/upload-resume", {
         method: "POST",
         body: formData,
-      }).then((res) => res.json());
+      }).then((res) => res.json() as Promise<UploadResumeResponse>);
     },
   });
+  const {mutateAsync: deleteResume} = api.public.deleteResume.useMutation()
 
   const onFormSubmit = useCallback(
     async (data: RouterInputs["public"]["apply"]) => {
@@ -108,19 +106,24 @@ export default function Apply() {
       formData.append("resume", resumeFile);
 
       try {
-        const resumeLink = (
-          (await uploadResume.mutateAsync(formData)) as ResumeUploadResponse
-        ).resumeLink;
-        data.resumeLink = resumeLink;
+        const resumeId = (await uploadResume(formData)).resumeId;
+        data.resumeId = resumeId;
       } catch (err) {
         toast({
           variant: "destructive",
           title: "Error",
           description: (err as Error).message,
         });
+        return;
       }
 
-      await submitForm(data);
+      try {
+        await submitForm(data);
+      } catch {
+        await deleteResume({
+          resumeId: data.resumeId,
+        });
+      }
     },
     [resumeFile, uploadResume, toast, submitForm],
   );
@@ -173,7 +176,7 @@ export default function Apply() {
               <ApplyTab
                 previousTab={isLeadershipSelected ? "leadership" : "interests"}
                 currentTab="meetingTimes"
-                nextTab="resumeLink"
+                nextTab="resumeId"
                 viewportRef={viewportRef}
               >
                 <Availability
@@ -182,7 +185,7 @@ export default function Apply() {
                   table={table}
                 />
               </ApplyTab>
-              <TabsContent className="space-y-2" value="resumeLink">
+              <TabsContent className="space-y-2" value="resumeId">
                 <ResumeUpload setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
@@ -223,7 +226,7 @@ type ApplyTabType =
   | "interests"
   | "leadership"
   | "meetingTimes"
-  | "resumeLink";
+  | "resumeId";
 
 /**
  * Validate input in section before allowing user to move on to next

@@ -8,10 +8,11 @@ import {
   useEffect,
   useRef,
   useState,
+  type ComponentProps,
   type Dispatch,
   type SetStateAction,
 } from "react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { Page, Document as PdfDocument, pdfjs } from "react-pdf";
 
 /**
  * @see https://dev.to/mfts/building-a-beautiful-document-viewer-with-react-pdf-666
@@ -33,10 +34,16 @@ const options = {
 };
 
 interface PDFViewerProps {
-  resumeLink: string;
+  file: ComponentProps<typeof PdfDocument>["file"];
+  fileName: string;
+  webViewLink: string;
 }
 
-export default function PDFViewer({ resumeLink }: PDFViewerProps) {
+export default function PDFViewer({
+  file,
+  fileName,
+  webViewLink,
+}: PDFViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1); // start on first page
   const [, setLoading] = useState(true);
@@ -77,10 +84,11 @@ export default function PDFViewer({ resumeLink }: PDFViewerProps) {
         setPageNumber={setPageNumber}
         ref={navRef}
         numPages={numPages}
-        fileName={resumeLink}
+        fileName={fileName}
+        href={webViewLink}
       />
-      <Document
-        file={resumeLink}
+      <PdfDocument
+        file={file}
         onLoadSuccess={onDocumentLoadSuccess}
         options={options}
         renderMode="canvas"
@@ -96,7 +104,7 @@ export default function PDFViewer({ resumeLink }: PDFViewerProps) {
           onRenderError={() => setLoading(false)}
           width={pageWidth}
         />
-      </Document>
+      </PdfDocument>
     </>
   );
 }
@@ -108,8 +116,9 @@ const Nav = forwardRef<
     setPageNumber: Dispatch<SetStateAction<number>>;
     numPages: number;
     fileName: string;
+    href: string;
   }
->(({ pageNumber, setPageNumber, numPages, fileName }, ref) => {
+>(({ pageNumber, setPageNumber, numPages, fileName, href }, ref) => {
   return (
     <nav ref={ref} className="bg-black">
       <div className="mx-auto px-2 sm:px-6 lg:px-8">
@@ -117,7 +126,8 @@ const Nav = forwardRef<
           <div className="flex flex-1 sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center">
               <Link
-                href={fileName}
+                href={href}
+                target="_blank"
                 className="text-2xl font-bold tracking-tighter text-white underline hover:text-blue-600"
               >
                 {fileName}

@@ -20,13 +20,11 @@ export const ApplyFormSchema = z
 
     // Personal info section
     personal: z.object({
-      fullName: z.string().min(1),
+      fullName: z.string().min(1, "Required"),
       email: z
         .string()
         .email("Invalid email")
-        .refine((input) => /@tamu.edu$/.test(input), {
-          message: "Must end with @tamu.edu",
-        }),
+        .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
       uin: z.coerce
         .number()
         .refine((n) => !isNaN(n), { message: "Required" })
@@ -49,13 +47,11 @@ export const ApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().refine((input) => /^\d{3}-\d{3}-\d{4}$/.test(input), {
-        message: "Invalid phone number",
-      }),
+      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
       year: yearSchema,
-      major: z.string().refine((input) => /^[A-Za-z]{4}$/.test(input), {
-        message: "Not a valid 4 letter major abbreviation",
-      }),
+      major: z
+        .string()
+        .regex(/^[A-Za-z]{4}$/, "Not a valid 4 letter major abbreviation"),
       availability: availabilitySchema,
     }),
 
@@ -123,9 +119,9 @@ export const ApplyFormSchema = z
         },
       ),
     /**
-     * Drive link to resume, nullable to allow submitting form to upload file, then updating with link
+     * File ID of resume in google drive, nullable to allow submitting form to upload file, then updating with actual ID
      */
-    resumeLink: z.string().nullable(),
+    resumeId: z.string(),
   })
   .superRefine(({ interests: { isLeadership }, leadership }, ctx) => {
     if (isLeadership) {

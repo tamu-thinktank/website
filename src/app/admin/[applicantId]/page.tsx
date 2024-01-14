@@ -14,12 +14,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
+import { type FileDataResponse } from "@/consts/api-types";
 import { q } from "@/consts/apply-questions";
 import { api } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
 import { clientErrorHandler } from "@/lib/utils";
 import { Temporal } from "@js-temporal/polyfill";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowUpRight } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect, useParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
@@ -56,11 +59,15 @@ function getQAs<
 
 export default function ApplicantPage() {
   const { toast } = useToast();
+  const { data: session, status: sessionStatus } = useSession();
+
+  // get applicant data into Q&A format
+
   const { applicantId } = useParams<{ applicantId: string }>();
   const {
     data: applicant,
-    isError,
-    isLoading,
+    isError: isApplicantError,
+    isLoading: isApplicantLoading,
   } = api.admin.getApplicant.useQuery(applicantId, {
     refetchOnMount: false,
     refetchOnReconnect: false,
@@ -77,13 +84,43 @@ export default function ApplicantPage() {
     return getQAs(applicant);
   }, [applicant]);
 
-  if (isLoading) {
+  // get resume from google drive
+
+  const getResumeURL = new URL("/api/get-resume", window.location.origin);
+  const params = new URLSearchParams({
+    resumeId: applicant?.resumeId ?? "",
+    userEmail: session?.user.email ?? "",
+  });
+  getResumeURL.search = params.toString();
+  const getResume = async () => {
+    const resp = await fetch(getResumeURL, {
+      method: "GET",
+    }).then((res) => {
+      if (!res.ok) throw new Error(res.statusText);
+      return res.json() as Promise<FileDataResponse>;
+    });
+
+    return resp;
+  };
+  const {
+    data: resumeFileData,
+    isLoading: isResumeLoading,
+    isError: isResumeError,
+  } = useQuery({
+    queryKey: ["get-resume", applicant?.resumeId, session?.user.email],
+    queryFn: getResume,
+    enabled: !!applicant && !!session,
+  });
+
+  if (isApplicantLoading || isResumeLoading || sessionStatus === "loading" ) {
     return <PageSkeleton />;
   }
-  if (isError) {
+  if (isApplicantError || isResumeError) {
     toast({
       title: "Error",
-      description: "Application not found, going to admin page",
+      description: `${
+        isApplicantError ? "Application" : "Resume"
+      } not found, going to admin page`,
       duration: 3000,
     });
 
@@ -98,6 +135,7 @@ export default function ApplicantPage() {
           applicantName={applicant.personal.fullName}
           applicantEmail={applicant.personal.email}
           meetingTimes={applicant.meetingTimes}
+          resumeId={applicant.resumeId}
         />
         <Table
           caption={q.personal.title}
@@ -131,7 +169,11 @@ export default function ApplicantPage() {
             )) ?? null}
           </Card>
         ) : null}
-        <PdfViewer resumeLink={applicant.resumeLink ?? ""} />
+        <PdfViewer
+          file={resumeFileData.fileContent}
+          fileName={resumeFileData.fileName}
+          webViewLink={resumeFileData.fileViewLink}
+        />
       </CardContent>
     </Card>
   );
@@ -142,11 +184,13 @@ function Buttons({
   applicantName,
   applicantEmail,
   meetingTimes,
+  resumeId,
 }: {
   applicantId: string;
   applicantName: string;
   applicantEmail: string;
   meetingTimes: RouterOutputs["admin"]["getApplicant"]["meetingTimes"];
+  resumeId: string;
 }) {
   const { toast } = useToast();
   const apiUtils = api.useUtils();
@@ -307,8 +351,9 @@ function Buttons({
 
   const acceptApplicant = useCallback(() => {
     updateApplicant({
-      id: applicantId,
+      applicantId,
       status: "ACCEPTED",
+      resumeId: resumeId,
     });
 
     if (soonestOfficer) {
@@ -321,14 +366,15 @@ function Buttons({
         startTime: soonestOfficer.startTime,
       });
     }
-  }, [soonestOfficer]);
+  }, [applicantId, soonestOfficer]);
 
   const rejectApplicant = useCallback(() => {
     updateApplicant({
-      id: applicantId,
+      applicantId,
       status: "REJECTED",
+      resumeId: resumeId,
     });
-  }, []);
+  }, [applicantId]);
 
   return (
     <div className="mt-4 flex gap-4">

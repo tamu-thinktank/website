@@ -1,4 +1,9 @@
 import { eventTimezone } from "@/consts/availability-grid";
+import {
+  RESUME_ACCEPTED_ID,
+  RESUME_PENDING_ID,
+  RESUME_REJECTED_ID,
+} from "@/consts/google-things";
 import { getAvailabilityMap } from "@/lib/utils/getAvailabilityMap";
 import {
   ApplicantSchema,
@@ -8,7 +13,8 @@ import {
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { getAvailabities } from "@/server/db/queries";
 import sendEmail from "@/server/service/email";
-import { addCalenderEvent } from "@/server/service/gcp";
+import CalendarService from "@/server/service/google-calendar";
+import DriveService from "@/server/service/google-drive";
 import { Temporal } from "@js-temporal/polyfill";
 import InterviewEmail from "emails/interview";
 import { z } from "zod";
@@ -164,24 +170,33 @@ export const adminRouter = createTRPCRouter({
           )
           .sort((a, b) => Temporal.ZonedDateTime.compare(a, b))
           .map((meetingTime) => meetingTime.toString()),
-        resumeLink: application.resumeLink,
+        resumeId: application.resumeId,
       };
     }),
   updateApplicant: protectedProcedure
     .input(
       z.object({
-        id: z.string().cuid2(),
+        applicantId: z.string().cuid2(),
         status: z.enum(["ACCEPTED", "REJECTED"]),
+        resumeId: z.string(),
       }),
     )
-    .mutation(async ({ input: { id, status }, ctx }) => {
+    .mutation(async ({ input: { applicantId, resumeId, status }, ctx }) => {
       await ctx.db.application.update({
         where: {
-          id,
+          id: applicantId,
         },
         data: {
           status,
         },
+      });
+
+      // move resume to accepted or rejected folder in drive
+      await DriveService.moveFile({
+        fromFolderId: RESUME_PENDING_ID,
+        toFolderId:
+          status === "ACCEPTED" ? RESUME_ACCEPTED_ID : RESUME_REJECTED_ID,
+        fileId: resumeId,
       });
 
       return true;
@@ -211,7 +226,7 @@ export const adminRouter = createTRPCRouter({
         const startTimeObj = Temporal.ZonedDateTime.from(startTime);
 
         // add meeting time to google calendar
-        const eventLink = await addCalenderEvent({
+        const eventLink = await CalendarService.addCalenderEvent({
           startTime: startTimeObj,
           emails: [officerEmail, applicantEmail],
         });

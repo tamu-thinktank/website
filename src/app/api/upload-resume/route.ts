@@ -1,7 +1,7 @@
-import type { ResumeUploadResponse } from "@/consts/types";
-import { env } from "@/env";
-import { uploadToFolder } from "@/server/service/gcp";
+import { RESUME_PENDING_ID } from "@/consts/google-things";
+import DriveService from "@/server/service/google-drive";
 import { NextResponse, type NextRequest } from "next/server";
+import { Readable } from "stream";
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
@@ -13,21 +13,22 @@ export async function POST(req: NextRequest) {
 
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
+  const stream = Readable.from(buffer);
 
-  const resumeLink = await uploadToFolder({
-    folderId: env.RESUME_PENDING_ID,
+  const resumeId = await DriveService.uploadToFolder({
+    folderId: RESUME_PENDING_ID,
     filename: file.name,
     mimeType: file.type,
-    file: buffer,
+    file: stream,
   });
 
-  if (!resumeLink) {
+  if (!resumeId) {
     return new NextResponse("Error uploading resume. Try again later.", {
       status: 500,
     });
   }
 
   return NextResponse.json({
-    resumeLink,
-  } satisfies ResumeUploadResponse);
+    resumeId,
+  });
 }
