@@ -98,9 +98,7 @@ export default function PersonalInfo() {
               <CardContent>
                 <FormControl>
                   <Input
-                    type="number"
                     placeholder="123004567"
-                    className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     {...field}
                   />
                 </FormControl>
@@ -255,6 +253,7 @@ export default function PersonalInfo() {
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
         name="personal.availability"
@@ -266,9 +265,6 @@ export default function PersonalInfo() {
                   {q.personal.availability}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
-                <CardDescription>
-                  Insert a description of the time commitment here
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
@@ -314,7 +310,7 @@ export default function PersonalInfo() {
             </Card>
           </FormItem>
         )}
-     />
+      />
     </div>
   );
 }

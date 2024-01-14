@@ -1,5 +1,5 @@
 import { times } from "@/consts/availability-grid";
-import { calculateTable } from "@/lib/utils/calculateTable";
+import { calculateTable } from "@/lib/utils/availability-grid/calculateTable";
 import { useEffect, useRef, useState } from "react";
 
 /**

@@ -1,4 +1,4 @@
-import { db } from ".";
+import { db } from "../../lib/db";
 
 export type dbAvailabilitiesType = Awaited<ReturnType<typeof getAvailabities>>;
 

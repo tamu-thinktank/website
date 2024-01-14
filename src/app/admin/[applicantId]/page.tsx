@@ -15,11 +15,10 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { type FileDataResponse } from "@/consts/api-types";
 import { q } from "@/consts/apply-questions";
-import { api } from "@/lib/trpc/react";
+import { api, clientErrorHandler } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
-import { clientErrorHandler } from "@/lib/utils";
+import { type FileDataResponse } from "@/types/api";
 import { Temporal } from "@js-temporal/polyfill";
 import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";

@@ -1,6 +1,6 @@
 import { type dbAvailabilitiesType } from "@/server/db/queries";
 import { Temporal } from "@js-temporal/polyfill";
-import { type AvailabilityMap } from "../z.schema";
+import { type AvailabilityMap } from "../../validations/apply";
 
 export const getAvailabilityMap = (dbAvailabilities: dbAvailabilitiesType) => {
   const availabilities: AvailabilityMap = new Map();

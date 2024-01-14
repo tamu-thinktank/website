@@ -1,6 +1,5 @@
 import { useToast } from "@/components/ui/use-toast";
-import { api } from "@/lib/trpc/react";
-import { clientErrorHandler } from "@/lib/utils";
+import { api, clientErrorHandler } from "@/lib/trpc/react";
 
 /**
  * Get officer availabilities and mutate current user availabilities
@@ -20,7 +19,7 @@ export default function useOfficerTimes() {
     api.admin.updateAvailabilities.useMutation({
       onSettled: async (newData, err) => {
         if (err) {
-          clientErrorHandler({err, toastFn: toast});
+          clientErrorHandler({ err, toastFn: toast });
         }
 
         // refetch

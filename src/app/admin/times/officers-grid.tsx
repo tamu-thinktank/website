@@ -4,7 +4,7 @@ import { Toggle } from "@/components/ui/toggle";
 import { palette, times, type Mode } from "@/consts/availability-grid";
 import useOfficerTimes from "@/hooks/useOfficerTimes";
 import { cn } from "@/lib/utils";
-import { type AvailabilityMap } from "@/lib/z.schema";
+import { type AvailabilityMap } from "@/lib/validations/apply";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
 import { Temporal } from "@js-temporal/polyfill";
 import { useSession } from "next-auth/react";

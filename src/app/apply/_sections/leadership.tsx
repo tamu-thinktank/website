@@ -9,15 +9,15 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
-  FormLabel
 } from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { q } from "@/consts/apply-questions";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function Leadership() {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
@@ -161,20 +161,17 @@ export default function Leadership() {
         )}
       />
 
-<FormField
+      <FormField
         control={form.control}
-        name="leadership.relaventExperience"
+        name="leadership.relevantExperience"
         render={({ field }) => (
           <FormItem>
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.leadership.relaventExperience}{" "}
+                  {q.leadership.relevantExperience}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
-                <CardDescription>
-                  Insert a description here
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
@@ -202,9 +199,6 @@ export default function Leadership() {
                   {q.leadership.timeCommitment}{" "}
                   <span className="text-red-500">*</span>
                 </CardTitle>
-                <CardDescription>
-                  Insert a description of the time commitment here
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
@@ -250,7 +244,7 @@ export default function Leadership() {
             </Card>
           </FormItem>
         )}
-     />
+      />
     </div>
   );
 }

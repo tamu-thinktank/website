@@ -1,4 +1,4 @@
-import { expandTimes } from "@/lib/utils/expandTimes";
+import { expandTimes } from "@/lib/utils/availability-grid/expandTimes";
 import { Temporal } from "@js-temporal/polyfill";
 import colors from "tailwindcss/colors";
 

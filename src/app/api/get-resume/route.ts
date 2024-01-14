@@ -5,7 +5,7 @@ export async function GET(req: NextRequest) {
   const resumeId = req.nextUrl.searchParams.get("resumeId");
   const userEmail = req.nextUrl.searchParams.get("userEmail");
 
-  if (!resumeId || !Boolean(resumeId) || !userEmail || !Boolean(userEmail)) {
+  if (!resumeId || !userEmail) {
     return new NextResponse("Invalid search params", { status: 400 });
   }
 

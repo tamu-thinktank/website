@@ -4,12 +4,12 @@ import {
   RESUME_PENDING_ID,
   RESUME_REJECTED_ID,
 } from "@/consts/google-things";
-import { getAvailabilityMap } from "@/lib/utils/getAvailabilityMap";
+import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap";
 import {
   ApplicantSchema,
   ApplicantsSchema,
   AvailabilityMapSchema,
-} from "@/lib/z.schema";
+} from "@/lib/validations/apply";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { getAvailabities } from "@/server/db/queries";
 import sendEmail from "@/server/service/email";
@@ -140,31 +140,17 @@ export const adminRouter = createTRPCRouter({
       return {
         ...application,
         personal: {
-          fullName: application.fullName,
-          email: application.email,
-          uin: application.uin,
-          altEmail: application.altEmail,
-          phone: application.phone,
-          year: application.year,
-          major: application.major,
-          availability: application.availability,
+          ...application,
         },
         interests: {
+          ...application,
           interestedAnswer: application.interestedAnswer,
           challenges: application.challenges.map((challenge) => {
             return challenge.challenge;
           }),
-          interestedChallenge: application.interestedChallenge,
-          passionAnswer: application.passionAnswer,
-          isLeadership: application.isLeadership,
         },
         leadership: {
-          skillsAnswer: application.skillsAnswer,
-          conflictsAnswer: application.conflictsAnswer,
-          presentation: application.presentation,
-          timeManagement: application.timeManagement,
-          relaventExperience: application.relaventExperience,
-          timeCommitment: application.timeCommitment,
+          ...application,
         },
         meetingTimes: application.meetingTimes
           .map((meetingTime) =>

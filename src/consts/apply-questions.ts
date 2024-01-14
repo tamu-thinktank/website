@@ -27,9 +27,9 @@ export const q = {
     presentation: "Rate your presentation skills on a scale from 1 to 5",
     timeManagement:
       "How would you rate your ability to meet deadlines and manage time effectively?",
-    relaventExperience:
+    relevantExperience:
       "Describe any relevant experience you have for this design challenge",
     timeCommitment:
-      "Are you able to commit 10+ hours per week with flexibility to accommodate general team availability"
+      "Are you able to commit 10+ hours per week with flexibility to accommodate general team availability?",
   },
 } as const;

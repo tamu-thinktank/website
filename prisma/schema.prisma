@@ -121,8 +121,8 @@ model Application {
 
     // personal info section
     fullName     String
-    email        String       @unique
-    uin          Int          @unique
+    email        String  @unique
+    uin          Int     @unique
     altEmail     String?
     phone        String
     year         Year
@@ -137,12 +137,12 @@ model Application {
     isLeadership        Boolean
 
     // Leadership section, empty if `isLeadership` is false
-    skillsAnswer    String? @db.Text
-    conflictsAnswer String? @db.Text
-    presentation    Int? // 1-5
-    timeManagement  String? @db.Text
-    relaventExperience String? @db.Text
-    timeCommitment  Boolean
+    skillsAnswer       String?  @db.Text
+    conflictsAnswer    String?  @db.Text
+    presentation       Int? // 1-5
+    timeManagement     String?  @db.Text
+    relevantExperience String?  @db.Text
+    timeCommitment     Boolean?
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeId     String // the id of the resume file in the google drive

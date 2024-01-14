@@ -1,4 +1,4 @@
-import { ApplyFormSchema } from "@/lib/z.schema";
+import { ApplyFormSchema } from "@/lib/validations/apply";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import DriveService from "@/server/service/google-drive";
 import { z } from "zod";
@@ -13,19 +13,16 @@ export const publicRouter = createTRPCRouter({
           ...input.personal,
           ...input.interests,
           challenges: {
-            connectOrCreate: input.interests.challenges.map((challenge) => {
-              return {
-                where: {
-                  challenge,
-                },
-                create: {
-                  challenge,
-                },
-              };
-            }),
+            connectOrCreate: input.interests.challenges.map((challenge) => ({
+              where: {
+                challenge,
+              },
+              create: {
+                challenge,
+              },
+            })),
           },
           ...input.leadership,
-          resumeId: input.resumeId,
           meetingTimes: {
             createMany: {
               data: input.meetingTimes.map((gridTime) => ({
@@ -33,6 +30,7 @@ export const publicRouter = createTRPCRouter({
               })),
             },
           },
+          resumeId: input.resumeId,
         },
       });
     }),

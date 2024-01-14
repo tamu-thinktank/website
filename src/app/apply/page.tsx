@@ -6,12 +6,11 @@ import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
-import { type UploadResumeResponse } from "@/consts/api-types";
 import useCalculateTable from "@/hooks/useCalculateTable";
-import { api } from "@/lib/trpc/react";
+import { api, clientErrorHandler } from "@/lib/trpc/react";
 import { type RouterInputs } from "@/lib/trpc/shared";
-import { clientErrorHandler } from "@/lib/utils";
-import { ApplyFormSchema } from "@/lib/z.schema";
+import { ApplyFormSchema } from "@/lib/validations/apply";
+import { type UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { useMutation } from "@tanstack/react-query";
@@ -44,6 +43,7 @@ export default function Apply() {
 
   const form = usePersistForm<RouterInputs["public"]["apply"]>("apply-form", {
     resolver: zodResolver(ApplyFormSchema),
+    // include at least the default values of optional fields
     defaultValues: {
       id: createId(),
       personal: {
@@ -57,6 +57,8 @@ export default function Apply() {
         conflictsAnswer: null,
         presentation: 1,
         timeManagement: null,
+        relevantExperience: null,
+        timeCommitment: null,
       },
       meetingTimes: [],
       resumeId: "",
@@ -76,12 +78,16 @@ export default function Apply() {
       router.push("/");
     },
     onError: (err) => {
-      clientErrorHandler({err, toastFn: toast});
+      clientErrorHandler({ err, toastFn: toast });
     },
   });
 
   const [resumeFile, setResumeFile] = useState<File>();
-  const {mutateAsync: uploadResume} = useMutation<UploadResumeResponse, unknown, FormData>({
+  const { mutateAsync: uploadResume } = useMutation<
+    UploadResumeResponse,
+    unknown,
+    FormData
+  >({
     mutationFn: (formData) => {
       return fetch("/api/upload-resume", {
         method: "POST",
@@ -89,7 +95,7 @@ export default function Apply() {
       }).then((res) => res.json() as Promise<UploadResumeResponse>);
     },
   });
-  const {mutateAsync: deleteResume} = api.public.deleteResume.useMutation()
+  const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
     async (data: RouterInputs["public"]["apply"]) => {

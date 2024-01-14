@@ -1,9 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
-import {
-  ApplicationStatus,
-  Challenge,
-  Year,
-} from "@prisma/client";
+import { ApplicationStatus, Challenge, Year } from "@prisma/client";
 import { z } from "zod";
 
 const charLimit = 1000;
@@ -24,8 +20,9 @@ export const ApplyFormSchema = z
         .email("Invalid email")
         .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
       uin: z.coerce
-        .number()
-        .refine((n) => !isNaN(n), { message: "Required" })
+        .number({
+          invalid_type_error: "Expected a number",
+        })
         .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
           message: "Invalid UIN",
         }),
@@ -50,20 +47,22 @@ export const ApplyFormSchema = z
       major: z
         .string()
         .regex(/^[A-Za-z]{4}$/, "Not a valid 4 letter major abbreviation"),
-      availability: z.coerce.boolean({required_error: "Required"}),
+      availability: z.boolean(),
     }),
 
     // Interests and Motivation section
     interests: z.object({
       interestedAnswer: z
         .string()
+        .min(1, "Required")
         .max(charLimit, "Responses must be within 1000 characters"),
-      challenges: z.array(challengeSchema).min(1),
+      challenges: z.array(challengeSchema).min(1, "Select at least one"),
       interestedChallenge: challengeSchema,
       passionAnswer: z
         .string()
+        .min(1, "Required")
         .max(charLimit, "Responses must be within 1000 characters"),
-      isLeadership: z.coerce.boolean(),
+      isLeadership: z.boolean(),
     }),
 
     // Leadership section
@@ -81,16 +80,16 @@ export const ApplyFormSchema = z
         .string()
         .max(charLimit, "Responses must be within 1000 characters")
         .nullable(),
-      relaventExperience: z
+      relevantExperience: z
         .string()
         .max(charLimit, "Responses must be within 1000 characters")
         .nullable(),
-      timeCommitment: z.coerce.boolean(),
+      timeCommitment: z.boolean().nullable(),
     }),
 
     meetingTimes: z
       .array(z.string())
-      .min(4)
+      .min(2, "Select at least a 30 minute window")
       .refine(
         (input) => {
           // make sure a 30 minute window exists in the selected times, where each selected time represents a 15 minute window
@@ -156,14 +155,14 @@ export const ApplyFormSchema = z
           message: "Required for leadership",
         });
       }
-      if (!leadership.relaventExperience) {
+      if (!leadership.relevantExperience) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          path: ["leadership.relaventExperience"],
+          path: ["leadership.relevantExperience"],
           message: "Required for leadership",
         });
       }
-      if (!leadership.timeCommitment) {
+      if (leadership.timeCommitment === null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["leadership.timeCommitment"],
