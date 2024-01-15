@@ -17,6 +17,7 @@ import CalendarService from "@/server/service/google-calendar";
 import DriveService from "@/server/service/google-drive";
 import { Temporal } from "@js-temporal/polyfill";
 import InterviewEmail from "emails/interview";
+import RejectAppEmail from "emails/reject-app";
 import { z } from "zod";
 
 export const adminRouter = createTRPCRouter({
@@ -290,4 +291,24 @@ export const adminRouter = createTRPCRouter({
         return true;
       },
     ),
+  rejectAppEmail: protectedProcedure
+    .input(
+      z.object({
+        applicantName: z.string(),
+        applicantEmail: z.string().email(),
+      }),
+    )
+    .mutation(async ({ input: { applicantName, applicantEmail } }) => {
+      try {
+        await sendEmail({
+          to: [applicantEmail],
+          subject: "ThinkTank application rejected",
+          template: RejectAppEmail({
+            userFirstname: applicantName.split(" ")[0] ?? "",
+          }),
+        });
+      } catch (e) {
+        throw new Error("Failed to send email: " + (e as Error).message);
+      }
+    }),
 });
