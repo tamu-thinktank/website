@@ -32,7 +32,8 @@ export const InterviewEmail = ({
   <Html>
     <Head />
     <Preview>
-      The sales intelligence platform that helps you uncover qualified leads.
+      ThinkTank would like to conduct an interview with you over a 
+      position on one of the design challenge teams for the Spring 2024 season.
     </Preview>
     <Body style={main}>
       <Container style={container}>
@@ -53,7 +54,7 @@ export const InterviewEmail = ({
           >
             <Row>
               <Column>
-                <Img src={`/ttt.webp`} width="50" alt="Koala" style={logo} />
+                <Img src={`/ttt.webp`} width="50" alt="TTT" style={logo} />
               </Column>
               <Column>
                 <Heading as="h2">TAMU ThinkTank</Heading>
@@ -61,8 +62,12 @@ export const InterviewEmail = ({
             </Row>
           </Button>
         </Section>
-        <Text style={paragraph}>Hi {userFirstname},</Text>
-        <Text style={paragraph}>Interview scheduled at {time}.</Text>
+        <Text style={paragraph}>Howdy {userFirstname}!</Text>
+        <Text style={paragraph}>
+          ThinkTank would like to conduct an interview with you over a 
+          position on one of the design challenge teams for the Spring 2024 season.
+        </Text>
+        <Text style={paragraph}>Your interview is scheduled at {time}.</Text>
         <Section style={btnContainer}>
           <Button style={button} href={eventLink}>
             Google Calendar
@@ -71,10 +76,10 @@ export const InterviewEmail = ({
         <Text style={paragraph}>
           Best,
           <br />
-          The Koala team
+          The TAMU ThinkTank Officer Team
         </Text>
         <Hr style={hr} />
-        <Text style={footer}>408 Warren Rd - San Mateo, CA 94402</Text>
+        <Text style={footer}></Text>
       </Container>
     </Body>
   </Html>

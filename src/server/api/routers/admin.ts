@@ -207,6 +207,7 @@ export const adminRouter = createTRPCRouter({
       async ({
         input: {
           officerId,
+          officerName,
           officerEmail,
           applicantName,
           applicantEmail,
@@ -232,6 +233,8 @@ export const adminRouter = createTRPCRouter({
           eventLink = await CalendarService.addCalenderEvent({
             startTime: startTimeObj,
             emails: [officerEmail, applicantEmail],
+            intervieweeName: applicantName,
+            interviewerName: officerName,
           });
         } catch (e) {
           throw new Error(
@@ -260,7 +263,7 @@ export const adminRouter = createTRPCRouter({
           await sendEmail({
             to: [applicantEmail],
             cc: [officerEmail],
-            subject: "Application accepted",
+            subject: "Interview for Spot on Design Challenge Team",
             template: InterviewEmail({
               userFirstname: applicantName.split(" ")[0] ?? "",
               time: startTimeObj

@@ -98,9 +98,13 @@ export default class CalendarService {
   static async addCalenderEvent({
     startTime,
     emails,
+    intervieweeName,
+    interviewerName,
   }: {
     startTime: Temporal.ZonedDateTime;
     emails: string[];
+    intervieweeName: string;
+    interviewerName: string;
   }) {
     const calendarClient = await this.getCalendarOAuthClient();
     const timeInCT = startTime.withTimeZone(eventTimezone);
@@ -110,7 +114,7 @@ export default class CalendarService {
         organizer: {
           email: env.APP_EMAIL,
         },
-        summary: "ThinkTank Interview",
+        summary: intervieweeName + " ThinkTank Interview (" + interviewerName + ")",
         location: "TBD",
         start: {
           dateTime: timeInCT.toString({
