@@ -270,7 +270,7 @@ export const adminRouter = createTRPCRouter({
           await sendEmail({
             to: [applicantEmail],
             cc: [officerEmail],
-            subject: "Interview for Spot on Design Challenge Team",
+            subject: "ThinkTank Interview",
             template: InterviewEmail({
               userFirstname: applicantName.split(" ")[0] ?? "",
               time: startTimeObj

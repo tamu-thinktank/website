@@ -75,21 +75,34 @@ export const InterviewEmail = ({
         </Section>
         <Text style={paragraph}>Howdy {userFirstname}!</Text>
         <Text style={paragraph}>
-          ThinkTank would like to conduct an interview with you over a position
-          on one of the design challenge teams for the Spring 2024 season.
+          TAMU ThinkTank would like to interview you for a spot on one of the
+          design challenge teams. We believe you could have the skills and
+          talents necessary to compete and excel in one of our design challenge
+          teams. This interview is the final step for us to determine if you
+          would be a good fit in both the organization and on a team.
         </Text>
         <Text style={paragraph}>
-          Your interview is scheduled at {time} in {location}.
+          The details for your interview are as follows:<br />
+          <strong>Time:</strong> {time} <br />
+          <strong>Location:</strong> {location}
         </Text>
+        <Text style={paragraph}>
+          These details are optimized to match your availability with ours, but
+          let us know if these do not work for you and we will try and
+          accommodate you. Accommodations will only be made for academic,
+          disability, family, or other related matters. If you're unsure,
+          contact us and we'll discuss it.
+        </Text>
+        <Text style={paragraph}>We're excited to meet you!</Text>
         <Section style={btnContainer}>
           <Button style={button} href={eventLink}>
             Google Calendar
           </Button>
         </Section>
         <Text style={paragraph}>
-          Best,
+          Sincerely,
           <br />
-          The TAMU ThinkTank Officer Team
+          TAMU ThinkTank Leadership
         </Text>
         <Hr style={hr} />
         <Text style={footer}></Text>
