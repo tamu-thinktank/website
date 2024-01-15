@@ -21,6 +21,7 @@ interface InterviewEmailProps {
   time: string;
   location: string;
   eventLink: string;
+  interviewerName: string;
 }
 
 export const InterviewEmail = ({
@@ -31,6 +32,7 @@ export const InterviewEmail = ({
   }).format(Date.now()),
   location = "TBD",
   eventLink = "https://calendar.google.com",
+  interviewerName = "John Doe",
 }: InterviewEmailProps) => (
   <Html>
     <Head />
@@ -85,7 +87,8 @@ export const InterviewEmail = ({
           The details for your interview are as follows:
           <br />
           <strong>Time:</strong> {time} <br />
-          <strong>Location:</strong> {location}
+          <strong>Location:</strong> {location} <br />
+          <strong>Interviewer:</strong> {interviewerName}
         </Text>
         <Text style={paragraph}>
           These details are optimized to match your availability with ours, but
@@ -95,11 +98,6 @@ export const InterviewEmail = ({
           contact us and we'll discuss it.
         </Text>
         <Text style={paragraph}>We're excited to meet you!</Text>
-        <Section style={btnContainer}>
-          <Button style={button} href={eventLink}>
-            Google Calendar
-          </Button>
-        </Section>
         <Text style={paragraph}>
           Sincerely,
           <br />

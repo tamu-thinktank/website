@@ -282,6 +282,7 @@ export const adminRouter = createTRPCRouter({
                 }),
               location,
               eventLink: eventLink ?? "",
+              interviewerName: officerName,
             }),
           });
         } catch (e) {
