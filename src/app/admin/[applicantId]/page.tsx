@@ -369,6 +369,26 @@ function Buttons({
     },
   );
 
+  const { mutate: sendRejectEmail } = api.admin.rejectAppEmail.useMutation({
+    onSuccess: (data, input) => {
+      sonner.success(`Rejection email sent to ${input.applicantName}`, {
+        action: {
+          label: "Admin",
+          onClick: () => router.push("/admin"),
+        },
+        duration: 5000,
+      });
+    },
+    onSettled: async (newData, err) => {
+      if (err) {
+        clientErrorHandler({ err, sonnerFn: sonner });
+      }
+
+      // refetch
+      void apiUtils.admin.getApplicant.invalidate(applicantId);
+    },
+  });
+
   const form = useForm<{
     location: string;
   }>({
@@ -411,6 +431,11 @@ function Buttons({
       applicantId,
       status: "REJECTED",
       resumeId: resumeId,
+    });
+
+    sendRejectEmail({
+      applicantName,
+      applicantEmail,
     });
   }, [applicantId]);
 
