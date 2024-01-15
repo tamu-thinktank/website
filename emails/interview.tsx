@@ -35,8 +35,8 @@ export const InterviewEmail = ({
   <Html>
     <Head />
     <Preview>
-      ThinkTank would like to conduct an interview with you over a 
-      position on one of the design challenge teams for the Spring 2024 season.
+      ThinkTank would like to conduct an interview with you over a position on
+      one of the design challenge teams for the Spring 2024 season.
     </Preview>
     <Body style={main}>
       <Container style={container}>
@@ -75,10 +75,12 @@ export const InterviewEmail = ({
         </Section>
         <Text style={paragraph}>Howdy {userFirstname}!</Text>
         <Text style={paragraph}>
-          ThinkTank would like to conduct an interview with you over a 
-          position on one of the design challenge teams for the Spring 2024 season.
+          ThinkTank would like to conduct an interview with you over a position
+          on one of the design challenge teams for the Spring 2024 season.
         </Text>
-        <Text style={paragraph}>Your interview is scheduled at {time} in {location}.</Text>
+        <Text style={paragraph}>
+          Your interview is scheduled at {time} in {location}.
+        </Text>
         <Section style={btnContainer}>
           <Button style={button} href={eventLink}>
             Google Calendar

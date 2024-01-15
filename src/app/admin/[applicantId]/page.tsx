@@ -152,13 +152,15 @@ export default function ApplicantPage() {
   return (
     <Card className="max-h-[95%] overflow-auto">
       <CardContent>
-        <Buttons
-          applicantId={applicantId}
-          applicantName={applicant.personal.fullName}
-          applicantEmail={applicant.personal.email}
-          meetingTimes={applicant.meetingTimes}
-          resumeId={applicant.resumeId}
-        />
+        {applicant.status === "PENDING" ? (
+          <Buttons
+            applicantId={applicantId}
+            applicantName={applicant.personal.fullName}
+            applicantEmail={applicant.personal.email}
+            meetingTimes={applicant.meetingTimes}
+            resumeId={applicant.resumeId}
+          />
+        ) : null}
         <Table
           caption={q.personal.title}
           headRow={["Questions", "Answers"]}
