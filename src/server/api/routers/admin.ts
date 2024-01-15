@@ -302,7 +302,7 @@ export const adminRouter = createTRPCRouter({
       try {
         await sendEmail({
           to: [applicantEmail],
-          subject: "ThinkTank application rejected",
+          subject: "ThinkTank Application Status",
           template: RejectAppEmail({
             userFirstname: applicantName.split(" ")[0] ?? "",
           }),

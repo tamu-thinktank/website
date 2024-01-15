@@ -79,10 +79,11 @@ export const InterviewEmail = ({
           design challenge teams. We believe you could have the skills and
           talents necessary to compete and excel in one of our design challenge
           teams. This interview is the final step for us to determine if you
-          would be a good fit in both the organization and on a team.
+          would be a good fit in the organization and on a team.
         </Text>
         <Text style={paragraph}>
-          The details for your interview are as follows:<br />
+          The details for your interview are as follows:
+          <br />
           <strong>Time:</strong> {time} <br />
           <strong>Location:</strong> {location}
         </Text>
@@ -105,7 +106,7 @@ export const InterviewEmail = ({
           TAMU ThinkTank Leadership
         </Text>
         <Hr style={hr} />
-        <Text style={footer}></Text>
+        <Text style={footer}>Contact: tamuthinktank@gmail.com</Text>
       </Container>
     </Body>
   </Html>

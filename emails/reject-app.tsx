@@ -20,14 +20,10 @@ interface RejectAppProps {
   userFirstname: string;
 }
 
-export const RejectAppEmail = ({
-  userFirstname = "Zeno",
-}: RejectAppProps) => (
+export const RejectAppEmail = ({ userFirstname = "Zeno" }: RejectAppProps) => (
   <Html>
     <Head />
-    <Preview>
-      ur trash lol
-    </Preview>
+    <Preview>TAMU ThinkTank has declined to proceed with your admission into one of our design challenge teams.</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section
@@ -63,17 +59,21 @@ export const RejectAppEmail = ({
             </Row>
           </Button>
         </Section>
-        <Text style={paragraph}>Howdy {userFirstname}! 😎</Text>
+        <Text style={paragraph}>Howdy {userFirstname}!</Text>
         <Text style={paragraph}>
-          We dont want u. Get good.
+          TAMU ThinkTank has declined to proceed with your admission into one of
+          our design challenge teams. ThinkTank is growing every year and we
+          currently do not have the space to fit everyone who applies. We
+          believe you have potential on a design challenge team and encourage
+          you to apply again in the following semester as we expand our size.
         </Text>
         <Text style={paragraph}>
-          Tough luck kiddo,
+          Sincerely,
           <br />
-          The TAMU ThinkTank Officer Team
+          TAMU ThinkTank Leadership
         </Text>
         <Hr style={hr} />
-        <Text style={footer}></Text>
+        <Text style={footer}>Contact: tamuthinktank@gmail.com</Text>
       </Container>
     </Body>
   </Html>
