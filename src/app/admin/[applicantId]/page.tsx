@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { q } from "@/consts/apply-questions";
+import { eventTimezone } from "@/consts/availability-grid";
 import { api, clientErrorHandler } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
 import { type FileDataResponse } from "@/types/api";
@@ -431,11 +432,16 @@ function Buttons({
           </TooltipTrigger>
           <TooltipContent>
             <p>
-              {form.formState.isValid
-                ? null
-                : "Enter location of the interview"}
+              {!soonestOfficer
+                ? "No meeting time available"
+                : !form.formState.isValid
+                  ? `Enter location of the interview at ${Temporal.ZonedDateTime.from(
+                      soonestOfficer.startTime,
+                    )
+                      .withTimeZone(eventTimezone)
+                      .toLocaleString("en-US")}`
+                  : null}
             </p>
-            <p>{!soonestOfficer ? "No meeting time available" : null}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
