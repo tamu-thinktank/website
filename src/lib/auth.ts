@@ -46,8 +46,11 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    signIn: async ({ user }) => {
+    signIn: async ({ user, profile }) => {
       if (user.email && env.ALLOWED_EMAILS.includes(user.email)) {
+        if (profile) {
+          user.name = profile.name;
+        }
         return true;
       } else {
         return false;

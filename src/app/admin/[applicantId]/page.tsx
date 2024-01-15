@@ -398,9 +398,9 @@ function Buttons({
   });
 
   const acceptApplicant = useCallback(() => {
-    if (!form.getValues("location")) {
+    if (!!soonestOfficer && !form.getValues("location")) {
       sonner.error("Error", {
-        description: "Please enter the location of the interview",
+        description: "Enter the location of the interview",
         duration: 3000,
       });
       return;
@@ -441,13 +441,15 @@ function Buttons({
 
   return (
     <div className="mt-4 flex gap-4">
-      <LocationInput form={form} />
+      <LocationInput form={form} isMeetingTimeAvailable={!!soonestOfficer} />
       <TooltipProvider>
         <Tooltip open={!soonestOfficer || !form.formState.isValid}>
           <TooltipTrigger asChild>
             <Button
               onClick={acceptApplicant}
-              disabled={isUpdateLoading || !form.formState.isValid}
+              disabled={
+                isUpdateLoading || (!!soonestOfficer && !form.formState.isValid)
+              }
               className="w-20"
             >
               {isUpdateLoading ? (
@@ -459,15 +461,15 @@ function Buttons({
           </TooltipTrigger>
           <TooltipContent>
             <p>
-              {!soonestOfficer
-                ? "No meeting time available"
-                : !form.formState.isValid
+              {!!soonestOfficer
+                ? !form.formState.isValid
                   ? `Enter location of the interview at ${Temporal.ZonedDateTime.from(
                       soonestOfficer.startTime,
                     )
                       .withTimeZone(eventTimezone)
                       .toLocaleString("en-US")}`
-                  : null}
+                  : null
+                : "No meeting time available"}
             </p>
           </TooltipContent>
         </Tooltip>
@@ -486,10 +488,12 @@ function Buttons({
 
 function LocationInput({
   form,
+  isMeetingTimeAvailable,
 }: {
   form: UseFormReturn<{
     location: string;
   }>;
+  isMeetingTimeAvailable: boolean;
 }) {
   return (
     <Form {...form}>
@@ -511,6 +515,7 @@ function LocationInput({
                   type="text"
                   placeholder="Interview location"
                   {...field}
+                  disabled={!isMeetingTimeAvailable}
                 />
               </FormControl>
               <FormMessage />

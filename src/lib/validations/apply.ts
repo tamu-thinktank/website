@@ -208,5 +208,6 @@ export const ApplicantSchema = ApplyFormSchema.and(
   z.object({
     submittedAt: z.date(),
     status: statusSchema,
+    location: z.string().nullable(),
   }),
 );
