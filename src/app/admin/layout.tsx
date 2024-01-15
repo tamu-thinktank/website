@@ -39,7 +39,6 @@ function Content({ children }: { children: React.ReactNode }) {
           },
           {
             connection: "google-oauth2",
-            prompt: "login",
             response_type: "code",
           },
         )

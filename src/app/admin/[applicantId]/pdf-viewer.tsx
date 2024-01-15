@@ -35,8 +35,8 @@ const options = {
 
 interface PDFViewerProps {
   file: ComponentProps<typeof PdfDocument>["file"];
-  fileName: string;
-  webViewLink: string;
+  fileName: string | undefined;
+  webViewLink: string | undefined;
 }
 
 export default function PDFViewer({
@@ -84,8 +84,8 @@ export default function PDFViewer({
         setPageNumber={setPageNumber}
         ref={navRef}
         numPages={numPages}
-        fileName={fileName}
-        href={webViewLink}
+        fileName={fileName ?? ""}
+        href={webViewLink ?? "#"}
       />
       <PdfDocument
         file={file}

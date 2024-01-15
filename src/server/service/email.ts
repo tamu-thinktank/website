@@ -6,8 +6,8 @@ import type { ReactElement } from "react";
 const transporter = createTransport({
   service: "gmail",
   auth: {
-    user: env.NODEMAILER_EMAIL,
-    pass: env.NODEMAILER_PW,
+    user: env.APP_EMAIL,
+    pass: env.APP_PW,
   },
 });
 
@@ -25,7 +25,7 @@ export default async function sendEmail({
   return new Promise((resolve, reject) => {
     transporter.sendMail(
       {
-        from: env.NODEMAILER_EMAIL,
+        from: env.APP_EMAIL,
         to,
         cc,
         subject,

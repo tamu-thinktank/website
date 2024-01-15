@@ -179,13 +179,16 @@ export const adminRouter = createTRPCRouter({
         },
       });
 
-      // move resume to accepted or rejected folder in drive
-      await DriveService.moveFile({
-        fromFolderId: RESUME_PENDING_ID,
-        toFolderId:
-          status === "ACCEPTED" ? RESUME_ACCEPTED_ID : RESUME_REJECTED_ID,
-        fileId: resumeId,
-      });
+      try {
+        await DriveService.moveFile({
+          fromFolderId: RESUME_PENDING_ID,
+          toFolderId:
+            status === "ACCEPTED" ? RESUME_ACCEPTED_ID : RESUME_REJECTED_ID,
+          fileId: resumeId,
+        });
+      } catch (e) {
+        throw new Error("Failed to move resume: " + (e as Error).message);
+      }
 
       return true;
     }),
@@ -213,11 +216,28 @@ export const adminRouter = createTRPCRouter({
       }) => {
         const startTimeObj = Temporal.ZonedDateTime.from(startTime);
 
+        // testing calendar api
+        // try {
+        //   await CalendarService.listEvents(Temporal.Now.zonedDateTimeISO());
+        // } catch (e) {
+        //   console.log(JSON.stringify(e, null, 2));
+        //   throw new Error("Failed to list events: " + (e as Error).message);
+        // }
+
         // add meeting time to google calendar
-        const eventLink = await CalendarService.addCalenderEvent({
-          startTime: startTimeObj,
-          emails: [officerEmail, applicantEmail],
-        });
+        let eventLink: Awaited<
+          ReturnType<(typeof CalendarService)["addCalenderEvent"]>
+        >;
+        try {
+          eventLink = await CalendarService.addCalenderEvent({
+            startTime: startTimeObj,
+            emails: [officerEmail, applicantEmail],
+          });
+        } catch (e) {
+          throw new Error(
+            "Failed to add event to calendar: " + (e as Error).message,
+          );
+        }
 
         // remove meeting time from soonestOfficer's availabilities
         const thirty = Array(2)
@@ -236,21 +256,25 @@ export const adminRouter = createTRPCRouter({
         });
 
         // send email to interview attendees
-        await sendEmail({
-          to: [applicantEmail],
-          cc: [officerEmail],
-          subject: "Application accepted",
-          template: InterviewEmail({
-            userFirstname: applicantName.split(" ")[0] ?? "",
-            time: startTimeObj
-              .withTimeZone(eventTimezone)
-              .toLocaleString("en-US", {
-                dateStyle: "short",
-                timeStyle: "short",
-              }),
-            eventLink: eventLink ?? "",
-          }),
-        });
+        try {
+          await sendEmail({
+            to: [applicantEmail],
+            cc: [officerEmail],
+            subject: "Application accepted",
+            template: InterviewEmail({
+              userFirstname: applicantName.split(" ")[0] ?? "",
+              time: startTimeObj
+                .withTimeZone(eventTimezone)
+                .toLocaleString("en-US", {
+                  dateStyle: "short",
+                  timeStyle: "short",
+                }),
+              eventLink: eventLink ?? "",
+            }),
+          });
+        } catch (e) {
+          throw new Error("Failed to send email: " + (e as Error).message);
+        }
 
         return true;
       },

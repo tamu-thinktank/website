@@ -55,8 +55,8 @@ export default class DriveService {
 
     await driveClient.files.update({
       fileId,
-      addParents: toFolderId,
       removeParents: fromFolderId,
+      addParents: toFolderId,
       fields: "id",
       supportsAllDrives: true,
     });

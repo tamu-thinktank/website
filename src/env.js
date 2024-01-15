@@ -68,9 +68,11 @@ export const env = createEnv({
         },
       ),
 
-    NODEMAILER_EMAIL: z.string().email(),
-    NODEMAILER_PW: z.string(),
+    APP_EMAIL: z.string().email(),
+    APP_PW: z.string(),
 
+    GOOGLE_CLIENT_ID: z.string(),
+    GOOGLE_CLIENT_SECRET: z.string(),
     GCP_CREDENTIALS: z.string().transform((input, ctx) => {
       const creds = JSON.parse(Buffer.from(input, "base64").toString());
       const parsedCreds = gcpCredentialsSchema.safeParse(creds);
@@ -111,9 +113,11 @@ export const env = createEnv({
     AUTH0_ISSUER: process.env.AUTH0_ISSUER,
     SITE_URL: process.env.SITE_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-    NODEMAILER_EMAIL: process.env.NODEMAILER_EMAIL,
-    NODEMAILER_PW: process.env.NODEMAILER_PW,
+    APP_EMAIL: process.env.APP_EMAIL,
+    APP_PW: process.env.APP_PW,
     ALLOWED_EMAILS: process.env.ALLOWED_EMAILS,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
     GCP_CREDENTIALS: process.env.GCP_CREDENTIALS,
   },
   /**

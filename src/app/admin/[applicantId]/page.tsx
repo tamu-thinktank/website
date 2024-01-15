@@ -21,11 +21,13 @@ import type { RouterOutputs } from "@/lib/trpc/shared";
 import { type FileDataResponse } from "@/types/api";
 import { Temporal } from "@js-temporal/polyfill";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect, useParams, useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { toast as sonner } from "sonner";
 import PdfViewer from "./pdf-viewer";
+
 /**
  * @returns Array of string Q&A pairs for each section, make sure questions and answers object share the same key names
  */
@@ -108,21 +110,31 @@ export default function ApplicantPage() {
     queryKey: ["get-resume", applicant?.resumeId, session?.user.email],
     queryFn: getResume,
     enabled: !!applicant && !!session,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
+    retry: false,
+    retryOnMount: false,
   });
 
-  if (isApplicantLoading || isResumeLoading || sessionStatus === "loading") {
-    return <PageSkeleton />;
-  }
-  if (isApplicantError || isResumeError) {
-    toast({
-      title: "Error",
-      description: `${
-        isApplicantError ? "Application" : "Resume"
-      } not found, going to admin page`,
-      duration: 3000,
-    });
+  useEffect(() => {
+    if (isApplicantError || isResumeError) {
+      toast({
+        title: "Error",
+        description: `${
+          isApplicantError
+            ? "Application not found, going to admin page"
+            : "Resume not found"
+        } `,
+        duration: 3000,
+      });
 
-    return redirect("/admin");
+      if (isApplicantError) redirect("/admin");
+    }
+  }, [isApplicantError, isResumeError]);
+
+  if (isApplicantLoading || isApplicantError || sessionStatus === "loading") {
+    return <PageSkeleton />;
   }
 
   return (
@@ -167,26 +179,15 @@ export default function ApplicantPage() {
             )) ?? null}
           </Card>
         ) : null}
-        <PdfViewer
-          file={resumeFileData.fileContent}
-          fileName={resumeFileData.fileName}
-          webViewLink={resumeFileData.fileViewLink}
-        />
-      </CardContent>
-    </Card>
-  );
-}
-
-function PageSkeleton() {
-  return (
-    <Card className="h-[95%] overflow-hidden">
-      <CardContent>
-        <div className="mt-4 flex gap-4">
-          <Skeleton className="h-10 w-1/12" />
-          <Skeleton className="h-10 w-1/12" />
-        </div>
-        <Skeleton className="my-6 h-[26rem] w-full" />
-        <Skeleton className="my-6 h-[26rem] w-full" />
+        {isResumeLoading ? (
+          <Skeleton className="my-6 h-[26rem] w-full" />
+        ) : (
+          <PdfViewer
+            file={resumeFileData?.fileContent}
+            fileName={resumeFileData?.fileName}
+            webViewLink={resumeFileData?.fileViewLink}
+          />
+        )}
       </CardContent>
     </Card>
   );
@@ -294,39 +295,40 @@ function Buttons({
     return soonest;
   }, [meetingTimes, officerTimes?.availabilities]);
 
-  const { mutate: updateApplicant } = api.admin.updateApplicant.useMutation({
-    onSuccess: (data, input) => {
-      let description = `Applicant has been ${input.status}.`;
-      if (input.status === "ACCEPTED") {
-        if (!soonestOfficer) {
-          description += " Email applicant about interview time.";
-        } else {
-          description += ` Scheduling interview...`;
+  const { mutate: updateApplicant, isLoading: isUpdateLoading } =
+    api.admin.updateApplicant.useMutation({
+      onSuccess: (data, input) => {
+        let description = `Applicant has been ${input.status}.`;
+        if (input.status === "ACCEPTED") {
+          if (!soonestOfficer) {
+            description += " Email applicant about interview time.";
+          } else {
+            description += ` Scheduling interview...`;
+          }
         }
-      }
 
-      sonner.success(input.status, {
-        description,
-        action:
-          !soonestOfficer || input.status === "REJECTED"
-            ? {
-                label: "Admin",
-                onClick: () => router.push("/admin"),
-              }
-            : undefined,
-        duration: 5000,
-      });
-    },
-    onSettled: async (newData, err) => {
-      if (err) {
-        clientErrorHandler({ err, sonnerFn: sonner });
-      }
+        sonner.success(input.status, {
+          description,
+          action:
+            !soonestOfficer || input.status === "REJECTED"
+              ? {
+                  label: "Admin",
+                  onClick: () => router.push("/admin"),
+                }
+              : undefined,
+          duration: 5000,
+        });
+      },
+      onSettled: async (newData, err) => {
+        if (err) {
+          clientErrorHandler({ err, sonnerFn: sonner });
+        }
 
-      // refetch
-      void apiUtils.admin.getApplicant.invalidate(applicantId);
-      void apiUtils.admin.getApplicants.invalidate();
-    },
-  });
+        // refetch
+        void apiUtils.admin.getApplicant.invalidate(applicantId);
+        void apiUtils.admin.getApplicants.invalidate();
+      },
+    });
 
   const { mutate: scheduleInterview } = api.admin.scheduleInterview.useMutation(
     {
@@ -385,16 +387,46 @@ function Buttons({
       <TooltipProvider>
         <Tooltip open={!soonestOfficer}>
           <TooltipTrigger asChild>
-            <Button onClick={acceptApplicant}>Accept</Button>
+            <Button
+              onClick={acceptApplicant}
+              disabled={isUpdateLoading}
+              className="w-20"
+            >
+              {isUpdateLoading ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Accept"
+              )}
+            </Button>
           </TooltipTrigger>
           <TooltipContent>
             <p>{!soonestOfficer ? "No meeting time available" : null}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
-      <Button variant={"destructive"} onClick={rejectApplicant}>
-        Reject
+      <Button
+        variant={"destructive"}
+        onClick={rejectApplicant}
+        disabled={isUpdateLoading}
+        className="w-20"
+      >
+        {isUpdateLoading ? <Loader2 className="animate-spin" /> : "Reject"}
       </Button>
     </div>
+  );
+}
+
+function PageSkeleton() {
+  return (
+    <Card className="h-[95%] overflow-hidden">
+      <CardContent>
+        <div className="mt-4 flex gap-4">
+          <Skeleton className="h-10 w-1/12" />
+          <Skeleton className="h-10 w-1/12" />
+        </div>
+        <Skeleton className="my-6 h-[26rem] w-full" />
+        <Skeleton className="my-6 h-[26rem] w-full" />
+      </CardContent>
+    </Card>
   );
 }
