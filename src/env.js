@@ -52,6 +52,7 @@ export const env = createEnv({
     AUTH0_CLIENT_SECRET: z.string(),
     AUTH0_ISSUER: z.string().url(),
 
+    WEB_URL: z.string().url(),
     SITE_URL: z.string().url(),
 
     ALLOWED_EMAILS: z
@@ -111,6 +112,7 @@ export const env = createEnv({
     AUTH0_CLIENT_ID: process.env.AUTH0_CLIENT_ID,
     AUTH0_CLIENT_SECRET: process.env.AUTH0_CLIENT_SECRET,
     AUTH0_ISSUER: process.env.AUTH0_ISSUER,
+    WEB_URL: process.env.WEB_URL,
     SITE_URL: process.env.SITE_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
     APP_EMAIL: process.env.APP_EMAIL,

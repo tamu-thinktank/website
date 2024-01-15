@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import {
   Body,
   Button,
@@ -39,22 +40,30 @@ export const InterviewEmail = ({
       <Container style={container}>
         <Section
           style={{
-            width: "100%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            textAlign: "center",
           }}
         >
           <Button
-            href="https://tamuthinktank.org"
+            href={env.WEB_URL}
             style={{
-              color: "black",
+              backgroundColor: "transparent",
               textDecoration: "none",
+              textAlign: "center",
+              color: "black",
+              display: "block",
             }}
           >
             <Row>
               <Column>
-                <Img src={`/ttt.webp`} width="50" alt="TTT" style={logo} />
+                <Img
+                  src={new URL(`/ttt.png`, env.WEB_URL).toString()}
+                  width="50"
+                  alt="TTT"
+                  style={{
+                    marginRight: "16px",
+                    backgroundColor: "transparent",
+                  }}
+                />
               </Column>
               <Column>
                 <Heading as="h2">TAMU ThinkTank</Heading>
@@ -95,10 +104,6 @@ const main = {
 
 const container = {
   padding: "20px 0 48px",
-};
-
-const logo = {
-  marginRight: "16px",
 };
 
 const paragraph = {

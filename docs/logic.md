@@ -10,8 +10,7 @@
 ## officer view at `/admin`
 
 - requires signin with google
-  - only `ALLOWED_EMAILS` from `.env` can signin
-  - only users with access to the shared drive can see resumes
+  - see `libraries.md/emails` for details
 
 - view all applicants
 - click on applicant -> go to page

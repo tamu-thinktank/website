@@ -1,7 +1,8 @@
 import "@/styles/globals.css";
 
+import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner"
+import { env } from "@/env";
 import { TRPCReactProvider } from "@/lib/trpc/react";
 import { type Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -13,7 +14,7 @@ const font = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://tamuthinktank.org"),
+  metadataBase: new URL(env.WEB_URL),
   title: "TAMU ThinkTank",
   description: "The official website for TAMU ThinkTank.",
   keywords: ["thinktank"],

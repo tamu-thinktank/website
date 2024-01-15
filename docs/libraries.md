@@ -2,6 +2,10 @@
 
 ## emails
 
+- Only emails in `ALLOWED_EMAILS` in `.env` can sign in
+- Emails need to be added to OAuth2 consent screen in Google Cloud Console
+- Make sure all emails have access to shared drive and calendar
+
 ### react-email
 
 - need packages: `react-email`, `@react-email/components`, `@react-email/render`
@@ -14,8 +18,11 @@
 
 ## gcp
 
-- using service account key file
-
 ### @googleapis/drive
 
+- using service account key file json as a base64 string in .env
+
 ### @googleapis/calendar
+
+- using Google OAuth2 w/ Auth0 Management API to get refresh token for calendar API
+  - Auth0 params in nextauth options

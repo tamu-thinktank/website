@@ -1,8 +1,7 @@
 import { eventTimezone } from "@/consts/availability-grid";
 import { CALENDAR_ID } from "@/consts/google-things";
 import { env } from "@/env";
-import { getServerAuthSession } from "@/lib/auth";
-import { getBaseUrl } from "@/lib/trpc/shared";
+import { getServerAuthSession, redirect_uri } from "@/lib/auth";
 import {
   Auth0MgmtAccessTokenSchema,
   Auth0UserIdentitiesSchema,
@@ -13,7 +12,7 @@ import axios from "axios";
 
 export default class CalendarService {
   /**
-   * @deprecated b/c we can't do Domain-Wide Delegation of Authority with a service account on personal gmail accounts
+   * @deprecated b/c we can't do "Domain-Wide Delegation of Authority" with a service account on personal gmail accounts. Use `getOAuthCalendarClient` instead.
    */
   static async getCalendarClient() {
     const auth = new calenderAuth.GoogleAuth({
@@ -75,12 +74,12 @@ export default class CalendarService {
     return user.identities[0]!.refresh_token;
   }
 
-  static async getCalendarOAuthClient() {
+  static async getOAuthCalendarClient() {
     const refreshToken = await this.getUserIdpRefreshToken();
     const auth = new calenderAuth.OAuth2({
       clientId: env.GOOGLE_CLIENT_ID,
       clientSecret: env.GOOGLE_CLIENT_SECRET,
-      redirectUri: getBaseUrl() + "/api/auth/callback/auth0",
+      redirectUri: redirect_uri,
     });
     auth.setCredentials({
       refresh_token: refreshToken,
@@ -106,7 +105,7 @@ export default class CalendarService {
     intervieweeName: string;
     interviewerName: string;
   }) {
-    const calendarClient = await this.getCalendarOAuthClient();
+    const calendarClient = await this.getOAuthCalendarClient();
     const timeInCT = startTime.withTimeZone(eventTimezone);
     const res = await calendarClient.events.insert({
       calendarId: CALENDAR_ID,
@@ -144,7 +143,7 @@ export default class CalendarService {
    * Lists the next 10 events on the calendar. Used for testing.
    */
   static async listEvents(time: Temporal.ZonedDateTime) {
-    const calendarClient = await this.getCalendarOAuthClient();
+    const calendarClient = await this.getOAuthCalendarClient();
     const res = await calendarClient.events.list({
       calendarId: CALENDAR_ID,
       timeMin: time.toString({

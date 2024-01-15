@@ -10,6 +10,8 @@ import { env } from "@/env";
 import { db } from "@/lib/db";
 import { getBaseUrl } from "./trpc/shared";
 
+export const redirect_uri = getBaseUrl() + "/api/auth/callback/auth0";
+
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
  * object and keep type safety.
@@ -81,10 +83,9 @@ export const authOptions: NextAuthOptions = {
       authorization: {
         params: {
           // these are required to get IDP refresh token from google
-          redirect_uri: getBaseUrl() + "/api/auth/callback/auth0",
+          redirect_uri,
           access_type: "offline",
-          connection_scope:
-            "https://www.googleapis.com/auth/calendar",
+          connection_scope: "https://www.googleapis.com/auth/calendar",
           approval_prompt: "force", // @see https://community.auth0.com/t/need-help-with-fetching-refresh-token-from-google-social-login/11699/2
         },
       },
