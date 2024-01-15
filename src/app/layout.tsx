@@ -17,12 +17,32 @@ export const metadata: Metadata = {
   metadataBase: new URL(env.WEB_URL),
   title: "TAMU ThinkTank",
   description: "The official website for TAMU ThinkTank.",
-  keywords: ["thinktank"],
+  keywords: [
+    "Next.js",
+    "React",
+    "Tailwind CSS",
+    "Server Components",
+    "TypeScript",
+    "TRPC",
+    "MySQL",
+    "Prisma",
+    "Vercel",
+    "Radix UI",
+    "TAMU ThinkTank",
+    "TAMU",
+    "ThinkTank",
+  ],
   icons: {
     icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
   },
   openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: env.WEB_URL,
     title: "TAMU ThinkTank",
+    description: "The official website for TAMU ThinkTank.",
+    images: [`${env.WEB_URL}/og.jpg`],
   },
 };
 
