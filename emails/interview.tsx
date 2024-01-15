@@ -19,6 +19,7 @@ import * as React from "react";
 interface InterviewEmailProps {
   userFirstname: string;
   time: string;
+  location: string;
   eventLink: string;
 }
 
@@ -28,6 +29,7 @@ export const InterviewEmail = ({
     dateStyle: "short",
     timeStyle: "short",
   }).format(Date.now()),
+  location = "TBD",
   eventLink = "https://calendar.google.com",
 }: InterviewEmailProps) => (
   <Html>
@@ -76,7 +78,7 @@ export const InterviewEmail = ({
           ThinkTank would like to conduct an interview with you over a 
           position on one of the design challenge teams for the Spring 2024 season.
         </Text>
-        <Text style={paragraph}>Your interview is scheduled at {time}.</Text>
+        <Text style={paragraph}>Your interview is scheduled at {time} in {location}.</Text>
         <Section style={btnContainer}>
           <Button style={button} href={eventLink}>
             Google Calendar

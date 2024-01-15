@@ -118,6 +118,7 @@ model Application {
     id          String            @id @default(cuid())
     submittedAt DateTime          @default(now())
     status      ApplicationStatus @default(PENDING)
+    location    String? // interview location if accepted
 
     // personal info section
     fullName     String

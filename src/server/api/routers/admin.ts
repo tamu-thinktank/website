@@ -165,33 +165,37 @@ export const adminRouter = createTRPCRouter({
     .input(
       z.object({
         applicantId: z.string().cuid2(),
-        status: z.enum(["ACCEPTED", "REJECTED"]),
         resumeId: z.string(),
+        status: z.enum(["ACCEPTED", "REJECTED"]),
+        location: z.string().optional(),
       }),
     )
-    .mutation(async ({ input: { applicantId, resumeId, status }, ctx }) => {
-      await ctx.db.application.update({
-        where: {
-          id: applicantId,
-        },
-        data: {
-          status,
-        },
-      });
-
-      try {
-        await DriveService.moveFile({
-          fromFolderId: RESUME_PENDING_ID,
-          toFolderId:
-            status === "ACCEPTED" ? RESUME_ACCEPTED_ID : RESUME_REJECTED_ID,
-          fileId: resumeId,
+    .mutation(
+      async ({ input: { applicantId, resumeId, status, location }, ctx }) => {
+        await ctx.db.application.update({
+          where: {
+            id: applicantId,
+          },
+          data: {
+            status,
+            location,
+          },
         });
-      } catch (e) {
-        throw new Error("Failed to move resume: " + (e as Error).message);
-      }
 
-      return true;
-    }),
+        try {
+          await DriveService.moveFile({
+            fromFolderId: RESUME_PENDING_ID,
+            toFolderId:
+              status === "ACCEPTED" ? RESUME_ACCEPTED_ID : RESUME_REJECTED_ID,
+            fileId: resumeId,
+          });
+        } catch (e) {
+          throw new Error("Failed to move resume: " + (e as Error).message);
+        }
+
+        return true;
+      },
+    ),
   scheduleInterview: protectedProcedure
     .input(
       z.object({
@@ -201,6 +205,7 @@ export const adminRouter = createTRPCRouter({
         applicantName: z.string(),
         applicantEmail: z.string().email(),
         startTime: z.string(),
+        location: z.string(),
       }),
     )
     .mutation(
@@ -212,6 +217,7 @@ export const adminRouter = createTRPCRouter({
           applicantName,
           applicantEmail,
           startTime,
+          location,
         },
         ctx,
       }) => {
@@ -232,6 +238,7 @@ export const adminRouter = createTRPCRouter({
         try {
           eventLink = await CalendarService.addCalenderEvent({
             startTime: startTimeObj,
+            location,
             emails: [officerEmail, applicantEmail],
             intervieweeName: applicantName,
             interviewerName: officerName,
@@ -272,6 +279,7 @@ export const adminRouter = createTRPCRouter({
                   dateStyle: "short",
                   timeStyle: "short",
                 }),
+              location,
               eventLink: eventLink ?? "",
             }),
           });

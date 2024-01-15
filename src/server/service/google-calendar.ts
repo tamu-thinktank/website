@@ -96,11 +96,13 @@ export default class CalendarService {
    */
   static async addCalenderEvent({
     startTime,
+    location,
     emails,
     intervieweeName,
     interviewerName,
   }: {
     startTime: Temporal.ZonedDateTime;
+    location: string;
     emails: string[];
     intervieweeName: string;
     interviewerName: string;
@@ -114,7 +116,7 @@ export default class CalendarService {
           email: env.APP_EMAIL,
         },
         summary: intervieweeName + " ThinkTank Interview (" + interviewerName + ")",
-        location: "TBD",
+        location,
         start: {
           dateTime: timeInCT.toString({
             timeZoneName: "never",

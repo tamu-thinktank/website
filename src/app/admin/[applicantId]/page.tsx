@@ -6,6 +6,14 @@ import { P } from "@/components/typography/P";
 import { Table } from "@/components/typography/Table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -19,13 +27,16 @@ import { q } from "@/consts/apply-questions";
 import { api, clientErrorHandler } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
 import { type FileDataResponse } from "@/types/api";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Temporal } from "@js-temporal/polyfill";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
+import { useForm, type UseFormReturn } from "react-hook-form";
 import { toast as sonner } from "sonner";
+import { z } from "zod";
 import PdfViewer from "./pdf-viewer";
 
 /**
@@ -355,11 +366,28 @@ function Buttons({
     },
   );
 
+  const form = useForm<{
+    location: string;
+  }>({
+    resolver: zodResolver(
+      z.object({ location: z.string().min(1, "Required") }),
+    ),
+  });
+
   const acceptApplicant = useCallback(() => {
+    if (!form.getValues("location")) {
+      sonner.error("Error", {
+        description: "Please enter the location of the interview",
+        duration: 3000,
+      });
+      return;
+    }
+
     updateApplicant({
       applicantId,
       status: "ACCEPTED",
       resumeId: resumeId,
+      location: form.getValues("location"),
     });
 
     if (!!soonestOfficer) {
@@ -370,9 +398,10 @@ function Buttons({
         applicantName,
         applicantEmail,
         startTime: soonestOfficer.startTime,
+        location: form.getValues("location"),
       });
     }
-  }, [applicantId, soonestOfficer]);
+  }, [applicantId, soonestOfficer, form]);
 
   const rejectApplicant = useCallback(() => {
     updateApplicant({
@@ -384,12 +413,13 @@ function Buttons({
 
   return (
     <div className="mt-4 flex gap-4">
+      <LocationInput form={form} />
       <TooltipProvider>
-        <Tooltip open={!soonestOfficer}>
+        <Tooltip open={!soonestOfficer || !form.formState.isValid}>
           <TooltipTrigger asChild>
             <Button
               onClick={acceptApplicant}
-              disabled={isUpdateLoading}
+              disabled={isUpdateLoading || !form.formState.isValid}
               className="w-20"
             >
               {isUpdateLoading ? (
@@ -400,6 +430,11 @@ function Buttons({
             </Button>
           </TooltipTrigger>
           <TooltipContent>
+            <p>
+              {form.formState.isValid
+                ? null
+                : "Enter location of the interview"}
+            </p>
             <p>{!soonestOfficer ? "No meeting time available" : null}</p>
           </TooltipContent>
         </Tooltip>
@@ -413,6 +448,44 @@ function Buttons({
         {isUpdateLoading ? <Loader2 className="animate-spin" /> : "Reject"}
       </Button>
     </div>
+  );
+}
+
+function LocationInput({
+  form,
+}: {
+  form: UseFormReturn<{
+    location: string;
+  }>;
+}) {
+  return (
+    <Form {...form}>
+      <form
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
+      >
+        <FormField
+          control={form.control}
+          name="location"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input
+                  id="location"
+                  type="text"
+                  placeholder="Interview location"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
   );
 }
 
