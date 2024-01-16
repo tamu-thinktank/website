@@ -1,8 +1,7 @@
+import { longAnswerLimit } from "@/consts/apply-questions";
 import { Temporal } from "@js-temporal/polyfill";
 import { ApplicationStatus, Challenge, Year } from "@prisma/client";
 import { z } from "zod";
-
-const charLimit = 1000;
 
 const challengeSchema = z.nativeEnum(Challenge);
 const statusSchema = z.nativeEnum(ApplicationStatus);
@@ -55,13 +54,13 @@ export const ApplyFormSchema = z
       interestedAnswer: z
         .string()
         .min(1, "Required")
-        .max(charLimit, "Responses must be within 1000 characters"),
+        .max(longAnswerLimit, "Responses must be within 1000 characters"),
       challenges: z.array(challengeSchema).min(1, "Select at least one"),
       interestedChallenge: challengeSchema,
       passionAnswer: z
         .string()
         .min(1, "Required")
-        .max(charLimit, "Responses must be within 1000 characters"),
+        .max(longAnswerLimit, "Responses must be within 1000 characters"),
       isLeadership: z.boolean(),
     }),
 
@@ -69,20 +68,20 @@ export const ApplyFormSchema = z
     leadership: z.object({
       skillsAnswer: z
         .string()
-        .max(charLimit, "Responses must be within 1000 characters")
+        .max(longAnswerLimit, "Responses must be within 1000 characters")
         .nullable(),
       conflictsAnswer: z
         .string()
-        .max(charLimit, "Responses must be within 1000 characters")
+        .max(longAnswerLimit, "Responses must be within 1000 characters")
         .nullable(),
       presentation: z.coerce.number().min(1).max(5).nullable(),
       timeManagement: z
         .string()
-        .max(charLimit, "Responses must be within 1000 characters")
+        .max(longAnswerLimit, "Responses must be within 1000 characters")
         .nullable(),
       relevantExperience: z
         .string()
-        .max(charLimit, "Responses must be within 1000 characters")
+        .max(longAnswerLimit, "Responses must be within 1000 characters")
         .nullable(),
       timeCommitment: z.boolean().nullable(),
     }),

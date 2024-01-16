@@ -33,3 +33,5 @@ export const q = {
       "Are you able to commit 10+ hours per week with flexibility to accommodate general team availability?",
   },
 } as const;
+
+export const longAnswerLimit = 1000;
