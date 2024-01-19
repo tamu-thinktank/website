@@ -13,16 +13,16 @@ export type Mode = "add" | "remove";
 export const times = expandTimes({
   startDateTime: Temporal.ZonedDateTime.from({
     timeZone: eventTimezone,
-    year: 2023,
-    month: 12,
-    day: 3,
+    year: 2024,
+    month: 1,
+    day: 22,
     hour: 9,
   }).withTimeZone("UTC"),
   endDateTime: Temporal.ZonedDateTime.from({
     timeZone: eventTimezone,
-    year: 2023,
-    month: 12,
-    day: 16,
+    year: 2024,
+    month: 2,
+    day: 2,
     hour: 20,
   }).withTimeZone("UTC"),
 });
