@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
-import { api, clientErrorHandler } from "@/lib/trpc/react";
+import { api } from "@/lib/trpc/react";
 import { type RouterInputs } from "@/lib/trpc/shared";
 import { ApplyFormSchema } from "@/lib/validations/apply";
 import { type UploadResumeResponse } from "@/types/api";
@@ -77,8 +77,13 @@ export default function Apply() {
       form.reset();
       router.push("/");
     },
-    onError: (err) => {
-      clientErrorHandler({ err, toastFn: toast });
+    onError: () => {
+      toast({
+        title: "Error",
+        variant: "destructive",
+        description: "UIN or email already submitted for this application. Contact us at tamuthinktank@gmail.com if you believe this is an error.",
+        duration: 5000,
+      });
     },
   });
 

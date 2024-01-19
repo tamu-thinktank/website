@@ -31,7 +31,7 @@ const clientLogos = [
 
 export default function HeroSection() {
   return (
-    <div className=" relative" id="home">
+    <div className="relative" id="home">
       <div
         aria-hidden="true"
         className="absolute inset-0 grid grid-cols-2 -space-x-52 py-40 opacity-40 dark:opacity-20"
@@ -40,7 +40,7 @@ export default function HeroSection() {
         <div className="h-32 bg-gradient-to-r from-cyan-400 to-sky-300 blur-[106px] dark:to-indigo-600"></div>
       </div>
       <Container>
-        <div className="relative mx-auto flex h-screen flex-col pt-36">
+        <div className="relative mx-auto flex flex-col justify-between pt-36">
           <div className="mx-auto text-center lg:w-2/3">
             <h1 className="text-5xl font-bold text-gray-900 dark:text-white md:text-6xl xl:text-7xl">
               TAMU ThinkTank
@@ -90,14 +90,14 @@ export default function HeroSection() {
               </div>
             </div>
           </div>
-          <div className="grid h-full grid-cols-3 items-center justify-center gap-10 md:grid-cols-6">
+          <div className="mt-10 grid h-full grid-cols-3 items-center justify-center gap-10 md:grid-cols-6">
             {clientLogos.map((logo, index) => (
               <Link href={logo.link} key={index}>
                 <Image
                   key={index}
                   src={logo.src}
                   className={`mx-auto ${
-                    index === 0 ? "h-24" : "h-auto"
+                    index === 0 ? "h-20" : "h-auto"
                   } w-auto`}
                   alt="client logo"
                   width={500}

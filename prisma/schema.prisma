@@ -68,6 +68,17 @@ model VerificationToken {
 
 // ------------------
 
+// Availabilities of officers for each time section in availability grid
+model OfficerTime {
+    gridTime   String // Temporal.ZonedDateTime ISO in UTC
+    officerId  String
+    officer    User   @relation(fields: [officerId], references: [id], onDelete: Cascade)
+    selectedAt String // Temporal.ZonedDateTime ISO in UTC
+
+    @@id([gridTime, officerId])
+    @@index([officerId])
+}
+
 enum Year {
     FRESHMAN
     SOPHOMORE
@@ -94,17 +105,6 @@ enum ApplicationStatus {
     PENDING
     ACCEPTED
     REJECTED
-}
-
-// Availabilities of officers for each time section in availability grid
-model OfficerTime {
-    gridTime   String // Temporal.ZonedDateTime ISO in UTC
-    officerId  String
-    officer    User   @relation(fields: [officerId], references: [id], onDelete: Cascade)
-    selectedAt String // Temporal.ZonedDateTime ISO in UTC
-
-    @@id([gridTime, officerId])
-    @@index([officerId])
 }
 
 // Availabilities of applicants
