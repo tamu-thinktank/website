@@ -77,9 +77,12 @@ enum Year {
 }
 
 enum Challenge {
-    AIAA
-    RASC_AL
-    Blue_Skies
+    TDC_93
+    TDC_94
+    TDC_95
+    TDC_96
+    TDC_97
+    TDC_98
 }
 
 model ChallengeTable {

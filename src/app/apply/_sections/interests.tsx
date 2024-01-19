@@ -26,20 +26,36 @@ const challenges: {
   link: string;
 }[] = [
   {
-    id: Challenge.AIAA,
-    label: "AIAA",
-    link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
+    id: Challenge.TDC_93,
+    label: "TDC-93",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
   },
   {
-    id: Challenge.RASC_AL,
-    label: "RASC-AL",
-    link: "https://rascal.nianet.org/competition-details/",
+    id: Challenge.TDC_94,
+    label: "TDC-94",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
   },
   {
-    id: Challenge.Blue_Skies,
-    label: "Blue Skies",
-    link: "https://blueskies.nianet.org/competition/",
+    id: Challenge.TDC_95,
+    label: "TDC-95",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
   },
+  {
+    id: Challenge.TDC_96,
+    label: "TDC-96",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.TDC_97,
+    label: "TDC-97",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.TDC_98,
+    label: "TDC-98",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  }
+
 ];
 
 export default function Interests() {
@@ -90,11 +106,7 @@ export default function Interests() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Details can be found below: <br />- AIAA:
-                  https://www.aiaa.org/get-involved/students-educators/Design-Competitions{" "}
-                  <br />- RASC-AL:
-                  https://rascal.nianet.org/competition-details/ <br />- Blue
-                  Skies: https://blueskies.nianet.org/competition/
+                  Details can be found below: <br /> https://docs.google.com/spreadsheets/d/1RV2x2WfHnKadF7-wfvLKe-247PeqpOvk/edit?usp=sharing&ouid=110812824996366755065&rtpof=true&sd=true
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -170,30 +182,66 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={Challenge.AIAA} id="AIAA" />
-                          <FormLabel htmlFor="AIAA">AIAA</FormLabel>
+                          <RadioGroupItem 
+                            value={Challenge.TDC_93} 
+                            id="TDC-93" 
+                          />
+                          <FormLabel htmlFor="TDC-93">TDC-93</FormLabel>
                         </div>
                       </FormControl>
                     </FormItem>
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.RASC_AL}
-                            id="RASC-AL"
+                          <RadioGroupItem 
+                            value={Challenge.TDC_94} 
+                            id="TDC-94" 
                           />
-                          <FormLabel htmlFor="RASC-AL">RASC-AL</FormLabel>
+                          <FormLabel htmlFor="TDC-94">TDC-94</FormLabel>
                         </div>
                       </FormControl>
                     </FormItem>
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.Blue_Skies}
-                            id="Blue Skies"
+                          <RadioGroupItem 
+                            value={Challenge.TDC_95} 
+                            id="TDC-95" 
                           />
-                          <FormLabel htmlFor="Blue Skies">Blue Skies</FormLabel>
+                          <FormLabel htmlFor="TDC-95">TDC-95</FormLabel>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem 
+                            value={Challenge.TDC_96} 
+                            id="TDC-96" 
+                          />
+                          <FormLabel htmlFor="TDC-96">TDC-96</FormLabel>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem 
+                            value={Challenge.TDC_97} 
+                            id="TDC-97" 
+                          />
+                          <FormLabel htmlFor="TDC-97">TDC-97</FormLabel>
+                        </div>
+                      </FormControl>
+                    </FormItem>
+                    <FormItem>
+                      <FormControl>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem 
+                            value={Challenge.TDC_98} 
+                            id="TDC-98" 
+                          />
+                          <FormLabel htmlFor="TDC-98">TDC-98</FormLabel>
                         </div>
                       </FormControl>
                     </FormItem>
