@@ -13,7 +13,11 @@ export default function useOfficerTimes() {
     isFetched: isDataFetched,
     isFetching: isDataFetching,
     isLoading: isDataLoading,
-  } = api.admin.getAvailabilities.useQuery(undefined);
+  } = api.admin.getAvailabilities.useQuery(undefined, {
+    onError: (err) => {
+      clientErrorHandler({ err, toastFn: toast });
+    },
+  });
 
   const { mutate, isLoading: isMutateLoading } =
     api.admin.updateAvailabilities.useMutation({

@@ -23,7 +23,10 @@ interface RejectAppProps {
 export const RejectAppEmail = ({ userFirstname = "Zeno" }: RejectAppProps) => (
   <Html>
     <Head />
-    <Preview>TAMU ThinkTank has declined to proceed with your admission into one of our design challenge teams.</Preview>
+    <Preview>
+      TAMU ThinkTank has declined to proceed with your admission into one of our
+      design challenge teams.
+    </Preview>
     <Body style={main}>
       <Container style={container}>
         <Section

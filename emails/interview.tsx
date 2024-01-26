@@ -31,7 +31,6 @@ export const InterviewEmail = ({
     timeStyle: "short",
   }).format(Date.now()),
   location = "TBD",
-  eventLink = "https://calendar.google.com",
   interviewerName = "John Doe",
 }: InterviewEmailProps) => (
   <Html>
@@ -125,21 +124,6 @@ const container = {
 const paragraph = {
   fontSize: "16px",
   lineHeight: "26px",
-};
-
-const btnContainer = {
-  textAlign: "center" as const,
-};
-
-const button = {
-  backgroundColor: "#4286F5",
-  borderRadius: "3px",
-  color: "#fff",
-  fontSize: "16px",
-  textDecoration: "none",
-  textAlign: "center" as const,
-  display: "block",
-  padding: ".6em 1em",
 };
 
 const hr = {

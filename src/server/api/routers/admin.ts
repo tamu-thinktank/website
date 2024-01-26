@@ -105,6 +105,10 @@ export const adminRouter = createTRPCRouter({
 
       return true;
     }),
+  clearAvailabilities: protectedProcedure.mutation(async ({ ctx }) => {
+    await ctx.db.officerTime.deleteMany();
+    return true;
+  }),
   getApplicants: protectedProcedure
     .output(ApplicantsSchema)
     .query(async ({ ctx }) => {

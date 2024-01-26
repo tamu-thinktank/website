@@ -46,5 +46,5 @@
   // > run task -> eslint -> lint whole folder
   "eslint.lintTask.enable": true,
   // show git status in editor
-  "git.openRepositoryInParentFolders": "always",
+  "git.openRepositoryInParentFolders": "always"
 }
