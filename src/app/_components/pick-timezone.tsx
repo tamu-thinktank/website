@@ -29,7 +29,7 @@ export default function PickTimezone({
   const [openTimezone, setOpenTimezone] = useState(false);
 
   return (
-    <>
+    <div className="flex flex-col gap-1">
       <Label className="text-sm font-semibold">Your time zone</Label>
       {isDesktop ? (
         <Popover open={openTimezone} onOpenChange={setOpenTimezone}>
@@ -104,7 +104,7 @@ export default function PickTimezone({
           to use it.
         </CardDescription>
       )}
-    </>
+    </div>
   );
 }
 
