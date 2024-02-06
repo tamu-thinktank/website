@@ -33,6 +33,16 @@ export default function Overview() {
             <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
               <div className="mt-8 flex gap-4 md:items-center">
                 <div className="w-5/6">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-teal-300">
+                    IV Fluid Generation (IVGEN) Mini pH Correction
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Team Hermes
+                  </p>
+                </div>
+              </div>
+              <div className="mt-8 flex gap-4 md:items-center">
+                <div className="w-5/6">
                   <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
                     TSGC Crew Tracking for Space Analog Research
                   </h1>
