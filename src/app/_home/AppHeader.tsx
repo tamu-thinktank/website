@@ -95,10 +95,18 @@ export default function Header() {
                 </ul>
               </div>
 
-              <div className="mt-12 lg:mt-0">
+              <div className="mt-12 flex space-x-4 lg:mt-0">
+                <a
+                  href="jsc"
+                  className="relative flex h-9 items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground"
+                >
+                  <span className="relative text-sm font-semibold text-white">
+                    JSC
+                  </span>
+                </a>
                 <a
                   href="apply"
-                  className="relative flex h-9 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground sm:w-max"
+                  className="relative flex h-9 items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground"
                 >
                   <span className="relative text-sm font-semibold text-white">
                     Apply
