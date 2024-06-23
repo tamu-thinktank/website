@@ -12,10 +12,4 @@
         <changefreq>always</changefreq>
         <priority>0.5</priority>
     </url>
-    <url>
-        <loc>https://tamuthinktank.org/jsc</loc>
-        <lastmod>2024-01-07</lastmod>
-        <changefreq>always</changefreq>
-        <priority>0.5</priority>
-    </url>
 </urlset>
