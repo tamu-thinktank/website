@@ -6,12 +6,12 @@ export default function Challenges() {
   return (
     <div id="articles">
       <Container>
-        <div className="mb-12 space-y-2 text-center">
-          <h2 className="text-3xl font-bold text-gray-800 dark:text-white md:text-4xl">
-            Latest Articles
-          </h2>
+        <div className="mb-12 space-y-2 text-center justify-between pt-24">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white md:text-4xl">
+            Fall 2024 Student Design Challenges
+          </h1>
           <p className="text-gray-600 dark:text-gray-300 lg:mx-auto lg:w-6/12">
-            Read about all of the things we've done so far!
+            The Official TAMU ThinkTank Fall 2024 Challenge Suite
           </p>
         </div>
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
