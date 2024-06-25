@@ -81,7 +81,8 @@ export default function Apply() {
       toast({
         title: "Error",
         variant: "destructive",
-        description: "UIN or email already submitted for this application. Contact us at tamuthinktank@gmail.com if you believe this is an error.",
+        description:
+          "UIN or email already submitted for this application. Contact us at tamuthinktank@gmail.com if you believe this is an error.",
         duration: 5000,
       });
     },

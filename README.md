@@ -1,6 +1,6 @@
 # Local setup
 
-**Recommended editor: [VSCode](https://code.visualstudio.com/)**  
+**Recommended editor: [VSCode](https://code.visualstudio.com/)**
 
 - Install all the recommended extensions
 
@@ -66,6 +66,7 @@
   - it finds the `docker-compose.yml` file in the working directory and runs it
   - will install mysql image if not already installed and run it in a container
   - can see installed image, running container, and volume (storage) in Docker Desktop or CLI
+
 - can stop container with `docker-compose stop`
 - can start existing container with `docker-compose start` (detached mode by default)
 - `DATABASE_URL`: already copied from .env.example for docker database
@@ -103,6 +104,7 @@
 ## Project database setup
 
 - Push our database schema to your database server:
+
   - Have Docker container running (`docker-compose start`) or PlanetScale database initialized
 
   ```pwsh
@@ -110,6 +112,7 @@
   ```
 
 - If weird type/syntax errors (VSCode):
+
   - ctrl+shift+p → restart ts server
   - ctrl+shift+p → restart eslint server
 
@@ -125,8 +128,8 @@
 
 ## Running website locally
 
-  ```pwsh
-  pnpm dev
-  ```
+```pwsh
+pnpm dev
+```
 
 - URL to view site: `http://localhost:3000/`

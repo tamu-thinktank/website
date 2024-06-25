@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Container from "./Container";
+import Container from "../_components/Container";
 
 export default function Officers() {
   return (

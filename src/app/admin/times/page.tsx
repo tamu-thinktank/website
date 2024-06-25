@@ -16,12 +16,14 @@ export default function MeetingTimes() {
 
   return (
     <Card className="h-[95%] overflow-auto">
-      <CardContent className="mt-6 flex items-end gap-4">
+      <CardContent className="mt-6 flex gap-4">
+        <Button size={"sm"} className="mt-6" onClick={() => clearTimes()}>
+          Clear times
+        </Button>
         <PickTimezone
           userTimezone={userTimezone}
           setUserTimezone={setUserTimezone}
         />
-        <Button onClick={() => clearTimes()}>Clear times</Button>
       </CardContent>
       <CardContent>
         <OfficersGrid userTimezone={userTimezone} />

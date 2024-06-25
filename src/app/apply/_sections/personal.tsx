@@ -97,10 +97,7 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input
-                    placeholder="123004567"
-                    {...field}
-                  />
+                  <Input placeholder="123004567" {...field} />
                 </FormControl>
                 <FormMessage />
               </CardContent>

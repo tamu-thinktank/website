@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Container from "./Container";
+import Container from "../_components/Container";
 
 export default function Articles() {
   return (
@@ -40,7 +40,9 @@ export default function Articles() {
                 target="_blank"
                 href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch"
               >
-                <span className="text-info dark:text-blue-300">Read more about Aggie Aeros</span>
+                <span className="text-info dark:text-blue-300">
+                  Read more about Aggie Aeros
+                </span>
               </Link>
             </div>
           </div>
@@ -70,7 +72,9 @@ export default function Articles() {
                 target="_blank"
                 href="https://engineering.tamu.edu/news/2023/07/texas-am-team-wins-texas-space-grant-consortium-design-challenge.html"
               >
-                <span className="text-info dark:text-blue-300">Read more about Team Vestigo</span>
+                <span className="text-info dark:text-blue-300">
+                  Read more about Team Vestigo
+                </span>
               </Link>
             </div>
           </div>

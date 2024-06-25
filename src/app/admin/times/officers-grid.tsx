@@ -376,7 +376,7 @@ export default function OfficersGrid({
   return (
     <>
       {/* List of people */}
-      {table && !!data?.officers.length && (
+      {!!table && !!data?.officers.length && (
         <div className="flex flex-wrap justify-center gap-1.5">
           {data.officers.map((officer) => (
             <Toggle

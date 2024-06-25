@@ -10,10 +10,12 @@
 ## officer view at `/admin`
 
 - requires signin with google
+
   - see `libraries.md/emails` for details
 
 - view all applicants
 - click on applicant -> go to page
+
   - show app form, render resume pdf on website
   - reject button
     - remove their available times (from db)

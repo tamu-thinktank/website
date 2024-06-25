@@ -27,7 +27,7 @@ declare module "next-auth" {
       id: string;
       providerAccountId: string;
     } & DefaultSession["user"];
-    error?: "RefreshAccessTokenError";
+    error?: "RefreshAccessTokenError"; // google refresh token error
   }
 
   // interface User {

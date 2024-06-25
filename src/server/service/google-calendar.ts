@@ -115,7 +115,8 @@ export default class CalendarService {
         organizer: {
           email: env.APP_EMAIL,
         },
-        summary: intervieweeName + " ThinkTank Interview (" + interviewerName + ")",
+        summary:
+          intervieweeName + " ThinkTank Interview (" + interviewerName + ")",
         location,
         start: {
           dateTime: timeInCT.toString({
