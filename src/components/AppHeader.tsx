@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Container from "../_components/Container";
+import Container from "./Container";
 
 export default function Header() {
   return (

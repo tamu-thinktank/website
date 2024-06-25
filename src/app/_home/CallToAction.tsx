@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Container from "../_components/Container";
+import Container from "../../components/Container";
 
 export default function CallToAction() {
   return (

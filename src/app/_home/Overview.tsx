@@ -1,5 +1,5 @@
 import ProjectCarousel from "@/app/_home/ProjectCarousel";
-import Container from "../_components/Container";
+import Container from "../../components/Container";
 
 export default function Overview() {
   return (

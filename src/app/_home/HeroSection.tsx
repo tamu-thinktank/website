@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import Container from "../_components/Container";
+import Container from "../../components/Container";
 
 const clientLogos = [
   {

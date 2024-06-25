@@ -1,7 +1,7 @@
-import AppFooter from "@/app/_home/AppFooter";
-import AppHeader from "@/app/_home/AppHeader";
-import Challenges from "@/app/challenges/Challenges";
+import AppFooter from "@/components/AppFooter";
+import AppHeader from "@/components/AppHeader";
 import type { NextPage } from "next";
+import Challenges from "./Challenges";
 
 const Home: NextPage = () => {
   return (

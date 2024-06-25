@@ -1,10 +1,10 @@
 "use client";
 
-import type { toast } from "@/app/_components/ui/use-toast";
+import type { toast } from "@/components/ui/use-toast";
 import type { AppRouter } from "@/server/api/root";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import type { TRPCClientErrorLike } from "@trpc/client";
+import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
 import { createTRPCReact } from "@trpc/react-query";
 import { useState } from "react";
 import type { toast as sonner } from "sonner";

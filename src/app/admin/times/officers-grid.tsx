@@ -1,8 +1,8 @@
-import useCalculateTable from "@/app/_hooks/useCalculateTable";
 import GridSkeleton from "@/components/grid-skeleton";
 import { Toggle } from "@/components/ui/toggle";
 import type { Mode } from "@/consts/availability-grid";
 import { palette, times } from "@/consts/availability-grid";
+import useCalculateTable from "@/hooks/useCalculateTable";
 import useOfficerTimes from "@/hooks/useOfficerTimes";
 import { cn } from "@/lib/utils";
 import type { AvailabilityMap } from "@/lib/validations/apply";

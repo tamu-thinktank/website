@@ -19,6 +19,12 @@ import { api } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { ApplicationStatus } from "@prisma/client";
+import type {
+  Column,
+  ColumnFiltersState,
+  Table as ReactTable,
+  SortingState,
+} from "@tanstack/react-table";
 import {
   createColumnHelper,
   flexRender,
@@ -28,12 +34,6 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import type {
-  Column,
-  ColumnFiltersState,
-  Table as ReactTable,
-  SortingState,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown } from "lucide-react";
 import Link from "next/link";
