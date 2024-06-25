@@ -15,8 +15,8 @@ const font = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(env.WEB_URL),
-  title: "TAMU ThinkTank",
-  description: "The official website for TAMU ThinkTank.",
+  title: "TAMU ThinkTank Challenges",
+  description: "The official website for TAMU ThinkTank Challenges.",
   keywords: [
     "Next.js",
     "React",
