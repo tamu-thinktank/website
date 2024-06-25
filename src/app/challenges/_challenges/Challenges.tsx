@@ -27,23 +27,11 @@ export default function Challenges() {
             </div>
             <div className="relative mt-6">
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                NASA's Waste Jettison Mechanism Challenge Winners
+                Challenge 1
               </h3>
               <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-                The team developed the Spring Loaded Ejection Mechanism (SLEM)
-                to eject waste out of the Orion capsule during long-distance
-                missions. The SLEM was TAMU ThinkTank's first project, and the
-                team won 4th Place overall and a $1000 cash prize.
+                Challenge Description 1
               </p>
-              <Link
-                className="inline-block"
-                target="_blank"
-                href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch"
-              >
-                <span className="text-info dark:text-blue-300">
-                  Read more about Aggie Aeros
-                </span>
-              </Link>
             </div>
           </div>
           <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
@@ -58,24 +46,68 @@ export default function Challenges() {
             </div>
             <div className="relative mt-6">
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                Texas A&M team wins Texas Space Grant Consortium Design
-                Challenge
+                Challenge 2
               </h3>
               <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-                Texas A&M University's and ThinkTank's very own Team Vestigo,
-                composed of freshmen, took first place against 16 other
-                university teams for their creation of a wearable device to
-                track crew member location and orientation while in space.
+                Challenge Description 2
               </p>
-              <Link
-                className="inline-block"
-                target="_blank"
-                href="https://engineering.tamu.edu/news/2023/07/texas-am-team-wins-texas-space-grant-consortium-design-challenge.html"
-              >
-                <span className="text-info dark:text-blue-300">
-                  Read more about Team Vestigo
-                </span>
-              </Link>
+            </div>
+          </div>
+          <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
+            <div className="relative overflow-hidden rounded-xl">
+              <Image
+                src="https://i.kym-cdn.com/entries/icons/original/000/039/393/cover2.jpg"
+                alt="art cover"
+                width="1000"
+                height="667"
+                className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="relative mt-6">
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
+                Challenge 3
+              </h3>
+              <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+                Challenge Description 3
+              </p>
+            </div>
+          </div>
+          <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
+            <div className="relative overflow-hidden rounded-xl">
+              <Image
+                src="https://media.tenor.com/60rUBc0DtFoAAAAe/far-too-easy-cringe-martincitopants-martincitopants.png"
+                alt="art cover"
+                width="1000"
+                height="667"
+                className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="relative mt-6">
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
+                Challenge 4
+              </h3>
+              <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+                Challenge Description 4
+              </p>
+            </div>
+          </div>
+          <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
+            <div className="relative overflow-hidden rounded-xl">
+              <Image
+                src="https://preview.redd.it/aerodynamics-of-a-cow-v0-42nixaopuhxa1.jpg?width=640&crop=smart&auto=webp&s=75cfd3307be2838d315dfbd8ed754b762a33c2fd"
+                alt="art cover"
+                width="1000"
+                height="667"
+                className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="relative mt-6">
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
+                Challenge 5
+              </h3>
+              <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+                Challenge Description 5
+              </p>
             </div>
           </div>
         </div>
