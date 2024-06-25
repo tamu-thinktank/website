@@ -62,7 +62,7 @@ export default function Header() {
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
                     <a
-                      href="#overview"
+                      href="/#overview"
                       className="block transition hover:text-primary md:px-4"
                     >
                       <span>Overview</span>
@@ -70,7 +70,7 @@ export default function Header() {
                   </li>
                   <li>
                     <a
-                      href="#travel"
+                      href="/#travel"
                       className="block transition hover:text-primary md:px-4"
                     >
                       <span>Travel</span>
@@ -78,7 +78,7 @@ export default function Header() {
                   </li>
                   <li>
                     <a
-                      href="#officers"
+                      href="/#officers"
                       className="block transition hover:text-primary md:px-4"
                     >
                       <span>Officers</span>
@@ -86,10 +86,18 @@ export default function Header() {
                   </li>
                   <li>
                     <a
-                      href="#articles"
+                      href="/#articles"
                       className="block transition hover:text-primary md:px-4"
                     >
                       <span>Articles</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="challenges"
+                      className="block transition hover:text-primary md:px-4"
+                    >
+                      <span>Challenges</span>
                     </a>
                   </li>
                 </ul>
