@@ -3,15 +3,8 @@
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import {
-  forwardRef,
-  useEffect,
-  useRef,
-  useState,
-  type ComponentProps,
-  type Dispatch,
-  type SetStateAction,
-} from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import type { ComponentProps, Dispatch, SetStateAction } from "react";
 import { Page, Document as PdfDocument, pdfjs } from "react-pdf";
 
 /**

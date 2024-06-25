@@ -12,6 +12,7 @@ export default function useCalculateTable(userTimezone: string) {
   useEffect(() => {
     if (times.length > 0) {
       if (!tableWorker.current) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         tableWorker.current = window.Worker
           ? new Worker(new URL("src/workers/calculateTable", import.meta.url))
           : undefined;

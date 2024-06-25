@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { type ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 
 export default function PurpleLayout({
   children,

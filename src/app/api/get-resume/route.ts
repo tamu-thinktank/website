@@ -1,5 +1,6 @@
 import DriveService from "@/server/service/google-drive";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest) {
   const resumeId = req.nextUrl.searchParams.get("resumeId");

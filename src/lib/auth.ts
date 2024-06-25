@@ -1,9 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import {
-  getServerSession,
-  type DefaultSession,
-  type NextAuthOptions,
-} from "next-auth";
+import { getServerSession } from "next-auth";
+import type { DefaultSession, NextAuthOptions } from "next-auth";
 import Auth0Provider from "next-auth/providers/auth0";
 
 import { env } from "@/env";
@@ -46,7 +43,7 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    signIn: async ({ user, profile }) => {
+    signIn: ({ user, profile }) => {
       if (user.email && env.ALLOWED_EMAILS.includes(user.email)) {
         if (profile) {
           user.name = profile.name;
@@ -56,7 +53,8 @@ export const authOptions: NextAuthOptions = {
         return false;
       }
     },
-    jwt: async ({ token, user, account }) => {
+    jwt: ({ token, user, account }) => {
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (user) {
         token.userId = user.id;
       }

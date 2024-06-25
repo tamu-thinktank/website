@@ -27,7 +27,7 @@ import { q } from "@/consts/apply-questions";
 import { eventTimezone } from "@/consts/availability-grid";
 import { api, clientErrorHandler } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
-import { type FileDataResponse } from "@/types/api";
+import type { FileDataResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Temporal } from "@js-temporal/polyfill";
 import { useQuery } from "@tanstack/react-query";
@@ -35,7 +35,8 @@ import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { redirect, useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
-import { useForm, type UseFormReturn } from "react-hook-form";
+import { useForm } from "react-hook-form";
+import type { UseFormReturn } from "react-hook-form";
 import { toast as sonner } from "sonner";
 import { z } from "zod";
 import PdfViewer from "./pdf-viewer";
@@ -333,7 +334,7 @@ function Buttons({
           duration: 5000,
         });
       },
-      onSettled: async (newData, err) => {
+      onSettled: (newData, err) => {
         if (err) {
           clientErrorHandler({ err, sonnerFn: sonner });
         }
@@ -358,7 +359,7 @@ function Buttons({
           duration: 5000,
         });
       },
-      onSettled: async (newData, err) => {
+      onSettled: (newData, err) => {
         if (err) {
           clientErrorHandler({ err, sonnerFn: sonner });
         }
@@ -379,7 +380,7 @@ function Buttons({
         duration: 5000,
       });
     },
-    onSettled: async (newData, err) => {
+    onSettled: (newData, err) => {
       if (err) {
         clientErrorHandler({ err, sonnerFn: sonner });
       }
@@ -413,7 +414,7 @@ function Buttons({
       location: form.getValues("location"),
     });
 
-    if (!!soonestOfficer) {
+    if (soonestOfficer) {
       scheduleInterview({
         officerId: soonestOfficer.id,
         officerName: soonestOfficer.name,
@@ -461,7 +462,7 @@ function Buttons({
           </TooltipTrigger>
           <TooltipContent>
             <p>
-              {!!soonestOfficer
+              {soonestOfficer
                 ? !form.formState.isValid
                   ? `Enter location of the interview at ${Temporal.ZonedDateTime.from(
                       soonestOfficer.startTime,

@@ -29,7 +29,7 @@ export const calculateRows = (
     (rows, partition, i) => [
       ...rows,
       ...partition,
-      partition[partition.length - 1]!.add({ minutes: 15 }),
+      partition[partition.length - 1]?.add({ minutes: 15 }) ?? null,
       ...(i < partitionedDates.length - 1 ? [null, null] : []), // Add spacer in between partitions
     ],
     [] as (Temporal.PlainTime | null)[],

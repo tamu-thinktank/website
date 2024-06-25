@@ -1,11 +1,12 @@
 import { RESUME_PENDING_ID } from "@/consts/google-things";
 import DriveService from "@/server/service/google-drive";
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { Readable } from "stream";
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
-  const file: File | null = formData.get("resume") as File;
+  const file = formData.get("resume") as File | null;
 
   if (!file) {
     return new NextResponse("No resume uploaded", { status: 400 });

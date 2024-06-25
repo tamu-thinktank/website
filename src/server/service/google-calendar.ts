@@ -7,14 +7,14 @@ import {
   Auth0UserIdentitiesSchema,
 } from "@/lib/validations/auth";
 import { calendar, auth as calenderAuth } from "@googleapis/calendar";
-import { type Temporal } from "@js-temporal/polyfill";
+import type { Temporal } from "@js-temporal/polyfill";
 import axios from "axios";
 
 export default class CalendarService {
   /**
    * @deprecated b/c we can't do "Domain-Wide Delegation of Authority" with a service account on personal gmail accounts. Use `getOAuthCalendarClient` instead.
    */
-  static async getCalendarClient() {
+  static getCalendarClient() {
     const auth = new calenderAuth.GoogleAuth({
       credentials: env.GCP_CREDENTIALS,
       scopes: ["https://www.googleapis.com/auth/calendar.events"],
@@ -71,7 +71,7 @@ export default class CalendarService {
       (await axios.request(config)).data,
     );
 
-    return user.identities[0]!.refresh_token;
+    return user.identities[0]?.refresh_token;
   }
 
   static async getOAuthCalendarClient() {

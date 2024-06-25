@@ -1,13 +1,15 @@
 import useCalculateTable from "@/app/_hooks/useCalculateTable";
 import GridSkeleton from "@/components/grid-skeleton";
 import { Toggle } from "@/components/ui/toggle";
-import { palette, times, type Mode } from "@/consts/availability-grid";
+import type { Mode } from "@/consts/availability-grid";
+import { palette, times } from "@/consts/availability-grid";
 import useOfficerTimes from "@/hooks/useOfficerTimes";
 import { cn } from "@/lib/utils";
-import { type AvailabilityMap } from "@/lib/validations/apply";
+import type { AvailabilityMap } from "@/lib/validations/apply";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
 import { Temporal } from "@js-temporal/polyfill";
 import { useSession } from "next-auth/react";
+import type { CSSProperties, SetStateAction } from "react";
 import {
   Fragment,
   useCallback,
@@ -15,18 +17,16 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
-  type SetStateAction,
 } from "react";
 
 interface AvailabilityViewerProps {
   userTimezone: string;
 }
 
-type SessionTime = {
+interface SessionTime {
   gridTime: string;
   selectedAt: string;
-};
+}
 
 export default function OfficersGrid({
   userTimezone,
@@ -51,8 +51,8 @@ export default function OfficersGrid({
   const officersColorMap = useMemo(() => {
     const map = new Map<string, string>();
     data?.officers.forEach((officer) => {
-      const color = palette[Math.floor(Math.random() * palette.length)]!;
-      map.set(officer.id, color);
+      const color = palette[Math.floor(Math.random() * palette.length)];
+      map.set(officer.id, color ?? "");
     });
     return map;
   }, [data?.officers.length]);
@@ -87,7 +87,7 @@ export default function OfficersGrid({
   const mode = useRef<Mode>();
 
   const userColor = useMemo(
-    () => officersColorMap.get(userId)!,
+    () => officersColorMap.get(userId),
     [officersColorMap.size],
   );
 
@@ -243,7 +243,7 @@ export default function OfficersGrid({
                   ) {
                     // show latest person
                     backgroundColor = firstOfficerColor;
-                  } else if (!!peopleHere[1]) {
+                  } else if (peopleHere[1]) {
                     // show 2nd latest person
                     backgroundColor = secondOfficerColor;
                   }
@@ -274,7 +274,7 @@ export default function OfficersGrid({
                       onPointerDown={(e) => {
                         e.preventDefault();
                         startPos.current = { x: colIdx, y: cellIdx };
-                        mode.current = !!userHere ? "remove" : "add";
+                        mode.current = userHere ? "remove" : "add";
                         setSelecting([cell.cellInUTC]);
                         e.currentTarget.releasePointerCapture(e.pointerId);
                       }}

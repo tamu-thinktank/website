@@ -1,11 +1,11 @@
 import { Temporal } from "@js-temporal/polyfill";
 
-type TimeRange = {
+interface TimeRange {
   /** DateTime at beginning of table in UTC */
   startDateTime: Temporal.ZonedDateTime;
   /** DateTime at end of table in UTC */
   endDateTime: Temporal.ZonedDateTime;
-};
+}
 
 /**
  * Takes timeRange and its timezone and as adds 15, 30 and 45 minute variants for every hour in every day

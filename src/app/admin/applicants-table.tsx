@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api } from "@/lib/trpc/react";
-import { type RouterOutputs } from "@/lib/trpc/shared";
+import type { RouterOutputs } from "@/lib/trpc/shared";
 import { capitalizeFirstLetter } from "@/lib/utils";
 import { ApplicationStatus } from "@prisma/client";
 import {
@@ -28,10 +28,12 @@ import {
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-  type Column,
-  type ColumnFiltersState,
-  type Table as ReactTable,
-  type SortingState,
+} from "@tanstack/react-table";
+import type {
+  Column,
+  ColumnFiltersState,
+  Table as ReactTable,
+  SortingState,
 } from "@tanstack/react-table";
 import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown } from "lucide-react";
 import Link from "next/link";
@@ -166,7 +168,7 @@ export default function ApplicantsTable() {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}

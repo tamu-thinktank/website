@@ -1,9 +1,5 @@
-import {
-  useForm,
-  type FieldValues,
-  type UseFormProps,
-  type UseFormReturn,
-} from "react-hook-form";
+import { useForm } from "react-hook-form";
+import type { FieldValues, UseFormProps, UseFormReturn } from "react-hook-form";
 import useFormPersist from "react-hook-form-persist";
 
 /**

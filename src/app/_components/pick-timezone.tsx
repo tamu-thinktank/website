@@ -85,9 +85,7 @@ export default function PickTimezone({
 
       {((Intl.DateTimeFormat().resolvedOptions().timeZone !== userTimezone &&
         eventTimezone !== Intl.DateTimeFormat().resolvedOptions().timeZone) ||
-        (eventTimezone === undefined &&
-          Intl.DateTimeFormat().resolvedOptions().timeZone !==
-            userTimezone)) && (
+        Intl.DateTimeFormat().resolvedOptions().timeZone !== userTimezone) && (
         <CardDescription>
           Your local timezone is detected to be{" "}
           <strong>{Intl.DateTimeFormat().resolvedOptions().timeZone}</strong>.{" "}

@@ -8,22 +8,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
-import { type RouterInputs } from "@/lib/trpc/shared";
+import type { RouterInputs } from "@/lib/trpc/shared";
 import { ApplyFormSchema } from "@/lib/validations/apply";
-import { type UploadResumeResponse } from "@/types/api";
+import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type PropsWithChildren,
-  type RefObject,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { PropsWithChildren, RefObject } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../_hooks/usePersistForm";
 import Availability from "./_sections/availability";

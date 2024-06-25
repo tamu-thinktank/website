@@ -16,7 +16,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { q } from "@/consts/apply-questions";
-import { type RouterInputs } from "@/lib/trpc/shared";
+import type { RouterInputs } from "@/lib/trpc/shared";
 import { Challenge } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 
@@ -124,7 +124,7 @@ export default function Interests() {
                           <FormControl>
                             <div className="flex items-center space-x-2">
                               <Checkbox
-                                checked={field.value?.some(
+                                checked={field.value.some(
                                   (value) => value === challenge.id,
                                 )}
                                 onCheckedChange={(checked) => {

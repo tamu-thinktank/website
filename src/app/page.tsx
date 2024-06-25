@@ -6,7 +6,7 @@ import HeroSection from "@/app/_home/HeroSection";
 import Officers from "@/app/_home/Officers";
 import Overview from "@/app/_home/Overview";
 import Travel from "@/app/_home/Travel";
-import { type NextPage } from "next";
+import type { NextPage } from "next";
 
 const Home: NextPage = () => {
   return (

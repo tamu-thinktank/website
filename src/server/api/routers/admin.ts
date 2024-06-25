@@ -92,7 +92,7 @@ export const adminRouter = createTRPCRouter({
           });
         });
         await ctx.db.$transaction(addOperations);
-      } else if (mode === "remove") {
+      } else {
         await ctx.db.officerTime.deleteMany({
           where: {
             officerId: ctx.session.user.id,
@@ -285,7 +285,7 @@ export const adminRouter = createTRPCRouter({
                   timeStyle: "short",
                 }),
               location,
-              eventLink: eventLink ?? "",
+              eventLink: eventLink,
               interviewerName: officerName,
             }),
           });

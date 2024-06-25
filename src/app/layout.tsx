@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { env } from "@/env";
 import { TRPCReactProvider } from "@/lib/trpc/react";
-import { type Metadata } from "next";
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { Providers } from "./providers";
