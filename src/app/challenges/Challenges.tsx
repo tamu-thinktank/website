@@ -122,6 +122,34 @@ export default function Challenges() {
             </p>
           </div>
         </div>
+        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
+          <div className="relative overflow-hidden rounded-xl">
+          <Link href="https://materovcompetition.org/" passHref>
+              <Image
+                src="https://mtsociety.memberclicks.net/assets/MATE%20ROV%20Logo-01.png"
+                alt="art cover"
+                width="1000"
+                height="1"
+                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+              />
+          </Link>
+          </div>
+          <div className="relative mt-6">
+            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
+            MATE ROV Competition
+            </h3>
+            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+            Building underwater robots is a fun and engaging way to teach science, technology, applied math, 
+            engineering, and entrepreneurial skills to students of all ages. MATE's suite of underwater robot 
+            or remotely operated vehicle (ROV) kits and instructional materials offer students at the elementary, 
+            middle, high school, and introductory 2- and 4-year level the opportunity to progress from beginner 
+            through advanced topics driven by their own desire to increase the capabilities of their robots- 
+            and build upon their own knowledge and skills. The MATE ROV Competition offers five different 
+            competition classes that are based on the sophistication of the skill and not strictly by age group. 
+            The five classes include: SCOUT, NAVIGATOR, RANGER, PIONEER, and EXPLORER. 
+            </p>
+          </div>
+        </div>
       </div>
     </Container>
   );
