@@ -124,6 +124,7 @@ export default function Interests() {
                           <FormControl>
                             <div className="flex items-center space-x-2">
                               <Checkbox
+                                id={`checkbox-${challenge.id}`}
                                 checked={field.value.some(
                                   (value) => value === challenge.id,
                                 )}
@@ -140,7 +141,10 @@ export default function Interests() {
                                       );
                                 }}
                               />
-                              <FormLabel className="font-normal">
+                              <FormLabel
+                                className="font-normal"
+                                htmlFor={`checkbox-${challenge.id}`}
+                              >
                                 {challenge.label}
                               </FormLabel>
                             </div>
