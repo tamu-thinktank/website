@@ -99,10 +99,10 @@ export const ApplyFormSchema = z
 
           let gridsCount = 1;
           for (let i = 0; i < sortedTimes.length - 1; i++) {
-            const curr = sortedTimes[i]!;
-            const next = sortedTimes[i + 1]!;
+            const curr = sortedTimes[i];
+            const next = sortedTimes[i + 1];
 
-            if (curr.add({ minutes: 15 }).equals(next)) {
+            if (next && curr?.add({ minutes: 15 }).equals(next)) {
               gridsCount++;
 
               if (gridsCount === 2) {

@@ -1,28 +1,9 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit",
-    "source.sortImports": "explicit"
+    "source.fixAll": "explicit"
   },
   "editor.formatOnSave": true,
   "editor.linkedEditing": true,
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[css]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[json]": {
-    "editor.defaultFormatter": "vscode.json-language-features"
-  },
   "[markdown]": {
     "editor.defaultFormatter": "yzhang.markdown-all-in-one"
   },
@@ -30,10 +11,6 @@
     // enable tailwind intellisense in cva() function
     ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
   ],
-  "search.exclude": {
-    // Avoid polluting search results with lockfile content
-    "**/pnpm-lock.yaml": true
-  },
   // Ensure VSCode uses pnpm instead of npm
   "npm.packageManager": "pnpm",
   // For those using file-nesting, nest the new files. E.g.:
@@ -43,8 +20,9 @@
   "markdown.copyFiles.destination": {
     "**/*": "${documentDirName}/static/"
   },
-  // > run task -> eslint -> lint whole folder
-  "eslint.lintTask.enable": true,
+  "eslint.lintTask.enable": true, // > run task -> eslint -> lint whole folder
+  "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
+  "eslint.useFlatConfig": true,
   // show git status in editor
   "git.openRepositoryInParentFolders": "always"
 }

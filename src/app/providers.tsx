@@ -3,9 +3,9 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import { Next13ProgressBar } from "next13-progressbar";
 
-type Props = {
+interface Props {
   children?: React.ReactNode;
-};
+}
 
 export const Providers = ({ children }: Props) => {
   return (

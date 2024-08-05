@@ -8,24 +8,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
-import { type RouterInputs } from "@/lib/trpc/shared";
+import type { RouterInputs } from "@/lib/trpc/shared";
 import { ApplyFormSchema } from "@/lib/validations/apply";
-import { type UploadResumeResponse } from "@/types/api";
+import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createId } from "@paralleldrive/cuid2";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type PropsWithChildren,
-  type RefObject,
-} from "react";
+import type { PropsWithChildren, RefObject } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import { usePersistForm } from "../_hooks/usePersistForm";
+import { usePersistForm } from "../../hooks/usePersistForm";
 import Availability from "./_sections/availability";
 import Interests from "./_sections/interests";
 import FormIntroTab from "./_sections/intro";
@@ -81,7 +75,8 @@ export default function Apply() {
       toast({
         title: "Error",
         variant: "destructive",
-        description: "UIN or email already submitted for this application. Contact us at tamuthinktank@gmail.com if you believe this is an error.",
+        description:
+          "UIN or email already submitted for this application. Contact us at tamuthinktank@gmail.com if you believe this is an error.",
         duration: 5000,
       });
     },

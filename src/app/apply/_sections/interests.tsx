@@ -16,7 +16,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { q } from "@/consts/apply-questions";
-import { type RouterInputs } from "@/lib/trpc/shared";
+import type { RouterInputs } from "@/lib/trpc/shared";
 import { Challenge } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 
@@ -54,8 +54,7 @@ const challenges: {
     id: Challenge.TDC_98,
     label: "TDC-98",
     link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  }
-
+  },
 ];
 
 export default function Interests() {
@@ -106,7 +105,8 @@ export default function Interests() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Details can be found below: <br /> https://docs.google.com/spreadsheets/d/1RV2x2WfHnKadF7-wfvLKe-247PeqpOvk/edit?usp=sharing&ouid=110812824996366755065&rtpof=true&sd=true
+                  Details can be found below: <br />{" "}
+                  https://docs.google.com/spreadsheets/d/1RV2x2WfHnKadF7-wfvLKe-247PeqpOvk/edit?usp=sharing&ouid=110812824996366755065&rtpof=true&sd=true
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -124,7 +124,8 @@ export default function Interests() {
                           <FormControl>
                             <div className="flex items-center space-x-2">
                               <Checkbox
-                                checked={field.value?.some(
+                                id={`checkbox-${challenge.id}`}
+                                checked={field.value.some(
                                   (value) => value === challenge.id,
                                 )}
                                 onCheckedChange={(checked) => {
@@ -140,7 +141,10 @@ export default function Interests() {
                                       );
                                 }}
                               />
-                              <FormLabel className="font-normal">
+                              <FormLabel
+                                className="font-normal"
+                                htmlFor={`checkbox-${challenge.id}`}
+                              >
                                 {challenge.label}
                               </FormLabel>
                             </div>
@@ -182,9 +186,9 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem 
-                            value={Challenge.TDC_93} 
-                            id="TDC-93" 
+                          <RadioGroupItem
+                            value={Challenge.TDC_93}
+                            id="TDC-93"
                           />
                           <FormLabel htmlFor="TDC-93">TDC-93</FormLabel>
                         </div>
@@ -193,9 +197,9 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem 
-                            value={Challenge.TDC_94} 
-                            id="TDC-94" 
+                          <RadioGroupItem
+                            value={Challenge.TDC_94}
+                            id="TDC-94"
                           />
                           <FormLabel htmlFor="TDC-94">TDC-94</FormLabel>
                         </div>
@@ -204,9 +208,9 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem 
-                            value={Challenge.TDC_95} 
-                            id="TDC-95" 
+                          <RadioGroupItem
+                            value={Challenge.TDC_95}
+                            id="TDC-95"
                           />
                           <FormLabel htmlFor="TDC-95">TDC-95</FormLabel>
                         </div>
@@ -215,9 +219,9 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem 
-                            value={Challenge.TDC_96} 
-                            id="TDC-96" 
+                          <RadioGroupItem
+                            value={Challenge.TDC_96}
+                            id="TDC-96"
                           />
                           <FormLabel htmlFor="TDC-96">TDC-96</FormLabel>
                         </div>
@@ -226,9 +230,9 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem 
-                            value={Challenge.TDC_97} 
-                            id="TDC-97" 
+                          <RadioGroupItem
+                            value={Challenge.TDC_97}
+                            id="TDC-97"
                           />
                           <FormLabel htmlFor="TDC-97">TDC-97</FormLabel>
                         </div>
@@ -237,9 +241,9 @@ export default function Interests() {
                     <FormItem>
                       <FormControl>
                         <div className="flex items-center space-x-2">
-                          <RadioGroupItem 
-                            value={Challenge.TDC_98} 
-                            id="TDC-98" 
+                          <RadioGroupItem
+                            value={Challenge.TDC_98}
+                            id="TDC-98"
                           />
                           <FormLabel htmlFor="TDC-98">TDC-98</FormLabel>
                         </div>

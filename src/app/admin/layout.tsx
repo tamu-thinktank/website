@@ -9,7 +9,7 @@ import { AdminHeader } from "./admin-header";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
+    <SessionProvider refetchOnWindowFocus>
       <GradientLayout>
         <Content>{children}</Content>
       </GradientLayout>
@@ -18,9 +18,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function Content({ children }: { children: React.ReactNode }) {
-  const { data: session, status: authStatus } = useSession();
+  const { status: authStatus } = useSession();
 
-  return session ? (
+  return authStatus === "authenticated" ? (
     <>
       <section className="h-[90vh] w-11/12 space-y-4 md:w-3/4 lg:w-2/3">
         <AdminHeader />
@@ -34,7 +34,6 @@ function Content({ children }: { children: React.ReactNode }) {
         void signIn(
           "auth0",
           {
-            redirect: true,
             callbackUrl: getBaseUrl() + "/admin",
           },
           {

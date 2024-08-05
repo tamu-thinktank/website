@@ -6,13 +6,13 @@ generator client {
 }
 
 datasource db {
-    provider     = "mysql"
-    // NOTE: When using mysql or sqlserver, uncomment @db.Text annotations in model Account below
+    provider  = "postgresql"
+    // NOTE: When using mysql or sqlserver, use @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url          = env("DATABASE_URL")
-    relationMode = "prisma" // for PlanetScale
+    url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+    directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 // ------------------ nextauth tables ------------------
@@ -23,12 +23,12 @@ model Account {
     type              String
     provider          String
     providerAccountId String
-    refresh_token     String? @db.Text
-    access_token      String? @db.Text
+    refresh_token     String?
+    access_token      String?
     expires_at        Int?
     token_type        String?
     scope             String?
-    id_token          String? @db.Text
+    id_token          String?
     session_state     String?
     user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -134,47 +134,20 @@ model Application {
     availability Boolean
 
     // Interests and Motivation section
-    interestedAnswer    String           @db.Text
+    interestedAnswer    String
     challenges          ChallengeTable[]
     interestedChallenge Challenge
-    passionAnswer       String           @db.Text
+    passionAnswer       String
     isLeadership        Boolean
 
     // Leadership section, empty if `isLeadership` is false
-    skillsAnswer       String?  @db.Text
-    conflictsAnswer    String?  @db.Text
+    skillsAnswer       String?
+    conflictsAnswer    String?
     presentation       Int? // 1-5
-    timeManagement     String?  @db.Text
-    relevantExperience String?  @db.Text
+    timeManagement     String?
+    relevantExperience String?
     timeCommitment     Boolean?
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeId     String // the id of the resume file in the google drive
-}
-
-model jsc {
-    id          String   @id @default(cuid())
-    submittedAt DateTime @default(now())
-
-    // personal info section
-    fullName String
-    email    String  @unique
-    altEmail String?
-    phone    String
-
-    // Interests and Motivation section
-    interestedAnswer    String    @db.Text
-    interestedChallenge Challenge
-    passionAnswer       String    @db.Text
-    isLeadership        Boolean
-
-    // Leadership section, empty if `isLeadership` is false
-    skillsAnswer       String?  @db.Text
-    conflictsAnswer    String?  @db.Text
-    presentation       Int? // 1-5
-    timeManagement     String?  @db.Text
-    relevantExperience String?  @db.Text
-    timeCommitment     Boolean?
-
-    resumeId String // the id of the resume file in the google drive
 }

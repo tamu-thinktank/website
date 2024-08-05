@@ -10,9 +10,14 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
+  // disable checks when building (checks are still run in github actions)
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },
+
   images: {
     unoptimized: true,
   },

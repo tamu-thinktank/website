@@ -8,18 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FormField, FormMessage } from "@/components/ui/form";
-import { palette, times, type Mode } from "@/consts/availability-grid";
+import type { Mode } from "@/consts/availability-grid";
+import { palette, times } from "@/consts/availability-grid";
 import type useCalculateTable from "@/hooks/useCalculateTable";
-import { type RouterInputs } from "@/lib/trpc/shared";
+import type { RouterInputs } from "@/lib/trpc/shared";
 import { cn } from "@/lib/utils";
-import {
-  Fragment,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-} from "react";
+import type { CSSProperties } from "react";
+import { Fragment, useCallback, useMemo, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface AvailabilityProps {
@@ -34,7 +29,7 @@ export default function Availability({
 }: AvailabilityProps) {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
   const color = useMemo(
-    () => palette[Math.floor(Math.random() * palette.length)]!,
+    () => palette[Math.floor(Math.random() * palette.length)],
     [],
   );
 
