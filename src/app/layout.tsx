@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     "Server Components",
     "TypeScript",
     "TRPC",
-    "MySQL",
+    "PostgreSQL",
     "Prisma",
     "Vercel",
     "Radix UI",

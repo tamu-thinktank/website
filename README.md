@@ -45,11 +45,11 @@
 
 - Below sections are steps for populating variables in .env file with your unique values
 
-### DATABASE_URL
+### POSTGRES_PRISMA_URL and POSTGRES_URL_NON_POOLING
 
-- the connection string to SQL database
+- from Vercel serverless postgres
 
-#### Option 1: Local database
+#### Local database
 
 - using Docker (recommended for development b/c fast and easy to reset database)
 - Install [Docker Desktop](https://docs.docker.com/desktop/install/windows-install/)
@@ -64,23 +64,16 @@
   - (stays open until you close it in terminal)
   - can add `-d` at the end for detached mode, which runs in background so you can keep using terminal
   - it finds the `docker-compose.yml` file in the working directory and runs it
-  - will install mysql image if not already installed and run it in a container
+  - will install postgres image if not already installed and run it in a container
   - can see installed image, running container, and volume (storage) in Docker Desktop or CLI
 
 - can stop container with `docker-compose stop`
 - can start existing container with `docker-compose start` (detached mode by default)
-- `DATABASE_URL`: already copied from .env.example for docker database
+- `POSTGRES_PRISMA_URL`: already copied from .env.example for docker database
 - to reset database:
   - delete container: `docker-compose down`
   - delete the volume (storage) with `docker volume rm dashboard_db`
-- can also delete mysql image with `docker rmi mysql` (will need to delete all containers using it first)
-
-#### Option 2: [PlanetScale](https://planetscale.com/)
-
-- Create account (login w/ GitHub) → [Create a database](https://www.youtube.com/watch?v=rCIoXrn58PA) → wait to initialize
-- Create new branch → name `dev` → `Connect` button → new password → select `Prisma` from `Connect with` dropdown → copy `DATABASE_URL` and paste in .env
-  - Can delete branch and create new one to reset database
-    - remember to update .env with new `DATABASE_URL`
+- can also delete postgres image with `docker rmi postgres` (will need to delete all containers using it first)
 
 ### NEXTAUTH_SECRET
 
@@ -105,8 +98,6 @@
 
 - Push our database schema to your database server:
 
-  - Have Docker container running (`docker-compose start`) or PlanetScale database initialized
-
   ```pwsh
   pnpm prisma db push
   ```
@@ -121,7 +112,7 @@
 - To view database locally:
 
   ```pwsh
-  pnpm prisma studio --browser "your browser (e.g. Firefox)"
+  pnpm prisma studio
   ```
 
   - (stays open until you close it in terminal)
