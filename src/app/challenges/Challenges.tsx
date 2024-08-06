@@ -151,16 +151,18 @@ export default function Challenges() {
               Texas Space Grant Consortium Design Challenge
             </h3>
             <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              The TSGC Design Challenge is a unique academic experience offering 
-              undergraduate students an opportunity to propose, design, and fabricate 
-              a solution to a toward solving research objectives of importance to NASA 
-              and its mission. Students form and work as a team to meet their design 
-              objective over the course of one or two semesters while interacting with 
-              their faculty advisor and NASA workplace mentor. Research groups submitting 
-              Design Challenge topics provide a mentor to work with each team. The overall 
-              experience provides student team members with an opportunity to engage in 
-              scientific research, hands-on design, space-related career opportunities, 
-              communication skills, and educational outreach.
+              The TSGC Design Challenge is a unique academic experience offering
+              undergraduate students an opportunity to propose, design, and
+              fabricate a solution to a toward solving research objectives of
+              importance to NASA and its mission. Students form and work as a
+              team to meet their design objective over the course of one or two
+              semesters while interacting with their faculty advisor and NASA
+              workplace mentor. Research groups submitting Design Challenge
+              topics provide a mentor to work with each team. The overall
+              experience provides student team members with an opportunity to
+              engage in scientific research, hands-on design, space-related
+              career opportunities, communication skills, and educational
+              outreach.
             </p>
           </div>
         </div>
@@ -178,16 +180,18 @@ export default function Challenges() {
           </div>
           <div className="relative mt-6">
             <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                GoAERO
+              GoAERO
             </h3>
             <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-               Catalyze a Breakthrough Solution to Design and Build the World's First Compact, 
-               Autonomy-Enabled Rescue Aircraft that is Safe and Simple to Fly. It is a three-year
-               global competition bringing the world's brightest minds together to focus on a 
-               singular mission: Saving Lives. Teams participating will design and build the first 
-               autonomy-enabled Emergency Response Flyer, a high-tech aircraft that will help response 
-               teams reach people, places and crises faster and easier than ever before. Winners will 
-               save countless lives. They'll also receive $2+ Million in prizes.
+              Catalyze a Breakthrough Solution to Design and Build the World's
+              First Compact, Autonomy-Enabled Rescue Aircraft that is Safe and
+              Simple to Fly. It is a three-year global competition bringing the
+              world's brightest minds together to focus on a singular mission:
+              Saving Lives. Teams participating will design and build the first
+              autonomy-enabled Emergency Response Flyer, a high-tech aircraft
+              that will help response teams reach people, places and crises
+              faster and easier than ever before. Winners will save countless
+              lives. They'll also receive $2+ Million in prizes.
             </p>
           </div>
         </div>

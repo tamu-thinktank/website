@@ -27,13 +27,15 @@ export default function Articles() {
             </div>
             <div className="relative mt-6">
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                Team Selenis wins best Non-Capstone Team Award at Engineering Project Showcase
+                Team Selenis wins best Non-Capstone Team Award at Engineering
+                Project Showcase
               </h3>
               <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-                TAMU ThinkTank's Team Selenis wins first place at the Engineering Project Showcase 
-                (Non-Capstone category) for their innovative rover mission concept, designed to 
-                prospect for water and ice deposits in the permanently shadowed regions of the lunar 
-                south pole.
+                TAMU ThinkTank's Team Selenis wins first place at the
+                Engineering Project Showcase (Non-Capstone category) for their
+                innovative rover mission concept, designed to prospect for water
+                and ice deposits in the permanently shadowed regions of the
+                lunar south pole.
               </p>
               <Link
                 className="inline-block"
