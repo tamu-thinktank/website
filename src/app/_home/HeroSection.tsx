@@ -24,8 +24,8 @@ const clientLogos = [
     link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
   },
   {
-    src: "/images/clients/aero.webp",
-    link: "https://engineering.tamu.edu/aerospace/index.html",
+    src: "https://engineering.tamu.edu/_files/_logos/logo.svg",
+    link: "https://engineering.tamu.edu/",
   },
 ];
 
