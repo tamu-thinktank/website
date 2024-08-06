@@ -31,4 +31,5 @@
 - `/admin/times`: availability grid for officers
   - each user is assigned a random color on page load
   - User can select times over someone else's time section, with the color of a section representing the most recent officer who selected that time. Unselecting a section shows any other most recent user's availability in that section (if any).
+  - User can select which teams they want to interview for (select all teams to interview any)
   - Can't select times if user is filtered out of view
