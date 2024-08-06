@@ -18,30 +18,30 @@ export default function Articles() {
           <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
             <div className="relative overflow-hidden rounded-xl">
               <Image
-                src="https://d253pvgap36xx8.cloudfront.net/challenges/thumbnail/8d50149c82f611ec8d16862fe09b0a86/8c0628a682f611eca2ab8a8fe6f2b952.webp"
+                src="/images/photos/selenis_win.webp"
                 alt="art cover"
                 width="1000"
                 height="667"
-                className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
+                className="h-64 w-full object-cover object-[center_100%] transition duration-500 group-hover:scale-105"
               />
             </div>
             <div className="relative mt-6">
               <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                NASA's Waste Jettison Mechanism Challenge Winners
+                Team Selenis wins best Non-Capstone Team Award at Engineering Project Showcase
               </h3>
               <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-                The team developed the Spring Loaded Ejection Mechanism (SLEM)
-                to eject waste out of the Orion capsule during long-distance
-                missions. The SLEM was TAMU ThinkTank's first project, and the
-                team won 4th Place overall and a $1000 cash prize.
+                TAMU ThinkTank's Team Selenis wins first place at the Engineering Project Showcase 
+                (Non-Capstone category) for their innovative rover mission concept, designed to 
+                prospect for water and ice deposits in the permanently shadowed regions of the lunar 
+                south pole.
               </p>
               <Link
                 className="inline-block"
                 target="_blank"
-                href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch"
+                href="https://engineering.tamu.edu/news/2024/05/engineering-project-showcase-highlights-senior-capstone-design-projects.html"
               >
                 <span className="text-info dark:text-blue-300">
-                  Read more about Aggie Aeros
+                  Read more about Team Selenis
                 </span>
               </Link>
             </div>
@@ -74,6 +74,37 @@ export default function Articles() {
               >
                 <span className="text-info dark:text-blue-300">
                   Read more about Team Vestigo
+                </span>
+              </Link>
+            </div>
+          </div>
+          <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
+            <div className="relative overflow-hidden rounded-xl">
+              <Image
+                src="https://d253pvgap36xx8.cloudfront.net/challenges/thumbnail/8d50149c82f611ec8d16862fe09b0a86/8c0628a682f611eca2ab8a8fe6f2b952.webp"
+                alt="art cover"
+                width="1000"
+                height="667"
+                className="h-64 w-full object-cover object-top transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="relative mt-6">
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
+                NASA's Waste Jettison Mechanism Challenge Winners
+              </h3>
+              <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+                The team developed the Spring Loaded Ejection Mechanism (SLEM)
+                to eject waste out of the Orion capsule during long-distance
+                missions. The SLEM was TAMU ThinkTank's first project, and the
+                team won 4th Place overall and a $1000 cash prize.
+              </p>
+              <Link
+                className="inline-block"
+                target="_blank"
+                href="https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch"
+              >
+                <span className="text-info dark:text-blue-300">
+                  Read more about Aggie Aeros
                 </span>
               </Link>
             </div>
