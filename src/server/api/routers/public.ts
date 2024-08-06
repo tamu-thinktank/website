@@ -9,18 +9,10 @@ export const publicRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       await ctx.db.application.create({
         data: {
-          id: input.id,
           ...input.personal,
           ...input.interests,
           challenges: {
-            connectOrCreate: input.interests.challenges.map((challenge) => ({
-              where: {
-                challenge,
-              },
-              create: {
-                challenge,
-              },
-            })),
+            set: input.interests.challenges,
           },
           ...input.leadership,
           meetingTimes: {

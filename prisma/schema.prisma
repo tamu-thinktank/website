@@ -56,6 +56,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     availability  OfficerTime[]
+    targetTeams   Challenge[] // teams officer is interviewing for
 }
 
 model VerificationToken {
@@ -88,17 +89,13 @@ enum Year {
 }
 
 enum Challenge {
-    TDC_93
-    TDC_94
-    TDC_95
-    TDC_96
-    TDC_97
-    TDC_98
-}
-
-model ChallengeTable {
-    challenge  Challenge     @id
-    applicants Application[] // the applicants that selected this challenge
+    AIAA
+    Blue_Skies
+    GoAero
+    RASCAL_1
+    RASCAL_2
+    Solar_District_Group
+    TSGC
 }
 
 enum ApplicationStatus {
@@ -135,7 +132,7 @@ model Application {
 
     // Interests and Motivation section
     interestedAnswer    String
-    challenges          ChallengeTable[]
+    challenges          Challenge[]
     interestedChallenge Challenge
     passionAnswer       String
     isLeadership        Boolean

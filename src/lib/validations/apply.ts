@@ -1,4 +1,4 @@
-import { longAnswerLimit } from "@/consts/apply-questions";
+import { longAnswerLimit } from "@/consts/apply-form";
 import { Temporal } from "@js-temporal/polyfill";
 import { ApplicationStatus, Challenge, Year } from "@prisma/client";
 import { z } from "zod";
@@ -9,8 +9,6 @@ const yearSchema = z.nativeEnum(Year);
 
 export const ApplyFormSchema = z
   .object({
-    id: z.string().cuid2(),
-
     // Personal info section
     personal: z.object({
       fullName: z.string().min(1, "Required"),

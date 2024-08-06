@@ -4,7 +4,7 @@ import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function FormIntroTab() {
   return (
-    <TabsContent className="space-y-2" value="id">
+    <TabsContent className="space-y-2" value="start">
       <Card>
         <CardHeader className="text-center">
           <CardTitle>ThinkTank Membership Application Form</CardTitle>

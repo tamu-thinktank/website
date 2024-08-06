@@ -1,9 +1,15 @@
+import type { Prisma } from "@prisma/client";
 import { db } from "../../lib/db";
 
 export type dbAvailabilitiesType = Awaited<ReturnType<typeof getAvailabities>>;
 
-export async function getAvailabities() {
+export async function getAvailabities(officerIds?: string[]) {
   return await db.officerTime.findMany({
+    where: {
+      officerId: {
+        in: officerIds,
+      },
+    },
     select: {
       gridTime: true,
       officer: {
@@ -17,3 +23,21 @@ export async function getAvailabities() {
     },
   });
 }
+
+export const getTargetTeams = async (
+  userId: string,
+  tx?: Prisma.TransactionClient,
+) => {
+  return (
+    (
+      await (tx ?? db).user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          targetTeams: true,
+        },
+      })
+    )?.targetTeams ?? []
+  );
+};

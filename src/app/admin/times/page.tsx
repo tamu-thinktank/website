@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/lib/trpc/react";
 import { useState } from "react";
 import OfficersGrid from "./officers-grid";
+import PickTeams from "./pick-teams";
 
 export default function MeetingTimes() {
   const [userTimezone, setUserTimezone] = useState(
@@ -24,6 +25,7 @@ export default function MeetingTimes() {
           userTimezone={userTimezone}
           setUserTimezone={setUserTimezone}
         />
+        <PickTeams />
       </CardContent>
       <CardContent>
         <OfficersGrid userTimezone={userTimezone} />

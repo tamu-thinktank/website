@@ -15,47 +15,9 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { q } from "@/consts/apply-questions";
+import { challenges, q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { Challenge } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
-
-const challenges: {
-  id: Challenge;
-  label: string;
-  link: string;
-}[] = [
-  {
-    id: Challenge.TDC_93,
-    label: "TDC-93",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-  {
-    id: Challenge.TDC_94,
-    label: "TDC-94",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-  {
-    id: Challenge.TDC_95,
-    label: "TDC-95",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-  {
-    id: Challenge.TDC_96,
-    label: "TDC-96",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-  {
-    id: Challenge.TDC_97,
-    label: "TDC-97",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-  {
-    id: Challenge.TDC_98,
-    label: "TDC-98",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-];
 
 export default function Interests() {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
@@ -183,72 +145,21 @@ export default function Interests() {
                     onValueChange={field.onChange}
                     value={field.value}
                   >
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.TDC_93}
-                            id="TDC-93"
-                          />
-                          <FormLabel htmlFor="TDC-93">TDC-93</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.TDC_94}
-                            id="TDC-94"
-                          />
-                          <FormLabel htmlFor="TDC-94">TDC-94</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.TDC_95}
-                            id="TDC-95"
-                          />
-                          <FormLabel htmlFor="TDC-95">TDC-95</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.TDC_96}
-                            id="TDC-96"
-                          />
-                          <FormLabel htmlFor="TDC-96">TDC-96</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.TDC_97}
-                            id="TDC-97"
-                          />
-                          <FormLabel htmlFor="TDC-97">TDC-97</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Challenge.TDC_98}
-                            id="TDC-98"
-                          />
-                          <FormLabel htmlFor="TDC-98">TDC-98</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
+                    {challenges.map((challenge) => (
+                      <FormItem>
+                        <FormControl>
+                          <div className="flex items-center space-x-2">
+                            <RadioGroupItem
+                              value={challenge.id}
+                              id={challenge.id}
+                            />
+                            <FormLabel htmlFor={challenge.id}>
+                              {challenge.label}
+                            </FormLabel>
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    ))}
                   </RadioGroup>
                 </FormControl>
                 <FormMessage />
