@@ -4,8 +4,8 @@ import Container from "../../components/Container";
 
 const clientLogos = [
   {
-    src: "/images/clients/ntl.webp",
-    link: "https://www.nasa.gov/general/nasa-tournament-lab/",
+    src: "https://blueskies.nianet.org/wp-content/uploads/cropped-Gateway-to-Blue-Skies-Small-Circle-Logo.png",
+    link: "https://blueskies.nianet.org/",
   },
   {
     src: "/images/clients/tsgc.webp",
