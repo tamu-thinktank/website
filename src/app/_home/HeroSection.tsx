@@ -80,7 +80,7 @@ export default function HeroSection() {
                 <h1 className="text-lg font-semibold text-gray-700 dark:text-white">
                   Cooperative Atmosphere
                 </h1>
-                <p className="mt-2 text-gray-500">150+ Members</p>
+                <p className="mt-2 text-gray-500">70+ Members</p>
               </div>
               <div className="text-center">
                 <h1 className="text-lg font-semibold text-gray-700 dark:text-white">
