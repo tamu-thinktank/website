@@ -1,3 +1,5 @@
+import { Challenge } from "@prisma/client";
+
 export const q = {
   personal: {
     title: "Personal Information",
@@ -35,3 +37,45 @@ export const q = {
 } as const;
 
 export const longAnswerLimit = 1000;
+
+export const challenges: {
+  id: Challenge;
+  label: string;
+  link: string;
+}[] = [
+  {
+    id: Challenge.AIAA,
+    label: "Placeholder (AIAA)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.Blue_Skies,
+    label: "Environmental Monitoring Aircraft (Blue Skies)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.GoAero,
+    label: "Compact Autonomous Rescue Aircraft (GoAero)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.RASCAL_1,
+    label: "Scalable Lunar Infrastructure (RASCAL 1)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.RASCAL_2,
+    label: "Lunar Servicing Robot (RASCAL 2)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.Solar_District_Group,
+    label: "University Solar Grid (Solar District Cup)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+  {
+    id: Challenge.TSGC,
+    label: "Space-Grade pH regulator (TSGC)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+];

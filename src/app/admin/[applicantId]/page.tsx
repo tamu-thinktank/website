@@ -23,13 +23,14 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { q } from "@/consts/apply-questions";
+import { q } from "@/consts/apply-form";
 import { eventTimezone } from "@/consts/availability-grid";
 import { api, clientErrorHandler } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
 import type { FileDataResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Temporal } from "@js-temporal/polyfill";
+import type { Challenge } from "@prisma/client";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -160,6 +161,7 @@ export default function ApplicantPage() {
             applicantEmail={applicant.personal.email}
             meetingTimes={applicant.meetingTimes}
             resumeId={applicant.resumeId}
+            interestedChallenge={applicant.interests.interestedChallenge}
           />
         ) : null}
         <Table
@@ -214,16 +216,20 @@ function Buttons({
   applicantEmail,
   meetingTimes,
   resumeId,
+  interestedChallenge,
 }: {
   applicantId: string;
   applicantName: string;
   applicantEmail: string;
   meetingTimes: RouterOutputs["admin"]["getApplicant"]["meetingTimes"];
   resumeId: string;
+  interestedChallenge: Challenge;
 }) {
   const router = useRouter();
   const apiUtils = api.useUtils();
-  const { data: officerTimes } = api.admin.getAvailabilities.useQuery();
+  const { data: officerTimes } = api.admin.getAvailabilities.useQuery({
+    targetTeam: interestedChallenge,
+  });
 
   const soonestOfficer = useMemo(() => {
     if (!officerTimes) return;

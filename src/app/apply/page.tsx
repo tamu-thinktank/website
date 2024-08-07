@@ -12,7 +12,6 @@ import type { RouterInputs } from "@/lib/trpc/shared";
 import { ApplyFormSchema } from "@/lib/validations/apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createId } from "@paralleldrive/cuid2";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -39,7 +38,6 @@ export default function Apply() {
     resolver: zodResolver(ApplyFormSchema),
     // include at least the default values of optional fields
     defaultValues: {
-      id: createId(),
       personal: {
         altEmail: null,
       },
@@ -153,10 +151,13 @@ export default function Apply() {
       >
         <ScrollArea viewportRef={viewportRef} className="h-full">
           <div className="flex w-screen items-center justify-center">
-            <Tabs defaultValue="id" className="my-4 w-11/12 md:w-3/4 lg:w-1/2">
+            <Tabs
+              defaultValue="start"
+              className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
+            >
               <FormIntroTab />
               <ApplyTab
-                previousTab="id"
+                previousTab="start"
                 currentTab="personal"
                 nextTab="interests"
                 viewportRef={viewportRef}
@@ -227,7 +228,7 @@ export default function Apply() {
  * Tab names match with object sections in the form schema
  */
 type ApplyTabType =
-  | "id"
+  | "start"
   | "personal"
   | "interests"
   | "leadership"
@@ -264,6 +265,10 @@ function ApplyTab({
   };
 
   const handleNext = useCallback(async () => {
+    if (currentTab === "start") {
+      return;
+    }
+
     const isValid = await form.trigger(currentTab, {
       shouldFocus: true,
     });
@@ -280,6 +285,7 @@ function ApplyTab({
 
   useEffect(() => {
     if (!isChecked) return;
+    if (currentTab === "start") return;
 
     const sub = form.watch((values, { name }) => {
       if (name?.startsWith(currentTab)) {

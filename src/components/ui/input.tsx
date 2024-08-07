@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { longAnswerLimit } from "@/consts/apply-questions";
+import { longAnswerLimit } from "@/consts/apply-form";
 import { cn } from "@/lib/utils";
 
 export type InputProps = React.InputHTMLAttributes<HTMLInputElement>;

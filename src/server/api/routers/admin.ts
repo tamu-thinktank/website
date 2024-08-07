@@ -11,17 +11,73 @@ import {
   AvailabilityMapSchema,
 } from "@/lib/validations/apply";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { getAvailabities } from "@/server/db/queries";
+import { getAvailabities, getTargetTeams } from "@/server/db/queries";
 import sendEmail from "@/server/service/email";
 import CalendarService from "@/server/service/google-calendar";
 import DriveService from "@/server/service/google-drive";
 import { Temporal } from "@js-temporal/polyfill";
+import { Challenge } from "@prisma/client";
 import InterviewEmail from "emails/interview";
 import RejectAppEmail from "emails/reject-app";
 import { z } from "zod";
 
+const teamsEnumSchema = z.nativeEnum(Challenge);
+const teamsSchema = z.array(teamsEnumSchema);
+
 export const adminRouter = createTRPCRouter({
+  getTargetTeams: protectedProcedure
+    .input(
+      z
+        .object({
+          officerId: z.string().cuid2(),
+        })
+        .optional(),
+    )
+    .output(teamsSchema)
+    .query(async ({ ctx }) => {
+      return await getTargetTeams(ctx.session.user.id);
+    }),
+  updateTargetTeams: protectedProcedure
+    .input(
+      z.object({
+        team: teamsEnumSchema,
+        op: z.enum(["add", "remove"]).default("add"),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.$transaction(async (tx) => {
+        const teams = await getTargetTeams(ctx.session.user.id, tx);
+
+        if (input.op === "add") {
+          if (teams.includes(input.team)) {
+            throw new Error("Team already selected");
+          }
+        } else if (!teams.includes(input.team)) {
+          throw new Error("Team not selected");
+        }
+
+        await tx.user.update({
+          where: {
+            id: ctx.session.user.id,
+          },
+          data: {
+            targetTeams:
+              input.op === "add"
+                ? { push: input.team }
+                : { set: teams.filter((t) => t !== input.team) },
+          },
+        });
+      });
+    }),
+
   getAvailabilities: protectedProcedure
+    .input(
+      z
+        .object({
+          targetTeam: teamsEnumSchema,
+        })
+        .optional(),
+    )
     .output(
       z.object({
         officers: z.array(
@@ -36,15 +92,22 @@ export const adminRouter = createTRPCRouter({
         availabilities: AvailabilityMapSchema,
       }),
     )
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx, input }) => {
       const officers = await ctx.db.user.findMany({
+        where: input?.targetTeam
+          ? {
+              targetTeams: {
+                has: input.targetTeam,
+              },
+            }
+          : undefined,
         select: {
           id: true,
           name: true,
         },
       });
 
-      const dbAvailabilities = await getAvailabities();
+      const dbAvailabilities = await getAvailabities(officers.map((o) => o.id));
       const availabilities = getAvailabilityMap(dbAvailabilities);
 
       return {
@@ -73,25 +136,28 @@ export const adminRouter = createTRPCRouter({
       const { gridTimes, mode } = input;
 
       if (mode === "add") {
-        const addOperations = gridTimes.map((gridTime) => {
-          return ctx.db.officerTime.upsert({
-            where: {
-              gridTime_officerId: {
-                gridTime,
-                officerId: ctx.session.user.id,
-              },
-            },
-            update: {
-              selectedAt: input.selectedAt,
-            },
-            create: {
-              gridTime,
-              officerId: ctx.session.user.id,
-              selectedAt: input.selectedAt,
-            },
-          });
-        });
-        await ctx.db.$transaction(addOperations);
+        await ctx.db.$transaction((tx) =>
+          Promise.all(
+            gridTimes.map((gridTime) =>
+              tx.officerTime.upsert({
+                where: {
+                  gridTime_officerId: {
+                    gridTime,
+                    officerId: ctx.session.user.id,
+                  },
+                },
+                update: {
+                  selectedAt: input.selectedAt,
+                },
+                create: {
+                  gridTime,
+                  officerId: ctx.session.user.id,
+                  selectedAt: input.selectedAt,
+                },
+              }),
+            ),
+          ),
+        );
       } else {
         await ctx.db.officerTime.deleteMany({
           where: {
@@ -133,7 +199,6 @@ export const adminRouter = createTRPCRouter({
           id: input,
         },
         include: {
-          challenges: true,
           meetingTimes: true,
         },
       });
@@ -150,9 +215,7 @@ export const adminRouter = createTRPCRouter({
         interests: {
           ...application,
           interestedAnswer: application.interestedAnswer,
-          challenges: application.challenges.map((challenge) => {
-            return challenge.challenge;
-          }),
+          challenges: application.challenges,
         },
         leadership: {
           ...application,
