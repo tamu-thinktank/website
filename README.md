@@ -6,11 +6,20 @@
 
 ## Install [pnpm](https://pnpm.io/installation)
 
-- Installation in Windows Powershell (see website for other OS):
+- Installation:
 
-  ```pwsh
-  iwr https://get.pnpm.io/install.ps1 -useb | iex
-  ```
+  - Windows Powershell:
+
+    ```pwsh
+    $env:PNPM_VERSION="9.0.4"
+    iwr https://get.pnpm.io/install.ps1 -useb | iex
+    ```
+
+    - POSIX:
+
+    ```sh
+    curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION="9.0.4" sh -
+    ```
 
   - Test if installed with `pnpm -v`, else restart computer
 
