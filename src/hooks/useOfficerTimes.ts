@@ -20,7 +20,7 @@ export default function useOfficerTimes() {
   });
 
   const { mutate, isLoading: isMutateLoading } =
-    api.admin.updateAvailabilities.useMutation({
+    api.admin.setAvailabilities.useMutation({
       onSettled: (newData, err) => {
         if (err) {
           clientErrorHandler({ err, toastFn: toast });

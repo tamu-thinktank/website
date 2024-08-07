@@ -115,59 +115,31 @@ export const adminRouter = createTRPCRouter({
         availabilities,
       };
     }),
-  updateAvailabilities: protectedProcedure
+  setAvailabilities: protectedProcedure
     .input(
-      z.intersection(
-        z.object({
-          gridTimes: z.array(z.string()),
-        }),
-        z.union([
+      z.object({
+        gridTimes: z.array(
           z.object({
-            mode: z.literal("add"),
+            gridTime: z.string(),
             selectedAt: z.string(),
           }),
-          z.object({
-            mode: z.literal("remove"),
-          }),
-        ]),
-      ),
+        ),
+      }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { gridTimes, mode } = input;
+      const { gridTimes } = input;
 
-      if (mode === "add") {
-        await ctx.db.$transaction((tx) =>
-          Promise.all(
-            gridTimes.map((gridTime) =>
-              tx.officerTime.upsert({
-                where: {
-                  gridTime_officerId: {
-                    gridTime,
-                    officerId: ctx.session.user.id,
-                  },
-                },
-                update: {
-                  selectedAt: input.selectedAt,
-                },
-                create: {
-                  gridTime,
-                  officerId: ctx.session.user.id,
-                  selectedAt: input.selectedAt,
-                },
-              }),
-            ),
-          ),
-        );
-      } else {
-        await ctx.db.officerTime.deleteMany({
-          where: {
-            officerId: ctx.session.user.id,
-            gridTime: {
-              in: gridTimes,
-            },
+      await ctx.db.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          availability: {
+            deleteMany: {}, // delete all existing times
+            create: gridTimes, // create new times
           },
-        });
-      }
+        },
+      });
 
       return true;
     }),

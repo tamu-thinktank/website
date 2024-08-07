@@ -9,7 +9,7 @@ import type { AvailabilityMap } from "@/lib/validations/apply";
 import { flip, offset, shift, useFloating } from "@floating-ui/react-dom";
 import { Temporal } from "@js-temporal/polyfill";
 import { useSession } from "next-auth/react";
-import type { CSSProperties, SetStateAction } from "react";
+import type { CSSProperties } from "react";
 import {
   Fragment,
   useCallback,
@@ -119,21 +119,14 @@ export default function OfficersGrid({
    */
   const onSelected = (
     /**
-     * The times to update
-     */
-    newTimes: string[],
-    /**
      * Updated sessionTimes
      */
-    newSessionTimes: SetStateAction<SessionTime[]>,
-    selectMode: Mode,
+    newSessionTimes: SessionTime[],
   ) => {
     setSessionTimes(newSessionTimes);
 
     mutate({
-      gridTimes: newTimes,
-      selectedAt: Temporal.Now.zonedDateTimeISO("UTC").toString(),
-      mode: selectMode,
+      gridTimes: newSessionTimes,
     });
   };
 
@@ -280,7 +273,6 @@ export default function OfficersGrid({
                       }}
                       onPointerUp={() => {
                         if (mode.current === "add") {
-                          const newTimes = [...selectingRef.current];
                           const newSessionTimes = [
                             // update existing times in the selection
                             ...sessionTimes.map((sT) => {
@@ -310,15 +302,12 @@ export default function OfficersGrid({
                                   ).toString(),
                               })),
                           ];
-                          onSelected(newTimes, newSessionTimes, mode.current);
+                          onSelected(newSessionTimes);
                         } else if (mode.current === "remove") {
-                          const newTimes = selectingRef.current.filter((t) =>
-                            sessionTimes.some((sT) => sT.gridTime === t),
-                          );
                           const newSessionTimes = sessionTimes.filter(
                             (t) => !selectingRef.current.includes(t.gridTime),
                           );
-                          onSelected(newTimes, newSessionTimes, mode.current);
+                          onSelected(newSessionTimes);
                         }
 
                         // reset selection
