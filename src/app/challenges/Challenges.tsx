@@ -136,9 +136,9 @@ export default function Challenges() {
         </div>
         <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
           <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://materovcompetition.org/" passHref>
+            <Link href="https://ig.utexas.edu/tsgc/design-challenge/" passHref>
               <Image
-                src="https://mtsociety.memberclicks.net/assets/MATE%20ROV%20Logo-01.png"
+                src="https://ig.utexas.edu/wp-content/uploads/2023/01/tsgc-design-challenge-color-1536x763.jpg"
                 alt="art cover"
                 width="1000"
                 height="1"
@@ -148,22 +148,50 @@ export default function Challenges() {
           </div>
           <div className="relative mt-6">
             <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              MATE ROV Competition
+              Texas Space Grant Consortium Design Challenge
             </h3>
             <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              Building underwater robots is a fun and engaging way to teach
-              science, technology, applied math, engineering, and
-              entrepreneurial skills to students of all ages. MATE's suite of
-              underwater robot or remotely operated vehicle (ROV) kits and
-              instructional materials offer students at the elementary, middle,
-              high school, and introductory 2- and 4-year level the opportunity
-              to progress from beginner through advanced topics driven by their
-              own desire to increase the capabilities of their robots- and build
-              upon their own knowledge and skills. The MATE ROV Competition
-              offers five different competition classes that are based on the
-              sophistication of the skill and not strictly by age group. The
-              five classes include: SCOUT, NAVIGATOR, RANGER, PIONEER, and
-              EXPLORER.
+              The TSGC Design Challenge is a unique academic experience offering
+              undergraduate students an opportunity to propose, design, and
+              fabricate a solution to a toward solving research objectives of
+              importance to NASA and its mission. Students form and work as a
+              team to meet their design objective over the course of one or two
+              semesters while interacting with their faculty advisor and NASA
+              workplace mentor. Research groups submitting Design Challenge
+              topics provide a mentor to work with each team. The overall
+              experience provides student team members with an opportunity to
+              engage in scientific research, hands-on design, space-related
+              career opportunities, communication skills, and educational
+              outreach.
+            </p>
+          </div>
+        </div>
+        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
+          <div className="relative overflow-hidden rounded-xl">
+            <Link href="https://ig.utexas.edu/tsgc/design-challenge/" passHref>
+              <Image
+                src="https://d253pvgap36xx8.cloudfront.net/challenges/wl/logo/GO%20AERO%20Logo.png"
+                alt="art cover"
+                width="1000"
+                height="1"
+                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+              />
+            </Link>
+          </div>
+          <div className="relative mt-6">
+            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
+              GoAERO
+            </h3>
+            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
+              Catalyze a Breakthrough Solution to Design and Build the World's
+              First Compact, Autonomy-Enabled Rescue Aircraft that is Safe and
+              Simple to Fly. It is a three-year global competition bringing the
+              world's brightest minds together to focus on a singular mission:
+              Saving Lives. Teams participating will design and build the first
+              autonomy-enabled Emergency Response Flyer, a high-tech aircraft
+              that will help response teams reach people, places and crises
+              faster and easier than ever before. Winners will save countless
+              lives. They'll also receive $2+ Million in prizes.
             </p>
           </div>
         </div>

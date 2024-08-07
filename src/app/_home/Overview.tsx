@@ -33,21 +33,31 @@ export default function Overview() {
             <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
               <div className="mt-8 flex gap-4 md:items-center">
                 <div className="w-5/6">
-                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-teal-300">
-                    IV Fluid Generation (IVGEN) Mini pH Correction
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
+                    RASC-AL Large Scale Lunar Crater Prospector 🥇
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400">
-                    Team Hermes
+                    Team Selenis
+                  </p>
+                </div>
+              </div>
+              <div className="mt-8 flex gap-4 md:items-center">
+                <div className="w-5/6">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-teal-300">
+                    TSGC Crew Tracking for Space Analog Research 🥇
+                  </h1>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    Team Vestigo
                   </p>
                 </div>
               </div>
               <div className="mt-8 flex gap-4 md:items-center">
                 <div className="w-5/6">
                   <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
-                    TSGC Crew Tracking for Space Analog Research
+                    IV Fluid Generation (IVGEN) Mini pH Correction
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400">
-                    Team Vestigo
+                    Team Hermes
                   </p>
                 </div>
               </div>
@@ -64,16 +74,6 @@ export default function Overview() {
               <div className="mt-8 flex gap-4 md:items-center">
                 <div className="w-5/6">
                   <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
-                    RASC-AL Large Scale Lunar Crater Prospector
-                  </h1>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Team Selenis
-                  </p>
-                </div>
-              </div>
-              <div className="mt-8 flex gap-4 md:items-center">
-                <div className="w-5/6">
-                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-teal-300">
                     RASC-AL AI-Powered Self Replicating Probes
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400">
@@ -83,7 +83,7 @@ export default function Overview() {
               </div>
               <div className="mt-8 flex gap-4 md:items-center">
                 <div className="w-5/6">
-                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-indigo-300">
+                  <h1 className="dark text-lg font-semibold text-gray-700 dark:text-teal-300">
                     Blue Skies Advancing Aviation for Natural Disasters
                   </h1>
                   <p className="text-gray-500 dark:text-gray-400">

@@ -4,8 +4,8 @@ import Container from "../../components/Container";
 
 const clientLogos = [
   {
-    src: "/images/clients/ntl.webp",
-    link: "https://www.nasa.gov/general/nasa-tournament-lab/",
+    src: "https://blueskies.nianet.org/wp-content/uploads/cropped-Gateway-to-Blue-Skies-Small-Circle-Logo.png",
+    link: "https://blueskies.nianet.org/",
   },
   {
     src: "/images/clients/tsgc.webp",
@@ -24,8 +24,8 @@ const clientLogos = [
     link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
   },
   {
-    src: "/images/clients/aero.webp",
-    link: "https://engineering.tamu.edu/aerospace/index.html",
+    src: "https://engineering.tamu.edu/_files/_logos/logo.svg",
+    link: "https://engineering.tamu.edu/",
   },
 ];
 
@@ -80,7 +80,7 @@ export default function HeroSection() {
                 <h1 className="text-lg font-semibold text-gray-700 dark:text-white">
                   Cooperative Atmosphere
                 </h1>
-                <p className="mt-2 text-gray-500">150+ Members</p>
+                <p className="mt-2 text-gray-500">70+ Members</p>
               </div>
               <div className="text-center">
                 <h1 className="text-lg font-semibold text-gray-700 dark:text-white">
