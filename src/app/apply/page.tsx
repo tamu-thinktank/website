@@ -34,28 +34,31 @@ export default function Apply() {
   );
   const table = useCalculateTable(userTimezone);
 
-  const form = usePersistForm<RouterInputs["public"]["apply"]>("apply-form", {
-    resolver: zodResolver(ApplyFormSchema),
-    // include at least the default values of optional fields
-    defaultValues: {
-      personal: {
-        altEmail: null,
+  const form = usePersistForm<RouterInputs["public"]["apply"]>(
+    "apply-form-F2024-v1",
+    {
+      resolver: zodResolver(ApplyFormSchema),
+      // include at least the default values of optional fields
+      defaultValues: {
+        personal: {
+          altEmail: null,
+        },
+        interests: {
+          challenges: [],
+        },
+        leadership: {
+          skillsAnswer: null,
+          conflictsAnswer: null,
+          presentation: 1,
+          timeManagement: null,
+          relevantExperience: null,
+          timeCommitment: null,
+        },
+        meetingTimes: [],
+        resumeId: "",
       },
-      interests: {
-        challenges: [],
-      },
-      leadership: {
-        skillsAnswer: null,
-        conflictsAnswer: null,
-        presentation: 1,
-        timeManagement: null,
-        relevantExperience: null,
-        timeCommitment: null,
-      },
-      meetingTimes: [],
-      resumeId: "",
     },
-  });
+  );
   const isLeadershipSelected = form.getValues("interests.isLeadership");
   const viewportRef = useRef<HTMLDivElement>(null);
 

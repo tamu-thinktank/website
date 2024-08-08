@@ -15,7 +15,7 @@
     iwr https://get.pnpm.io/install.ps1 -useb | iex
     ```
 
-    - POSIX:
+  - POSIX:
 
     ```sh
     curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION="9.0.4" sh -

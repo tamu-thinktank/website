@@ -2,6 +2,7 @@
 
 ## apply form at `/apply`
 
+- when making changes to form content, update semester / version of form in `apply/page.tsx`
 - calendar features
   - an officer selects times to set on form at `/admin/times`
   - applicants select their own available times in availability grid view
