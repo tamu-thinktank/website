@@ -19,7 +19,7 @@ export const q = {
     interestedChallenge: "Which Design Challenge are you most interested in?",
     passionAnswer:
       "Describe an instance where you demonstrated your passion for a project, task, or subject matter",
-    isLeadership: "Are you interested in a leadership position on a team?",
+    isLeadership: "Are you interested in a Team Lead position?",
   },
   leadership: {
     title: "Leadership",
@@ -32,7 +32,7 @@ export const q = {
     relevantExperience:
       "Describe any relevant experience you have for this design challenge",
     timeCommitment:
-      "Are you able to commit 10+ hours per week with flexibility to accommodate general team availability?",
+      "Are you able add 2 class's worth of work to your schedule hours per week with flexibility to accommodate general team availability?",
   },
 } as const;
 
