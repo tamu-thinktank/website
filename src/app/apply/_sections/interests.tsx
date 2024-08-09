@@ -68,15 +68,13 @@ export default function Interests() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Details can be found {" "} 
+                  Details can be found{" "}
                   <Link
                     className="inline-block"
                     target="_blank"
                     href="/challenges"
                   >
-                    <span className="text-info dark:text-blue-300">
-                      here
-                    </span>
+                    <span className="text-info dark:text-blue-300">here</span>
                   </Link>
                 </CardDescription>
               </CardHeader>
