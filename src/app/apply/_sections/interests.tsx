@@ -18,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { challenges, q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
+import Link from "next/link";
 
 export default function Interests() {
   const form = useFormContext<RouterInputs["public"]["apply"]>();
@@ -67,8 +68,16 @@ export default function Interests() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Details can be found below: <br />{" "}
-                  https://docs.google.com/spreadsheets/d/1RV2x2WfHnKadF7-wfvLKe-247PeqpOvk/edit?usp=sharing&ouid=110812824996366755065&rtpof=true&sd=true
+                  Details can be found {" "} 
+                  <Link
+                    className="inline-block"
+                    target="_blank"
+                    href="/challenges"
+                  >
+                    <span className="text-info dark:text-blue-300">
+                      here
+                    </span>
+                  </Link>
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
