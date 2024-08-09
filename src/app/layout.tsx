@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     "University",
     "College Station",
     "College",
-    "Student"
+    "Student",
   ],
   icons: {
     icon: "/favicon.ico",

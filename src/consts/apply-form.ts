@@ -10,7 +10,8 @@ export const q = {
     phone: "Contact Number",
     year: "Current Year at TAMU",
     major: "Major",
-    availability: "Are you able to add a class's worth of work to your schedule?",
+    availability:
+      "Are you able to add a class's worth of work to your schedule?",
   },
   interests: {
     title: "Interests and Motivation",
