@@ -49,7 +49,6 @@ export default function Apply() {
         leadership: {
           skillsAnswer: null,
           conflictsAnswer: null,
-          presentation: 1,
           timeManagement: null,
           relevantExperience: null,
           timeCommitment: null,

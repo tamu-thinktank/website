@@ -140,7 +140,6 @@ model Application {
     // Leadership section, empty if `isLeadership` is false
     skillsAnswer       String?
     conflictsAnswer    String?
-    presentation       Int? // 1-5
     timeManagement     String?
     relevantExperience String?
     timeCommitment     Boolean?

@@ -90,48 +90,6 @@ export default function Leadership() {
       />
       <FormField
         control={form.control}
-        name="leadership.presentation"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {q.leadership.presentation}{" "}
-                  <span className="text-red-500">*</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FormControl>
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <div className="flex w-1/2 justify-between">
-                      <p>1</p>
-                      <p>2</p>
-                      <p>3</p>
-                      <p>4</p>
-                      <p>5</p>
-                    </div>
-                    <div className="flex w-full items-center justify-center gap-4">
-                      Novice{" "}
-                      <Slider
-                        min={1}
-                        max={5}
-                        step={1}
-                        className="w-1/2"
-                        onValueChange={field.onChange}
-                        value={field.value ? [field.value] : [1]}
-                      />{" "}
-                      Expert
-                    </div>
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
         name="leadership.timeManagement"
         render={({ field }) => (
           <FormItem>

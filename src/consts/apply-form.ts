@@ -27,13 +27,12 @@ export const q = {
     skillsAnswer:
       "Describe a situation where you demonstrated leadership skills",
     conflictsAnswer: "How do you handle conflicts within a team environment?",
-    presentation: "Rate your presentation skills on a scale from 1 to 5",
     timeManagement:
       "How would you rate your ability to meet deadlines and manage time effectively?",
     relevantExperience:
       "Describe any relevant experience you have for this design challenge",
     timeCommitment:
-      "Are you able add 2 class's worth of work to your schedule hours per week with flexibility to accommodate general team availability?",
+      "Are you able to add 2 class's worth of work to your schedule?",
   },
 } as const;
 
