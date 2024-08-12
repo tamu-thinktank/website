@@ -13,7 +13,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
