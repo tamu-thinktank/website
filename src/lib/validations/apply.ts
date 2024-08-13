@@ -72,7 +72,6 @@ export const ApplyFormSchema = z
         .string()
         .max(longAnswerLimit, "Responses must be within 1000 characters")
         .nullable(),
-      presentation: z.coerce.number().min(1).max(5).nullable(),
       timeManagement: z
         .string()
         .max(longAnswerLimit, "Responses must be within 1000 characters")
@@ -135,13 +134,6 @@ export const ApplyFormSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["leadership.conflictsAnswer"],
-          message: "Required for leadership",
-        });
-      }
-      if (!leadership.presentation) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["leadership.presentation"],
           message: "Required for leadership",
         });
       }
