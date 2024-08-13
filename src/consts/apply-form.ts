@@ -46,36 +46,26 @@ export const challenges: {
   {
     id: Challenge.AIAA,
     label: "Placeholder (AIAA)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+    link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
   },
   {
     id: Challenge.Blue_Skies,
     label: "Environmental Monitoring Aircraft (Blue Skies)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-  {
-    id: Challenge.GoAero,
-    label: "Compact Autonomous Rescue Aircraft (GoAero)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+    link: "https://blueskies.nianet.org/competition/",
   },
   {
     id: Challenge.RASCAL_1,
-    label: "Scalable Lunar Infrastructure (RASCAL 1)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+    label: "Scalable Lunar Infrastructure (RASC-AL)",
+    link: "https://rascal.nianet.org/",
   },
   {
     id: Challenge.RASCAL_2,
-    label: "Lunar Servicing Robot (RASCAL 2)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+    label: "Lunar Servicing Robot (RASC-AL)",
+    link: "https://rascal.nianet.org/",
   },
   {
     id: Challenge.Solar_District_Group,
     label: "University Solar Grid (Solar District Cup)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-  {
-    id: Challenge.TSGC,
-    label: "Space-Grade pH regulator (TSGC)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+    link: "https://www.herox.com/SolarDistrictCup",
   },
 ];

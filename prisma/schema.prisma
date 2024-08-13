@@ -91,11 +91,9 @@ enum Year {
 enum Challenge {
     AIAA
     Blue_Skies
-    GoAero
     RASCAL_1
     RASCAL_2
     Solar_District_Group
-    TSGC
 }
 
 enum ApplicationStatus {
