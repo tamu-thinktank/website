@@ -64,11 +64,12 @@ export const RejectAppEmail = ({ userFirstname = "Zeno" }: RejectAppProps) => (
         </Section>
         <Text style={paragraph}>Howdy {userFirstname}!</Text>
         <Text style={paragraph}>
-          TAMU ThinkTank has declined to proceed with your admission into one of
-          our design challenge teams. ThinkTank is growing every year and we
-          currently do not have the space to fit everyone who applies. We
-          believe you have potential on a design challenge team and encourage
-          you to apply again in the following semester as we expand our size.
+          TAMU ThinkTank has decided to not proceed further with your 
+          admission into one of our design challenge teams. ThinkTank 
+          is growing every year and we currently do not have the space 
+          to fit everyone who applies. We believe you have potential on 
+          a design challenge team and encourage you to apply again in 
+          the following semester as we expand our size.
         </Text>
         <Text style={paragraph}>
           Sincerely,
