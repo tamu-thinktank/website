@@ -45,8 +45,8 @@ export const challenges: {
 }[] = [
   {
     id: Challenge.AIAA,
-    label: "Placeholder (AIAA)",
-    link: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions",
+    label: "Mars Exploration Surveyors to Enable Human Exploration (AIAA)",
+    link: "https://www.aiaa.org/docs/default-source/uploadedfiles/membership-and-communities/university-students/design-competitions/2024-25-aiaa-undergraduate-team-space-design-competition.pdf",
   },
   {
     id: Challenge.Blue_Skies,
@@ -56,12 +56,12 @@ export const challenges: {
   {
     id: Challenge.RASCAL_1,
     label: "Scalable Lunar Infrastructure (RASC-AL)",
-    link: "https://rascal.nianet.org/",
+    link: "https://rascal.nianet.org/wp-content/uploads/2025-RASC-AL-Competition-Guidelines.pdf",
   },
   {
     id: Challenge.RASCAL_2,
     label: "Lunar Servicing Robot (RASC-AL)",
-    link: "https://rascal.nianet.org/",
+    link: "https://rascal.nianet.org/wp-content/uploads/2025-RASC-AL-Competition-Guidelines.pdf",
   },
   {
     id: Challenge.Solar_District_Group,
