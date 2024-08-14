@@ -64,9 +64,10 @@ export default function Apply() {
   const { mutateAsync: submitForm } = api.public.apply.useMutation({
     onSuccess: () => {
       toast({
-        title:
-          "✅ Form submitted! \n Contact tamuthinktank@gmail.com if you do not recieve an email by Sept. 9th.",
-        duration: 5000,
+        title: "Form Submitted!",
+        description:
+          "Contact tamuthinktank@gmail.com if you do not recieve an email by Sept. 9th.",
+        duration: 10000,
       });
 
       form.reset();
