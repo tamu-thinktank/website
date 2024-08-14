@@ -65,7 +65,7 @@ export default function Apply() {
     onSuccess: () => {
       toast({
         title:
-          "✅ Form submitted! \n Contact tamuthinktank@gmail.com if you do not recieve an email by Sept. 9th.",
+          "✅ Form submitted! <br> Contact tamuthinktank@gmail.com if you do not recieve an email by Sept. 9th.",
         duration: 5000,
       });
 
