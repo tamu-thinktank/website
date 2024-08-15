@@ -34,7 +34,7 @@ export default function Apply() {
   );
   const table = useCalculateTable(userTimezone);
 
-  const form = usePersistForm<RouterInputs["public"]["apply"]>(
+  const form = usePersistForm<RouterInputs["public"]["applyForm"]>(
     "apply-form-F2024-v2",
     {
       resolver: zodResolver(ApplyFormSchema),
@@ -61,7 +61,7 @@ export default function Apply() {
   const isLeadershipSelected = form.getValues("interests.isLeadership");
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const { mutateAsync: submitForm } = api.public.apply.useMutation({
+  const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
     onSuccess: () => {
       toast({
         title: "Form Submitted!",
@@ -100,7 +100,7 @@ export default function Apply() {
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
-    async (data: RouterInputs["public"]["apply"]) => {
+    async (data: RouterInputs["public"]["applyForm"]) => {
       if (!resumeFile) {
         toast({
           variant: "destructive",
@@ -254,7 +254,7 @@ function ApplyTab({
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
-  const form = useFormContext<RouterInputs["public"]["apply"]>();
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);

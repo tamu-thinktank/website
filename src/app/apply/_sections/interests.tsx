@@ -17,11 +17,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { challenges, q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { useFormContext } from "react-hook-form";
 import Link from "next/link";
+import { useFormContext } from "react-hook-form";
 
 export default function Interests() {
-  const form = useFormContext<RouterInputs["public"]["apply"]>();
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">
