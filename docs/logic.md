@@ -2,11 +2,21 @@
 
 ## apply form at `/apply`
 
-- when making changes to form content, update semester / version of form in `apply/page.tsx`
 - calendar features
   - an officer selects times to set on form at `/admin/times`
   - applicants select their own available times in availability grid view
 - resumes to shared drive
+
+### editing form
+
+- when making changes to form content, update semester / version of form in `apply/page.tsx`
+- to update answers and their types, first edit the `Application` table in `schema.prisma` and then run `pnpm prisma generate`
+- to update question content, edit the `q` object in `apply-form.ts`
+- change labels / links of challenges in `apply-form.ts`
+- run `pnpm typecheck` to see all the type errors from db changes and fix them
+- modify `ApplyFormSchema` in `validations/apply.ts` to change the validations
+- possibly change `defaultValues` in `apply/page.tsx`
+- check `getQAs()` in `admin/applicant-page.tsx` for any changes to specific questions
 
 ## officer view at `/admin`
 
