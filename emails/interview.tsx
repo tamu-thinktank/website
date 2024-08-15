@@ -101,20 +101,15 @@ export const InterviewEmail = ({
           order to receive information about your application status in
           ThinkTank.
         </Text>
-        <a
-          href="https://discord.gg/9Fjkstq4kf"
-          className="relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:border before:border-transparent before:bg-primary/10 before:bg-gradient-to-b before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-gray-800 sm:w-max"
-        >
-          <span className="relative text-base font-semibold text-primary dark:text-white">
-            Discord
-          </span>
+        <a href="https://discord.gg/qUAuSraYV9" className="display:inline-block; background-color:#5865F2; color:white; padding:12px 24px; text-decoration:none; border-radius:8px; font-family:Ginto Nord, Arial, sans-serif;">
+            ThinkTank Discord
         </a>
         <Text style={paragraph}>
           Once in the discord, please change your server nickname to your
           preferred first name and last name. Additionally, ensure that
           notifications for the ThinkTank server are enabled. This is
-          <strong>VERY IMPORTANT</strong> and failure to do so before the
-          interview will result in the <strong>IMMEDIATE</strong>
+          <strong> VERY IMPORTANT</strong> and failure to do so before the
+          interview will result in the <strong>IMMEDIATE </strong>
           dismissal of your application.
         </Text>
         <Text style={paragraph}>
