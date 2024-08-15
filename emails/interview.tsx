@@ -101,8 +101,11 @@ export const InterviewEmail = ({
           order to receive information about your application status in
           ThinkTank.
         </Text>
-        <a href="https://discord.gg/qUAuSraYV9" className="display:inline-block; background-color:#5865F2; color:white; padding:12px 24px; text-decoration:none; border-radius:8px; font-family:Ginto Nord, Arial, sans-serif;">
-            ThinkTank Discord
+        <a
+          href="https://discord.gg/qUAuSraYV9"
+          className="display:inline-block; background-color:#5865F2; color:white; padding:12px 24px; text-decoration:none; border-radius:8px; font-family:Ginto Nord, Arial, sans-serif;"
+        >
+          ThinkTank Discord
         </a>
         <Text style={paragraph}>
           Once in the discord, please change your server nickname to your
