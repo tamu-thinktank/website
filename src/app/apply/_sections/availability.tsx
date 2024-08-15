@@ -27,7 +27,7 @@ export default function Availability({
   setUserTimezone,
   table,
 }: AvailabilityProps) {
-  const form = useFormContext<RouterInputs["public"]["apply"]>();
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
   const color = useMemo(
     () => palette[Math.floor(Math.random() * palette.length)],
     [],

@@ -65,7 +65,7 @@ function TeamsList() {
   const {
     mutate: selectTeam,
     variables: selectionInput,
-    isLoading: isSelecting,
+    isPending: isSelecting,
   } = api.admin.updateTargetTeams.useMutation({
     onSettled: async () => {
       return await apiUtils.admin.getTargetTeams.invalidate();
@@ -88,9 +88,9 @@ function TeamsList() {
                   op: selectedTeams?.includes(challengeId) ? "remove" : "add",
                 });
               }}
-              disabled={isSelecting && selectionInput?.team === challengeId}
+              disabled={isSelecting && selectionInput.team === challengeId}
               className={
-                isSelecting && selectionInput?.team === challengeId
+                isSelecting && selectionInput.team === challengeId
                   ? "opacity-50"
                   : ""
               }

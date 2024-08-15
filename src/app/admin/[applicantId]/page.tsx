@@ -160,7 +160,12 @@ export default function ApplicantPage() {
     }
   }, [isApplicantError, isResumeError]);
 
-  if (isApplicantLoading || isApplicantError || sessionStatus === "loading") {
+  if (
+    isApplicantLoading ||
+    isApplicantError ||
+    sessionStatus === "loading" ||
+    !applicant
+  ) {
     return <PageSkeleton />;
   }
 
@@ -329,7 +334,7 @@ function Buttons({
     return soonest;
   }, [meetingTimes, officerTimes?.availabilities]);
 
-  const { mutate: updateApplicant, isLoading: isUpdateLoading } =
+  const { mutate: updateApplicant, isPending: isUpdateLoading } =
     api.admin.updateApplicant.useMutation({
       onSuccess: (data, input) => {
         let description = `Applicant has been ${input.status}.`;

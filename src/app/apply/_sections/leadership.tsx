@@ -19,7 +19,7 @@ import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
 export default function Leadership() {
-  const form = useFormContext<RouterInputs["public"]["apply"]>();
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">

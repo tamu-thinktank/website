@@ -23,7 +23,7 @@ import { Year } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 
 export default function PersonalInfo() {
-  const form = useFormContext<RouterInputs["public"]["apply"]>();
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">

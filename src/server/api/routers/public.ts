@@ -4,7 +4,7 @@ import DriveService from "@/server/service/google-drive";
 import { z } from "zod";
 
 export const publicRouter = createTRPCRouter({
-  apply: publicProcedure
+  applyForm: publicProcedure
     .input(ApplyFormSchema)
     .mutation(async ({ input, ctx }) => {
       await ctx.db.application.create({

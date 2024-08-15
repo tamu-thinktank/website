@@ -20,7 +20,7 @@ export default function ResumeUpload({
 }: {
   setResumeFile: (file?: File) => void;
 }) {
-  const form = useFormContext<RouterInputs["public"]["apply"]>();
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
   return (
     <Card>
