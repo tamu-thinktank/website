@@ -1,6 +1,14 @@
+import type { ApplyForm } from "@/lib/validations/apply";
 import { Challenge } from "@prisma/client";
 
-export const q = {
+export const longAnswerLimit = 1000;
+
+type Questions = {
+  [Section in Exclude<keyof ApplyForm, "resumeId" | "meetingTimes">]: {
+    [QuestionKey in keyof ApplyForm[Section] | "title"]: string;
+  };
+};
+export const q: Questions = {
   personal: {
     title: "Personal Information",
     fullName: "Full Name",
@@ -34,9 +42,7 @@ export const q = {
     timeCommitment:
       "Are you able to add 2 class's worth of work to your schedule?",
   },
-} as const;
-
-export const longAnswerLimit = 1000;
+};
 
 export const challenges: {
   id: Challenge;

@@ -23,7 +23,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { q } from "@/consts/apply-form";
+import { challenges, q } from "@/consts/apply-form";
 import { eventTimezone } from "@/consts/availability-grid";
 import { api, clientErrorHandler } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
@@ -50,21 +50,34 @@ function getQAs<
   QKey extends keyof (typeof q)[Section],
   AKey extends keyof RouterOutputs["admin"]["getApplicant"][Section],
 >(answers: RouterOutputs["admin"]["getApplicant"]) {
-  const QAs = new Map<Section, [(typeof q)[Section][QKey], string][]>();
+  const QAs = new Map<Section, [string, string][]>();
 
-  Object.keys(q).forEach((section) => {
-    let currSection = QAs.get(section as Section);
+  (Object.keys(q) as Section[]).forEach((section) => {
+    let currSection = QAs.get(section);
     if (!currSection) {
-      QAs.set(section as Section, []);
-      currSection = QAs.get(section as Section);
+      QAs.set(section, []);
+      currSection = QAs.get(section);
     }
-    Object.keys(q[section as Section]).forEach((qkey) => {
+    Object.keys(q[section]).forEach((qkey) => {
       if (qkey === "title") return;
 
-      currSection?.push([
-        q[section as Section][qkey as QKey],
-        String(answers[section as Section][qkey as AKey]),
-      ]);
+      const question = q[section][qkey as QKey];
+      const answer = answers[section][qkey as AKey];
+      if (qkey === "challenges") {
+        currSection?.push([
+          question,
+          (answer as Challenge[])
+            .map((c) => challenges.find((ch) => ch.id === c)?.label ?? "")
+            .join(", "),
+        ]);
+      } else if (qkey === "interestedChallenge") {
+        currSection?.push([
+          question,
+          challenges.find((ch) => ch.id === answer)?.label ?? "",
+        ]);
+      } else {
+        currSection?.push([question, String(answer)]);
+      }
     });
   });
 

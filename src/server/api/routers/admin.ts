@@ -186,8 +186,6 @@ export const adminRouter = createTRPCRouter({
         },
         interests: {
           ...application,
-          interestedAnswer: application.interestedAnswer,
-          challenges: application.challenges,
         },
         leadership: {
           ...application,

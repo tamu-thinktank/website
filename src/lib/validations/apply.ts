@@ -160,6 +160,7 @@ export const ApplyFormSchema = z
       }
     }
   });
+export type ApplyForm = z.infer<typeof ApplyFormSchema>;
 
 /**
  * Map of gridTimes from db to officers available at that time
