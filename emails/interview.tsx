@@ -114,7 +114,7 @@ export const InterviewEmail = ({
           <Row>
             <Column>
               <Img
-                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a69f118df70ad7828d4_icon_clyde_blurple_RGB.svg"
+                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png"
                 width="50"
                 alt="Discord"
                 style={{
@@ -124,7 +124,7 @@ export const InterviewEmail = ({
               />
             </Column>
             <Column>
-              <Heading as="h3">ThinkTank Dicord</Heading>
+              <Heading as="h3">ThinkTank Discord</Heading>
             </Column>
           </Row>
         </Button>
