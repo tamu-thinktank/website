@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
 
 export default function FormIntroTab() {
   return (
@@ -10,8 +10,8 @@ export default function FormIntroTab() {
           <CardTitle>ThinkTank Membership Application Form</CardTitle>
           <Separator />
         </CardHeader>
-        <CardContent>
-          Our club's mission is to provide experience and opportunities to all
+        <CardContent className="text-center">
+          {/* Our club's mission is to provide experience and opportunities to all
           engineering students, regardless of their past experiences. Please
           keep this in mind as you complete your application. <br /> <br />
           There are 5 sections with a resume upload at the end. Make sure you
@@ -23,14 +23,15 @@ export default function FormIntroTab() {
           right to vary the evaluation criteria from semester to semester based
           on the number of applicants, available teams, competition
           requirements, and other relevant factors.
-          <br /> <br />
+          <br /> <br /> */}
+          ❗❗❗❗❗❗ Applications will open on August 29th ❗❗❗❗❗❗
         </CardContent>
       </Card>
-      <TabsList className="float-right bg-transparent">
+      {/* <TabsList className="float-right bg-transparent">
         <TabsTrigger className="bg-white text-black" value="personal">
           Next
         </TabsTrigger>
-      </TabsList>
+      </TabsList> */}
     </TabsContent>
   );
 }
