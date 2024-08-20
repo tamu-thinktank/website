@@ -78,5 +78,5 @@ export const challenges: {
     id: Challenge.Website,
     label: "Website Development Team",
     link: "https://tamuthinktank.org/",
-  }
+  },
 ];
