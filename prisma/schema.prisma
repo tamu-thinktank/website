@@ -94,6 +94,7 @@ enum Challenge {
     RASCAL_1
     RASCAL_2
     Solar_District_Group
+    Website
 }
 
 enum ApplicationStatus {

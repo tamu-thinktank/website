@@ -74,4 +74,9 @@ export const challenges: {
     label: "University Solar Grid (Solar District Cup)",
     link: "https://www.herox.com/SolarDistrictCup",
   },
+  {
+    id: Challenge.Website,
+    label: "Website Development Team",
+    link: "https://tamuthinktank.org/",
+  }
 ];
