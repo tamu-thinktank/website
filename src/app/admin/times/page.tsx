@@ -1,7 +1,7 @@
 "use client";
 
 import PickTimezone from "@/components/pick-timezone";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { api } from "@/lib/trpc/react";
 import { useState } from "react";
@@ -13,7 +13,7 @@ export default function MeetingTimes() {
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
 
-  const { mutate: clearTimes } = api.admin.clearAvailabilities.useMutation();
+  // const { mutate: clearTimes } = api.admin.clearAvailabilities.useMutation();
 
   return (
     <Card className="h-[95%] overflow-auto">
