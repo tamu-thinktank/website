@@ -18,9 +18,9 @@ export default function MeetingTimes() {
   return (
     <Card className="h-[95%] overflow-auto">
       <CardContent className="mt-6 flex gap-4">
-        <Button size={"sm"} className="mt-6" onClick={() => clearTimes()}>
+        {/* <Button size={"sm"} className="mt-6" onClick={() => clearTimes()}>
           Clear times
-        </Button>
+        </Button> */}
         <PickTimezone
           userTimezone={userTimezone}
           setUserTimezone={setUserTimezone}
