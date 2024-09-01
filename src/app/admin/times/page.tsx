@@ -3,7 +3,7 @@
 import PickTimezone from "@/components/pick-timezone";
 // import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { api } from "@/lib/trpc/react";
+// import { api } from "@/lib/trpc/react";
 import { useState } from "react";
 import OfficersGrid from "./officers-grid";
 import PickTeams from "./pick-teams";
