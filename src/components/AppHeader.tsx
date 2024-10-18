@@ -1,12 +1,45 @@
+"use client";
 import Image from "next/image";
+import Link from "next/link";
 import Container from "./Container";
+import { useEffect, useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { ChevronDown } from "lucide-react";
 
 export default function Header() {
+  const [showNavbar, setShowNavbar] = useState(true);
+  let lastScrollY = 0;
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <header>
-      <nav className="absolute z-10 w-full">
+      <nav
+        className={`fixed top-0 z-10 w-full border-b border-gray-300/30 bg-[#0C0D0E] transition-transform duration-300 ${
+          showNavbar ? "translate-y-0" : "-translate-y-full"
+        }`}
+      >
         <Container>
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-2 md:gap-0 md:py-4">
+          <div className="relative flex flex-wrap items-center justify-between gap-6 py-4 md:py-3 lg:py-2">
             <input
               aria-hidden="true"
               type="checkbox"
@@ -15,19 +48,18 @@ export default function Header() {
               className="peer hidden"
             />
             <div className="relative z-20 flex w-full justify-between md:px-0 lg:w-max">
-              <a href="/#home" className="flex items-center space-x-2">
-                <Image
-                  src="/ttt.webp"
-                  alt="art cover"
-                  loading="lazy"
-                  width={0}
-                  height={0}
-                  className="h-auto w-10 object-cover object-top transition duration-500 group-hover:scale-105"
-                />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  TAMU ThinkTank
-                </span>
-              </a>
+              <div className="flex items-center space-x-2">
+                <Link href="/">
+                  <Image
+                    src="/ttt.svg"
+                    alt="art cover"
+                    loading="lazy"
+                    width={100}
+                    height={100}
+                    className="w-50 h-auto object-cover object-top transition duration-500 group-hover:scale-105"
+                  />
+                </Link>
+              </div>
 
               <div className="relative flex max-h-10 items-center lg:hidden">
                 <label
@@ -62,28 +94,29 @@ export default function Header() {
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
                     <a
-                      href="/#overview"
+                      href="/#about"
                       className="block transition hover:text-primary md:px-4"
                     >
-                      <span>Overview</span>
+                      <span>About</span>
                     </a>
                   </li>
+
                   <li>
-                    <a
-                      href="/#travel"
-                      className="block transition hover:text-primary md:px-4"
-                    >
-                      <span>Travel</span>
-                    </a>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger className="flex items-center transition hover:text-primary md:px-4">
+                        Challenges <ChevronDown className="ml-1 h-4 w-4" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem>Option 1</DropdownMenuItem>
+                        <DropdownMenuItem>Option 2</DropdownMenuItem>
+                        <DropdownMenuItem>Option 3</DropdownMenuItem>
+                        <DropdownMenuItem>Option 4</DropdownMenuItem>
+                        <DropdownMenuItem>Option 5</DropdownMenuItem>
+                        <DropdownMenuItem>Option 6</DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </li>
-                  <li>
-                    <a
-                      href="/#officers"
-                      className="block transition hover:text-primary md:px-4"
-                    >
-                      <span>Officers</span>
-                    </a>
-                  </li>
+
                   <li>
                     <a
                       href="/#articles"
@@ -92,12 +125,13 @@ export default function Header() {
                       <span>Articles</span>
                     </a>
                   </li>
+
                   <li>
                     <a
-                      href="challenges"
+                      href="/#faq"
                       className="block transition hover:text-primary md:px-4"
                     >
-                      <span>Challenges</span>
+                      <span>FAQ</span>
                     </a>
                   </li>
                 </ul>
@@ -106,10 +140,10 @@ export default function Header() {
               <div className="mt-12 lg:mt-0">
                 <a
                   href="apply"
-                  className="relative flex h-9 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground sm:w-max"
+                  className="relative flex h-[35px] w-[120px] items-center justify-center rounded-[48px] px-4 before:absolute before:inset-0 before:rounded-[48px] before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground"
                 >
-                  <span className="relative text-sm font-semibold text-white">
-                    Apply
+                  <span className="relative text-sm font-semibold text-black">
+                    Join Us
                   </span>
                 </a>
               </div>

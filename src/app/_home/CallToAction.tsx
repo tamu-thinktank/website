@@ -15,7 +15,7 @@ export default function CallToAction() {
         <div className="relative">
           <Image
             className="mx-auto h-auto w-32 rounded-full"
-            src="/ttt.webp"
+            src="/ttt.svg"
             alt="user avatar"
             width={500}
             height={500}
