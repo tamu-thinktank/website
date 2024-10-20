@@ -3,7 +3,6 @@ import Link from "next/link";
 import Container from "../../components/Container";
 import { useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
-
 import {
   SiDiscord,
   SiFacebook,
@@ -12,6 +11,11 @@ import {
 } from "@icons-pack/react-simple-icons";
 
 const scrollItems = [
+  "Industry Experience",
+  "Cooperative Atmosphere",
+  "Personal Empowerment",
+  "Hands-on Learning",
+  "Networking Opportunities",
   "Industry Experience",
   "Cooperative Atmosphere",
   "Personal Empowerment",
@@ -38,7 +42,7 @@ const socialLinks = [
   },
 ];
 
-export default function HeroSection() {
+export default function MyComponent() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
 
@@ -50,7 +54,6 @@ export default function HeroSection() {
     const containerWidth = scrollContainer.offsetWidth;
 
     let scrollPosition = 0;
-    const scrollSpeed = 50;
 
     const scroll = () => {
       scrollPosition += 1;
@@ -87,86 +90,104 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div className="relative bg-[#0C0D0E]" id="home">
-      <div className="pointer-events-none absolute right-0 top-0 h-1/2 w-1/2 -translate-y-1/3 translate-x-1/3 transform rounded-full bg-blue-500 opacity-10 blur-3xl"></div>
-      <Container>
-        <div className="relative mx-auto flex h-screen flex-col justify-center">
-          <div className="mx-auto w-full text-center lg:w-4/5 xl:w-3/4 2xl:w-2/3">
-            <h1 className="mb-1 bg-gradient-to-r from-white via-white to-blue-900 bg-clip-text pb-1 text-5xl font-bold leading-tight text-transparent sm:mb-3 sm:text-6xl md:text-7xl lg:text-8xl xl:text-7xl 2xl:text-7xl 2xl:leading-tight">
-              Empowering
-            </h1>
-            <h1 className="mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text pb-1 text-5xl font-bold leading-tight text-transparent sm:mb-6 sm:text-6xl md:text-7xl lg:text-8xl xl:text-7xl 2xl:text-7xl 2xl:leading-tight">
-              Future Engineers
-            </h1>
+    <div
+      className="relative overflow-hidden bg-[#0C0D0E]"
+      id="home"
+      style={{
+        fontFamily:
+          '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
+      }}
+    >
+      <div className="pointer-events-none absolute right-[-125px] top-[-375px] h-[1000px] w-[1000px] -translate-y-1/2 translate-x-1/2 transform bg-blue-400 opacity-10 blur-3xl md:h-[1250px] md:w-[1250px] lg:h-[1500px] lg:w-[1500px]"></div>
 
-            <p className="mx-auto max-w-3xl text-base text-gray-400 sm:text-lg md:text-xl lg:text-xl xl:text-lg 2xl:text-xl">
-              From Potential to Professional,
-            </p>
-            <p className="mx-auto mb-6 mt-1 max-w-3xl text-base text-gray-400 sm:mb-12 sm:text-lg md:text-xl lg:text-xl xl:text-lg 2xl:text-xl">
-              start your journey with ThinkTank
-            </p>
+      <div className="flex min-h-screen items-center py-5 md:py-12">
+        <Container>
+          <div className="desktop-scale mobile-adjust relative mx-auto flex flex-col justify-center">
+            <div className="mx-auto w-full text-center lg:w-4/5 xl:w-3/4 2xl:w-2/3">
+              <div className="font-poppins 3xl:top-12 3xl:pt-8 relative top-8 w-full bg-gradient-to-r from-white to-[#000080] bg-clip-text pt-0.5 text-[650%] font-semibold leading-snug text-transparent max-md:max-w-full max-md:text-4xl">
+                Empowering
+              </div>
 
-            <div className="mb-8 flex flex-wrap justify-center gap-x-4 gap-y-4 sm:mb-16 sm:gap-x-6">
-              <a
-                href="https://discord.gg/qUAuSraYV9"
-                className="relative flex h-10 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:h-11 sm:w-56 md:w-64 lg:h-12 lg:w-72 xl:h-14 xl:w-80"
+              <div className="font-poppins -mt-4 w-full bg-gradient-to-r from-white to-gray-500 bg-clip-text text-[650%] font-semibold text-transparent max-md:max-w-full max-md:text-4xl">
+                Future Engineers
+              </div>
+
+              <p
+                className="mx-auto max-w-3xl text-sm text-gray-200 sm:text-base md:text-lg lg:text-xl xl:text-2xl"
+                style={{ lineHeight: "1.3" }}
               >
-                <span className="relative text-sm font-semibold text-black sm:text-base lg:text-lg xl:text-xl">
-                  Join Us
-                </span>
-              </a>
-              <a
-                href="apply"
-                className="relative flex h-10 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:border before:border-gray-700 before:bg-gray-800 before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:h-11 sm:w-56 md:w-64 lg:h-12 lg:w-72 xl:h-14 xl:w-80"
-              >
-                <span className="relative text-sm font-semibold text-white sm:text-base lg:text-lg xl:text-xl">
-                  Contact Us
-                </span>
-              </a>
-            </div>
+                From Potential to Professional
+              </p>
+              <p className="mx-auto mb-6 mt-1 max-w-3xl text-sm text-gray-200 sm:mb-12 sm:text-base md:text-lg lg:text-xl xl:text-2xl">
+                Start Your Journey with ThinkTank
+              </p>
 
-            <div className="mb-6 flex justify-center space-x-4 sm:mb-12 sm:space-x-6 lg:space-x-8">
-              {socialLinks.map((link) => (
+              <div className="mb-8 flex flex-wrap justify-center gap-x-4 gap-y-4 sm:mb-16 sm:gap-x-6">
                 <a
-                  key={link.name}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="transform text-gray-400 transition-transform duration-300 hover:scale-125 hover:text-white"
+                  href="https://discord.gg/qUAuSraYV9"
+                  className="group relative flex h-10 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-48 lg:h-12 lg:w-56 xl:h-14 xl:w-64"
                 >
-                  <link.icon className="h-4.5 w-4.5 lg:h-7.5 lg:w-7.5 2xl:h-10.5 2xl:w-10.5 sm:h-6 sm:w-6 xl:h-9 xl:w-9" />
-                  <span className="sr-only">{link.name}</span>
-                </a>
-              ))}
-            </div>
-
-            <div className="relative overflow-hidden border-y border-gray-700 py-4 sm:py-6 lg:py-8">
-              <div className="absolute bottom-0 left-0 top-0 z-10 w-32 bg-gradient-to-r from-[#0C0D0E] to-transparent"></div>
-              <div className="absolute bottom-0 right-0 top-0 z-10 w-32 bg-gradient-to-l from-[#0C0D0E] to-transparent"></div>
-              <div
-                ref={scrollRef}
-                className="inline-block whitespace-nowrap"
-                style={{ willChange: "transform" }}
-              >
-                {[...scrollItems, ...scrollItems].map((item, index) => (
-                  <span
-                    key={index}
-                    className="inline-block px-4 text-base font-semibold text-gray-300 sm:px-8 sm:text-lg lg:text-xl xl:text-2xl"
-                  >
-                    {item}
+                  <span className="relative text-sm font-semibold text-black transition-all duration-300 ease-in-out will-change-transform group-hover:scale-110 sm:text-base lg:text-lg xl:text-xl">
+                    Join Us
                   </span>
+                </a>
+                <a
+                  href="apply"
+                  className="contact-us-btn group relative flex h-10 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:border before:border-white before:bg-transparent before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 sm:w-48 lg:h-12 lg:w-56 xl:h-14 xl:w-64"
+                >
+                  <span className="relative text-sm font-semibold text-white transition-all duration-300 ease-in-out will-change-transform group-hover:scale-110 sm:text-base lg:text-lg xl:text-xl">
+                    Contact Us
+                  </span>
+                </a>
+              </div>
+
+              <div className="mb-6 flex justify-center space-x-4 sm:mb-12 sm:space-x-6 lg:space-x-8">
+                {socialLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transform text-gray-300 transition-all duration-300 ease-in-out will-change-transform hover:scale-125 hover:text-white"
+                  >
+                    <link.icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 xl:h-10 xl:w-10" />
+                    <span className="sr-only">{link.name}</span>
+                  </a>
                 ))}
               </div>
+
+              <div className="my-4 border-t border-white opacity-20"></div>
+              <div
+                className="relative overflow-hidden border-y border-[#0C0D0E] py-4 sm:py-6 lg:py-8"
+                style={{ margin: "20px 0" }}
+              >
+                <div className="absolute bottom-0 left-0 top-0 z-10 w-32 bg-gradient-to-r from-[#0C0D0E] to-transparent"></div>
+                <div className="from absolute bottom-0 right-0 top-0 z-10 w-32 bg-gradient-to-l"></div>
+                <div
+                  ref={scrollRef}
+                  className="inline-block whitespace-nowrap"
+                  style={{ willChange: "transform" }}
+                >
+                  {[...scrollItems, ...scrollItems].map((item, index) => (
+                    <span
+                      key={index}
+                      className="inline-block px-4 text-sm font-semibold text-gray-300 sm:px-8 sm:text-base lg:text-lg xl:text-xl"
+                    >
+                      {item}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div
+              ref={arrowRef}
+              className="absolute -bottom-12 left-1/2 -translate-x-1/2 transform sm:-bottom-16 lg:-bottom-20 xl:-bottom-24"
+            >
+              <ChevronDown className="h-6 w-6 text-white sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12" />
             </div>
           </div>
-          <div
-            ref={arrowRef}
-            className="absolute bottom-4 left-1/2 -translate-x-1/2 transform sm:bottom-8"
-          >
-            <ChevronDown className="h-6 w-6 text-white sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12" />
-          </div>
-        </div>
-      </Container>
+        </Container>
+      </div>
     </div>
   );
 }

@@ -82,3 +82,66 @@
 #toggle_nav:checked ~ div #hamburger #line2 {
   @apply -translate-y-1 -rotate-45;
 }
+@media (min-width: 1024px) {
+  .desktop-scale {
+    transform: scale(1.5);
+    transform-origin: center top;
+    height: 66.67vh; /* 100vh / 1.5 */
+    overflow: hidden;
+  }
+
+  .desktop-scale > * {
+    transform: scale(0.667); /* 1 / 1.5 */
+    transform-origin: center top;
+    height: 150%; /* 100% * 1.5 */
+    width: 150%; /* 100% * 1.5 */
+  }
+}
+/* Custom styles moved from the component */
+@media (min-width: 1921px) {
+  .desktop-scale {
+    transform: scale(2.1);
+    transform-origin: center top;
+    padding-top: 0vh;
+    padding-bottom: 0vh;
+  }
+}
+
+@media (max-width: 1000px) {
+  .mobile-adjust {
+    transform: scale(0.5);
+    font-size: 0.8em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+.gradient-text-white-navy {
+  background: linear-gradient(to right, white, #000080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-white-gray {
+  background: linear-gradient(to right, white, #808080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hover-animation {
+  transition: all 0.3s ease;
+}
+
+.hover-animation:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.toggle_nav:checked ~ div .hamburger .line {
+  @apply translate-y-1.5 rotate-45;
+}
+
+.toggle_nav:checked ~ div .hamburger .line2 {
+  @apply -translate-y-1 -rotate-45;
+}
