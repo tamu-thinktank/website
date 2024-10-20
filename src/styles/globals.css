@@ -145,3 +145,31 @@
 .toggle_nav:checked ~ div .hamburger .line2 {
   @apply -translate-y-1 -rotate-45;
 }
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+
+.font-poppins {
+  font-family: 'Poppins', sans-serif;
+}
+
+.font-dm-sans {
+  font-family: 'DM Sans', sans-serif;
+}
+
+.navbar {
+  position: fixed;
+  z-index: 1000; /* Lower than the Empowering text */
+}
+.highest-z-index {
+  position: relative; /* Ensure it’s positioned to honor z-index */
+  z-index: 3000;
+}
+@media (max-width: 600px) {
+  .responsive-title {
+    font-size: 6em; 
+  }
+}
+@media (min-width: 601px) {
+  .responsive-title {
+    font-size: 6em; 
+  }
+}
