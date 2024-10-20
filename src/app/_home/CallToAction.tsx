@@ -1,55 +1,51 @@
-import Image from "next/image";
 import Container from "../../components/Container";
 
-export default function CallToAction() {
-  return (
-    <div className="relative py-16">
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 m-auto grid h-max w-full grid-cols-2 -space-x-52 opacity-40 dark:opacity-20"
-      >
-        <div className="h-56 bg-gradient-to-br from-primary to-purple-400 blur-[106px] dark:from-blue-700"></div>
-        <div className="h-32 bg-gradient-to-r from-cyan-400 to-sky-300 blur-[106px] dark:to-indigo-600"></div>
-      </div>
-      <Container>
-        <div className="relative">
-          <Image
-            className="mx-auto h-auto w-32 rounded-full"
-            src="/ttt.svg"
-            alt="user avatar"
-            width={500}
-            height={500}
-          />
+interface BenefitBoxProps {
+  title: string;
+}
 
-          <div className="m-auto mt-6 space-y-6 md:w-8/12 lg:w-7/12">
-            <h1 className="text-center text-4xl font-bold text-gray-800 dark:text-white md:text-5xl">
-              Join Us Today!
-            </h1>
-            <p className="text-center text-xl text-gray-600 dark:text-gray-300">
-              Join our design challenges to gain hands-on experience,
-              specialized skills, and faculty mentorship.
-            </p>
-            <div className="flex flex-wrap justify-center gap-6">
-              <a
-                href="apply"
-                className="relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:border before:border-transparent before:bg-primary/10 before:bg-gradient-to-b before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:border-gray-700 dark:before:bg-gray-800 sm:w-max"
-              >
-                <span className="relative text-base font-semibold text-primary dark:text-white">
-                  Apply
-                </span>
-              </a>
-              <a
-                href="#overview"
-                className="relative flex h-11 w-full items-center justify-center px-6 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground sm:w-max"
-              >
-                <span className="relative text-base font-semibold text-white">
-                  More about
-                </span>
-              </a>
-            </div>
+function BenefitBox({ title }: BenefitBoxProps) {
+  const words = title.split(" ");
+  const firstWord = words[0]; // Get the first word
+  const lastThreeWords = words.slice(-3).join(" "); // Get the last three words
+  const middleWords = words.slice(1, -3).join(" "); // Get the words in between
+
+  return (
+    <div className="group relative">
+      {/* Background highlight effect */}
+      <div className="absolute inset-0 bg-white opacity-0 blur-xl transition-opacity duration-300 ease-in-out group-hover:opacity-10"></div>
+
+      {/* Main component */}
+      <div className="relative z-10 h-96 overflow-hidden rounded-2xl bg-[#1A1A1A] p-6">
+        <div className="absolute inset-0 rounded-2xl border-2 border-[#535151] opacity-50"></div>
+        <div className="relative z-20 flex h-full flex-col">
+          <div className="absolute inset-x-2 top-2 h-2/3 overflow-hidden rounded-lg transition-all duration-700 ease-in-out group-hover:inset-x-[-10%] group-hover:top-[-15%] group-hover:h-[85%] group-hover:rounded-b-none group-hover:rounded-t-2xl">
+            <div className="h-full w-full bg-gray-700 transition-transform duration-500 ease-in-out group-hover:scale-150"></div>
           </div>
+          <h3 className="mt-auto pb-4 pl-6 text-left text-2xl font-semibold text-white">
+            <span className="block font-normal">{firstWord}</span>{" "}
+            {/* First word regular */}
+            <span className="block font-normal">{middleWords}</span>{" "}
+            {/* Middle words normal */}
+            <span className="block font-semibold">{lastThreeWords}</span>{" "}
+            {/* Last three words semibold */}
+          </h3>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Benefits() {
+  return (
+    <section className="bg-[#0C0D0E] py-20 md:py-28">
+      <Container>
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-3">
+          <BenefitBox title="Gain Real World Experience" />
+          <BenefitBox title="Turn Ideas Into Reality" />
+          <BenefitBox title="Travel Across The World" />
         </div>
       </Container>
-    </div>
+    </section>
   );
 }

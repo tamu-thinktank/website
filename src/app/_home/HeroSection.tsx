@@ -11,16 +11,15 @@ import {
 } from "@icons-pack/react-simple-icons";
 
 const scrollItems = [
-  "Industry Experience",
-  "Cooperative Atmosphere",
-  "Personal Empowerment",
-  "Hands-on Learning",
-  "Networking Opportunities",
-  "Industry Experience",
-  "Cooperative Atmosphere",
-  "Personal Empowerment",
-  "Hands-on Learning",
-  "Networking Opportunities",
+  "Internship Opportunities",
+  "Skill Development",
+  "Interdisciplinary Teams",
+  "Peer Mentors",
+  "Creative Solutions",
+  "Project Leadership",
+  "Systems Engineering",
+  "Faculty Mentors ",
+  "Professional Presentations",
 ];
 
 const socialLinks = [

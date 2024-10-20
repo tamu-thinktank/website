@@ -8,20 +8,16 @@ export default function Component() {
         <div className="flex flex-col-reverse items-start justify-between space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
           <div className="w-full space-y-6 lg:w-1/2 lg:pt-0">
             <h2 className="text-2xl font-bold italic text-gray-900 dark:text-white sm:text-3xl md:text-4xl lg:text-5xl">
-              Our <span style={{ color: "#B8B8B8" }}>Mission</span>
+              <span style={{ color: "#B8B8B8" }}>Our Mission</span>
             </h2>
             <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300 sm:text-base md:text-lg">
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat.
-              </p>
-              <p>
-                Duis aute irure dolor in reprehenderit in voluptate velit esse
-                cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                cupidatat non proident, sunt in culpa qui officia deserunt
-                mollit anim id est laborum.
+                ThinkTank provides undergraduates with opportunities to expand
+                their technical skills while working collaboratively with peers
+                on real-world design challenges. By offering mentorship,
+                resource support, and workshops modeled on professional
+                practices, we empower students to grow into innovative engineers
+                ready for the demands of their future careers.
               </p>
             </div>
             <div className="pt-6">

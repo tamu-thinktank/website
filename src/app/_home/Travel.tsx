@@ -1,69 +1,102 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Container from "../../components/Container";
 
-export default function Travel() {
-  return (
-    <div id="travel">
-      <Container>
-        <svg
-          width="90pt"
-          height="90pt"
-          version="1.1"
-          viewBox="0 0 1200 1200"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="#ffffff"
-        >
-          <g>
-            <path d="m1199.1 461.83c-8.5938-31.273-88.465-33.961-120.6-23.258-116.87 38.867-233.75 77.746-350.64 116.63l-405.72-162.02-42.816 45.637 173.62 208.51c-111.91 38.688-316.88 110.12-354.09 122.48-32.027 10.668 206.96 44.578 261.76 35.473 0 0 420.98-137.32 607.12-199.25 47.844-15.91 95.711-31.824 143.55-47.746 32.016-10.648 97.141-62.523 87.816-96.461z" />
-            <path d="m32.52 621.5-32.52 30.047 86.242 100.61 124.98-44.016z" />
-          </g>
-        </svg>
+const logos = [
+  "/images/clients/aero.webp",
+  "/images/clients/aiaa.webp",
+  "/images/clients/herox.webp",
+  "/images/clients/rascal.webp",
+  "/images/clients/tsgc.webp",
+];
 
-        <div className="flex-row-reverse justify-between space-y-6 text-gray-600 lg:flex lg:items-center lg:gap-12 lg:space-y-0">
-          <div className="lg:w-1/2">
+function LogoSlider() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    const slideWidth = ((slider.scrollWidth / logos.length) * 1) / 2;
+    const animationDuration = 15000;
+
+    const animation = slider.animate(
+      [
+        { transform: "translateX(0)" },
+        { transform: `translateX(-${slideWidth * logos.length}px)` },
+      ],
+      {
+        duration: animationDuration,
+        iterations: Infinity,
+        easing: "linear",
+      },
+    );
+
+    return () => {
+      animation.cancel();
+    };
+  }, []);
+
+  return (
+    <div className="w-full overflow-hidden">
+      <div ref={sliderRef} className="flex">
+        {[...logos, ...logos].map((logo, index) => (
+          <div key={index} className="flex-shrink-0 px-4">
             <Image
-              src="/images/photos/IMG_6121.webp"
-              alt="image"
-              className="w-full"
-              width={500}
-              height={500}
+              src={logo}
+              alt={``}
+              width={100}
+              height={50}
+              objectFit="contain"
             />
           </div>
-          <div className="lg:w-1/2">
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white md:text-4xl">
-              Travel Opportunities!
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function ChallengeSection() {
+  return (
+    <div id="travel" className="bg-[#0C0D0E] py-8 md:py-12">
+      <Container>
+        <div className="flex flex-col-reverse items-start justify-between space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+          <div className="w-full space-y-8 lg:w-1/2 lg:pt-0">
+            <h2 className="text-2xl font-bold italic text-gray-900 dark:text-white sm:text-3xl md:text-4xl lg:text-5xl">
+              <span style={{ color: "#B8B8B8" }}>Design Challenges</span>
             </h2>
-            <p className="my-8 text-gray-600 dark:text-gray-300">
-              At TAMU ThinkTank, students can showcase their design projects at
-              industry events with the help of various programs and services.
-              Attending these events offers a chance to meet industry
-              professionals, receive valuable feedback, and gain insight into
-              current industry trends. Additionally, networking at project
-              showcases can create meaningful connections and open up
-              opportunities for future career growth.
-            </p>
-            <div className="space-y-4 divide-y divide-gray-100 dark:divide-gray-800">
-              <div className="mt-8 flex gap-4 md:items-center">
-                <div className="w-5/6">
-                  <h1 className="text-lg font-semibold text-gray-700 dark:text-indigo-300">
-                    Texas Space Grant Consortium Showcase
-                  </h1>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Johnson Space Center, Houston, TX
-                  </p>
-                </div>
-              </div>
-              <div className="flex gap-4 pt-4 md:items-center">
-                <div className="w-5/6">
-                  <h1 className="text-lg font-semibold text-gray-700 dark:text-teal-300">
-                    Engineering Project Showcase
-                  </h1>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Zachry Engineering Education Complex, College Station, TX
-                  </p>
-                </div>
-              </div>
+            <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300 sm:text-base md:text-lg">
+              <p>
+                ThinkTank teams compete in capstone-level engineering
+                competitions by designing solutions for significant present and
+                future challenges. Each member learns to solve complex problems,
+                develop critical subsystems, and integrate their solutions
+                within a cohesive team environment.
+              </p>
             </div>
+            <div className="my-8 border-t border-gray-700"></div>
+            <div className="space-y-6">
+              <LogoSlider />
+            </div>
+            <div className="my-8 border-t border-gray-700"></div>
+            <div className="pt-4">
+              <button className="w-full transform rounded-full border-2 border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg">
+                Explore Challenges
+              </button>
+            </div>
+          </div>
+          <div className="w-full lg:w-1/2">
+            <Image
+              src="/images/photos/IMG_6121.webp"
+              alt="Design Challenge"
+              className="w-full rounded-lg object-cover"
+              width={600}
+              height={400}
+              layout="responsive"
+            />
           </div>
         </div>
       </Container>
