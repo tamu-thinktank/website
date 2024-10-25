@@ -1,140 +1,143 @@
-import Container from "@/components/Container";
-import Image from "next/image";
-import Link from "next/link";
+"use client";
 
-export default function Challenges() {
+import React, { useState, useEffect } from 'react';
+import AppHeader from "@/components/AppHeader"; // Adjust path if needed
+import AppFooter from "@/components/AppFooter"; // Adjust path if needed
+
+const DesignChallenges: React.FC = () => {
+  const [showMore, setShowMore] = useState(false);
+
+  const handleToggle = () => {
+    setShowMore(!showMore);
+  };
+
+  useEffect(() => {
+    const fadeInElements = document.querySelectorAll('.fade-in');
+    const slideInElements = document.querySelectorAll('.slide-in');
+    const bounceElements = document.querySelectorAll('.bounce');
+
+    fadeInElements.forEach(el => {
+      el.style.opacity = 0;
+      el.style.transition = 'opacity 1s ease-in-out';
+      setTimeout(() => {
+        el.style.opacity = 1;
+      }, 100);
+    });
+
+    slideInElements.forEach(el => {
+      el.style.transform = 'translateY(-20px)';
+      el.style.opacity = 0;
+      el.style.transition = 'transform 1s ease-in-out, opacity 1s ease-in-out';
+      setTimeout(() => {
+        el.style.transform = 'translateY(0)';
+        el.style.opacity = 1;
+      }, 100);
+    });
+
+    const bounceKeyframes = [
+      { transform: 'translateY(0)' },
+      { transform: 'translateY(-10px)' },
+      { transform: 'translateY(0)' }
+    ];
+
+    const bounceTiming = {
+      duration: 2000,
+      iterations: Infinity
+    };
+
+    bounceElements.forEach(el => {
+      el.animate(bounceKeyframes, bounceTiming);
+    });
+  }, []);
+
   return (
-    <Container>
-      <div className="mb-12 justify-between space-y-2 pt-24 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white md:text-4xl">
-          Fall 2024 Student Design Challenges
+    <>
+      <main className="flex flex-col items-center justify-start h-screen bg-gray-900 p-8 mt-20">
+        <h2 className="text-sm text-gray-400 mb-0 text-left w-full mt-2 fade-in">2024-2025</h2>
+        <h1 className="text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-gray-400 to-gray-800 leading-tight pt-0 mb-2 text-left w-full slide-in">
+          Design Challenges
         </h1>
-        <p className="text-gray-600 dark:text-gray-300 lg:mx-auto lg:w-6/12">
-          The Official TAMU ThinkTank Fall 2024 Challenge Suite
-        </p>
-      </div>
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://blueskies.nianet.org/competition/" passHref>
-              <Image
-                src="https://blueskies.nianet.org/wp-content/uploads/BlueSkies_Logo_lg-1.png"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
+
+        {/* Arrow Icon */}
+        <div className="mt-4 bounce">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6 text-gray-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11 6l-6 6 6 6M18 12H3" />
+          </svg>
+        </div>
+
+        {/* Challenge Section */}
+        <div className="mt-10 flex flex-col bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-4xl fade-in">
+          <div className="flex items-start">
+            <div className="mr-4">
+              <p className="text-sm text-gray-400 mb-1">
+                The <span className="text-white text-lg font-semibold">ATLAS</span>
+              </p>
+              <img
+                src="/images/download.webp" // Update this to your correct path
+                alt="A representation of the design challenge"
+                className="w-48 h-auto rounded-md"
               />
-            </Link>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-white">Challenge Title</h3>
+              <p className="text-white mt-2">Description of the challenge goes here, detailing what participants can expect.</p>
+              <button
+                onClick={handleToggle}
+                aria-expanded={showMore}
+                className="bg-blue-600 text-white px-4 py-2 rounded-md mt-2"
+                style={{ transition: 'transform 0.3s ease-in-out' }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              >
+                {showMore ? 'Show Less' : 'See More'}
+              </button>
+            </div>
           </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              NASA'S Gateways to Blue Skies Competition
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              Blue Skies expands engagement between universities and NASA's
-              University Innovation Project, industry, and government partners
-              by providing an opportunity for multi-disciplinary teams of
-              students from all academic levels (i.e., freshman, sophomore,
-              junior, senior, and graduate) to tackle significant challenges and
-              opportunities for the aviation industry through a new project
-              theme each year. The competition is guided by a push toward new
-              technologies as well as environmentally and socially conscious
-              aviation.
-            </p>
+
+          {/* Expanded content section */}
+          <div
+            className={`mt-5 bg-gray-700 p-6 rounded-md w-full transition-all duration-500 ease-in-out ${showMore ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}
+          >
+            <img
+              src="/images/download.webp" // Ensure the image path is correct
+              alt="An additional view related to the challenge"
+              className="w-full h-[400px] rounded-md object-cover mb-4" // Full width, fixed height, maintain aspect ratio
+            />
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-gray-400">Team</p>
+                <h4 className="text-2xl font-semibold text-white">Team Name</h4>
+              </div>
+              <p className="text-gray-400">| Apply Today</p>
+            </div>
+            <h4 className="text-lg font-semibold text-white mt-4">Additional Information</h4>
+            <p className="text-white">Further details about the challenge can be included here.</p>
+            <div className="flex justify-around mt-6">
+              <a href="https://blueskies.nianet.org/competition/" target="_blank" rel="noopener noreferrer">
+                <img src="/images/blue.png" alt="Blue Skies Competition" className="w-40 h-20 rounded-lg" />
+              </a>
+              <a href="https://www.herox.com/SolarDistrictCup" target="_blank" rel="noopener noreferrer">
+                <img src="/images/solar.png" alt="Solar District Cup" className="w-40 h-20 rounded-lg" />
+              </a>
+              <a href="https://rascal.nianet.org/" target="_blank" rel="noopener noreferrer">
+                <img src="/images/other.png" alt="RASC-AL" className="w-40 h-20 rounded-lg" />
+              </a>
+              <a href="https://www.aiaa.org/get-involved/students-educators/Design-Competitions" target="_blank" rel="noopener noreferrer">
+                <img src="/images/aiaa.png" alt="AIAA Design Competitions" className="w-40 h-20 rounded-lg" />
+              </a>
+            </div>
           </div>
         </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://www.herox.com/SolarDistrictCup" passHref>
-              <Image
-                src="https://d253pvgap36xx8.cloudfront.net/editor_uploads/252917/2023/06/28/SDC-logo-color-horizontal.jpg"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              Solar District Cup
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              The Solar District Cup is a collegiate competition that challenges
-              multidisciplinary student teams to design and model distributed
-              energy systems for a mixed-use campus or district—groups of
-              buildings served by a common electrical distribution feeder. The
-              competition engages students across disciplines—engineering,
-              finance, urban planning, sustainability, communications, and
-              more—to reimagine how energy is generated, managed, and used in a
-              district.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://rascal.nianet.org/" passHref>
-              <Image
-                src="https://www.nasa.gov/wp-content/uploads/2023/03/2023-rasc-al-banner-images.png?w=1500"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              RASC-AL
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              RASC-AL competitions fuel innovation for aerospace systems
-              concepts, analogs, and technology prototyping by bridging gaps
-              through university engagement. RASC-AL is open to undergraduate
-              and graduate university-level students studying fields with
-              applications to human space exploration (i.e., aerospace,
-              bio-medical, electrical, and mechanical engineering; and life,
-              physical, and computer sciences). RASC-AL projects allow students
-              to incorporate their coursework into real aerospace design
-              concepts and work together in a team environment.
-              Interdisciplinary teams are encouraged.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link
-              href="https://www.aiaa.org/get-involved/students-educators/Design-Competitions"
-              passHref
-            >
-              <Image
-                src="https://www.aiaa.org/images/default-source/site-design/logos/logo.png?sfvrsn=59ffaa92_4"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              AIAA Design Competitions
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              AIAA design competitions allow students to perform theoretical
-              work and gain real-world insight into the design process. Whether
-              students are designing an aircraft, engine, or space vehicle, they
-              will go through all the primary design steps involved in
-              determining a solution to a Request for Proposal (RFP). This
-              includes determining a hypothetical solution, testing the
-              hypothesis, evaluating its effectiveness, possibly doing some cost
-              analysis, and finally preparing a report that will be submitted in
-              response to the RFP. These responses are reviewed by experts in
-              the field who will provide constructive responses to the students.
-            </p>
-          </div>
-        </div>
-      </div>
-    </Container>
+      </main>
+    </>
   );
-}
+};
+
+export default DesignChallenges;
