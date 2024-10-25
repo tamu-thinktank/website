@@ -1,8 +1,76 @@
-import Container from "@/components/Container";
-import Image from "next/image";
-import Link from "next/link";
+"use client";
 
-export default function Challenges() {
+import React from 'react';
+import BoxComponent from './box_component'; // Assuming you have the BoxComponent in the same directory
+import Container from "@/components/Container"; // Keep the original Container component
+
+const Challenges = () => {
+  // Information for the three teams
+  const teams = [
+    {
+      teamName: "Daedalus",
+      shortOverview: "Hands-On NASA Research Project",
+      competitionOverview: "Texas Space Grant Consortium (TSGC) offers unique, hands-on challenges sponsored by NASA mentors which rotate each year. We can’t guarantee what you will be working on, but we can guarantee it will be an amazing experience!",
+      duration: "1 Semester",
+      teamSize: "6",
+      admissionTimeline: "Applications: 1/16/25\nInterviews: 1/25/25\nAcceptance: 1/27/25",
+      pastTeams: [
+        "Astronaut Tracking System",
+        "Microgravity Water Filtration",
+        "Lunar Cellular Infrastructure"
+      ],
+      mentors: {
+        peer: "Aiden Kampwerth",
+        faculty: "TBD"
+      },
+      competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
+      imageUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSK7R7OIUg1uWdF5NKWZgGWSg3AJZ1_Har5kw&s" // Add a valid image URL for Daedalus
+    },
+    {
+      teamName: "Altas",
+      shortOverview: "Design ThinkTank’s Next-Gen Website",
+      competitionOverview: "ThinkTank is creating a team to overhaul both the frontend and backend of our website. We’re looking to vastly improve the applicant experience as well as enhance the administrative tools ThinkTank needs to run.",
+      duration: "2 Semesters",
+      teamSize: "4-6",
+      admissionTimeline: "Applications: 9/6/24\nInterviews: 9/15/24\nAcceptance: 9/16/24",
+      researchAreas: [
+        "Full Stack Web Development",
+        "UI/UX Design",
+        "Backend/Database Architecture",
+        "Automation"
+      ],
+      mentors: {
+        peer: "Aiden Kampwerth",
+        faculty: "N/A"
+      },
+      competitionLink: "", // Add competition link if available
+      imageUrl: "https://thewebcycle.com/wp-content/uploads/2022/07/PMG-WITH-WHITE-TEXT-Copy-e1657541928389.png" // Add a valid image URL for Altas
+    },
+    {
+      teamName: "Nova",
+      shortOverview: "Design NASA’s Next Lunar Base",
+      competitionOverview: "RASC-AL is looking for a research proposal for the design, development, and operation of a Lunar Base on the South Pole of the moon.",
+      duration: "2 Semesters",
+      teamSize: "12-20",
+      admissionTimeline: "Applications Due: 9/6/24\nInterviews End: 9/15/24\nAcceptance: 9/16/24",
+      researchAreas: [
+        "Architecture/Construction",
+        "Power Systems",
+        "Communication",
+        "Life Support Systems",
+        "In-Situ Resource Utilization (ISRU)",
+        "Logistics",
+        "And many more…"
+      ],
+      mentors: {
+        peer: "Moksh Shah",
+        faculty: ""
+      },
+      competitionLink: "https://rascal.nianet.org",
+      imageUrl: "https://i.ytimg.com/vi/HatbpRKdbew/maxresdefault.jpg" // Add a valid image URL for Nova
+    }
+  ];
+
   return (
     <Container>
       <div className="mb-12 justify-between space-y-2 pt-24 text-center">
@@ -13,128 +81,24 @@ export default function Challenges() {
           The Official TAMU ThinkTank Fall 2024 Challenge Suite
         </p>
       </div>
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://blueskies.nianet.org/competition/" passHref>
-              <Image
-                src="https://blueskies.nianet.org/wp-content/uploads/BlueSkies_Logo_lg-1.png"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              NASA'S Gateways to Blue Skies Competition
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              Blue Skies expands engagement between universities and NASA's
-              University Innovation Project, industry, and government partners
-              by providing an opportunity for multi-disciplinary teams of
-              students from all academic levels (i.e., freshman, sophomore,
-              junior, senior, and graduate) to tackle significant challenges and
-              opportunities for the aviation industry through a new project
-              theme each year. The competition is guided by a push toward new
-              technologies as well as environmentally and socially conscious
-              aviation.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://www.herox.com/SolarDistrictCup" passHref>
-              <Image
-                src="https://d253pvgap36xx8.cloudfront.net/editor_uploads/252917/2023/06/28/SDC-logo-color-horizontal.jpg"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              Solar District Cup
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              The Solar District Cup is a collegiate competition that challenges
-              multidisciplinary student teams to design and model distributed
-              energy systems for a mixed-use campus or district—groups of
-              buildings served by a common electrical distribution feeder. The
-              competition engages students across disciplines—engineering,
-              finance, urban planning, sustainability, communications, and
-              more—to reimagine how energy is generated, managed, and used in a
-              district.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://rascal.nianet.org/" passHref>
-              <Image
-                src="https://www.nasa.gov/wp-content/uploads/2023/03/2023-rasc-al-banner-images.png?w=1500"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              RASC-AL
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              RASC-AL competitions fuel innovation for aerospace systems
-              concepts, analogs, and technology prototyping by bridging gaps
-              through university engagement. RASC-AL is open to undergraduate
-              and graduate university-level students studying fields with
-              applications to human space exploration (i.e., aerospace,
-              bio-medical, electrical, and mechanical engineering; and life,
-              physical, and computer sciences). RASC-AL projects allow students
-              to incorporate their coursework into real aerospace design
-              concepts and work together in a team environment.
-              Interdisciplinary teams are encouraged.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link
-              href="https://www.aiaa.org/get-involved/students-educators/Design-Competitions"
-              passHref
-            >
-              <Image
-                src="https://www.aiaa.org/images/default-source/site-design/logos/logo.png?sfvrsn=59ffaa92_4"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              AIAA Design Competitions
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              AIAA design competitions allow students to perform theoretical
-              work and gain real-world insight into the design process. Whether
-              students are designing an aircraft, engine, or space vehicle, they
-              will go through all the primary design steps involved in
-              determining a solution to a Request for Proposal (RFP). This
-              includes determining a hypothetical solution, testing the
-              hypothesis, evaluating its effectiveness, possibly doing some cost
-              analysis, and finally preparing a report that will be submitted in
-              response to the RFP. These responses are reviewed by experts in
-              the field who will provide constructive responses to the students.
-            </p>
-          </div>
-        </div>
-      </div>
+      {teams.map((team, index) => (
+        <BoxComponent
+          key={index}
+          teamName={team.teamName}
+          shortOverview={team.shortOverview}
+          competitionOverview={team.competitionOverview}
+          duration={team.duration}
+          teamSize={team.teamSize}
+          admissionTimeline={team.admissionTimeline}
+          researchAreas={team.researchAreas}
+          pastTeams={team.pastTeams}
+          mentors={team.mentors}
+          competitionLink={team.competitionLink}
+          imageUrl={team.imageUrl}
+        />
+      ))}
     </Container>
   );
-}
+};
+
+export default Challenges;
