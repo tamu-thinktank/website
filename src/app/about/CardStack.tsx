@@ -19,7 +19,7 @@ export default function CardStack() {
       })
 
     return (
-        <div className="flex flex-col space-y-8">
+        <div className="flex flex-col space-y-8 mb-8">
             {projects.map((project, index) => (
             <Card key={index} i={index} {...project}/>
             ))}
