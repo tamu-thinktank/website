@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://tamuthinktank.org
-
-# Sitemaps
-Sitemap: https://tamuthinktank.org/sitemap.xml
