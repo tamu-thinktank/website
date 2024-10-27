@@ -50,7 +50,7 @@ function LogoSlider() {
               alt={``}
               width={100}
               height={50}
-              objectFit="contain"
+              background-size="contain"
             />
           </div>
         ))}
