@@ -74,6 +74,7 @@
     "dotenv": "^16.4.5",
     "embla-carousel-autoplay": "8.0.0-rc17",
     "embla-carousel-react": "8.0.0-rc17",
+    "gsap": "^3.12.5",
     "lucide-react": "^0.297.0",
     "next": "^14.2.4",
     "next-auth": "^4.24.5",

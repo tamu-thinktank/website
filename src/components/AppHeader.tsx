@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import Container from "./Container";
@@ -10,40 +11,56 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ChevronDown } from "lucide-react";
+import { Poppins, DM_Sans } from "next/font/google";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-poppins",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-dm-sans",
+});
 
 export default function Header() {
   const [showNavbar, setShowNavbar] = useState(true);
-  let lastScrollY = 0;
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > lastScrollY) {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY) {
         setShowNavbar(false);
       } else {
         setShowNavbar(true);
       }
-      lastScrollY = window.scrollY;
+
+      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, []);
+  }, [lastScrollY]);
 
   return (
-    <header>
+    <header className={`${poppins.variable} ${dmSans.variable} font-sans`}>
       <nav
-        className={`fixed top-0 z-10 w-full border-b border-gray-300/30 bg-[#0C0D0E] transition-transform duration-300 ${
-          showNavbar ? "translate-y-0" : "-translate-y-full"
-        }`}
+        className={`navbar ${showNavbar ? "translate-y-0" : "-translate-y-full"}`}
       >
         <Container>
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-4 md:py-3 lg:py-2">
+          <div className="navbar-content">
             <input
               aria-hidden="true"
               type="checkbox"
               name="toggle_nav"
+              id="toggle_nav"
               className="peer hidden"
             />
             <div className="relative z-20 flex w-full justify-between md:px-0 lg:w-max">
@@ -52,10 +69,9 @@ export default function Header() {
                   <Image
                     src="/ttt.svg"
                     alt="art cover"
-                    loading="lazy"
                     width={100}
                     height={100}
-                    className="w-50 h-auto object-cover object-top transition duration-500 group-hover:scale-105"
+                    className="navbar-logo"
                   />
                 </Link>
               </div>
@@ -67,34 +83,20 @@ export default function Header() {
                 >
                   <div
                     aria-hidden="true"
-                    className="m-auto h-0.5 w-5 rounded bg-sky-900 transition duration-300 peer-checked:translate-y-1.5
-                               peer-checked:rotate-45 dark:bg-gray-300"
+                    className="m-auto h-0.5 w-5 rounded bg-sky-900 transition duration-300 dark:bg-gray-300"
                   ></div>
                   <div
                     aria-hidden="true"
-                    className="m-auto mt-2 h-0.5 w-5 rounded bg-sky-900 transition duration-300 peer-checked:-translate-y-1
-                               peer-checked:-rotate-45 dark:bg-gray-300"
+                    className="m-auto mt-2 h-0.5 w-5 rounded bg-sky-900 transition duration-300 dark:bg-gray-300"
                   ></div>
                 </label>
               </div>
             </div>
-            <div
-              aria-hidden="true"
-              className="fixed inset-0 z-10 h-screen w-screen origin-bottom scale-y-0 bg-white/70 backdrop-blur-2xl transition duration-500 peer-checked:origin-top peer-checked:scale-y-100 dark:bg-gray-900/70 lg:hidden"
-            ></div>
-            <div
-              className="invisible absolute left-0 top-full z-20 w-full origin-top translate-y-1 scale-95 flex-col flex-wrap justify-end gap-6 rounded-3xl border border-gray-100 bg-white p-8 opacity-0 shadow-2xl shadow-gray-600/10 transition-all duration-300 
-                            peer-checked:visible peer-checked:scale-100 peer-checked:opacity-100 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none lg:visible lg:relative lg:flex lg:w-7/12 lg:translate-y-0 lg:scale-100 lg:flex-row lg:items-center lg:gap-0
-                            lg:border-none lg:bg-transparent lg:p-0 lg:opacity-100 
-                            lg:shadow-none lg:peer-checked:translate-y-0 lg:dark:bg-transparent"
-            >
+            <div className="navbar-menu">
               <div className="w-full text-gray-600 dark:text-gray-300 lg:w-auto lg:pr-4 lg:pt-0">
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
-                    <a
-                      href="/#about"
-                      className="block transition hover:text-primary md:px-4"
-                    >
+                    <a href="/#about" className="navbar-link">
                       <span>About</span>
                     </a>
                   </li>
@@ -116,19 +118,13 @@ export default function Header() {
                   </li>
 
                   <li>
-                    <a
-                      href="/#articles"
-                      className="block transition hover:text-primary md:px-4"
-                    >
+                    <a href="/#articles" className="navbar-link">
                       <span>Articles</span>
                     </a>
                   </li>
 
                   <li>
-                    <a
-                      href="/#faq"
-                      className="block transition hover:text-primary md:px-4"
-                    >
+                    <a href="/#faq" className="navbar-link">
                       <span>FAQ</span>
                     </a>
                   </li>
@@ -136,13 +132,8 @@ export default function Header() {
               </div>
 
               <div className="mt-12 lg:mt-0">
-                <a
-                  href="apply"
-                  className="relative flex h-[35px] w-[120px] items-center justify-center rounded-[48px] px-4 before:absolute before:inset-0 before:rounded-[48px] before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground"
-                >
-                  <span className="relative text-sm font-semibold text-black">
-                    Join Us
-                  </span>
+                <a href="apply" className="navbar-button">
+                  <span className="navbar-button-text">Join Us</span>
                 </a>
               </div>
             </div>

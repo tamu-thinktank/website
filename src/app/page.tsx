@@ -1,5 +1,5 @@
 import Articles from "@/app/_home/Articles";
-import CallToAction from "@/app/_home/CallToAction";
+import Benefits from "@/app/_home/Benefits";
 import HeroSection from "@/app/_home/HeroSection";
 import Officers from "@/app/_home/Officers";
 import Overview from "@/app/_home/Overview";
@@ -15,7 +15,7 @@ const Home: NextPage = () => {
       <main className="mb-40 space-y-20 bg-[#0C0D0E]">
         <HeroSection />
         <Overview />
-        <CallToAction />
+        <Benefits />
         <ChallengeSection />
 
         <Articles />
