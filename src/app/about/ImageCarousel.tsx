@@ -33,7 +33,7 @@ export default function ImageCarousel() {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 3000);
+    }, 3500);
 
     return () => clearInterval(interval);
   }, [currentIndex]);
@@ -41,7 +41,7 @@ export default function ImageCarousel() {
   return (
     <div className="relative w-[90vw] max-w-7xl mx-auto h-[70vh] overflow-hidden mt-8 rounded-3xl">
       <div
-        className="flex transition-transform duration-700 ease-in-out"
+        className="flex transition-transform duration-1000 ease-in-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
         {orgImages.map((image, index) => (
