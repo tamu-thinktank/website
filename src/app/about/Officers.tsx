@@ -10,7 +10,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/garrett.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
     {
       id: 2,
@@ -19,7 +19,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/payas.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
     {
       id: 3,
@@ -28,7 +28,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/aiden.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
     {
       id: 4,
@@ -37,7 +37,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/arjun.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
     {
       id: 5,
@@ -46,7 +46,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/moksh.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
     {
       id: 6,
@@ -55,7 +55,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/jaeson.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
     {
       id: 7,
@@ -64,7 +64,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/landon.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
     {
       id: 8,
@@ -73,7 +73,7 @@ export default function Officers() {
       major: "major",
       class: "year",
       image: "/images/avatars/krishnan.webp",
-      bio: "bio",
+      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
     },
   ];
 
@@ -81,18 +81,18 @@ export default function Officers() {
     <div className="text-gray-600 dark:text-gray-300" id="officers">
       <Container>
         <div className="mb-20 space-y-4 px-6 md:px-0">
-            <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
-              Officers
-            </h2>
-            <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
+          <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
+            Officers
+          </h2>
+          <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
         </div>
-
+  
         {/* Grid layout */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {officers.map((officer) => (
             <div
               key={officer.id}
-              className="relative group aspect-square rounded-3xl overflow-hidden border border-gray-100 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+              className="relative group aspect-square rounded-3xl overflow-hidden shadow-lg dark:bg-gray-800 transform transition-transform duration-500 ease-in-out hover:scale-105"
             >
               {/* Officer Image */}
               <Image
@@ -102,15 +102,15 @@ export default function Officers() {
                 width={500}
                 height={500}
               />
-
+  
               {/* Hover Overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-500 ease-in-out opacity-0 group-hover:opacity-100">
                 <h3 className="text-xl font-bold text-white">{officer.name}</h3>
-                <p className="text-sm text-gray-300 mt-1">
+                <p className="text-md font-semibold text-gray-300 mt-1">
                   {officer.major} '{officer.class}
                 </p>
-                <p className="text-sm text-gray-300 mt-1">{officer.role}</p>
-                <p className="mt-2 text-xs text-gray-400 px-4 text-center">
+                <p className="text-sm text-gray-300 mt-3">{officer.role}</p>
+                <p className="mt-3 text-xs text-gray-300 px-4 text-center">
                   {officer.bio}
                 </p>
               </div>
@@ -119,5 +119,5 @@ export default function Officers() {
         </div>
       </Container>
     </div>
-  );
-}
+  );  
+}  
