@@ -81,9 +81,10 @@ export default function Officers() {
     <div className="text-gray-600 dark:text-gray-300" id="officers">
       <Container>
         <div className="mb-20 space-y-4 px-6 md:px-0">
-          <h2 className="text-center text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
-            Officers
-          </h2>
+            <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
+              Officers
+            </h2>
+            <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
         </div>
 
         {/* Grid layout */}
