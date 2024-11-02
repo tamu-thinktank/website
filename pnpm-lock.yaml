@@ -224,6 +224,9 @@ importers:
       react-hook-form-persist:
         specifier: ^3.0.0
         version: 3.0.0(react-hook-form@7.52.2(react@18.2.0))(react@18.2.0)
+      react-icons:
+        specifier: ^5.3.0
+        version: 5.3.0(react@18.2.0)
       react-pdf:
         specifier: ^7.6.0
         version: 7.7.3(@types/react@18.3.3)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -3578,6 +3581,11 @@ packages:
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
+
+  react-icons@5.3.0:
+    resolution: {integrity: sha512-DnUk8aFbTyQPSkCfF8dbX6kQjXA9DktMeJqfjrg6cK9vwQVMxmcA3BfP4QoiztVmEHtwlTgLFsPuH2NskKT6eg==}
+    peerDependencies:
+      react: '*'
 
   react-is@16.13.1:
     resolution: {integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==}
@@ -7641,6 +7649,10 @@ snapshots:
       react-hook-form: 7.52.2(react@18.2.0)
 
   react-hook-form@7.52.2(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+
+  react-icons@5.3.0(react@18.2.0):
     dependencies:
       react: 18.2.0
 
