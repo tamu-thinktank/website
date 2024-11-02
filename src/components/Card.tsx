@@ -22,7 +22,8 @@ export default function Card({ i, title, description, src, color }: CardProps) {
     return (
         <div ref={container} className="h-screen flex items-center justify-center sticky top-0">
             <div style={{ backgroundColor: color, top: `calc(${i * 50}px)` }} className="flex flex-col relative min-h-[400px] w-[90vw] max-w-6xl rounded-[25px] px-[20px] py-[5px] transform-origin-top">
-                <h2 className="font-bold text-gray-400 m-0 text-2xl">{title}</h2>
+                {i !== 0 && <hr className="border-t-2 border-gray-300 dark:border-gray-600" />}
+                <h2 className="font-bold text-gray-400 m-1 text-2xl md:text-3xl">{title}</h2>
                 <div className="flex flex-col md:flex-row h-full mt-12 gap-12">
                 <div className="relative w-full md:w-2/5 h-[300px] rounded-2xl overflow-hidden hidden md:block">
                         <motion.div style={{ scale }} className="w-full h-full relative">
