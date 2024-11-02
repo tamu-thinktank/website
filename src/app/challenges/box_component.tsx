@@ -36,10 +36,10 @@ const Box = styled.div<ExpandedProps>`
   align-items: stretch;
   justify-content: space-between;
   width: 60%;
-  height: ${(props) => (props.expanded ? '800px' : '300px')};
+  height: ${(props) => (props.expanded ? '1075px' : '300px')};
   margin: 40px auto;
-  border: 1px solid #ececec;
-  background-color: #f9f9f9;
+  border: 1px solid #000;
+  background-color: #000;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   overflow: hidden;
@@ -51,36 +51,149 @@ const ImageSection = styled.div<ExpandedProps>`
   width: ${(props) => (props.expanded ? '100%' : '50%')};
   height: ${(props) => (props.expanded ? '200px' : '100%')};
   transition: width ${fasterDuration}ms ${easing}, height ${fasterDuration}ms ${easing};
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: ${(props) => (props.expanded ? 'pointer' : 'auto')};
+    transition: transform 0.5s ${easing};
+
+    &:hover {
+      transform: scale(1.05); /* Zooms in slightly on hover */
+    }
+  }
+
 `;
 
 const TextSection = styled.div<ExpandedProps>`
   flex: 1;
   padding: 20px;
-  text-align: ${(props) => (props.expanded ? 'left' : 'left')};
-  transition: width ${fasterDuration}ms ${easing}, height ${fasterDuration}ms ${easing};
-  background-color: #ffffff;
-  color: black;
+  background-color: #000;
+  color: white;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 `;
 
-const ToggleButton = styled.button`
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #003366;
+const Header = styled.div<ExpandedProps>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: ${(props) => (props.expanded ? '10px' : '5px')};
+
+  .team-name {
+    font-size: ${(props) => (props.expanded ? '2rem' : '1.5rem')};
+    text-align: center;
+    margin-right: 10px; /* Add space to the right of the team name */
+  }
+
+  .separator {
+    margin: 0 15px; /* Space on both sides of the separator */
+  }
+`;
+
+const ApplyButton = styled.button`
+  padding: 8px 12px;
+  border-radius: 5px;
+  background-color: #555;
   color: white;
   border: none;
-  font-size: 24px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 10px; /* Space to the left of the Apply button */
+  transition: background-color 0.3s ${easing};
+
+  &:hover {
+    background-color: #777;
+  }
+`;
+
+const CompetitionOverviewSection = styled.div`
+  margin: 20px 0;
+  text-align: center;
+
+  hr {
+    border: none;
+    border-top: 1px solid #555;
+    margin: 10px 0;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  p {
+    font-size: 1rem;
+    color: #d0d0d0;
+  }
+`;
+
+const InfoGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+`;
+
+const InfoCard = styled.div`
+  background-color: #1c1c1c;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+  }
+`;
+
+const MentorSection = styled.div`
+  margin-top: 20px;
+  text-align: center;
+
+  h4 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .mentor-grid {
+    display: flex;
+    justify-content: space-around;
+    gap: 15px;
+  }
+
+  .mentor-placeholder {
+    width: 200px;
+    height: 200px;
+    background-color: #333;
+    border-radius: 8px;
+  }
+`;
+
+const ToggleButton = styled.div<ExpandedProps>`
+  position: absolute;
+  bottom: ${(props) => (props.expanded ? '5px' : '10px')};
+  right: ${(props) => (props.expanded ? '350px' : '150px')};
+  padding: 10px 15px;
+  border-radius: 5px;
+  background-color: #000;
+  color: white;
+  border: none;
+  font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ${easing}, transform 0.3s ${easing};
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    background-color: #00509e;
+    background-color: #545454;
     transform: scale(1.05);
   }
 
@@ -114,65 +227,85 @@ const BoxComponent: React.FC<BoxProps> = ({
   };
 
   return (
-      <Box expanded={isExpanded}>
-        <ImageSection expanded={isExpanded}>
-          {imageUrl ? (
-            <img src={imageUrl} alt={`${teamName} visual`} className="w-full h-full object-cover" />
-          ) : (
-            <p>Image not available</p>
-          )}
-        </ImageSection>
+    <Box expanded={isExpanded}>
+      <ImageSection expanded={isExpanded}>
+        {imageUrl ? (
+          <a href={competitionLink} target="_blank" rel="noopener noreferrer">
+            <img src={imageUrl} alt={`${teamName} visual`} />
+          </a>
+        ) : (
+          <p>Image not available</p>
+        )}
+      </ImageSection>
 
-        <TextSection expanded={isExpanded}>
-          <h2 className="text-2xl font-bold mb-2">{teamName}</h2>
-          <p className="font-semibold mb-2">{shortOverview}</p>
+      <TextSection expanded={isExpanded}>
+        <Header expanded={isExpanded}>
+          <span className="team-name">{teamName.toUpperCase()}</span>
           {isExpanded && (
             <>
-              <h3 className="text-xl font-semibold mt-4 mb-2">Competition Overview</h3>
+              <span className="separator">|</span>
+              <ApplyButton>Apply</ApplyButton>
+            </>
+          )}
+        </Header>
+        {!isExpanded && <p className="font-semibold mb-2">{shortOverview}</p>}
+        {isExpanded && (
+          <>
+            <CompetitionOverviewSection>
+              <hr />
+              <h3>Competition Overview</h3>
               <p>{competitionOverview}</p>
-              <h3 className="text-xl font-semibold mt-4 mb-2">Details</h3>
-              <p><strong>Duration:</strong> {duration}</p>
-              <p><strong>Team Size:</strong> {teamSize}</p>
-              <h3 className="text-xl font-semibold mt-4 mb-2">Admission Timeline</h3>
-              <p>{admissionTimeline}</p>
+              <hr />
+            </CompetitionOverviewSection>
+
+            <InfoGrid>
+              <InfoCard>
+                <h3>Details</h3>
+                <p><strong>Duration:</strong> {duration}</p>
+                <p><strong>Team Size:</strong> {teamSize}</p>
+              </InfoCard>
+              <InfoCard>
+                <h3>Admission Timeline</h3>
+                <p>{admissionTimeline}</p>
+              </InfoCard>
               {researchAreas && (
-                <>
-                  <h3 className="text-xl font-semibold mt-4 mb-2">Research Areas</h3>
+                <InfoCard>
+                  <h3>Research Areas</h3>
                   <ul className="list-disc pl-5">
                     {researchAreas.map((area, index) => (
                       <li key={index}>{area}</li>
                     ))}
                   </ul>
-                </>
+                </InfoCard>
               )}
               {pastTeams && (
-                <>
-                  <h3 className="text-xl font-semibold mt-4 mb-2">Past Teams</h3>
+                <InfoCard>
+                  <h3>Past Teams</h3>
                   <ul className="list-disc pl-5">
                     {pastTeams.map((team, index) => (
                       <li key={index}>{team}</li>
                     ))}
                   </ul>
-                </>
+                </InfoCard>
               )}
-              <h3 className="text-xl font-semibold mt-4 mb-2">Mentors</h3>
-              <p><strong>Peer:</strong> {mentors.peer}</p>
-              <p><strong>Faculty:</strong> {mentors.faculty}</p>
-              {competitionLink && (
-                <p className="mt-4">
-                  <a href={competitionLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
-                    Competition Link
-                  </a>
-                </p>
-              )}
-            </>
-          )}
-        </TextSection>
+            </InfoGrid>
 
-        <ToggleButton onClick={handleToggle}>
-          {isExpanded ? '−' : '+'}
-        </ToggleButton>
-      </Box>
+            <MentorSection>
+              <h4>Mentors</h4>
+              <div className="mentor-grid">
+                <div className="mentor-placeholder"></div>
+                <div className="mentor-placeholder"></div>
+                <div className="mentor-placeholder"></div>
+              </div>
+            </MentorSection>
+          </>
+        )}
+      </TextSection>
+
+      <ToggleButton expanded={isExpanded} onClick={handleToggle}>
+        {isExpanded ? 'See Less' : 'See More'}
+      </ToggleButton>
+    </Box>
   );
 };
 
