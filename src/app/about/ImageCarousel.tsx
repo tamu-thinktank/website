@@ -7,15 +7,13 @@ export default function ImageCarousel() {
     "/images/imageCarouselPhotos/image1.webp",
     "/images/imageCarouselPhotos/image2.webp",
     "/images/imageCarouselPhotos/image3.webp",
-    "/images/imageCarouselPhotos/image4.webp",
     "/images/imageCarouselPhotos/image5.webp",
     "/images/imageCarouselPhotos/image6.webp",
     "/images/imageCarouselPhotos/image7.webp",
     "/images/imageCarouselPhotos/image9.webp",
     "/images/imageCarouselPhotos/image10.webp",
     "/images/imageCarouselPhotos/image11.webp",
-    "/images/imageCarouselPhotos/image12.webp",
-    "/images/imageCarouselPhotos/image13.webp"
+    "/images/imageCarouselPhotos/image12.webp"
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
