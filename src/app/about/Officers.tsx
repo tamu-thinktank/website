@@ -80,7 +80,7 @@ export default function Officers() {
   return (
     <div className="text-gray-600 dark:text-gray-300" id="officers">
       <Container>
-        <div className="mb-20 space-y-4 px-6 md:px-0">
+        <div className="mb-8 space-y-4 px-6 md:px-0">
           <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
             Officers
           </h2>
@@ -106,11 +106,11 @@ export default function Officers() {
               {/* Hover Overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
                 <h3 className="text-xl font-bold text-white">{officer.name}</h3>
-                <p className="text-md font-semibold text-gray-300 mt-1">
+                <p className="text-md font-semibold text-gray-200 mt-1">
                   {officer.major} '{officer.class}
                 </p>
-                <p className="text-sm text-gray-300 mt-3">{officer.role}</p>
-                <p className="mt-3 text-sm text-gray-300 px-4 text-center">
+                <p className="text-sm text-gray-200 mt-3">{officer.role}</p>
+                <p className="mt-3 text-sm text-gray-200 px-4 text-center">
                   {officer.bio}
                 </p>
               </div>
