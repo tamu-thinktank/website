@@ -21,7 +21,7 @@ export default function Component() {
               </p>
             </div>
             <div className="pt-6">
-              <button className="w-full transform rounded-full border-2 border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg">
+              <button className="w-full transform rounded-full border border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg">
                 Learn More
               </button>
             </div>

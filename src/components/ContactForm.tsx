@@ -1,0 +1,265 @@
+"use client";
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import emailjs from "@emailjs/browser";
+
+interface FormData {
+  name: string;
+  email: string;
+  uin: string;
+  subject: string;
+  message: string;
+}
+
+const ContactForm: React.FC = () => {
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    uin: "",
+    subject: "",
+    message: "",
+  });
+
+  const [errors, setErrors] = useState({
+    email: "",
+    uin: "",
+    message: "",
+  });
+
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [stateMessage, setStateMessage] = useState<string>("");
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validateUIN = (uin: string) => {
+    return /^\d{9,}$/.test(uin);
+  };
+
+  const validateMessage = (message: string) => {
+    const wordCount = message.trim().split(/\s+/).length;
+    return wordCount <= 250;
+  };
+
+  const handleBlur = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target as HTMLInputElement | HTMLTextAreaElement;
+
+    switch (name) {
+      case "email":
+        if (!validateEmail(value)) {
+          setErrors((prev) => ({
+            ...prev,
+            email: "Invalid email format. Must contain @ and .",
+          }));
+        }
+        break;
+      case "uin":
+        if (!validateUIN(value)) {
+          setErrors((prev) => ({
+            ...prev,
+            uin: "UIN must be at least 9 digits long.",
+          }));
+        }
+        break;
+      case "message":
+        if (!validateMessage(value)) {
+          setErrors((prev) => ({
+            ...prev,
+            message: "Message cannot exceed 250 words.",
+          }));
+        }
+        break;
+    }
+  };
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (
+      !validateEmail(formData.email) ||
+      !validateUIN(formData.uin) ||
+      !validateMessage(formData.message)
+    ) {
+      setStateMessage("Please fix the errors before submitting.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        {
+          name: formData.name,
+          email: formData.email,
+          uin: formData.uin,
+          subject: formData.subject,
+          message: formData.message,
+        },
+        process.env.NEXT_PUBLIC_EMAILJS_USER_ID,
+      );
+
+      console.log(result.text);
+      setStateMessage("Message sent successfully!");
+      setFormData({ name: "", email: "", uin: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Failed to send email:", error);
+      setStateMessage("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+      setTimeout(() => setStateMessage(""), 5000);
+    }
+  };
+
+  const isFormValid =
+    !errors.email &&
+    !errors.uin &&
+    !errors.message &&
+    formData.name &&
+    formData.email &&
+    formData.uin &&
+    formData.subject &&
+    formData.message;
+
+  return (
+    <div className="bg-[#1A1A1A] p-3 text-sm text-white">
+      <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
+        <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <label htmlFor="name" className="sr-only">
+              Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Name"
+              required
+              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+            />
+          </div>
+          <div>
+            <label htmlFor="email" className="sr-only">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="Email"
+              required
+              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+            />
+            {errors.email && (
+              <p className="mt-1 text-xs text-red-500">{errors.email}</p>
+            )}
+          </div>
+        </div>
+        <div className="mb-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div>
+            <label htmlFor="uin" className="sr-only">
+              UIN
+            </label>
+            <input
+              type="text"
+              name="uin"
+              id="uin"
+              value={formData.uin}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              placeholder="UIN"
+              required
+              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+            />
+            {errors.uin && (
+              <p className="mt-1 text-xs text-red-500">{errors.uin}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="subject" className="sr-only">
+              Subject
+            </label>
+
+            <select
+              name="subject"
+              id="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              required
+              className="w-full appearance-none border-b border-gray-600 bg-transparent px-1 py-2 text-gray-400 transition duration-300 focus:border-white focus:text-white focus:outline-none focus:ring-0"
+            >
+              <option value="" disabled className="bg-[#1A1A1A] text-gray-400">
+                Select Subject
+              </option>
+              <option value="Academic" className="bg-[#1A1A1A] text-gray-400">
+                Academic
+              </option>
+              <option value="Financial" className="bg-[#1A1A1A] text-gray-400">
+                Financial
+              </option>
+              <option value="Housing" className="bg-[#1A1A1A] text-gray-400">
+                Housing
+              </option>
+              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+                Other
+              </option>
+            </select>
+          </div>
+        </div>
+        <div className="mb-3">
+          <label htmlFor="message" className="sr-only">
+            Message
+          </label>
+          <textarea
+            name="message"
+            id="message"
+            rows={3}
+            value={formData.message}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            placeholder="Message"
+            required
+            className="w-full resize-none border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+          ></textarea>
+          {errors.message && (
+            <p className="mt-1 text-xs text-red-500">{errors.message}</p>
+          )}
+        </div>
+        <div>
+          <button
+            type="submit"
+            disabled={!isFormValid || isSubmitting}
+            className="w-full rounded-md bg-white px-3 py-1.5 text-sm text-[#1A1A1A] transition duration-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1A1A1A]"
+          >
+            {isSubmitting ? "Sending..." : "Send Message"}
+          </button>
+        </div>
+      </form>
+      {stateMessage && (
+        <p
+          className={`mt-2 text-xs ${stateMessage.includes("successfully") ? "text-green-400" : "text-red-400"} text-center`}
+        >
+          {stateMessage}
+        </p>
+      )}
+    </div>
+  );
+};
+
+export default ContactForm;

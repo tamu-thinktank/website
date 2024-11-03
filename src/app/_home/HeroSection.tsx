@@ -131,7 +131,7 @@ export default function MyComponent() {
                     href="apply"
                     className="w-full transform rounded-full border-2 border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:w-48 lg:h-12 lg:w-56 xl:h-14 xl:w-64"
                   >
-                    <span className="relative text-sm font-semibold sm:text-base lg:text-lg xl:text-xl">
+                    <span className="relative text-sm font-medium text-white/80 sm:text-base lg:text-lg xl:text-xl">
                       Contact Us
                     </span>
                   </a>

@@ -11,16 +11,18 @@ import type { NextPage } from "next";
 const Home: NextPage = () => {
   return (
     <>
-      <AppHeader />
-      <main className="mb-40 space-y-20 bg-[#0C0D0E]">
+      <div className="bg-[#0C0D0E]">
+        <AppHeader />
+
         <HeroSection />
         <Overview />
         <Benefits />
-        <ChallengeSection />
 
+        <ChallengeSection />
         <Articles />
-      </main>
-      <AppFooter />
+
+        <AppFooter />
+      </div>
     </>
   );
 };
