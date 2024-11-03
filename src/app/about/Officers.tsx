@@ -104,13 +104,13 @@ export default function Officers() {
               />
   
               {/* Hover Overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-500 ease-in-out opacity-0 group-hover:opacity-100">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
                 <h3 className="text-xl font-bold text-white">{officer.name}</h3>
                 <p className="text-md font-semibold text-gray-300 mt-1">
                   {officer.major} '{officer.class}
                 </p>
                 <p className="text-sm text-gray-300 mt-3">{officer.role}</p>
-                <p className="mt-3 text-xs text-gray-300 px-4 text-center">
+                <p className="mt-3 text-sm text-gray-300 px-4 text-center">
                   {officer.bio}
                 </p>
               </div>
