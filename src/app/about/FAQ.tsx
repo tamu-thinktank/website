@@ -37,7 +37,7 @@ function FAQ() {
       <Accordion type="single" collapsible>
         {faqData.map((item, index) => (
           <AccordionItem key={index} value={`question-${index + 1}`}>
-            <AccordionTrigger>{item.question}</AccordionTrigger>
+            <AccordionTrigger className="text-left w-full">{item.question}</AccordionTrigger>
             <AccordionContent>{item.answer}</AccordionContent>
           </AccordionItem>
         ))}
