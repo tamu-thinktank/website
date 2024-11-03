@@ -233,6 +233,9 @@ importers:
       react-resizable-panels:
         specifier: ^1.0.5
         version: 1.0.10(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-swipeable:
+        specifier: ^7.0.1
+        version: 7.0.1(react@18.2.0)
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -3645,6 +3648,11 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  react-swipeable@7.0.1:
+    resolution: {integrity: sha512-RKB17JdQzvECfnVj9yDZsiYn3vH0eyva/ZbrCZXZR0qp66PBRhtg4F9yJcJTWYT5Adadi+x4NoG53BxKHwIYLQ==}
+    peerDependencies:
+      react: ^16.8.3 || ^17 || ^18
 
   react@18.2.0:
     resolution: {integrity: sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==}
@@ -7720,6 +7728,10 @@ snapshots:
       tslib: 2.6.3
     optionalDependencies:
       '@types/react': 18.3.3
+
+  react-swipeable@7.0.1(react@18.2.0):
+    dependencies:
+      react: 18.2.0
 
   react@18.2.0:
     dependencies:
