@@ -46,7 +46,9 @@ export default function Card({ i, title, description, src, color }: CardProps) {
             </motion.div>
           </div>
           <div className="relative top-0 w-full md:w-3/5">
-            <p className="text-base">{description}</p>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl">
+              {description}
+            </p>
           </div>
         </div>
       </div>

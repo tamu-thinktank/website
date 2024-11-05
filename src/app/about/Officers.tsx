@@ -86,38 +86,39 @@ export default function Officers() {
           </h2>
           <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
         </div>
-  
+
         {/* Grid layout */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {officers.map((officer) => (
             <div
               key={officer.id}
-              className="relative group aspect-square rounded-3xl overflow-hidden shadow-lg dark:bg-gray-800 transform transition-transform duration-500 ease-in-out hover:scale-105"
+              className="group relative aspect-square transform overflow-hidden rounded-3xl shadow-lg transition-transform duration-500 ease-in-out hover:scale-105 dark:bg-gray-800"
             >
               {/* Officer Image */}
               <Image
-                className="object-cover w-full h-full transition-opacity duration-300 ease-in-out group-hover:opacity-50"
+                className="h-full w-full object-cover transition-opacity duration-300 ease-in-out group-hover:opacity-50"
                 src={officer.image}
                 alt={`${officer.name} avatar`}
                 width={500}
                 height={500}
               />
-  
+
               {/* Hover Overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all duration-300 ease-in-out opacity-0 group-hover:opacity-100">
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 opacity-0 transition-all duration-300 ease-in-out group-hover:bg-opacity-60 group-hover:opacity-100">
                 <h3 className="text-xl font-bold text-white">{officer.name}</h3>
-                <p className="text-md font-semibold text-gray-200 mt-1">
+                <p className="text-md mt-1 font-semibold text-gray-200">
                   {officer.major} '{officer.class}
                 </p>
-                <p className="text-sm text-gray-200 mt-3">{officer.role}</p>
-                <p className="mt-3 text-sm text-gray-200 px-4 text-center">
+                <p className="mt-3 text-sm text-gray-200">{officer.role}</p>
+                <p className="mt-3 px-4 text-center text-sm text-gray-200">
                   {officer.bio}
                 </p>
               </div>
             </div>
           ))}
         </div>
+        <div style={{ padding: "30px" }}></div>
       </Container>
     </div>
-  );  
-}  
+  );
+}

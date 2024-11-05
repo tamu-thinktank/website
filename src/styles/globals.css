@@ -100,59 +100,83 @@
 
 @media (min-width: 1024px) {
   .desktop-scale {
-    transform: scale(1.2);
+    transform: scale(1.5);
     transform-origin: center top;
-    height: 80vh;
+    height: 66.67vh;
     overflow: hidden;
   }
 
   .desktop-scale > * {
-    transform: scale(0.833);
+    transform: scale(0.667);
     transform-origin: center top;
-    height: 120%;
-    width: 120%;
+    height: 150%;
+    width: 150%;
   }
 }
 
 @media (min-width: 1921px) {
   .desktop-scale {
-    transform: scale(1.5);
+    transform: scale(2.1);
     transform-origin: center top;
-    padding-top: 2vh;
-    padding-bottom: 2vh;
+    padding-top: 0vh;
+    padding-bottom: 0vh;
   }
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 1000px) {
   .mobile-adjust {
-    transform: scale(0.8);
-    font-size: 0.9em;
+    transform: scale(0.5);
+    font-size: 0.8em;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 }
 
-/* ... (keep your existing CSS) ... */
+/* Custom styles */
+.gradient-text-white-navy {
+  background: linear-gradient(to right, white, #000080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-white-gray {
+  background: linear-gradient(to right, white, #808080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hover-animation {
+  transition: all 0.3s ease;
+}
+
+.hover-animation:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.highest-z-index {
+  position: relative;
+  z-index: 3000;
+}
 
 @media (max-width: 600px) {
   .responsive-title {
-    font-size: 3rem;
+    font-size: 4em;
   }
 }
 
 @media (min-width: 601px) and (max-width: 1023px) {
   .responsive-title {
-    font-size: 4rem;
+    font-size: 5em;
   }
 }
 
 @media (min-width: 1024px) {
   .responsive-title {
-    font-size: 5rem;
+    font-size: 6em;
   }
 }
-
 @media (max-width: 640px) {
   .mobile-lower {
     top: -12.5%;
@@ -162,5 +186,5 @@ html, body {
   margin: 0;
   padding: 0;
   background: #0C0D0E; /* Set the desired background color */
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  
 }
