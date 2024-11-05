@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
-import { useEffect } from "react";
+import React from 'react';
+import { useEffect } from 'react';
 import Card from "@/components/Card";
-import { projects } from "@/app/about/data";
-import Lenis from "lenis";
+import { projects } from '@/data';
+import Lenis from '@studio-freight/lenis';
 
 export default function CardStack() {
   useEffect(() => {
@@ -18,8 +18,8 @@ export default function CardStack() {
   }, []);
 
   return (
-    <div className="mb-8 flex flex-col space-y-8">
-      {projects.map((project: any, index: any) => (
+    <div className="flex flex-col space-y-8 mb-8">
+      {projects.map((project, index) => (
         <Card key={index} i={index} {...project} />
       ))}
     </div>

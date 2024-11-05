@@ -1,22 +1,11 @@
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import Container from "../../components/Container";
 
 const faqData = [
-  {
-    question: "Question1?",
-    answer: "Ah yes, this is the answer to question 1.",
-  },
-  {
-    question: "Question2?",
-    answer: "Indubitably, this is the answer to question 2.",
-  },
+  { question: "Question1?", answer: "Ah yes, this is the answer to question 1." },
+  { question: "Question2?", answer: "Indubitably, this is the answer to question 2." },
   { question: "Question3?", answer: "Nah, this is the answer to question 3." },
-  { question: "Question4?", answer: "Yeah, this is the answer to question 4." },
+  { question: "Question4?", answer: "Yeah, this is the answer to question 4." }
 ];
 
 function FAQ() {
@@ -37,7 +26,6 @@ function FAQ() {
           </AccordionItem>
         ))}
       </Accordion>
-      <div style={{ padding: "70px" }}></div>
     </Container>
   );
 }
