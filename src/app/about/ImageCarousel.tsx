@@ -4,15 +4,11 @@ import { BsFillArrowLeftCircleFill, BsFillArrowRightCircleFill } from 'react-ico
 
 export default function ImageCarousel() {
   const orgImages = [
-    "/images/imageCarouselPhotos/image1.webp",
     "/images/imageCarouselPhotos/image2.webp",
-    "/images/imageCarouselPhotos/image3.webp",
-    "/images/imageCarouselPhotos/image5.webp",
     "/images/imageCarouselPhotos/image6.webp",
     "/images/imageCarouselPhotos/image7.webp",
     "/images/imageCarouselPhotos/image9.webp",
     "/images/imageCarouselPhotos/image10.webp",
-    "/images/imageCarouselPhotos/image11.webp",
     "/images/imageCarouselPhotos/image12.webp"
   ];
 
