@@ -12,14 +12,10 @@ const Home: NextPage = () => {
     <>
       <AppHeader />
       <main className="bg-[#0C0D0E]">
-      <div className="pt-20">
-        <ImageCarousel />
-        <CardStack />
-        <Officers />
-        <OfficerInterest />
-        <FAQ />
-      </div>
-      <AppFooter />
+        <div className="pt-20">
+          <CardStack />
+        </div>
+        <AppFooter />
       </main>
     </>
   );
