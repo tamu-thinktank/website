@@ -59,7 +59,7 @@ export default function Officers() {
               Aiden Kampwerth
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-300">
-              Competition Team Administrator
+              Competition Team Administrators YEAHHHH
             </p>
           </div>
           <div className="aspect-auto rounded-3xl border border-gray-100 bg-white p-8 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none">

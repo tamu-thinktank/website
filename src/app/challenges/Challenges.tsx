@@ -207,7 +207,43 @@ const Challenges = () => {
       field: "Civil Engineering",
       prize: "N/A",
       dtype: "Proposal"
-    }
+    },
+    {
+      teamName: "Orion",
+      shortOverview: "Design an extensive mission for Mars’ subsurface layer, surface, and atmosphere.",
+      competitionOverview:
+        "AIAA has asked research teams to develop an extensive plan for a mission to Mars. The teams will build off of previous relevant data to create CAD models and trade studies, as well as their understanding of important subjects such as Orbital Mechanics or Propulsion, to design this research mission successfully. The research will target Mars’ subsurface layer, surface, and atmosphere.",
+      duration: "2 Semesters",
+      teamSize: "10",
+      admissionTimeline: [
+        { date: "Applications Due", description: "9/6/24" },
+        { date: "Interviews End", description: "9/15/24" },
+        { date: "Acceptance", description: "9/16/24" }
+      ],
+      researchAreas: [
+        "Orbital Mechanics",
+        "Structural and Thermal Analysis",
+        "Power systems",
+        "Payload design",
+        "Communications and data handling",
+        "Logisitics for space missions"
+      ],
+      mentors: {
+        peer: "Payas Joshi",
+        faculty: "Dr. James Thomas",
+      },
+      competitionLink: "https://www.aiaa.org/get-involved/students-educators/Design-Competitions#design-competition-rfps",
+      imageUrl: "03Qi7SZgiYjO1OLFnklCfog-3.webp",
+      image: "/images/payas.webp",
+      major: "Industrial",
+      year: "27",
+      description: "About Me",
+      facultyImage: "Thomas_James.jpg",
+      field: "Mechanical Engineering",
+      interest: "Autonomous Vehicles\n Combinatorial Optimization\nVision-based Control\nMotion Planning",
+      prize: "$750 for 1st place",
+      dtype: "Proposal"
+    },
   ];
 
   return (
