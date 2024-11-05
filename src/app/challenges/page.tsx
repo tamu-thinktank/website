@@ -6,9 +6,8 @@ import Challenges from "./Challenges";
 const Home: NextPage = () => {
   return (
     <>
-      <main className="mb-40 space-y-20">
+      <main className="bg mb-40 space-y-20">
         <AppHeader />
-
         <Challenges />
       </main>
       <AppFooter />

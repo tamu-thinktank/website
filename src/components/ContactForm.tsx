@@ -208,13 +208,22 @@ const ContactForm: React.FC = () => {
                 Select Subject
               </option>
               <option value="Academic" className="bg-[#1A1A1A] text-gray-400">
-                Academic
+                Applications
               </option>
               <option value="Financial" className="bg-[#1A1A1A] text-gray-400">
-                Financial
+                Interviews
               </option>
               <option value="Housing" className="bg-[#1A1A1A] text-gray-400">
-                Housing
+                Competitions
+              </option>
+              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+                Design Teams
+              </option>
+              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+                Workshops
+              </option>
+              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+                Opportunities
               </option>
               <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
                 Other

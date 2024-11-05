@@ -81,9 +81,9 @@ export default function Benefits() {
     <section className="bg-[#0C0D0E] py-12 sm:py-16 md:py-20 lg:py-28">
       <Container>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
-          <MemoizedBenefitBox title="Gain Real World Experience" />
-          <MemoizedBenefitBox title="Turn Ideas Into Reality" />
-          <MemoizedBenefitBox title="Travel Across The World" />
+          <MemoizedBenefitBox title="Learn Real World Engineering" />
+          <MemoizedBenefitBox title="Pursue Research and Innovation" />
+          <MemoizedBenefitBox title="Engage With Dedicated Peers" />
         </div>
       </Container>
     </section>

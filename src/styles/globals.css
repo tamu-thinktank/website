@@ -100,83 +100,59 @@
 
 @media (min-width: 1024px) {
   .desktop-scale {
-    transform: scale(1.5);
+    transform: scale(1.2);
     transform-origin: center top;
-    height: 66.67vh;
+    height: 80vh;
     overflow: hidden;
   }
 
   .desktop-scale > * {
-    transform: scale(0.667);
+    transform: scale(0.833);
     transform-origin: center top;
-    height: 150%;
-    width: 150%;
+    height: 120%;
+    width: 120%;
   }
 }
 
 @media (min-width: 1921px) {
   .desktop-scale {
-    transform: scale(2.1);
+    transform: scale(1.5);
     transform-origin: center top;
-    padding-top: 0vh;
-    padding-bottom: 0vh;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
   }
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1023px) {
   .mobile-adjust {
-    transform: scale(0.5);
-    font-size: 0.8em;
+    transform: scale(0.8);
+    font-size: 0.9em;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 }
 
-/* Custom styles */
-.gradient-text-white-navy {
-  background: linear-gradient(to right, white, #000080);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.gradient-text-white-gray {
-  background: linear-gradient(to right, white, #808080);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.hover-animation {
-  transition: all 0.3s ease;
-}
-
-.hover-animation:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
-}
-
-.highest-z-index {
-  position: relative;
-  z-index: 3000;
-}
+/* ... (keep your existing CSS) ... */
 
 @media (max-width: 600px) {
   .responsive-title {
-    font-size: 4em;
+    font-size: 3rem;
   }
 }
 
 @media (min-width: 601px) and (max-width: 1023px) {
   .responsive-title {
-    font-size: 5em;
+    font-size: 4rem;
   }
 }
 
 @media (min-width: 1024px) {
   .responsive-title {
-    font-size: 6em;
+    font-size: 5rem;
   }
 }
+
 @media (max-width: 640px) {
   .mobile-lower {
     top: -12.5%;
