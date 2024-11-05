@@ -19,7 +19,7 @@ export default function Officers() {
       major: "Industrial Engineering",
       class: "27",
       image: "/images/avatars/payas.webp",
-      bio: "About me",
+      bio: "Previously, I was the Team Lead for Team Astraeus for which me and my team designed a full-scale mission to explore Venus’ surface. My interests are primarily in operations research and systems engineering. In my free time, I love to watch UFC, cook while listening to music, and play football.",
     },
     {
       id: 3,
@@ -37,7 +37,7 @@ export default function Officers() {
       major: "Aerospace Engineering",
       class: "27",
       image: "/images/avatars/arjun.webp",
-      bio: "About me",
+      bio: "Part of Team Elementum - Competed in the 2023 BlueSkies Challenge. Interested in human spaceflight and exploration. Loves the outdoors, camping, and good food.",
     },
     {
       id: 5,
@@ -55,7 +55,7 @@ export default function Officers() {
       major: "Aerospace Engineering",
       class: "25",
       image: "/images/avatars/jaeson.webp",
-      bio: "About me",
+      bio: "Competed in several design challenges. Propulsion systems and digital modeling focused, with an interest in radio communication. Enjoys drawing and tinkering with analogue technology.",
     },
     {
       id: 7,
@@ -82,7 +82,7 @@ export default function Officers() {
       major: "Aerospace Engineering",
       class: "25",
       image: "/images/avatars/krishnan.webp",
-      bio: "Web Dev",
+      bio: "Competed in several design challenges. Working a Real-Time Multi-Regime Aerodynamics model and IV&V for Crew Dragon FSW. Enjoys swimming, bouldering, and playing KSP.",
     },
   ];
 
