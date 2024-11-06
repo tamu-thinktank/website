@@ -14,15 +14,15 @@ export const times = expandTimes({
   startDateTime: Temporal.ZonedDateTime.from({
     timeZone: eventTimezone,
     year: 2024,
-    month: 9,
-    day: 7,
+    month: 1,
+    day: 17,
     hour: 9,
   }).withTimeZone("UTC"),
   endDateTime: Temporal.ZonedDateTime.from({
     timeZone: eventTimezone,
     year: 2024,
-    month: 9,
-    day: 15,
+    month: 1,
+    day: 25,
     hour: 20,
   }).withTimeZone("UTC"),
 });
