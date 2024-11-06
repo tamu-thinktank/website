@@ -134,7 +134,8 @@ const Footer: React.FC = () => {
                 </a>
               </div>
               <p className="font-dm-sans order-2 text-xs font-bold text-[#949494]">
-                developed and designed by xyz
+                Developed and Designed by Lucas Vadlamudi, Jeremy Tran, Tanish
+                Bandari, Nithish Mohan, and James Bryant
               </p>
             </div>
           </div>
