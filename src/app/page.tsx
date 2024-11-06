@@ -7,6 +7,7 @@ import Travel from "@/app/_home/Travel";
 import AppFooter from "@/components/AppFooter";
 import AppHeader from "@/components/AppHeader";
 import type { NextPage } from "next";
+import ApplyBanner from "@/components/ApplyBanner";
 
 const Home: NextPage = () => {
   return (
