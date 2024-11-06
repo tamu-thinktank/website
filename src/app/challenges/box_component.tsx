@@ -1,27 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AdmissionTimelineEntry {
   date: string;
   description: string;
 }
-
-const FacultyMentorContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: 20px;
-  text-align: center;
-
-  h3 {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: white;
-  }
-`;
 
 interface BoxProps {
   teamName: string;
@@ -56,7 +43,7 @@ interface ExpandedProps {
 const fasterDuration = 800;
 const easing = "cubic-bezier(0.25, 0.8, 0.25, 1)";
 
-const Box = styled.div<ExpandedProps>`
+const Box = styled(motion.div)<ExpandedProps>`
   display: flex;
   flex-direction: ${(props) => (props.expanded ? "column" : "row")};
   align-items: stretch;
@@ -68,13 +55,10 @@ const Box = styled.div<ExpandedProps>`
   background-color: #1a1a1a;
   border-radius: 10px;
   overflow: hidden;
-  transition:
-    height ${fasterDuration}ms ${easing},
-    flex-direction ${fasterDuration}ms ${easing};
 
   @media (max-width: 768px) {
     flex-direction: column;
-    height: ${(props) => (props.expanded ? "auto" : "450px")};
+    height: ${(props) => (props.expanded ? "auto" : "500px")};
     margin: 20px auto;
   }
 `;
@@ -82,13 +66,12 @@ const Box = styled.div<ExpandedProps>`
 const ImageSection = styled.div<ExpandedProps>`
   width: ${(props) => (props.expanded ? "100%" : "50%")};
   height: ${(props) => (props.expanded ? "450px" : "300px")};
-  transition:
-    width ${fasterDuration}ms ${easing},
-    height ${fasterDuration}ms ${easing};
+  position: relative;
+  overflow: hidden;
 
   @media (max-width: 768px) {
     width: 100%;
-    height: ${(props) => (props.expanded ? "200px" : "150px")};
+    height: 200px;
   }
 `;
 
@@ -96,14 +79,20 @@ const TextSection = styled.div<ExpandedProps>`
   flex: 1;
   padding: 15px 20px;
   background-color: #000;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   color: #bababa;
   position: relative;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   @media (max-width: 768px) {
     padding: 10px 15px;
+    max-height: ${(props) => (props.expanded ? "none" : "300px")};
   }
 `;
 
@@ -132,87 +121,85 @@ const Header = styled.div<ExpandedProps>`
 
   .separator {
     margin: 0 10px;
+    color: white;
   }
 
-  .otherSeparator {
-    margin: 0 5px;
+  .status {
+    font-size: 0.8rem;
+    font-weight: bold;
   }
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
+  margin-top: 15px;
+  margin-bottom: 20px;
 
   @media (max-width: 768px) {
-    bottom: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
   }
 `;
 
-const ButtonStyle = styled.a`
-  font-size: 14px;
+const ButtonStyle = styled.a<{ disabled?: boolean; filled?: boolean }>`
+  font-size: 16px;
   font-weight: bold;
-  padding: 6px 12px;
+  padding: 10px 20px;
+  width: 100%;
+  max-width: 200px;
   border-radius: 50px;
-  border: 1px solid white;
-  background-color: black;
-  color: white;
-  cursor: pointer;
+  border: 0.5px solid white;
+  background-color: ${(props) => (props.filled ? "white" : "transparent")};
+  color: ${(props) => (props.filled ? "black" : "white")};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   text-decoration: none;
-  transition:
-    background-color 0.3s ${easing},
-    color 0.3s ${easing};
-  text-transform: none;
+  text-align: center;
+  transition: all 0.3s ease;
+  opacity: ${(props) => (props.disabled ? "0.5" : "1")};
+  pointer-events: ${(props) => (props.disabled ? "none" : "auto")};
 
   &:hover {
-    background-color: white;
-    color: black;
+    transform: scale(1.05);
   }
 
   @media (max-width: 768px) {
-    font-size: 12px;
-    padding: 4px 8px;
+    font-size: 14px;
+    padding: 8px 16px;
   }
 `;
 
 const ToggleButton = styled.div<ExpandedProps>`
-  font-size: 14px;
+  font-size: 16px;
   font-weight: bold;
-  padding: ${(props) => (props.expanded ? "6px 80px" : "6px 12px")};
+  padding: 10px 20px;
+  width: 100%;
+  max-width: 200px;
   border-radius: 50px;
-  border: 1px solid white;
-  background-color: black;
+  border: 0.5px solid white;
+  background-color: transparent;
   color: white;
   cursor: pointer;
-  white-space: nowrap;
-  transition:
-    background-color 0.3s ${easing},
-    color 0.3s ${easing};
+  text-align: center;
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: white;
-    color: black;
+    transform: scale(1.05);
   }
 
   @media (max-width: 768px) {
-    font-size: 12px;
-    padding: ${(props) => (props.expanded ? "4px 60px" : "4px 8px")};
+    font-size: 14px;
+    padding: 8px 16px;
   }
 `;
 
-const Separator = styled.span`
-  color: white;
+const StatusIndicator = styled.span<{ isOpen: boolean }>`
+  font-size: 14px;
   font-weight: bold;
-  margin: 0 5px;
-`;
-
-const otherSeparator = styled.span`
-  margin: 0 5px;
+  color: ${(props) => (props.isOpen ? "#4CAF50" : "#FF5722")};
 `;
 
 const InfoBlock = styled.div`
@@ -309,8 +296,46 @@ const TimelineContainer = styled.div`
   strong {
     display: block;
     color: white;
+  }
+`;
 
-  `;
+const MentorSection = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+`;
+
+const MentorCard = styled.div`
+  position: relative;
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 10px;
+
+  @media (max-width: 768px) {
+    width: 150px;
+    height: 150px;
+  }
+`;
+
+const MentorInfo = styled.div`
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
+
 const BoxComponent: React.FC<BoxProps> = ({
   teamName,
   shortOverview,
@@ -333,210 +358,213 @@ const BoxComponent: React.FC<BoxProps> = ({
   prize,
   dtype,
 }) => {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const isOpen = teamName === "Daedalus";
+
+  useEffect(() => {
+    setIsLoaded(true);
+  }, []);
 
   const handleToggle = () => {
     setIsExpanded((prev) => !prev);
   };
 
+  const variants = {
+    collapsed: { height: ["auto", "300px"] },
+    expanded: { height: ["300px", "auto"] },
+  };
+
   return (
-    <Box expanded={isExpanded}>
+    <Box
+      expanded={isExpanded}
+      initial="collapsed"
+      animate={isExpanded ? "expanded" : "collapsed"}
+      variants={variants}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
+    >
       <ImageSection expanded={isExpanded}>
-        {imageUrl ? (
-          <a href={competitionLink} target="_blank" rel="noopener noreferrer">
-            <img src={imageUrl} alt={`${teamName} visual`} />
-          </a>
-        ) : (
-          <p>Image not available</p>
+        {imageUrl && (
+          <Image
+            src={imageUrl}
+            alt={`${teamName} visual`}
+            layout="fill"
+            objectFit="cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            style={{
+              opacity: isLoaded ? 1 : 0,
+              transition: "opacity 0.5s ease-in-out",
+            }}
+            onLoadingComplete={() => setIsLoaded(true)}
+          />
         )}
       </ImageSection>
 
       <TextSection expanded={isExpanded}>
         <Header expanded={isExpanded}>
           <span className="team-name">{teamName.toUpperCase()}</span>
-          {isExpanded && (
-            <>
-              <span className="separator">|</span>
-              <ButtonStyle
-                href={competitionLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Apply
-              </ButtonStyle>
-              <span className="otherSeparator"></span>
-              <ButtonStyle
-                href={competitionLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Competition Link
-              </ButtonStyle>
-            </>
-          )}
+          <span className="separator">|</span>
+          <StatusIndicator isOpen={isOpen}>
+            {isOpen ? "Open" : "Closed"}
+          </StatusIndicator>
         </Header>
         {!isExpanded && (
           <>
             <p className="mb-2 text-center font-semibold">{shortOverview}</p>
             <ButtonContainer>
-              <ToggleButton expanded={isExpanded} onClick={handleToggle}>
-                See More
-              </ToggleButton>
-              <Separator>|</Separator>
               <ButtonStyle
                 href={competitionLink}
                 target="_blank"
                 rel="noopener noreferrer"
+                disabled={!isOpen}
+                filled={isOpen}
               >
-                Apply
+                {isOpen ? "Apply" : "Closed"}
               </ButtonStyle>
-            </ButtonContainer>
-          </>
-        )}
-        {isExpanded && (
-          <>
-            <InfoBlock>
-              <h3>Challenge Overview</h3>
-              <p>{competitionOverview}</p>
-            </InfoBlock>
-
-            <div style={{ display: "flex", justifyContent: "start", gap: 20 }}>
-              {researchAreas ? (
-                <InfoBlock style={{ flex: "1" }}>
-                  <h3>Research Areas</h3>
-                  <ul>
-                    {researchAreas.map((area, index) => (
-                      <li key={index}>{area}</li>
-                    ))}
-                  </ul>
-                </InfoBlock>
-              ) : (
-                pastTeams && (
-                  <InfoBlock style={{ flex: "1" }}>
-                    <h3>Past Teams</h3>
-                    <ul>
-                      {pastTeams.map((team, index) => (
-                        <li key={index}>{team}</li>
-                      ))}
-                    </ul>
-                  </InfoBlock>
-                )
-              )}
-
-              <InfoBlock style={{ flex: "1" }}>
-                <h3>Details</h3>
-                <ul>
-                  <li>
-                    <strong>Duration:</strong> {duration}
-                  </li>
-                  <li>
-                    <strong>Team Size:</strong> {teamSize}
-                  </li>
-                  <li>
-                    <strong>Prize Amount:</strong> {prize}
-                  </li>
-                  <li>
-                    <strong>Deliverable Type:</strong> {dtype}
-                  </li>
-                </ul>
-              </InfoBlock>
-            </div>
-
-            <InfoBlock>
-              <h3>Mentors</h3>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  gap: "20px",
-                }}
-              >
-                <div
-                  className="group relative aspect-square transform overflow-hidden rounded-3xl shadow-lg transition-transform duration-500 ease-in-out hover:scale-105 dark:bg-gray-800"
-                  style={{ width: "200px", height: "200px" }}
-                >
-                  <Image
-                    className="transition-opacity duration-300 ease-in-out group-hover:opacity-50"
-                    src={image}
-                    alt={`${mentors.peer} avatar`}
-                    width={200}
-                    height={200}
-                  />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 opacity-0 transition-all duration-300 ease-in-out group-hover:bg-opacity-60 group-hover:opacity-100">
-                    <h3 className="text-xl font-bold text-white">
-                      {mentors.peer}
-                    </h3>
-                    <p className="text-md mt-1 font-semibold text-gray-200">
-                      {major} '{year}
-                    </p>
-                    <p className="mt-3 text-sm text-gray-200">Peer Mentor</p>
-                    <p className="mt-3 px-4 text-center text-sm text-gray-200">
-                      {description}
-                    </p>
-                  </div>
-                </div>
-
-                <div
-                  className="group relative aspect-square transform overflow-hidden rounded-3xl shadow-lg transition-transform duration-500 ease-in-out hover:scale-105 dark:bg-gray-800"
-                  style={{ width: "200px", height: "200px" }}
-                >
-                  <Image
-                    className="transition-opacity duration-300 ease-in-out group-hover:opacity-50"
-                    src={facultyImage}
-                    alt={`${mentors.faculty} avatar`}
-                    width={200}
-                    height={200}
-                  />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 opacity-0 transition-all duration-300 ease-in-out group-hover:bg-opacity-60 group-hover:opacity-100">
-                    <h3 className="text-xl font-bold text-white">
-                      {mentors.faculty}
-                    </h3>
-                    <p className="text-md mt-1 font-semibold text-gray-200">
-                      {field}
-                    </p>
-                    <p className="mt-3 text-sm text-gray-200">Faculty Mentor</p>
-                    <p className="mt-3 px-4 text-center text-sm text-gray-200">
-                      {description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </InfoBlock>
-
-            <InfoBlock>
-              <h3>Admission Deadlines</h3>
-              <TimelineContainer>
-                <div className="timeline-line" />
-                <div className="timeline-markers">
-                  {admissionTimeline.map((entry, index) => {
-                    const entryDate = new Date(entry.date);
-                    const currentDate = new Date();
-                    const dotColor = entryDate > currentDate ? "green" : "red";
-
-                    return (
-                      <div key={index} className="marker-container">
-                        <div
-                          className="marker"
-                          style={{ backgroundColor: dotColor }}
-                        />
-                        <div className="timeline-label">
-                          <strong>{entry.date}</strong>
-                          {entry.description}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </TimelineContainer>
-            </InfoBlock>
-
-            <ButtonContainer>
               <ToggleButton expanded={isExpanded} onClick={handleToggle}>
-                See Less
+                See More
               </ToggleButton>
             </ButtonContainer>
           </>
         )}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <InfoBlock>
+                <h3>Challenge Overview</h3>
+                <p>{competitionOverview}</p>
+              </InfoBlock>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "20px",
+                }}
+              >
+                {researchAreas ? (
+                  <InfoBlock>
+                    <h3>Research Areas</h3>
+                    <ul>
+                      {researchAreas.map((area, index) => (
+                        <li key={index}>{area}</li>
+                      ))}
+                    </ul>
+                  </InfoBlock>
+                ) : (
+                  pastTeams && (
+                    <InfoBlock>
+                      <h3>Past Teams</h3>
+                      <ul>
+                        {pastTeams.map((team, index) => (
+                          <li key={index}>{team}</li>
+                        ))}
+                      </ul>
+                    </InfoBlock>
+                  )
+                )}
+
+                <InfoBlock>
+                  <h3>Details</h3>
+                  <ul>
+                    <li>
+                      <strong>Duration:</strong> {duration}
+                    </li>
+                    <li>
+                      <strong>Team Size:</strong> {teamSize}
+                    </li>
+                    <li>
+                      <strong>Prize Amount:</strong> {prize}
+                    </li>
+                    <li>
+                      <strong>Deliverable Type:</strong> {dtype}
+                    </li>
+                  </ul>
+                </InfoBlock>
+              </div>
+
+              <InfoBlock>
+                <h3>Mentors</h3>
+                <MentorSection>
+                  <MentorCard>
+                    <Image
+                      src={image}
+                      alt={`${mentors.peer} avatar`}
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                    <MentorInfo>
+                      <h4 className="text-lg font-bold">{mentors.peer}</h4>
+                      <p className="text-sm">
+                        {major} '{year}
+                      </p>
+                      <p className="mt-2 text-sm">Peer Mentor</p>
+                      <p className="mt-1 px-2 text-center text-xs">
+                        {description}
+                      </p>
+                    </MentorInfo>
+                  </MentorCard>
+
+                  <MentorCard>
+                    <Image
+                      src={facultyImage}
+                      alt={`${mentors.faculty} avatar`}
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                    <MentorInfo>
+                      <h4 className="text-lg font-bold">{mentors.faculty}</h4>
+                      <p className="text-sm">{field}</p>
+                      <p className="mt-2 text-sm">Faculty Mentor</p>
+                      <p className="mt-1 px-2 text-center text-xs">
+                        {interest}
+                      </p>
+                    </MentorInfo>
+                  </MentorCard>
+                </MentorSection>
+              </InfoBlock>
+
+              <InfoBlock>
+                <h3>Admission Deadlines</h3>
+                <TimelineContainer>
+                  <div className="timeline-line" />
+                  <div className="timeline-markers">
+                    {admissionTimeline.map((entry, index) => {
+                      const entryDate = new Date(entry.date);
+                      const currentDate = new Date();
+                      const dotColor =
+                        entryDate > currentDate ? "green" : "red";
+
+                      return (
+                        <div key={index} className="marker-container">
+                          <div
+                            className="marker"
+                            style={{ backgroundColor: dotColor }}
+                          />
+                          <div className="timeline-label">
+                            <strong>{entry.date}</strong>
+                            {entry.description}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </TimelineContainer>
+              </InfoBlock>
+
+              <ButtonContainer>
+                <ToggleButton expanded={isExpanded} onClick={handleToggle}>
+                  See Less
+                </ToggleButton>
+              </ButtonContainer>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </TextSection>
     </Box>
   );
