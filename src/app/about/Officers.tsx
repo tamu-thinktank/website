@@ -7,19 +7,19 @@ export default function Officers() {
       id: 1,
       name: "Garrett Stevenson",
       role: "President",
-      major: "major",
-      class: "year",
+      major: "Aerospace Engineering",
+      class: "25",
       image: "/images/avatars/garrett.webp",
-      bio: "About me",
+      bio: "Competed in several design challenges. Experienced in systems engineering, mission concept development, and radio frequency communications. Loves spacecraft, hiking, and mashed potatoes.",
     },
     {
       id: 2,
       name: "Payas Joshi",
       role: "Vice President",
-      major: "major",
-      class: "year",
+      major: "Industrial Engineering",
+      class: "27",
       image: "/images/avatars/payas.webp",
-      bio: "About me",
+      bio: "Previously, I was the Team Lead for Team Astraeus for which me and my team designed a full-scale mission to explore Venus’ surface. My interests are primarily in operations research and systems engineering. In my free time, I love to watch UFC, cook while listening to music, and play football.",
     },
     {
       id: 3,
@@ -28,52 +28,61 @@ export default function Officers() {
       major: "Aerospace Engineering",
       class: "26",
       image: "/images/avatars/aiden.webp",
-      bio: "About me",
+      bio: "Team Lead for Team Vestigo - Won 1st place in competition. Specialty in scientific computing for aerospace applications. Enjoys movies, tennis, and cooking.",
     },
     {
       id: 4,
       name: "Arjun Sawheny",
-      role: "Competition Team Coordinator",
-      major: "major",
-      class: "year",
+      role: "Peer Mentor",
+      major: "Aerospace Engineering",
+      class: "27",
       image: "/images/avatars/arjun.webp",
-      bio: "About me",
+      bio: "Part of Team Elementum - Competed in the 2023 BlueSkies Challenge. Interested in human spaceflight and exploration. Loves the outdoors, camping, and good food.",
     },
     {
       id: 5,
       name: "Moksh Shah",
-      role: "Competition Team Coordinator",
-      major: "major",
-      class: "year",
+      role: "Peer Mentor",
+      major: "Aerospace Engineering",
+      class: "27",
       image: "/images/avatars/moksh.webp",
-      bio: "About me",
+      bio: "Part of Team Selenis - Won 1st place at Engineering Project Showcase. Extensive research expertise in Lunar Operations. Loves to play tennis in free time.",
     },
     {
       id: 6,
       name: "Jae-son Rivera",
-      role: "Public Outreach Officer",
-      major: "major",
-      class: "year",
+      role: "Public Relations",
+      major: "Aerospace Engineering",
+      class: "25",
       image: "/images/avatars/jaeson.webp",
-      bio: "About me",
+      bio: "Competed in several design challenges. Propulsion systems and digital modeling focused, with an interest in radio communication. Enjoys drawing and tinkering with analogue technology.",
     },
     {
       id: 7,
       name: "Landon Uelsmann",
       role: "Treasurer",
-      major: "major",
-      class: "year",
+      major: "Computer Science",
+      class: "26",
       image: "/images/avatars/landon.webp",
-      bio: "About me",
+      bio: "Part of Team Vestigo - Won 1st place in competition. Interest in cryptography and machine learning. I love to play Fortnite competitively in my free time.",
     },
     {
       id: 8,
+      name: "Ipshita Singh",
+      role: "Marketing Specialist",
+      major: "Mechanical Engineering",
+      class: "27",
+      image: "/images/avatars/ipshita.webp",
+      bio: "Part of Team Astraeus. Worked mainly on the GNC subsystem. Enjoys trying new places to eat and watching good movies.",
+    },
+    {
+      id: 9,
       name: "Krishnan Vellore",
-      role: "Advisory Officer",
-      major: "major",
-      class: "year",
+      role: "Web Dev",
+      major: "Aerospace Engineering",
+      class: "25",
       image: "/images/avatars/krishnan.webp",
-      bio: "About me",
+      bio: "Competed in several design challenges. Working a Real-Time Multi-Regime Aerodynamics model and IV&V for Crew Dragon FSW. Enjoys swimming, bouldering, and playing KSP.",
     },
   ];
 
@@ -105,11 +114,13 @@ export default function Officers() {
 
               {/* Hover Overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 opacity-0 transition-all duration-300 ease-in-out group-hover:bg-opacity-60 group-hover:opacity-100">
-                <h3 className="text-xl font-bold text-white">{officer.name}</h3>
-                <p className="text-md mt-1 font-semibold text-gray-200">
+                <h3 className="text-2xl font-bold text-white">
+                  {officer.name}
+                </h3>
+                <p className="mt-1 text-xl font-semibold text-gray-200">
                   {officer.major} '{officer.class}
                 </p>
-                <p className="mt-3 text-sm text-gray-200">{officer.role}</p>
+                <p className="mt-1 text-lg text-gray-200">{officer.role}</p>
                 <p className="mt-3 px-4 text-center text-sm text-gray-200">
                   {officer.bio}
                 </p>
@@ -117,7 +128,6 @@ export default function Officers() {
             </div>
           ))}
         </div>
-        <div style={{ padding: "30px" }}></div>
       </Container>
     </div>
   );
