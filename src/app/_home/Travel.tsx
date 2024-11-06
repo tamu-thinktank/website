@@ -93,7 +93,7 @@ export default function ChallengeSection() {
               </button>
             </div>
           </div>
-          <div className="w-full lg:w-1/2">
+          <div className="mb-8 w-full pb-8 md:mb-12 md:pb-0 lg:w-1/2">
             <Image
               src="/images/photos/IMG_6121.webp"
               alt="Design Challenge"

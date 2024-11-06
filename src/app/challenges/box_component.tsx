@@ -330,9 +330,38 @@ const MentorInfo = styled.div`
   color: white;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  text-align: center;
+  padding: 1rem;
 
   &:hover {
     opacity: 1;
+  }
+
+  h4 {
+    width: 100%;
+    font-size: 1.125rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    width: 100%;
+    font-size: 0.875rem;
+    margin: 0;
+
+    &.role {
+      margin-top: 0.5rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    h4 {
+      font-size: 1rem;
+    }
+
+    p {
+      font-size: 0.75rem;
+    }
   }
 `;
 
@@ -499,14 +528,11 @@ const BoxComponent: React.FC<BoxProps> = ({
                       objectFit="cover"
                     />
                     <MentorInfo>
-                      <h4 className="text-lg font-bold">{mentors.peer}</h4>
-                      <p className="text-sm">
+                      <h4>{mentors.peer}</h4>
+                      <p>
                         {major} '{year}
                       </p>
-                      <p className="mt-2 text-sm">Peer Mentor</p>
-                      <p className="mt-1 px-2 text-center text-xs">
-                        {description}
-                      </p>
+                      <p className="role">Peer Mentor</p>
                     </MentorInfo>
                   </MentorCard>
 
@@ -518,43 +544,12 @@ const BoxComponent: React.FC<BoxProps> = ({
                       objectFit="cover"
                     />
                     <MentorInfo>
-                      <h4 className="text-lg font-bold">{mentors.faculty}</h4>
-                      <p className="text-sm">{field}</p>
-                      <p className="mt-2 text-sm">Faculty Mentor</p>
-                      <p className="mt-1 px-2 text-center text-xs">
-                        {interest}
-                      </p>
+                      <h4>{mentors.faculty}</h4>
+                      {field && <p>{field}</p>}
+                      <p className="role">Faculty Mentor</p>
                     </MentorInfo>
                   </MentorCard>
                 </MentorSection>
-              </InfoBlock>
-
-              <InfoBlock>
-                <h3>Admission Deadlines</h3>
-                <TimelineContainer>
-                  <div className="timeline-line" />
-                  <div className="timeline-markers">
-                    {admissionTimeline.map((entry, index) => {
-                      const entryDate = new Date(entry.date);
-                      const currentDate = new Date();
-                      const dotColor =
-                        entryDate > currentDate ? "green" : "red";
-
-                      return (
-                        <div key={index} className="marker-container">
-                          <div
-                            className="marker"
-                            style={{ backgroundColor: dotColor }}
-                          />
-                          <div className="timeline-label">
-                            <strong>{entry.date}</strong>
-                            {entry.description}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </TimelineContainer>
               </InfoBlock>
 
               <ButtonContainer>
