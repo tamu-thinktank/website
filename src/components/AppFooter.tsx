@@ -115,19 +115,19 @@ const Footer: React.FC = () => {
                   <FaDiscord size={24} />
                 </a>
                 <a
-                  href="#"
+                  href="https://getinvolved.tamu.edu/org/thinktank"
                   className="text-[#949494] transition-colors duration-300 hover:text-white"
                 >
                   <Facebook size={24} />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.instagram.com/tamuthinktank/"
                   className="text-[#949494] transition-colors duration-300 hover:text-white"
                 >
                   <Instagram size={24} />
                 </a>
                 <a
-                  href="#"
+                  href="https://www.linkedin.com/company/tamu-thinktank"
                   className="text-[#949494] transition-colors duration-300 hover:text-white"
                 >
                   <Linkedin size={24} />

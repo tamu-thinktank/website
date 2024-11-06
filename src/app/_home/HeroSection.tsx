@@ -26,25 +26,25 @@ const scrollItems = [
 const socialLinks = [
   {
     name: "Discord",
-    url: "https://discord.gg/your-discord-link",
+    url: "https://discord.gg/qUAuSraYV9",
     icon: SiDiscord,
     size: 1.05,
   },
   {
     name: "Facebook",
-    url: "https://facebook.com/your-page",
+    url: "https://getinvolved.tamu.edu/org/thinktank",
     icon: SiFacebook,
     size: 1.02,
   },
   {
     name: "Instagram",
-    url: "https://instagram.com/your-profile",
+    url: "https://www.instagram.com/tamuthinktank/",
     icon: SiInstagram,
     size: 1,
   },
   {
     name: "LinkedIn",
-    url: "https://linkedin.com/company/your-company",
+    url: "https://www.linkedin.com/company/tamu-thinktank",
     icon: SiLinkedin,
     size: 1,
   },

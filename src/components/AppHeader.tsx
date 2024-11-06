@@ -120,14 +120,14 @@ export default function Header() {
                       </a>
                       <a
                         href="/"
-                        onClick={(e) => handleLinkClick(e, "/", 2)}
+                        onClick={(e) => handleLinkClick(e, "/", 2.5)}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         Articles
                       </a>
                       <a
                         href="/about"
-                        onClick={(e) => handleLinkClick(e, "/about", 6)}
+                        onClick={(e) => handleLinkClick(e, "/about", 7)}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         FAQ
@@ -170,7 +170,7 @@ export default function Header() {
                     <a
                       href="/"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/", 2)}
+                      onClick={(e) => handleLinkClick(e, "/", 2.5)}
                     >
                       <span>Articles</span>
                     </a>
@@ -179,7 +179,7 @@ export default function Header() {
                     <a
                       href="/about"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/about", 6)}
+                      onClick={(e) => handleLinkClick(e, "/about", 7)}
                     >
                       <span>FAQ</span>
                     </a>
