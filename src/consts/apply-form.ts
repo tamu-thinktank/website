@@ -12,6 +12,7 @@ export const q: Questions = {
   personal: {
     title: "Personal Information",
     fullName: "Full Name",
+    preferredName: "Preferred Name",
     email: "TAMU Email",
     uin: "UIN",
     altEmail: "Additional Email Contact",

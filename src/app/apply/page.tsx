@@ -35,12 +35,13 @@ export default function Apply() {
   const table = useCalculateTable(userTimezone);
 
   const form = usePersistForm<RouterInputs["public"]["applyForm"]>(
-    "apply-form-F2024-v3",
+    "apply-form-S2025-v1",
     {
       resolver: zodResolver(ApplyFormSchema),
       // include at least the default values of optional fields
       defaultValues: {
         personal: {
+          preferredName: null,
           altEmail: null,
         },
         interests: {
