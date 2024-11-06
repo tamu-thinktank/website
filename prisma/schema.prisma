@@ -116,7 +116,7 @@ model Application {
 
     // personal info section
     fullName        String
-    preferredName   String
+    preferredName   String?
     email           String  @unique
     uin             Int     @unique
     altEmail        String?
