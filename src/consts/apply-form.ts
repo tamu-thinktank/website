@@ -54,5 +54,5 @@ export const challenges: {
     id: Challenge.TSGC,
     label: "Texas Space Grant Consortium Design Challenge (TSGC)",
     link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  }
+  },
 ];

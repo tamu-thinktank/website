@@ -66,12 +66,18 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.personal.preferredName} <span className="text-red-500"></span>
+                  {q.personal.preferredName}{" "}
+                  <span className="text-red-500"></span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input type="text" placeholder="Joe" {...field} value={field.value ?? ""}/>
+                  <Input
+                    type="text"
+                    placeholder="Joe"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
