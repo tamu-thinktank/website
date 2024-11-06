@@ -90,6 +90,7 @@ enum Year {
 
 enum Challenge {
     TSGC
+    AIAA
 }
 
 enum ApplicationStatus {
