@@ -2,8 +2,8 @@ import React from "react";
 
 const AboutHeader: React.FC = () => {
   return (
-    <div className="relative w-full p-8 pt-48 md:p-12 md:pl-24 lg:p-16 lg:pl-32">
-      <div className="flex flex-col items-start gap-0.5">
+    <div className="relative w-full p-8 pt-32 md:p-12 md:pl-24 md:pt-72 lg:p-16 lg:pl-32 lg:pt-40">
+      <div className="flex flex-col items-start gap-0">
         <span className="font-dm-sans text-[0.93em] font-semibold text-[#B8B8B8] md:text-[0.93em]">
           About
         </span>

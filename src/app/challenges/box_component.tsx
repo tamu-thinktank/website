@@ -63,7 +63,7 @@ const Box = styled.div<ExpandedProps>`
   justify-content: space-between;
   width: 100%;
   height: ${(props) => (props.expanded ? "auto" : "300px")};
-  margin: 20px auto;
+  margin: 30px auto;
   border: 2px solid rgba(83, 81, 81, 0.5);
   background-color: #1a1a1a;
   border-radius: 10px;
@@ -75,7 +75,7 @@ const Box = styled.div<ExpandedProps>`
   @media (max-width: 768px) {
     flex-direction: column;
     height: ${(props) => (props.expanded ? "auto" : "450px")};
-    margin: 10px auto;
+    margin: 20px auto;
   }
 `;
 
@@ -216,7 +216,7 @@ const otherSeparator = styled.span`
 `;
 
 const InfoBlock = styled.div`
-  background-color: #262626;
+  background-color: #050505;
   outline: 1px solid rgba(82, 80, 80, 0.5);
   border-radius: 10px;
   padding: 15px;
@@ -504,7 +504,7 @@ const BoxComponent: React.FC<BoxProps> = ({
             </InfoBlock>
 
             <InfoBlock>
-              <h3>Admission Timeline</h3>
+              <h3>Admission Deadlines</h3>
               <TimelineContainer>
                 <div className="timeline-line" />
                 <div className="timeline-markers">
