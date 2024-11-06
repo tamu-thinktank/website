@@ -140,10 +140,10 @@ export default function MyComponent() {
                   href="https://discord.gg/qUAuSraYV9"
                   className="group relative flex h-14 w-[85%] max-w-[20rem] items-center justify-center rounded-full bg-primary px-6 text-base font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-12 sm:w-48 sm:text-sm lg:h-14 lg:w-56 lg:text-lg xl:h-16 xl:w-64 xl:text-xl"
                 >
-                  Join Us
+                  Apply
                 </Link>
                 <Link
-                  href="/apply"
+                  href="/"
                   className="flex h-14 w-[85%] max-w-[20rem] items-center justify-center rounded-full border-2 border-white bg-transparent px-6 text-base font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-12 sm:w-48 sm:text-sm lg:h-14 lg:w-56 lg:text-lg xl:h-16 xl:w-64 xl:text-xl"
                 >
                   Contact Us

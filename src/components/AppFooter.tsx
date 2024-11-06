@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import ContactForm from "./ContactForm";
 import {
   ArrowUpRight,
@@ -12,8 +13,14 @@ import {
 import { FaDiscord } from "react-icons/fa";
 
 const Footer: React.FC = () => {
+  const router = useRouter();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
   };
 
   return (
@@ -24,7 +31,12 @@ const Footer: React.FC = () => {
             <p className="font-dm-sans mb-4 font-bold text-[#949494]">
               Think. Take the Moment.
             </p>
-            <button className="transform rounded-full bg-white px-6 py-3 text-[#1A1A1A] transition duration-300 hover:scale-105 hover:bg-gray-200">
+            <button
+              className="transform rounded-full bg-white px-6 py-3 text-[#1A1A1A] transition duration-300 hover:scale-105 hover:bg-gray-200"
+              onClick={() => {
+                window.location.href = "https://discord.gg/qUAuSraYV9";
+              }}
+            >
               Join Us
             </button>
           </div>
@@ -32,18 +44,43 @@ const Footer: React.FC = () => {
             <ContactForm />
           </div>
           <div className="order-2 -mt-20 mb-8 w-full self-end lg:order-3 lg:-mt-4 lg:mb-0 lg:w-1/4 lg:self-start">
-            <ul className="mt-0 space-y-2 lg:mt-0">
-              {["About", "Projects", "Team", "Contact"].map((item) => (
-                <li key={item} className="flex items-center justify-end">
-                  <a
-                    href="#"
-                    className="flex items-center text-[#949494] transition duration-300 hover:text-white"
-                  >
-                    {item}
-                    <ArrowUpRight className="ml-1 h-4 w-4" />
-                  </a>
-                </li>
-              ))}
+            <ul className="mt-0 space-y-2 md:mt-[-8px] lg:mt-0">
+              <li className="flex items-center justify-end">
+                <button
+                  onClick={() => router.push("/about")}
+                  className="flex items-center text-[#949494] transition duration-300 hover:text-white"
+                >
+                  About
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </li>
+              <li className="flex items-center justify-end">
+                <button
+                  onClick={() => router.push("/challenges")}
+                  className="flex items-center text-[#949494] transition duration-300 hover:text-white"
+                >
+                  Projects
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </li>
+              <li className="flex items-center justify-end">
+                <button
+                  onClick={() => router.push("/")}
+                  className="flex items-center text-[#949494] transition duration-300 hover:text-white"
+                >
+                  Home
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </li>
+              <li className="flex items-center justify-end">
+                <button
+                  onClick={scrollToBottom}
+                  className="flex items-center text-[#949494] transition duration-300 hover:text-white"
+                >
+                  Contact
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </li>
             </ul>
           </div>
         </div>
@@ -70,7 +107,9 @@ const Footer: React.FC = () => {
             <div className="flex w-full flex-col items-end lg:flex-row lg:justify-between">
               <div className="order-1 mb-2 flex space-x-4 lg:mb-0">
                 <a
-                  href="#"
+                  href="https://discord.gg/qUAuSraYV9"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-[#949494] transition-colors duration-300 hover:text-white"
                 >
                   <FaDiscord size={24} />

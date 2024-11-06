@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Container from "../../components/Container";
+import { useRouter } from "next/navigation";
 
 const logos = [
   "/images/clients/aero.webp",
@@ -60,6 +61,7 @@ function LogoSlider() {
 }
 
 export default function ChallengeSection() {
+  const router = useRouter();
   return (
     <div id="travel" className="bg-[#0C0D0E] py-8 md:py-12">
       <Container>
@@ -83,7 +85,10 @@ export default function ChallengeSection() {
             </div>
             <div className="my-8 border-t border-gray-700"></div>
             <div className="pt-4">
-              <button className="w-full transform rounded-full border-2 border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg">
+              <button
+                onClick={() => router.push("/challenges")}
+                className="w-full transform rounded-full border-2 border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg"
+              >
                 Explore Challenges
               </button>
             </div>

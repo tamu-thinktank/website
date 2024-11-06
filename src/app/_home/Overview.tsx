@@ -1,7 +1,10 @@
+"use client";
 import ProjectCarousel from "@/app/_home/ProjectCarousel";
 import Container from "../../components/Container";
+import { useRouter } from "next/navigation";
 
 export default function Component() {
+  const router = useRouter();
   return (
     <div id="overview" className="bg-[#0C0D0E] py-8 md:py-12">
       <Container>
@@ -21,7 +24,10 @@ export default function Component() {
               </p>
             </div>
             <div className="pt-6">
-              <button className="w-full transform rounded-full border border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg">
+              <button
+                onClick={() => router.push("/about")}
+                className="w-full transform rounded-full border border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg"
+              >
                 Learn More
               </button>
             </div>

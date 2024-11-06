@@ -7,6 +7,7 @@ import Container from "./Container";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Poppins, DM_Sans } from "next/font/google";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -23,7 +24,6 @@ const dmSans = DM_Sans({
 export default function Header() {
   const [showNavbar, setShowNavbar] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -47,44 +47,29 @@ export default function Header() {
     };
   }, [lastScrollY]);
 
-  useEffect(() => {
-    if (isMenuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isMenuOpen]);
-
   const handleLinkClick = async (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
     viewportMultiplier?: number,
   ) => {
     e.preventDefault();
-    setIsMenuOpen(false);
 
     const targetPath = href.split("#")[0] || "/";
 
     if (targetPath === pathname && viewportMultiplier !== undefined) {
-      // Same page, just scroll
       window.scrollTo({
         top: window.innerHeight * viewportMultiplier,
         behavior: "smooth",
       });
     } else {
-      // Different page, navigate then scroll
       await router.push(href);
       if (viewportMultiplier !== undefined) {
-        // Increased timeout to ensure page load
         setTimeout(() => {
           window.scrollTo({
             top: window.innerHeight * viewportMultiplier,
             behavior: "smooth",
           });
-        }, 300); // Increased from 100ms to 300ms
+        }, 300);
       }
     }
   };
@@ -110,21 +95,57 @@ export default function Header() {
               </div>
 
               <div className="relative flex max-h-10 items-center lg:hidden">
-                <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
-                  className="relative p-2"
-                  aria-label="Toggle menu"
-                >
-                  {isMenuOpen ? (
-                    <X className="h-6 w-6 text-gray-300" />
-                  ) : (
+                <Sheet>
+                  <SheetTrigger className="p-2">
                     <Menu className="h-6 w-6 text-gray-300" />
-                  )}
-                </button>
+                  </SheetTrigger>
+                  <SheetContent
+                    side="right"
+                    className="w-full border-gray-800 bg-[#0C0D0E]"
+                  >
+                    <div className="flex h-full flex-col gap-8 pt-16">
+                      <a
+                        href="/about"
+                        onClick={(e) => handleLinkClick(e, "/about")}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        About
+                      </a>
+                      <a
+                        href="/challenges"
+                        onClick={(e) => handleLinkClick(e, "/challenges")}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        Challenges
+                      </a>
+                      <a
+                        href="/"
+                        onClick={(e) => handleLinkClick(e, "/", 2)}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        Articles
+                      </a>
+                      <a
+                        href="/about"
+                        onClick={(e) => handleLinkClick(e, "/about", 6)}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        FAQ
+                      </a>
+                      <a
+                        href="/apply"
+                        onClick={(e) => handleLinkClick(e, "/apply")}
+                        className="inline-flex h-10 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-200"
+                      >
+                        Join Us
+                      </a>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
 
-            <div className={`navbar-menu ${isMenuOpen ? "active" : ""}`}>
+            <div className="navbar-menu">
               <div className="w-full text-gray-600 dark:text-gray-300 lg:w-auto lg:pr-4 lg:pt-0">
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
@@ -136,7 +157,6 @@ export default function Header() {
                       <span>About</span>
                     </a>
                   </li>
-
                   <li>
                     <a
                       href="/challenges"
@@ -146,7 +166,6 @@ export default function Header() {
                       <span>Challenges</span>
                     </a>
                   </li>
-
                   <li>
                     <a
                       href="/"
@@ -156,7 +175,6 @@ export default function Header() {
                       <span>Articles</span>
                     </a>
                   </li>
-
                   <li>
                     <a
                       href="/about"
@@ -175,58 +193,10 @@ export default function Header() {
                   className="navbar-button"
                   onClick={(e) => handleLinkClick(e, "/apply")}
                 >
-                  <span className="navbar-button-text">Join Us</span>
+                  <span className="navbar-button-text">Apply</span>
                 </a>
               </div>
             </div>
-
-            {/* Mobile Menu Overlay */}
-            {isMenuOpen && (
-              <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md lg:hidden">
-                <div className="flex h-full flex-col px-6 py-20">
-                  <ul className="flex flex-col items-center gap-8 text-xl text-white">
-                    <li>
-                      <a
-                        href="/about"
-                        onClick={(e) => handleLinkClick(e, "/about")}
-                      >
-                        About
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="/challenges"
-                        onClick={(e) => handleLinkClick(e, "/challenges")}
-                      >
-                        Challenges
-                      </a>
-                    </li>
-                    <li>
-                      <a href="/" onClick={(e) => handleLinkClick(e, "/", 2)}>
-                        Articles
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="/about"
-                        onClick={(e) => handleLinkClick(e, "/about", 6)}
-                      >
-                        FAQ
-                      </a>
-                    </li>
-                    <li className="mt-8">
-                      <a
-                        href="/apply"
-                        className="navbar-button"
-                        onClick={(e) => handleLinkClick(e, "/apply")}
-                      >
-                        <span className="navbar-button-text">Join Us</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
           </div>
         </Container>
       </nav>
