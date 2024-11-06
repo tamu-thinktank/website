@@ -87,7 +87,7 @@ export default function ChallengeSection() {
             <div className="pt-4">
               <button
                 onClick={() => router.push("/challenges")}
-                className="w-full transform rounded-full border-2 border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg"
+                className="touransform w-full rounded-full border-2 border-white bg-transparent px-6 py-3 text-base text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black sm:text-lg"
               >
                 Explore Challenges
               </button>

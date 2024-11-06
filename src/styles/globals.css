@@ -160,23 +160,7 @@
   z-index: 3000;
 }
 
-@media (max-width: 600px) {
-  .responsive-title {
-    font-size: 4em;
-  }
-}
 
-@media (min-width: 601px) and (max-width: 1023px) {
-  .responsive-title {
-    font-size: 5em;
-  }
-}
-
-@media (min-width: 1024px) {
-  .responsive-title {
-    font-size: 6em;
-  }
-}
 @media (max-width: 640px) {
   .mobile-lower {
     top: -12.5%;

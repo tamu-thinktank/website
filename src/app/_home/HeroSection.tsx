@@ -28,39 +28,38 @@ const socialLinks = [
     name: "Discord",
     url: "https://discord.gg/your-discord-link",
     icon: SiDiscord,
-    size: 1.05, // 5% bigger
+    size: 1.05,
   },
   {
     name: "Facebook",
     url: "https://facebook.com/your-page",
     icon: SiFacebook,
-    size: 1.02, // 2% bigger
+    size: 1.02,
   },
   {
     name: "Instagram",
     url: "https://instagram.com/your-profile",
     icon: SiInstagram,
-    size: 1, // default size
+    size: 1,
   },
   {
     name: "LinkedIn",
     url: "https://linkedin.com/company/your-company",
     icon: SiLinkedin,
-    size: 1, // default size
+    size: 1,
   },
 ];
 
 export default function MyComponent() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const arrowRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
     const scrollWidth = scrollContainer.scrollWidth;
-    const containerWidth = scrollContainer.offsetWidth;
-
     let scrollPosition = 0;
     let animationId: number;
 
@@ -68,10 +67,6 @@ export default function MyComponent() {
       scrollPosition += 1;
       if (scrollPosition >= scrollWidth / 2) {
         scrollPosition = 0;
-        scrollContainer.style.transition = "none";
-        scrollContainer.style.transform = `translateX(0px)`;
-        void scrollContainer.offsetWidth; // Trigger reflow
-        scrollContainer.style.transition = "transform 0.5s linear";
       }
       scrollContainer.style.transform = `translateX(-${scrollPosition}px)`;
       animationId = requestAnimationFrame(scroll);
@@ -80,7 +75,9 @@ export default function MyComponent() {
     animationId = requestAnimationFrame(scroll);
 
     return () => {
-      cancelAnimationFrame(animationId);
+      if (animationId) {
+        cancelAnimationFrame(animationId);
+      }
     };
   }, []);
 
@@ -88,49 +85,57 @@ export default function MyComponent() {
     const arrow = arrowRef.current;
     if (!arrow) return;
 
-    const animate = () => {
-      arrow.animate(
-        [
-          { transform: "translateY(0px)" },
-          { transform: "translateY(5px)" },
-          { transform: "translateY(0px)" },
-        ],
-        {
-          duration: 5000000,
-          iterations: Infinity,
-          easing: "ease-in-out",
-        },
-      );
+    const handleScroll = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const containerBottom = container.getBoundingClientRect().bottom;
+      const viewportHeight = window.innerHeight;
+
+      if (containerBottom < viewportHeight) {
+        arrow.style.position = "absolute";
+        arrow.style.bottom = "8px";
+      } else {
+        arrow.style.position = "fixed";
+        arrow.style.bottom = "32px";
+      }
     };
 
-    animate();
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
   }, []);
 
   return (
     <div
       className="relative min-h-screen overflow-hidden bg-[#0C0D0E]"
       id="home"
+      ref={containerRef}
     >
       <div className="pointer-events-none absolute right-[-125px] top-[-375px] h-[1000px] w-[1000px] -translate-y-1/2 translate-x-1/2 transform bg-blue-400 opacity-10 blur-3xl md:h-[1250px] md:w-[1250px] lg:h-[1500px] lg:w-[1500px]"></div>
 
       <div className="flex min-h-screen items-center justify-center py-5 md:py-12">
         <Container>
-          <div className="desktop-scale mobile-adjust relative mx-auto flex flex-col justify-center pt-16">
+          <div className="desktop-scale mobile-adjust relative mx-auto flex flex-col justify-center overflow-visible pt-0 sm:pt-16">
             <div className="mx-auto w-full text-center lg:w-4/5 xl:w-3/4 2xl:w-2/3">
-              <div className="relative">
-                <h1 className="responsive-title font-poppins relative z-[3000] mb-1 w-full bg-gradient-to-r from-white to-[#617B7F] bg-clip-text font-semibold leading-tight text-transparent">
+              <div className="relative pt-5 sm:pt-20">
+                <h1 className="font-poppins relative z-[9999] mb-1 w-full bg-gradient-to-r from-white to-[#617B7F] bg-clip-text text-[7.2em] font-semibold leading-relaxed text-transparent sm:text-[4em] md:text-[5em] lg:text-[6em]">
                   Empowering
                 </h1>
-                <h2 className="responsive-title font-poppins relative z-[3000] mb-1 mt-[-0.2em] w-full bg-gradient-to-r from-white to-gray-500 bg-clip-text font-semibold leading-tight text-transparent">
+                <h2 className="font-poppins relative z-[9999] mb-1 mt-[-0.2em] w-full whitespace-nowrap bg-gradient-to-r from-white to-gray-500 bg-clip-text text-[7em] font-semibold leading-relaxed text-transparent sm:text-[4em] md:text-[5em] lg:text-[6em]">
                   Future Engineers
                 </h2>
               </div>
 
               <div className="space-y-0">
-                <p className="font-dm-sans mx-auto max-w-3xl text-[1.5em] text-[#B8B8B8] sm:text-[1.5em] md:text-[1.5em] lg:text-[1.5em] xl:text-[1.5em]">
+                <p className="font-dm-sans mx-auto max-w-3xl text-[2em] text-[#B8B8B8] sm:text-[1.5em]">
                   From Potential to Professional
                 </p>
-                <p className="font-dm-sans mx-auto mb-1 max-w-3xl text-[1.5em] text-[#B8B8B8] sm:mb-8 sm:text-[1.5em] md:text-[1.5em] lg:text-[1.5em] xl:text-[1.5em] ">
+                <p className="font-dm-sans mx-auto mb-1 max-w-3xl text-[2em] text-[#B8B8B8] sm:mb-8 sm:text-[1.5em]">
                   Start Your Journey with ThinkTank
                 </p>
               </div>
@@ -138,13 +143,13 @@ export default function MyComponent() {
               <div className="mb-8 flex flex-col items-center gap-y-4 pt-8 sm:mb-16 sm:flex-row sm:justify-center sm:gap-x-6">
                 <Link
                   href="https://discord.gg/qUAuSraYV9"
-                  className="group relative flex h-14 w-[85%] max-w-[20rem] items-center justify-center rounded-full bg-primary px-6 text-base font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-12 sm:w-48 sm:text-sm lg:h-14 lg:w-56 lg:text-lg xl:h-16 xl:w-64 xl:text-xl"
+                  className="group relative flex h-20 w-[90%] max-w-[23rem] items-center justify-center rounded-full bg-primary px-7 text-2xl font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Apply
                 </Link>
                 <Link
                   href="/"
-                  className="flex h-14 w-[85%] max-w-[20rem] items-center justify-center rounded-full border-2 border-white bg-transparent px-6 text-base font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-12 sm:w-48 sm:text-sm lg:h-14 lg:w-56 lg:text-lg xl:h-16 xl:w-64 xl:text-xl"
+                  className="flex h-20 w-[90%] max-w-[23rem] items-center justify-center rounded-full border-2 border-white bg-transparent px-7 text-2xl font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Contact Us
                 </Link>
@@ -160,7 +165,7 @@ export default function MyComponent() {
                     className="transform text-gray-300 transition-all duration-300 ease-in-out will-change-transform hover:scale-125 hover:text-white"
                   >
                     <link.icon
-                      className="h-7 w-7 sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12"
+                      className="h-10 w-10 sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12"
                       style={{
                         transform: `scale(${link.size})`,
                       }}
@@ -171,12 +176,9 @@ export default function MyComponent() {
               </div>
 
               <div className="my-4 border-t border-white opacity-20"></div>
-              <div
-                className="relative overflow-hidden border-y border-[#0C0D0E] py-4 sm:py-6 lg:py-8"
-                style={{ margin: "20px 0" }}
-              >
-                <div className="pointer-events-none absolute bottom-0 left-[0px] top-0 z-10 w-36 bg-gradient-to-r from-[#0C0D0E] to-transparent"></div>
-                <div className="pointer-events-none absolute bottom-0 right-[-5px] top-0 z-10 w-36 bg-gradient-to-l from-[#0C0D0E] to-transparent"></div>
+              <div className="relative overflow-hidden border-y border-[#0C0D0E] py-4 sm:py-6 lg:py-8">
+                <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-20 bg-gradient-to-r from-[#0C0D0E] to-transparent sm:w-40"></div>
+                <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-20 bg-gradient-to-l from-[#0C0D0E] to-transparent sm:w-40"></div>
 
                 <div
                   ref={scrollRef}
@@ -197,7 +199,10 @@ export default function MyComponent() {
           </div>
         </Container>
       </div>
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 transform">
+      <div
+        ref={arrowRef}
+        className="fixed bottom-8 left-1/2 -translate-x-1/2 transform"
+      >
         <ChevronDown className="h-8 w-8 animate-bounce text-white" />
       </div>
     </div>
