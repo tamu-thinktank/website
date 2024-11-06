@@ -25,7 +25,12 @@ export default function FormIntroTab() {
           on the number of applicants, available teams, competition
           requirements, and other relevant factors.
           <br /> <br />
-          ❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗
+          <strong>
+            WE HIGHLY RECOMMEND READING THE FAQ AND COMPLETING THE APPLICATION
+            ON A LAPTOP/DESKTOP
+          </strong>
+          <br /> <br />
+          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong>
         </CardContent>
       </Card>
       <TabsList className="float-right bg-transparent">
