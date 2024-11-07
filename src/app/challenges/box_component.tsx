@@ -145,12 +145,19 @@ const ButtonContainer = styled.div`
   }
 `;
 
-const ButtonStyle = styled.a<{ disabled?: boolean; filled?: boolean }>`
+const ButtonStyle = styled.a<{
+  disabled?: boolean;
+  filled?: boolean;
+  expanded?: boolean;
+}>`
   font-size: 16px;
   font-weight: bold;
   padding: 10px 20px;
-  width: 100%;
-  max-width: 200px;
+  width: ${(props) => (props.expanded ? "100%" : "100%")};
+  max-width: ${(props) =>
+    props.expanded
+      ? "200px"
+      : "420px"}; // Differentiate based on expanded state
   border-radius: 50px;
   border: 0.5px solid white;
   background-color: ${(props) => (props.filled ? "white" : "transparent")};
@@ -170,6 +177,10 @@ const ButtonStyle = styled.a<{ disabled?: boolean; filled?: boolean }>`
   @media (max-width: 768px) {
     font-size: 14px;
     padding: 8px 16px;
+    max-width: ${(props) =>
+      props.expanded
+        ? "100%"
+        : "100%"}; // Ensure full width responsiveness on smaller screens
   }
 `;
 
@@ -178,7 +189,7 @@ const ToggleButton = styled.div<ExpandedProps>`
   font-weight: bold;
   padding: 10px 20px;
   width: 100%;
-  max-width: 200px;
+  max-width: 420px;
   border-radius: 50px;
   border: 0.5px solid white;
   background-color: transparent;
@@ -194,6 +205,7 @@ const ToggleButton = styled.div<ExpandedProps>`
   @media (max-width: 768px) {
     font-size: 14px;
     padding: 8px 16px;
+    max-width: 100%;
   }
 `;
 
@@ -480,7 +492,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  gap: "20px",
+                  gap: "15px",
                 }}
               >
                 {researchAreas ? (
@@ -587,6 +599,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                   flexDirection: "row",
                   justifyContent: "center",
                   gap: "20px",
+                  width: "100%",
                 }}
               >
                 <ButtonStyle
@@ -612,6 +625,11 @@ const BoxComponent: React.FC<BoxProps> = ({
                 >
                   {isOpen ? "Apply" : "Closed"}
                 </ButtonStyle>
+              </ButtonContainer>
+              <ButtonContainer style={{ marginTop: "10px", width: "100%" }}>
+                <ToggleButton expanded={isExpanded} onClick={handleToggle}>
+                  See Less
+                </ToggleButton>
               </ButtonContainer>
             </motion.div>
           )}

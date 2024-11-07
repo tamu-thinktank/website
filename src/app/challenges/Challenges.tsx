@@ -112,7 +112,8 @@ const Challenges = () => {
     },
     {
       teamName: "Servus",
-      shortOverview: "Aviation Solutions for Agriculture",
+      shortOverview:
+        "Design a Fully Autonomous Maintenance Vehicle for the Moon",
       competitionOverview:
         "NASA RASC-AL is also looking for a proposal for a maintenance rover that can service and preserve the permanent lunar base that NASA aims to establish. The rover shall weigh no more than 500kg and perform critical tasks to support the base such as inspecting systems, swapping payloads, and connecting umbilicals.",
       duration: "2 Semesters",
