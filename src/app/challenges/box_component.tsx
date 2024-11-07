@@ -164,6 +164,7 @@ const ButtonStyle = styled.a<{ disabled?: boolean; filled?: boolean }>`
 
   &:hover {
     transform: scale(1.05);
+    transition: transform 0.3s ease;
   }
 
   @media (max-width: 768px) {
@@ -403,6 +404,12 @@ const BoxComponent: React.FC<BoxProps> = ({
     collapsed: { height: ["auto", "300px"] },
     expanded: { height: ["300px", "auto"] },
   };
+  // - timeline functionality isnt working
+  const getMarkerColor = (date: string) => {
+    const deadlineDate = new Date(date);
+    const currentDate = new Date("2024-11-07"); // testing out with current date
+    return currentDate > deadlineDate ? "red" : "green";
+  };
 
   return (
     <Box
@@ -552,10 +559,59 @@ const BoxComponent: React.FC<BoxProps> = ({
                 </MentorSection>
               </InfoBlock>
 
-              <ButtonContainer>
-                <ToggleButton expanded={isExpanded} onClick={handleToggle}>
-                  See Less
-                </ToggleButton>
+              <InfoBlock>
+                <h3>Timeline</h3>
+                <TimelineContainer>
+                  <div className="timeline-line" />
+                  <div className="timeline-markers">
+                    {admissionTimeline.map((entry, index) => (
+                      <div key={index} className="marker-container">
+                        <div
+                          className="marker"
+                          style={{
+                            backgroundColor: getMarkerColor(entry.date),
+                          }}
+                        />
+                        <div className="timeline-label">
+                          <strong>{entry.date}</strong>
+                          {entry.description}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </TimelineContainer>
+              </InfoBlock>
+
+              <ButtonContainer
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  gap: "20px",
+                }}
+              >
+                <ButtonStyle
+                  href={competitionLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  filled={false}
+                  style={{
+                    border: "1px solid white",
+                    color: "white",
+                    backgroundColor: "transparent",
+                  }}
+                >
+                  Competition Link
+                </ButtonStyle>
+                <ButtonStyle
+                  href={competitionLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  disabled={!isOpen}
+                  filled={true}
+                  style={{ backgroundColor: "white", color: "black" }}
+                >
+                  {isOpen ? "Apply" : "Closed"}
+                </ButtonStyle>
               </ButtonContainer>
             </motion.div>
           )}

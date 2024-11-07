@@ -261,6 +261,7 @@ function FAQ() {
           </AccordionItem>
         ))}
       </Accordion>
+      <div style={{ padding: "40px" }}></div>
     </Container>
   );
 }

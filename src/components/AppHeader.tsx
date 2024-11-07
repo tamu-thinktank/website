@@ -57,21 +57,26 @@ export default function Header() {
     const targetPath = href.split("#")[0] || "/";
 
     if (targetPath === pathname && viewportMultiplier !== undefined) {
-      window.scrollTo({
-        top: window.innerHeight * viewportMultiplier,
-        behavior: "smooth",
-      });
+      scrollToPosition(viewportMultiplier);
     } else {
       await router.push(href);
       if (viewportMultiplier !== undefined) {
         setTimeout(() => {
-          window.scrollTo({
-            top: window.innerHeight * viewportMultiplier,
-            behavior: "smooth",
-          });
-        }, 300);
+          scrollToPosition(viewportMultiplier);
+        }, 500); // Increased from 300 to 500ms
       }
     }
+  };
+
+  const scrollToPosition = (viewportMultiplier: number) => {
+    const isMobile = window.innerWidth < 768; // Assuming 768px as the mobile breakpoint
+    const scrollMultiplier = isMobile
+      ? viewportMultiplier * 1.5
+      : viewportMultiplier;
+    window.scrollTo({
+      top: window.innerHeight * scrollMultiplier,
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -120,14 +125,14 @@ export default function Header() {
                       </a>
                       <a
                         href="/"
-                        onClick={(e) => handleLinkClick(e, "/", 2.5)}
+                        onClick={(e) => handleLinkClick(e, "/", 2.55)}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         Articles
                       </a>
                       <a
                         href="/about"
-                        onClick={(e) => handleLinkClick(e, "/about", 7)}
+                        onClick={(e) => handleLinkClick(e, "/about", 6.3)}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         FAQ
@@ -170,7 +175,7 @@ export default function Header() {
                     <a
                       href="/"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/", 2.5)}
+                      onClick={(e) => handleLinkClick(e, "/", 2.75)}
                     >
                       <span>Articles</span>
                     </a>
@@ -179,7 +184,7 @@ export default function Header() {
                     <a
                       href="/about"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/about", 7)}
+                      onClick={(e) => handleLinkClick(e, "/about", 8)}
                     >
                       <span>FAQ</span>
                     </a>

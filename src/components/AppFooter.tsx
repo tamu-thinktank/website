@@ -59,7 +59,7 @@ const Footer: React.FC = () => {
                   onClick={() => router.push("/challenges")}
                   className="flex items-center text-[#949494] transition duration-300 hover:text-white"
                 >
-                  Projects
+                  Challenges
                   <ArrowUpRight className="ml-1 h-4 w-4" />
                 </button>
               </li>

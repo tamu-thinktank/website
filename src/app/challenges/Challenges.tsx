@@ -46,7 +46,7 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "4-6",
       admissionTimeline: [
-        { date: "Applications Due", description: "9/6/24" },
+        { date: "Applications", description: "9/6/24" },
         { date: "Interviews End", description: "9/15/24" },
         { date: "Acceptance", description: "9/16/24" },
       ],
@@ -79,7 +79,7 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "12-20",
       admissionTimeline: [
-        { date: "Applications Due", description: "9/6/24" },
+        { date: "Applications", description: "9/6/24" },
         { date: "Interviews End", description: "9/15/24" },
         { date: "Acceptance", description: "9/16/24" },
       ],
@@ -118,7 +118,7 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "12-20",
       admissionTimeline: [
-        { date: "Applications Due", description: "9/6/24" },
+        { date: "Applications", description: "9/6/24" },
         { date: "Interviews End", description: "9/15/24" },
         { date: "Acceptance", description: "9/16/24" },
       ],
@@ -154,7 +154,7 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "6",
       admissionTimeline: [
-        { date: "Applications Due", description: "9/6/24" },
+        { date: "Applications", description: "9/6/24" },
         { date: "Interviews End", description: "9/15/24" },
         { date: "Acceptance", description: "9/16/24" },
       ],
@@ -189,7 +189,7 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "12-14",
       admissionTimeline: [
-        { date: "Applications Due", description: "9/6/24" },
+        { date: "Applications", description: "9/6/24" },
         { date: "Interviews End", description: "9/15/24" },
         { date: "Acceptance", description: "9/16/24" },
       ],
@@ -223,7 +223,7 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "10",
       admissionTimeline: [
-        { date: "Applications Due", description: "9/6/24" },
+        { date: "Applications", description: "9/6/24" },
         { date: "Interviews End", description: "9/15/24" },
         { date: "Acceptance", description: "9/16/24" },
       ],

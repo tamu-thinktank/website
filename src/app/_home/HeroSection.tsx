@@ -110,6 +110,14 @@ export default function MyComponent() {
     };
   }, []);
 
+  const scrollToBottom = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <div
       className="relative min-h-screen overflow-hidden bg-[#0C0D0E]"
@@ -142,17 +150,18 @@ export default function MyComponent() {
 
               <div className="mb-8 flex flex-col items-center gap-y-4 pt-8 sm:mb-16 sm:flex-row sm:justify-center sm:gap-x-6">
                 <Link
-                  href="https://discord.gg/qUAuSraYV9"
+                  href="/apply"
                   className="group relative flex h-20 w-[90%] max-w-[23rem] items-center justify-center rounded-full bg-primary px-7 text-2xl font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Apply
                 </Link>
-                <Link
-                  href="/"
+                <a
+                  href="#"
+                  onClick={scrollToBottom}
                   className="flex h-20 w-[90%] max-w-[23rem] items-center justify-center rounded-full border-2 border-white bg-transparent px-7 text-2xl font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Contact Us
-                </Link>
+                </a>
               </div>
 
               <div className="mb-6 flex justify-center space-x-4 sm:mb-12 sm:space-x-6 lg:space-x-8">
