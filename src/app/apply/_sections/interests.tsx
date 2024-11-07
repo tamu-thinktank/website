@@ -72,7 +72,7 @@ export default function Interests() {
                   <Link
                     className="inline-block"
                     target="_blank"
-                    href="/challenges"
+                    href="https://ig.utexas.edu/tsgc/design-challenge/"
                   >
                     <span className="text-info dark:text-blue-300">here</span>
                   </Link>

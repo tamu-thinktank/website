@@ -89,12 +89,8 @@ enum Year {
 }
 
 enum Challenge {
+    TSGC
     AIAA
-    Blue_Skies
-    RASCAL_1
-    RASCAL_2
-    Solar_District_Group
-    Website
 }
 
 enum ApplicationStatus {
@@ -120,14 +116,15 @@ model Application {
     location    String? // interview location if accepted
 
     // personal info section
-    fullName     String
-    email        String  @unique
-    uin          Int     @unique
-    altEmail     String?
-    phone        String
-    year         Year
-    major        String
-    availability Boolean
+    fullName        String
+    preferredName   String?
+    email           String  @unique
+    uin             Int     @unique
+    altEmail        String?
+    phone           String
+    year            Year
+    major           String
+    availability    Boolean
 
     // Interests and Motivation section
     interestedAnswer    String
