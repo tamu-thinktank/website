@@ -29,8 +29,8 @@ export default function FormIntroTab() {
             WE HIGHLY RECOMMEND READING THE FAQ AND COMPLETING THE APPLICATION
             ON A LAPTOP/DESKTOP
           </strong>
-          <br /> <br />
-          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong>
+          {/* <br /> <br />
+          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong> */}
         </CardContent>
       </Card>
       <TabsList className="float-right bg-transparent">

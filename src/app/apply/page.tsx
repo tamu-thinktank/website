@@ -67,7 +67,7 @@ export default function Apply() {
       toast({
         title: "Form Submitted!",
         description:
-          "Contact tamuthinktank@gmail.com if you do not recieve an email by Jan. 17th.",
+          "Contact tamuthinktank@gmail.com if you do not recieve an email by Jan. 19th.",
         duration: 10000,
       });
 
