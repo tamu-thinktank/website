@@ -4,65 +4,49 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 5%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 5%;
+    --popover: 0 0% 5%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-
+    --primary: 0 0% 5%;
+    --primary-foreground: 0 0% 5%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
 
     --radius: 0.5rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 0 0% 5%;
     --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
+    --card: 0 0% 5%;
     --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
+    --popover: 0 0% 5%;
     --popover-foreground: 210 40% 98%;
-
     --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
+    --primary-foreground: 000 00% 100%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
-
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
-
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+    --border: 210 5.1% 5%;
 
-    --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --ring: 0 0% 5%; /* Replaced the blue color */
   }
 }
 
@@ -71,14 +55,118 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-[#0C0D0E] text-foreground;
   }
 }
 
-#toggle_nav:checked ~ div #hamburger #line {
-  @apply translate-y-1.5 rotate-45;
+/* Navbar styles */
+.navbar {
+  @apply fixed top-0 z-10 w-full border-b border-gray-300/30 bg-[#0C0D0E] transition-transform duration-300;
 }
 
-#toggle_nav:checked ~ div #hamburger #line2 {
-  @apply -translate-y-1 -rotate-45;
+.navbar-content {
+  @apply relative flex flex-wrap items-center justify-between gap-6 py-4 md:py-3 lg:py-2;
+}
+
+.navbar-logo {
+  @apply h-8 w-auto object-cover object-top transition duration-500 group-hover:scale-105;
+}
+
+.navbar-menu {
+  @apply invisible absolute left-0 top-full z-20 w-full origin-top translate-y-1 scale-95 flex-col flex-wrap justify-end gap-6 rounded-3xl border border-gray-100 bg-white p-8 opacity-0 shadow-2xl shadow-gray-600/10 transition-all duration-300 
+  peer-checked:visible peer-checked:scale-100 peer-checked:opacity-100 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none lg:visible lg:relative lg:flex lg:w-7/12 lg:translate-y-0 lg:scale-100 lg:flex-row lg:items-center lg:gap-0
+  lg:border-none lg:bg-transparent lg:p-0 lg:opacity-100 lg:shadow-none lg:peer-checked:translate-y-0 lg:dark:bg-transparent;
+}
+
+.navbar-link {
+  @apply block transition hover:text-primary md:px-4;
+}
+
+.navbar-button {
+  @apply relative flex h-[35px] w-[120px] items-center justify-center rounded-[48px] px-4 before:absolute before:inset-0 before:rounded-[48px] before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground;
+}
+
+.navbar-button-text {
+  @apply relative text-sm font-semibold text-black;
+}
+
+/* Responsive styles */
+@media (max-width: 1023px) {
+  .navbar-menu {
+    @apply fixed inset-0 z-10 h-screen w-screen origin-bottom scale-y-0 bg-white/70 backdrop-blur-2xl transition duration-500 peer-checked:origin-top peer-checked:scale-y-100 dark:bg-gray-900/70;
+  }
+}
+
+@media (min-width: 1024px) {
+  .desktop-scale {
+    transform: scale(1.5);
+    transform-origin: center top;
+    height: 66.67vh;
+    overflow: hidden;
+  }
+
+  .desktop-scale > * {
+    transform: scale(0.667);
+    transform-origin: center top;
+    height: 150%;
+    width: 150%;
+  }
+}
+
+@media (min-width: 1921px) {
+  .desktop-scale {
+    transform: scale(2.1);
+    transform-origin: center top;
+    padding-top: 0vh;
+    padding-bottom: 0vh;
+  }
+}
+
+@media (max-width: 1000px) {
+  .mobile-adjust {
+    transform: scale(0.5);
+    font-size: 0.8em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* Custom styles */
+.gradient-text-white-navy {
+  background: linear-gradient(to right, white, #000080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-text-white-gray {
+  background: linear-gradient(to right, white, #808080);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hover-animation {
+  transition: all 0.3s ease;
+}
+
+.hover-animation:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+.highest-z-index {
+  position: relative;
+  z-index: 3000;
+}
+
+@media (max-width: 640px) {
+  .mobile-lower {
+    top: -12.5%;
+  }
+}
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #0c0d0e; /* Set the desired background color */
 }
