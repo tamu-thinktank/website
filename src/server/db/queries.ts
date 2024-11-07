@@ -41,3 +41,7 @@ export const getTargetTeams = async (
     )?.targetTeams ?? []
   );
 };
+
+export const getAllApplications = async () => {
+  return await db.application.findMany();
+};

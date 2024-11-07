@@ -12,6 +12,7 @@ export const ApplyFormSchema = z
     // Personal info section
     personal: z.object({
       fullName: z.string().min(1, "Required"),
+      preferredName: z.string().nullable(),
       email: z
         .string()
         .email("Invalid email")

@@ -1,4 +1,4 @@
-lockfileVersion: '9.0'
+lockfileVersion: "9.0"
 
 settings:
   autoInstallPeers: true
@@ -212,6 +212,9 @@ importers:
       nodemailer:
         specifier: ^6.9.8
         version: 6.9.14
+      papaparse:
+        specifier: ^5.4.1
+        version: 5.4.1
       pdfjs-dist:
         specifier: 3.11.174
         version: 3.11.174
@@ -279,7 +282,10 @@ importers:
       '@types/node':
         specifier: ^18.19.42
         version: 18.19.44
-      '@types/react':
+      "@types/papaparse":
+        specifier: ^5.3.14
+        version: 5.3.14
+      "@types/react":
         specifier: ^18.2.37
         version: 18.3.3
       '@types/react-dom':
@@ -1728,8 +1734,17 @@ packages:
   '@types/nprogress@0.2.3':
     resolution: {integrity: sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==}
 
-  '@types/prop-types@15.7.12':
-    resolution: {integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==}
+  "@types/papaparse@5.3.14":
+    resolution:
+      {
+        integrity: sha512-LxJ4iEFcpqc6METwp9f6BV6VVc43m6MfH0VqFosHvrUgfXiFe6ww7R3itkOQ+TCK6Y+Iv/+RnnvtRZnkc5Kc9g==,
+      }
+
+  "@types/prop-types@15.7.12":
+    resolution:
+      {
+        integrity: sha512-5zvhXYtRNRluoE/jAp4GVsSduVUzNWKkOZrCDBWYtE7biZywwdC2AcEzg+cSMLFRfVgeAFqpfNabiPjxFddV1Q==,
+      }
 
   '@types/react-dom@18.3.0':
     resolution: {integrity: sha512-EhwApuTmMBmXuFOikhQLIBUn6uFg81SwLMOAUgodJF14SOBOCMdU04gDoYi0WOJJHD144TL32z4yDqCW3dnkQg==}
@@ -3407,7 +3422,16 @@ packages:
     engines: {node: '>=6'}
 
   package-json-from-dist@1.0.0:
-    resolution: {integrity: sha512-dATvCeZN/8wQsGywez1mzHtTlP22H8OEfPrVMLNr4/eGa+ijtLn/6M5f0dY8UKNrC2O9UCU6SSoG3qRKnt7STw==}
+    resolution:
+      {
+        integrity: sha512-dATvCeZN/8wQsGywez1mzHtTlP22H8OEfPrVMLNr4/eGa+ijtLn/6M5f0dY8UKNrC2O9UCU6SSoG3qRKnt7STw==,
+      }
+
+  papaparse@5.4.1:
+    resolution:
+      {
+        integrity: sha512-HipMsgJkZu8br23pW15uvo6sib6wne/4woLZPlFf3rpDyMe9ywEXUsuD7+6K9PRkJlVT51j/sCOYDKGGS3ZJrw==,
+      }
 
   parent-module@1.0.1:
     resolution: {integrity: sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g==}
@@ -5666,7 +5690,11 @@ snapshots:
 
   '@types/nprogress@0.2.3': {}
 
-  '@types/prop-types@15.7.12': {}
+  "@types/papaparse@5.3.14":
+    dependencies:
+      "@types/node": 18.19.44
+
+  "@types/prop-types@15.7.12": {}
 
   '@types/react-dom@18.3.0':
     dependencies:
@@ -7606,6 +7634,8 @@ snapshots:
   p-try@2.2.0: {}
 
   package-json-from-dist@1.0.0: {}
+
+  papaparse@5.4.1: {}
 
   parent-module@1.0.1:
     dependencies:
