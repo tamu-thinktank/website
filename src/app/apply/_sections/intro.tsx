@@ -13,13 +13,12 @@ export default function FormIntroTab() {
         </CardHeader>
       </Card>
       <TabsList className="float-right bg-transparent">
-      <TabsList className="float-right bg-transparent">
-        <TabsTrigger className="bg-white text-black" value="personal">
-          Next
-        </TabsTrigger>
-      </TabsList>
+        <TabsList className="float-right bg-transparent">
+          <TabsTrigger className="bg-white text-black" value="personal">
+            Next
+          </TabsTrigger>
+        </TabsList>
       </TabsList>
     </TabsContent>
   );
 }
-
