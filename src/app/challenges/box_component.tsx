@@ -449,7 +449,7 @@ const BoxComponent: React.FC<BoxProps> = ({
             <p className="mb-2 text-center font-semibold">{shortOverview}</p>
             <ButtonContainer>
               <ButtonStyle
-                href={competitionLink}
+                href="/apply"
                 target="_blank"
                 rel="noopener noreferrer"
                 disabled={!isOpen}
@@ -603,7 +603,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                   Competition Link
                 </ButtonStyle>
                 <ButtonStyle
-                  href={competitionLink}
+                  href="/apply"
                   target="_blank"
                   rel="noopener noreferrer"
                   disabled={!isOpen}
