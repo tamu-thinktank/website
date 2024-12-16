@@ -11,7 +11,11 @@ import {
   AvailabilityMapSchema,
 } from "@/lib/validations/apply";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
-import { getAvailabities, getTargetTeams } from "@/server/db/queries";
+import {
+  getAllApplications,
+  getAvailabities,
+  getTargetTeams,
+} from "@/server/db/queries";
 import sendEmail from "@/server/service/email";
 import CalendarService from "@/server/service/google-calendar";
 import DriveService from "@/server/service/google-drive";
@@ -349,4 +353,7 @@ export const adminRouter = createTRPCRouter({
         throw new Error("Failed to send email: " + (e as Error).message);
       }
     }),
+  getAllApplications: protectedProcedure.query(async () => {
+    return await getAllApplications();
+  }),
 });

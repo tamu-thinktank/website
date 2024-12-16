@@ -1,140 +1,290 @@
-import Container from "@/components/Container";
-import Image from "next/image";
-import Link from "next/link";
+"use client";
 
-export default function Challenges() {
+import React from "react";
+import BoxComponent from "./box_component";
+import Container from "@/components/Container";
+
+const Challenges = () => {
+  const teams = [
+    {
+      teamName: "Daedalus",
+      shortOverview: "Hands-On NASA Research Project",
+      competitionOverview:
+        "Texas Space Grant Consortium (TSGC) offers unique, hands-on challenges sponsored by NASA mentors which rotate each year. We can’t guarantee what you will be working on, but we can guarantee it will be an amazing experience!",
+      duration: "1 Semester",
+      teamSize: "6",
+      admissionTimeline: [
+        { date: "Applications", description: "1/16/25" },
+        { date: "Interviews", description: "1/25/25" },
+        { date: "Acceptance", description: "1/27/25" },
+      ],
+
+      pastTeams: [
+        "Astronaut Tracking System",
+        "Microgravity Water Filtration",
+        "Lunar Cellular Infrastructure",
+      ],
+      mentors: {
+        peer: "Aiden Kampwerth",
+        faculty: "TBD",
+      },
+      competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
+      imageUrl: "/images/Daedalus.png",
+      image: "/images/avatars/aiden.webp",
+      major: "Aerospace",
+      year: "26",
+      description: "About Me",
+      facultyImage: "8742495.png",
+      prize: "$6,000 for 1st place",
+      dtype: "Showcase",
+    },
+    {
+      teamName: "Altas",
+      shortOverview: "Design ThinkTank’s Next-Gen Website",
+      competitionOverview:
+        "ThinkTank is creating a team to overhaul both the frontend and backend of our website. We’re looking to vastly improve the applicant experience as well as enhance the administrative tools ThinkTank needs to run.",
+      duration: "2 Semesters",
+      teamSize: "4-6",
+      admissionTimeline: [
+        { date: "Applications", description: "9/6/24" },
+        { date: "Interviews End", description: "9/15/24" },
+        { date: "Acceptance", description: "9/16/24" },
+      ],
+      researchAreas: [
+        "Full Stack Web Development",
+        "UI/UX Design",
+        "Backend/Database Architecture",
+        "Automation",
+      ],
+      mentors: {
+        peer: "Aiden Kampwerth",
+        faculty: "N/A",
+      },
+      competitionLink:
+        "https://docs.google.com/document/d/1gFVdFCoLfGgvlPvA1qoBKyV9seidLXgtLZyCMtijvHM/edit?usp=drive_link",
+      imageUrl: "/images/Atlas.png",
+      image: "/images/avatars/aiden.webp",
+      major: "Aerospace",
+      year: "26",
+      description: "About Me",
+      facultyImage: "8742495.png",
+      prize: "Potential Research Lab Positions",
+      dtype: "Functional Website",
+    },
+    {
+      teamName: "Nova",
+      shortOverview: "Design NASA’s Next Lunar Base",
+      competitionOverview:
+        "NASA RASC-AL is looking for a research proposal for the design, development, and operation of a Lunar Base on the South Pole of the moon. The base should be self-sustaining by providing goods and services to 3rd party companies while supporting scientific research for future expansion.",
+      duration: "2 Semesters",
+      teamSize: "12-20",
+      admissionTimeline: [
+        { date: "Applications", description: "9/6/24" },
+        { date: "Interviews End", description: "9/15/24" },
+        { date: "Acceptance", description: "9/16/24" },
+      ],
+      researchAreas: [
+        "Architecture",
+        "Construction",
+        "Power Systems",
+        "Communication",
+        "Life Support Systems",
+        "In-Situ Resource Utilization (ISRU)",
+        "Logistics",
+        "And many more…",
+      ],
+      mentors: {
+        peer: "Moksh Shah",
+        faculty: "Dr. Arash Noshadravan",
+      },
+      competitionLink: "https://rascal.nianet.org",
+      imageUrl: "/images/Nova.jpg",
+      image: "/images/avatars/moksh.webp",
+      major: "Aerospace",
+      year: "27",
+      description: "About Me",
+      facultyImage: "/images/Noshadravan_Arash.jpg",
+      field: "Civil Engineering",
+      interest:
+        "Materials and Infrastructure \n Life-cycle Assessment and Optimization \n Multiscale Modeling \n Computational Mechanics",
+      prize: "$6,500 travel stipend for finalists",
+      dtype: "Proposal",
+    },
+    {
+      teamName: "Servus",
+      shortOverview:
+        "Design a Fully Autonomous Maintenance Vehicle for the Moon",
+      competitionOverview:
+        "NASA RASC-AL is also looking for a proposal for a maintenance rover that can service and preserve the permanent lunar base that NASA aims to establish. The rover shall weigh no more than 500kg and perform critical tasks to support the base such as inspecting systems, swapping payloads, and connecting umbilicals.",
+      duration: "2 Semesters",
+      teamSize: "12-20",
+      admissionTimeline: [
+        { date: "Applications", description: "9/6/24" },
+        { date: "Interviews End", description: "9/15/24" },
+        { date: "Acceptance", description: "9/16/24" },
+      ],
+      researchAreas: [
+        "Mechanical systems",
+        "Power systems",
+        "Communications, Navigation, and Autonomy",
+        "Robotic applications",
+      ],
+      mentors: {
+        peer: "Moksh Shah",
+        faculty: "Dr. Sivakumar Rathinam",
+      },
+      competitionLink: "https://rascal.nianet.org",
+      imageUrl: "/images/Servus.png",
+      image: "/images/avatars/moksh.webp",
+      major: "Aerospace",
+      year: "27",
+      description: "About Me",
+      facultyImage: "/images/rathinam-sivakumar.jpg",
+      field: "Mechanical Engineering",
+      interest:
+        "Autonomous Vehicles\n Combinatorial Optimization\nVision-based Control\nMotion Planning",
+      prize: "$6,500 travel stipend for finalists",
+      dtype: "Proposal",
+    },
+
+    {
+      teamName: "Solara",
+      shortOverview: "Aviation Solutions for Agriculture",
+      competitionOverview:
+        "BlueSkies is looking for a conceptual aviation system meant to support the agricultural industry in some form. The solution is to be tailored to improving production, efficiency, environmental impact, and the resilience of agriculture.",
+      duration: "2 Semesters",
+      teamSize: "6",
+      admissionTimeline: [
+        { date: "Applications", description: "9/6/24" },
+        { date: "Interviews End", description: "9/15/24" },
+        { date: "Acceptance", description: "9/16/24" },
+      ],
+      researchAreas: [
+        "Theoretical aviation solutions",
+        "Aeronautical interactions with environment",
+        "Current innovations in agricultural industry",
+        "Product development and deployment",
+        "Applications of high-potential technologies",
+      ],
+      mentors: {
+        peer: "Arjun Sawhney",
+        faculty: "Dr. Matt Elliott",
+      },
+      competitionLink: "https://blueskies.nianet.org/competition/",
+      imageUrl: "/images/Solara.jpg",
+      image: "/images/avatars/arjun.webp",
+      major: "Aerospace",
+      year: "27",
+      description: "About Me",
+      facultyImage: "/Elliott_Matt-2022.jpg",
+      field: "Mechanical Engineering",
+      prize: "$8,000 travel stipend for finalists",
+      dtype: "Proposal",
+    },
+
+    {
+      teamName: "Voltaris",
+      shortOverview: "Model Renewable Energy Systems",
+      competitionOverview:
+        "The U.S. Dept. of Energy is looking for student teams to take the role of solar developers to conceptualize solar energy systems for a campus. Teams are to consider the community in which they are assigned and design an effective and reliable solar-powered energy management system.",
+      duration: "2 Semesters",
+      teamSize: "12-14",
+      admissionTimeline: [
+        { date: "Applications", description: "9/6/24" },
+        { date: "Interviews End", description: "9/15/24" },
+        { date: "Acceptance", description: "9/16/24" },
+      ],
+      researchAreas: [
+        "Integration of renewable energy systems",
+        "Power & energy focused electrical engineering",
+        "Urban planning and civil engineering",
+        "Project-based finance and budget work",
+      ],
+      mentors: {
+        peer: "Arjun Sawhney",
+        faculty: "Dr. Stacey Lyle",
+      },
+      competitionLink: "https://www.energy.gov/eere/solar/solar-district-cup",
+      imageUrl: "/images/Voltaris.jpg",
+      image: "/images/avatars/arjun.webp",
+      major: "Aerospace",
+      year: "27",
+      description: "About Me",
+      facultyImage: "images/Lyle_Stacey.jpg",
+      field: "Civil Engineering",
+      prize: "N/A",
+      dtype: "Proposal",
+    },
+    {
+      teamName: "Orion",
+      shortOverview:
+        "Design an extensive mission for Mars’ subsurface layer, surface, and atmosphere.",
+      competitionOverview:
+        "AIAA has asked research teams to develop an extensive plan for a mission to Mars. The teams will build off of previous relevant data to create CAD models and trade studies, as well as their understanding of important subjects such as Orbital Mechanics or Propulsion, to design this research mission successfully. The research will target Mars’ subsurface layer, surface, and atmosphere.",
+      duration: "2 Semesters",
+      teamSize: "10",
+      admissionTimeline: [
+        { date: "Applications", description: "9/6/24" },
+        { date: "Interviews End", description: "9/15/24" },
+        { date: "Acceptance", description: "9/16/24" },
+      ],
+      researchAreas: [
+        "Orbital Mechanics",
+        "Structural and Thermal Analysis",
+        "Power systems",
+        "Payload design",
+        "Communications and data handling",
+        "Logisitics for space missions",
+      ],
+      mentors: {
+        peer: "Payas Joshi",
+        faculty: "Dr. James Thomas",
+      },
+      competitionLink:
+        "https://www.aiaa.org/get-involved/students-educators/Design-Competitions#design-competition-rfps",
+      imageUrl: "03Qi7SZgiYjO1OLFnklCfog-3.webp",
+      image: "/images/payas.webp",
+      major: "Industrial",
+      year: "27",
+      description: "About Me",
+      facultyImage: "Thomas_James.jpg",
+      field: "Mechanical Engineering",
+      interest:
+        "Autonomous Vehicles\n Combinatorial Optimization\nVision-based Control\nMotion Planning",
+      prize: "$750 for 1st place",
+      dtype: "Proposal",
+    },
+  ];
+
   return (
     <Container>
-      <div className="mb-12 justify-between space-y-2 pt-24 text-center">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-white md:text-4xl">
-          Fall 2024 Student Design Challenges
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300 lg:mx-auto lg:w-6/12">
-          The Official TAMU ThinkTank Fall 2024 Challenge Suite
-        </p>
-      </div>
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://blueskies.nianet.org/competition/" passHref>
-              <Image
-                src="https://blueskies.nianet.org/wp-content/uploads/BlueSkies_Logo_lg-1.png"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              NASA'S Gateways to Blue Skies Competition
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              Blue Skies expands engagement between universities and NASA's
-              University Innovation Project, industry, and government partners
-              by providing an opportunity for multi-disciplinary teams of
-              students from all academic levels (i.e., freshman, sophomore,
-              junior, senior, and graduate) to tackle significant challenges and
-              opportunities for the aviation industry through a new project
-              theme each year. The competition is guided by a push toward new
-              technologies as well as environmentally and socially conscious
-              aviation.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://www.herox.com/SolarDistrictCup" passHref>
-              <Image
-                src="https://d253pvgap36xx8.cloudfront.net/editor_uploads/252917/2023/06/28/SDC-logo-color-horizontal.jpg"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              Solar District Cup
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              The Solar District Cup is a collegiate competition that challenges
-              multidisciplinary student teams to design and model distributed
-              energy systems for a mixed-use campus or district—groups of
-              buildings served by a common electrical distribution feeder. The
-              competition engages students across disciplines—engineering,
-              finance, urban planning, sustainability, communications, and
-              more—to reimagine how energy is generated, managed, and used in a
-              district.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link href="https://rascal.nianet.org/" passHref>
-              <Image
-                src="https://www.nasa.gov/wp-content/uploads/2023/03/2023-rasc-al-banner-images.png?w=1500"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              RASC-AL
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              RASC-AL competitions fuel innovation for aerospace systems
-              concepts, analogs, and technology prototyping by bridging gaps
-              through university engagement. RASC-AL is open to undergraduate
-              and graduate university-level students studying fields with
-              applications to human space exploration (i.e., aerospace,
-              bio-medical, electrical, and mechanical engineering; and life,
-              physical, and computer sciences). RASC-AL projects allow students
-              to incorporate their coursework into real aerospace design
-              concepts and work together in a team environment.
-              Interdisciplinary teams are encouraged.
-            </p>
-          </div>
-        </div>
-        <div className="group rounded-3xl border border-gray-100 bg-white bg-opacity-50 p-6 shadow-2xl shadow-gray-600/10 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none sm:p-8">
-          <div className="relative overflow-hidden rounded-xl">
-            <Link
-              href="https://www.aiaa.org/get-involved/students-educators/Design-Competitions"
-              passHref
-            >
-              <Image
-                src="https://www.aiaa.org/images/default-source/site-design/logos/logo.png?sfvrsn=59ffaa92_4"
-                alt="art cover"
-                width="1000"
-                height="1"
-                className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-          <div className="relative mt-6">
-            <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-              AIAA Design Competitions
-            </h3>
-            <p className="mb-8 mt-6 text-gray-600 dark:text-gray-300">
-              AIAA design competitions allow students to perform theoretical
-              work and gain real-world insight into the design process. Whether
-              students are designing an aircraft, engine, or space vehicle, they
-              will go through all the primary design steps involved in
-              determining a solution to a Request for Proposal (RFP). This
-              includes determining a hypothetical solution, testing the
-              hypothesis, evaluating its effectiveness, possibly doing some cost
-              analysis, and finally preparing a report that will be submitted in
-              response to the RFP. These responses are reviewed by experts in
-              the field who will provide constructive responses to the students.
-            </p>
-          </div>
-        </div>
-      </div>
+      {teams.map((team, index) => (
+        <BoxComponent
+          key={index}
+          teamName={team.teamName}
+          shortOverview={team.shortOverview}
+          competitionOverview={team.competitionOverview}
+          duration={team.duration}
+          teamSize={team.teamSize}
+          admissionTimeline={team.admissionTimeline}
+          researchAreas={team.researchAreas}
+          pastTeams={team.pastTeams}
+          mentors={team.mentors}
+          competitionLink={team.competitionLink}
+          imageUrl={team.imageUrl}
+          image={team.image}
+          major={team.major}
+          year={team.year}
+          description={team.description}
+          facultyImage={team.facultyImage}
+          field={team.field}
+          interest={team.interest}
+          prize={team.prize}
+          dtype={team.dtype}
+        />
+      ))}
     </Container>
   );
-}
+};
+
+export default Challenges;

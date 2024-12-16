@@ -60,6 +60,33 @@ export default function PersonalInfo() {
       />
       <FormField
         control={form.control}
+        name="personal.preferredName"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {q.personal.preferredName}{" "}
+                  <span className="text-red-500"></span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Joe"
+                    {...field}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
         name="personal.email"
         render={({ field }) => (
           <FormItem>

@@ -1,103 +1,192 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import Container from "./Container";
+import { useEffect, useState } from "react";
+import { Menu, X } from "lucide-react";
+import { Poppins, DM_Sans } from "next/font/google";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  variable: "--font-poppins",
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-dm-sans",
+});
 
 export default function Header() {
+  const [showNavbar, setShowNavbar] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY) {
+        setShowNavbar(false);
+      } else {
+        setShowNavbar(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [lastScrollY]);
+
+  const handleLinkClick = async (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    href: string,
+    viewportMultiplier?: number,
+  ) => {
+    e.preventDefault();
+
+    const targetPath = href.split("#")[0] || "/";
+
+    if (targetPath === pathname && viewportMultiplier !== undefined) {
+      scrollToPosition(viewportMultiplier);
+    } else {
+      await router.push(href);
+      if (viewportMultiplier !== undefined) {
+        setTimeout(() => {
+          scrollToPosition(viewportMultiplier);
+        }, 500); // Increased from 300 to 500ms
+      }
+    }
+  };
+
+  const scrollToPosition = (viewportMultiplier: number) => {
+    const isMobile = window.innerWidth < 768; // Assuming 768px as the mobile breakpoint
+    const scrollMultiplier = isMobile
+      ? viewportMultiplier * 1.5
+      : viewportMultiplier;
+    window.scrollTo({
+      top: window.innerHeight * scrollMultiplier,
+      behavior: "smooth",
+    });
+  };
+
   return (
-    <header>
-      <nav className="absolute z-10 w-full">
+    <header className={`${poppins.variable} ${dmSans.variable} font-sans`}>
+      <nav
+        className={`navbar ${showNavbar ? "translate-y-0" : "-translate-y-full"}`}
+      >
         <Container>
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-2 md:gap-0 md:py-4">
-            <input
-              aria-hidden="true"
-              type="checkbox"
-              name="toggle_nav"
-              id="toggle_nav"
-              className="peer hidden"
-            />
+          <div className="navbar-content">
             <div className="relative z-20 flex w-full justify-between md:px-0 lg:w-max">
-              <a href="/#home" className="flex items-center space-x-2">
-                <Image
-                  src="/ttt.webp"
-                  alt="art cover"
-                  loading="lazy"
-                  width={0}
-                  height={0}
-                  className="h-auto w-10 object-cover object-top transition duration-500 group-hover:scale-105"
-                />
-                <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                  TAMU ThinkTank
-                </span>
-              </a>
+              <div className="flex items-center space-x-2">
+                <Link href="/">
+                  <Image
+                    src="/ttt.svg"
+                    alt="art cover"
+                    width={100}
+                    height={100}
+                    className="navbar-logo"
+                  />
+                </Link>
+              </div>
 
               <div className="relative flex max-h-10 items-center lg:hidden">
-                <label
-                  htmlFor="toggle_nav"
-                  id="hamburger"
-                  className="relative  -mr-6 p-6"
-                >
-                  <div
-                    aria-hidden="true"
-                    id="line"
-                    className="m-auto h-0.5 w-5 rounded bg-sky-900 transition duration-300 dark:bg-gray-300"
-                  ></div>
-                  <div
-                    aria-hidden="true"
-                    id="line2"
-                    className="m-auto mt-2 h-0.5 w-5 rounded bg-sky-900 transition duration-300 dark:bg-gray-300"
-                  ></div>
-                </label>
+                <Sheet>
+                  <SheetTrigger className="p-2">
+                    <Menu className="h-6 w-6 text-gray-300" />
+                  </SheetTrigger>
+                  <SheetContent
+                    side="right"
+                    className="w-full border-gray-800 bg-[#0C0D0E]"
+                  >
+                    <div className="flex h-full flex-col gap-8 pt-16">
+                      <a
+                        href="/about"
+                        onClick={(e) => handleLinkClick(e, "/about")}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        About
+                      </a>
+                      <a
+                        href="/challenges"
+                        onClick={(e) => handleLinkClick(e, "/challenges")}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        Challenges
+                      </a>
+                      <a
+                        href="/"
+                        onClick={(e) => handleLinkClick(e, "/", 2.55)}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        Articles
+                      </a>
+                      <a
+                        href="/about"
+                        onClick={(e) => handleLinkClick(e, "/about", 6.3)}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        FAQ
+                      </a>
+                      <a
+                        href="/apply"
+                        onClick={(e) => handleLinkClick(e, "/apply")}
+                        className="inline-flex h-10 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-200"
+                      >
+                        Join Us
+                      </a>
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
             </div>
-            <div
-              aria-hidden="true"
-              className="fixed inset-0 z-10 h-screen w-screen origin-bottom scale-y-0 bg-white/70 backdrop-blur-2xl transition duration-500 peer-checked:origin-top peer-checked:scale-y-100 dark:bg-gray-900/70 lg:hidden"
-            ></div>
-            <div
-              className="invisible absolute left-0 top-full z-20 w-full origin-top translate-y-1 scale-95 flex-col flex-wrap justify-end gap-6 rounded-3xl border border-gray-100  bg-white p-8 opacity-0 shadow-2xl shadow-gray-600/10 transition-all duration-300 
-                            peer-checked:visible peer-checked:scale-100 peer-checked:opacity-100 dark:border-gray-700 dark:bg-gray-800 dark:shadow-none lg:visible lg:relative lg:flex lg:w-7/12 lg:translate-y-0 lg:scale-100 lg:flex-row lg:items-center lg:gap-0
-                            lg:border-none lg:bg-transparent lg:p-0 lg:opacity-100 
-                            lg:shadow-none lg:peer-checked:translate-y-0 lg:dark:bg-transparent"
-            >
+
+            <div className="navbar-menu">
               <div className="w-full text-gray-600 dark:text-gray-300 lg:w-auto lg:pr-4 lg:pt-0">
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
                     <a
-                      href="/#overview"
-                      className="block transition hover:text-primary md:px-4"
+                      href="/about"
+                      className="navbar-link"
+                      onClick={(e) => handleLinkClick(e, "/about")}
                     >
-                      <span>Overview</span>
+                      <span>About</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="/#travel"
-                      className="block transition hover:text-primary md:px-4"
+                      href="/challenges"
+                      className="navbar-link"
+                      onClick={(e) => handleLinkClick(e, "/challenges")}
                     >
-                      <span>Travel</span>
+                      <span>Challenges</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="/#officers"
-                      className="block transition hover:text-primary md:px-4"
-                    >
-                      <span>Officers</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="/#articles"
-                      className="block transition hover:text-primary md:px-4"
+                      href="/"
+                      className="navbar-link"
+                      onClick={(e) => handleLinkClick(e, "/", 2.75)}
                     >
                       <span>Articles</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="challenges"
-                      className="block transition hover:text-primary md:px-4"
+                      href="/about"
+                      className="navbar-link"
+                      onClick={(e) => handleLinkClick(e, "/about", 8)}
                     >
-                      <span>Challenges</span>
+                      <span>FAQ</span>
                     </a>
                   </li>
                 </ul>
@@ -105,12 +194,11 @@ export default function Header() {
 
               <div className="mt-12 lg:mt-0">
                 <a
-                  href="apply"
-                  className="relative flex h-9 w-full items-center justify-center px-4 before:absolute before:inset-0 before:rounded-full before:bg-primary before:transition before:duration-300 hover:before:scale-105 active:duration-75 active:before:scale-95 dark:before:bg-primary-foreground sm:w-max"
+                  href="/apply"
+                  className="navbar-button"
+                  onClick={(e) => handleLinkClick(e, "/apply")}
                 >
-                  <span className="relative text-sm font-semibold text-white">
-                    Apply
-                  </span>
+                  <span className="navbar-button-text">Apply</span>
                 </a>
               </div>
             </div>
