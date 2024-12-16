@@ -9,7 +9,7 @@
     --card: 0 0% 5%;
     --card-foreground: 0 0% 5%;
     --popover: 0 0% 5%;
-    
+
     --primary: 0 0% 5%;
     --primary-foreground: 0 0% 5%;
     --secondary: 210 40% 96.1%;
@@ -22,7 +22,7 @@
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    
+
     --radius: 0.5rem;
   }
 
@@ -70,7 +70,7 @@
 }
 
 .navbar-logo {
-  @apply w-auto h-8 object-cover object-top transition duration-500 group-hover:scale-105;
+  @apply h-8 w-auto object-cover object-top transition duration-500 group-hover:scale-105;
 }
 
 .navbar-menu {
@@ -160,31 +160,14 @@
   z-index: 3000;
 }
 
-@media (max-width: 600px) {
-  .responsive-title {
-    font-size: 4em;
-  }
-}
-
-@media (min-width: 601px) and (max-width: 1023px) {
-  .responsive-title {
-    font-size: 5em;
-  }
-}
-
-@media (min-width: 1024px) {
-  .responsive-title {
-    font-size: 6em;
-  }
-}
 @media (max-width: 640px) {
   .mobile-lower {
     top: -12.5%;
   }
 }
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  background: #0C0D0E; /* Set the desired background color */
-  
+  background: #0c0d0e; /* Set the desired background color */
 }
