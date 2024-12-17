@@ -12,6 +12,7 @@ export const q: Questions = {
   personal: {
     title: "Personal Information",
     fullName: "Full Name",
+    preferredName: "Preferred Name",
     email: "TAMU Email",
     uin: "UIN",
     altEmail: "Additional Email Contact",
@@ -50,33 +51,8 @@ export const challenges: {
   link: string;
 }[] = [
   {
-    id: Challenge.AIAA,
-    label: "Mars Exploration Surveyors to Enable Human Exploration (AIAA)",
-    link: "https://www.aiaa.org/docs/default-source/uploadedfiles/membership-and-communities/university-students/design-competitions/2024-25-aiaa-undergraduate-team-space-design-competition.pdf",
-  },
-  {
-    id: Challenge.Blue_Skies,
-    label: "Environmental Monitoring Aircraft (Blue Skies)",
-    link: "https://blueskies.nianet.org/competition/",
-  },
-  {
-    id: Challenge.RASCAL_1,
-    label: "Scalable Lunar Infrastructure (RASC-AL)",
-    link: "https://rascal.nianet.org/wp-content/uploads/2025-RASC-AL-Competition-Guidelines.pdf",
-  },
-  {
-    id: Challenge.RASCAL_2,
-    label: "Lunar Servicing Robot (RASC-AL)",
-    link: "https://rascal.nianet.org/wp-content/uploads/2025-RASC-AL-Competition-Guidelines.pdf",
-  },
-  {
-    id: Challenge.Solar_District_Group,
-    label: "University Solar Grid (Solar District Cup)",
-    link: "https://www.herox.com/SolarDistrictCup",
-  },
-  {
-    id: Challenge.Website,
-    label: "Website Development Team",
-    link: "https://tamuthinktank.org/",
+    id: Challenge.TSGC,
+    label: "Texas Space Grant Consortium Design Challenge (TSGC)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
   },
 ];
