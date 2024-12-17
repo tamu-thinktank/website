@@ -1,5 +1,7 @@
 import Image from "next/image";
 import Container from "./Container";
+import Link from 'next/link';
+
 
 export default function Header() {
   return (
@@ -97,7 +99,9 @@ export default function Header() {
                       href="challenges"
                       className="block transition hover:text-primary md:px-4"
                     >
-                      <span>Challenges</span>
+                      <span>Design Challanges</span>
+                      <Link href="/design-challenges" className="block transition hover:text-primary md:px-4"> </Link>
+
                     </a>
                   </li>
                 </ul>

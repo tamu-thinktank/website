@@ -9,6 +9,7 @@ import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { Providers } from "./providers";
 
+
 const font = Inter({
   subsets: ["latin"],
 });
@@ -56,16 +57,19 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Retrieve cookies asynchronously
+  const cookieValue = cookies().toString();
+
   return (
     <html lang="en">
       <body className={`${font.className} bg-gray-900`}>
         <Providers>
-          <TRPCReactProvider cookies={cookies().toString()}>
+          <TRPCReactProvider cookies={cookieValue}>
             {children}
             <Toaster />
             <Sonner />
