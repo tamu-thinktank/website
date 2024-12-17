@@ -2,7 +2,6 @@
 import React, { useEffect } from "react";
 import Card from "@/components/Card";
 import { projects } from "@/data";
-import Lenis from "@studio-freight/lenis";
 
 interface ScrollTarget {
   section: string;
@@ -11,14 +10,6 @@ interface ScrollTarget {
 
 export default function CardStack() {
   useEffect(() => {
-    const lenis = new Lenis();
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
 
     // Check for stored scroll target with type safety
     const scrollData = sessionStorage.getItem("scrollTarget");
