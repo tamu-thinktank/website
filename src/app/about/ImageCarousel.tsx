@@ -1,13 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel";
 import { useScroll, useTransform, motion } from "framer-motion";
+import Autoplay from "embla-carousel-autoplay"
 
 export default function ImageCarousel() {
   const orgImages = [
@@ -23,7 +26,6 @@ export default function ImageCarousel() {
     "/images/imageCarouselPhotos/image12.webp",
   ];
 
-  const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef(null);
 
   const { scrollYProgress } = useScroll({
@@ -34,22 +36,6 @@ export default function ImageCarousel() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1]);
   const yOffset = useTransform(scrollYProgress, [0, 0.5], ["0%", "10%"]);
 
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev === 0 ? orgImages.length - 1 : prev - 1));
-  };
-
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev === orgImages.length - 1 ? 0 : prev + 1));
-  };
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 3500);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div
       ref={containerRef}
@@ -59,11 +45,21 @@ export default function ImageCarousel() {
         className="sticky top-0 h-screen w-full overflow-hidden"
         style={{ scale, y: yOffset }}
       >
-        <Carousel className="h-full w-full">
-          <CarouselContent
-            className="flex transition-transform duration-1000 ease-in-out"
-            style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-          >
+        <Carousel
+          className="h-full w-full"
+          plugins={[
+            Autoplay({
+              delay: 3500,
+              stopOnHover: false,
+              stopOnInteraction: false,
+            }),
+          ]}
+          opts={{
+            loop: true,
+            align: "start",
+          }}
+        >
+          <CarouselContent className="flex">
             {orgImages.map((image, index) => (
               <CarouselItem
                 key={index}
@@ -78,21 +74,19 @@ export default function ImageCarousel() {
             ))}
           </CarouselContent>
 
-          <button
-            onClick={prevSlide}
-            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2 text-3xl text-white transition-all duration-300 hover:bg-opacity-75"
+          <CarouselPrevious
             aria-label="Previous slide"
+            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2 text-white transition-all duration-300 hover:bg-opacity-75"
           >
             <ChevronLeft size={24} />
-          </button>
+          </CarouselPrevious>
 
-          <button
-            onClick={nextSlide}
-            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2 text-3xl text-white transition-all duration-300 hover:bg-opacity-75"
+          <CarouselNext
             aria-label="Next slide"
+            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2 text-white transition-all duration-300 hover:bg-opacity-75"
           >
             <ChevronRight size={24} />
-          </button>
+          </CarouselNext>
         </Carousel>
       </motion.div>
     </div>

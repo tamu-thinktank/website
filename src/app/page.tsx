@@ -8,7 +8,6 @@ import AppFooter from "@/components/AppFooter";
 import AppHeader from "@/components/AppHeader";
 import SmoothScroll from "@/components/SmoothScroll";
 import type { NextPage } from "next";
-import ApplyBanner from "@/components/ApplyBanner";
 
 const Home: NextPage = () => {
   return (
