@@ -22,11 +22,11 @@ export default function Card({ i, title, description, src, color }: CardProps) {
   return (
     <div
       ref={container}
-      className="sticky top-0 flex h-screen items-center justify-center"
+      className="sticky min-h-[400px] top-1/2 transform -translate-y-1/2 flex items-center justify-center mt-[50vh]"
     >
       <div
         style={{ backgroundColor: color, top: `calc(${i * 50}px)` }}
-        className="transform-origin-top relative flex min-h-[400px] w-[90vw] max-w-6xl flex-col rounded-[25px] px-[20px] py-[5px]"
+        className="transform-origin-top relative flex min-h-[400px] w-[90vw] max-w-6xl flex-col px-[20px] py-[0px]"
       >
         {i !== 0 && (
           <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
