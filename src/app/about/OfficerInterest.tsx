@@ -15,9 +15,9 @@ const OfficerInterest = () => {
       </p>
       <a
         href="#"
-        className="rounded-full border border-white px-4 py-2 text-white transition duration-300 ease-in-out hover:bg-white hover:text-black"
+        className="rounded-full border border-white px-4 py-2 text-white transition duration-300 ease-in-out hover:bg-white hover:scale-105 hover:text-black"
       >
-        Apply Now ›
+        Apply Now
       </a>
       <div style={{ padding: "10px" }}></div>
     </div>
