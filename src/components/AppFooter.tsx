@@ -87,13 +87,13 @@ const Footer: React.FC = () => {
         <div className="mt-auto flex w-full flex-col items-start justify-between lg:flex-row lg:items-end">
           <div className="flex w-full flex-col items-start lg:items-start">
             <div className="mb-4 flex w-full items-center justify-start lg:mb-0">
-              <div className="relative flex items-center lg:-ml-16">
+              <div className="relative flex items-center lg:-ml-25">
                 <div className="relative">
-                  <div className="absolute -left-6 -top-10  origin-bottom-right -rotate-90 transform text-sm font-bold text-[#949494] lg:-left-28 lg:-top-20 lg:text-3xl">
+                  <div className="absolute -left-10 -top-16  origin-bottom-right -rotate-90 transform text-2xl font-bold text-[#949494] xl:ml-5 lg:ml-5 lg:-left-20 lg:-top-20 lg:text-3xl">
                     TAMU
                   </div>
                 </div>
-                <h2 className="font-poppins ml-4 text-[3.2rem] font-bold text-[#949494] lg:left-20 lg:ml-4 lg:-translate-x-8 lg:text-8xl">
+                <h2 className="font-poppins ml-7 text-[5rem] font-bold text-[#949494] lg:ml-7 xl:ml-7 lg:text-8xl">
                   ThinkTank
                 </h2>
               </div>
