@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import Card from "@/components/Card";
 import { projects } from "@/data";
-import Lenis from "@studio-freight/lenis";
+import Lenis from "lenis";
 
 interface ScrollTarget {
   section: string;
