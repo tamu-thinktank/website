@@ -191,13 +191,13 @@ export default function MyComponent() {
 
                 <div
                   ref={scrollRef}
-                  className="inline-block whitespace-nowrap"
+                  className="flex whitespace-nowrap space-x-8 px-6"
                   style={{ willChange: "transform" }}
                 >
                   {[...scrollItems, ...scrollItems].map((item, index) => (
                     <span
                       key={index}
-                      className="font-dm-sans inline-block px-4 text-sm font-semibold text-gray-300 sm:px-8 sm:text-base lg:text-lg xl:text-xl"
+                      className="font-dm-sans text-3xl font-semibold text-gray-300 sm:text-lg md:text-2xl lg:text-3xl xl:text-3xl"
                     >
                       {item}
                     </span>
