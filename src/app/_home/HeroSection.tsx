@@ -82,33 +82,39 @@ export default function MyComponent() {
   }, []);
 
   useEffect(() => {
-    const arrow = arrowRef.current;
-    if (!arrow) return;
+  const arrow = arrowRef.current;
+  const container = containerRef.current;
+  const carousel = scrollRef.current;
 
-    const handleScroll = () => {
-      const container = containerRef.current;
-      if (!container) return;
+  if (!arrow || !container || !carousel) return;
 
-      const containerBottom = container.getBoundingClientRect().bottom;
-      const viewportHeight = window.innerHeight;
+  const handleScroll = () => {
+    const containerRect = container.getBoundingClientRect();
+    const carouselRect = carousel.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
 
-      if (containerBottom < viewportHeight) {
-        arrow.style.position = "absolute";
-        arrow.style.bottom = "8px";
-      } else {
-        arrow.style.position = "fixed";
-        arrow.style.bottom = "32px";
-      }
-    };
+    if (containerRect.bottom > viewportHeight) {
+      arrow.style.position = "fixed";
+      arrow.style.bottom = "32px";
+      arrow.style.left = "50%";
+      arrow.style.transform = "translateX(-50%)";
+    }
+    else if (carouselRect.bottom <= viewportHeight) {
+      arrow.style.position = "absolute";
+      arrow.style.bottom = "8px"; 
+      arrow.style.left = "50%";
+      arrow.style.transform = "translateX(-50%)";
+    }
+  };
 
-    window.addEventListener("scroll", handleScroll);
-    window.addEventListener("resize", handleScroll);
+  window.addEventListener("scroll", handleScroll);
+  window.addEventListener("resize", handleScroll);
 
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
-    };
-  }, []);
+  return () => {
+    window.removeEventListener("scroll", handleScroll);
+    window.removeEventListener("resize", handleScroll);
+  };
+}, []);
 
   const scrollToBottom = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
