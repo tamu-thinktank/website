@@ -7,11 +7,16 @@ import ChallengesHeader from "./ChallengesHeader";
 const Home: NextPage = () => {
   return (
     <>
-      <AppHeader />
-      <main className="mb-40 space-y-20">
-        <Challenges />
-      </main>
-      <AppFooter />
+      <SmoothScroll>
+        <div className="bg-[#0C0D0E]">
+          <main className="bg mb-40 space-y-20">
+            <ChallengesHeader />
+            <AppHeader />
+            <Challenges />
+          </main>
+          <AppFooter />
+        </div>
+      </SmoothScroll>
     </>
   );
 };

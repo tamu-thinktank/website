@@ -121,7 +121,7 @@ export default function Header() {
                         onClick={(e) => handleLinkClick(e, "/challenges")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
-                        Challenges
+                        Design Challenges
                       </a>
                       <a
                         href="/"
@@ -168,7 +168,7 @@ export default function Header() {
                       className="navbar-link"
                       onClick={(e) => handleLinkClick(e, "/challenges")}
                     >
-                      <span>Challenges</span>
+                      <span>Competitions</span>
                     </a>
                   </li>
                   <li>
