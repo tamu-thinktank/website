@@ -11,15 +11,6 @@ interface ScrollTarget {
 
 export default function CardStack() {
   useEffect(() => {
-    const lenis = new Lenis();
-
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
-
-    requestAnimationFrame(raf);
-
     // Check for stored scroll target with type safety
     const scrollData = sessionStorage.getItem("scrollTarget");
     if (scrollData) {
