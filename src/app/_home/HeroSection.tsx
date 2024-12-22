@@ -3,10 +3,8 @@
 import Link from "next/link";
 import Container from "../../components/Container";
 import { useRef, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
 import {
   SiDiscord,
-  SiFacebook,
   SiInstagram,
   SiLinkedin,
 } from "@icons-pack/react-simple-icons";
@@ -22,6 +20,7 @@ const scrollItems = [
   "Faculty Mentors ",
   "Professional Presentations",
 ];
+
 const TAMUlogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -66,7 +65,6 @@ const socialLinks = [
 
 export default function MyComponent() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const arrowRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -96,22 +94,19 @@ export default function MyComponent() {
   }, []);
 
   useEffect(() => {
-    const arrow = arrowRef.current;
-    if (!arrow) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     const handleScroll = () => {
-      const container = containerRef.current;
-      if (!container) return;
-
       const containerBottom = container.getBoundingClientRect().bottom;
       const viewportHeight = window.innerHeight;
 
       if (containerBottom < viewportHeight) {
-        arrow.style.position = "absolute";
-        arrow.style.bottom = "8px";
+        container.classList.add("absolute");
+        container.classList.remove("fixed");
       } else {
-        arrow.style.position = "fixed";
-        arrow.style.bottom = "32px";
+        container.classList.add("fixed");
+        container.classList.remove("absolute");
       }
     };
 
@@ -142,22 +137,22 @@ export default function MyComponent() {
 
       <div className="flex min-h-screen items-center justify-center py-5 md:py-12">
         <Container>
-          <div className=" relative mx-auto flex flex-col justify-center overflow-visible pt-0 sm:pt-16">
+          <div className="landing-page-container relative mx-auto flex flex-col justify-center overflow-visible pt-0 sm:pt-16">
             <div className="mx-auto w-full text-center lg:w-4/5 xl:w-3/4 2xl:w-2/3">
               <div className="relative pt-5 sm:pt-20">
-                <h1 className="font-poppins relative z-[9999] mb-1 w-full bg-gradient-to-r from-white to-[#617B7F] bg-clip-text text-[7.2em] font-semibold leading-relaxed text-transparent sm:text-[4em] md:text-[5em] lg:text-[6em]">
+                <h1 className="font-poppins relative z-[3] mb-2 w-full bg-gradient-to-r from-white to-[#617B7F] bg-clip-text pb-2 text-5xl font-semibold leading-[1.2] text-transparent sm:text-6xl md:text-7xl lg:text-[5em]">
                   Empowering
                 </h1>
-                <h2 className="font-poppins relative z-[9999] mb-1 mt-[-0.2em] w-full whitespace-nowrap bg-gradient-to-r from-white to-gray-500 bg-clip-text text-[7em] font-semibold leading-relaxed text-transparent sm:text-[4em] md:text-[5em] lg:text-[6em]">
+                <h2 className="font-poppins relative z-[3] mb-1 mt-1 w-full whitespace-nowrap bg-gradient-to-r from-white to-gray-500 bg-clip-text pb-2 text-5xl font-semibold leading-[1.2] text-transparent sm:text-6xl md:text-7xl lg:text-[5em]">
                   Future Engineers
                 </h2>
               </div>
 
-              <div className="space-y-0">
-                <p className="font-dm-sans mx-auto max-w-3xl text-[2em] text-[#B8B8B8] sm:text-[1.5em]">
+              <div className="mt-4 space-y-2 sm:mt-4 sm:space-y-0">
+                <p className="font-dm-sans mx-auto mb-1 max-w-3xl text-xl text-[#B8B8B8] sm:mb-2 sm:text-2xl lg:text-[1.5em]">
                   From Potential to Professional
                 </p>
-                <p className="font-dm-sans mx-auto mb-1 max-w-3xl text-[2em] text-[#B8B8B8] sm:mb-8 sm:text-[1.5em]">
+                <p className="font-dm-sans mx-auto mb-2 max-w-3xl text-xl text-[#B8B8B8] sm:mb-4 sm:text-2xl lg:text-[1.5em]">
                   Start Your Journey with ThinkTank
                 </p>
               </div>
@@ -165,14 +160,14 @@ export default function MyComponent() {
               <div className="mb-8 flex flex-col items-center gap-y-4 pt-8 sm:mb-16 sm:flex-row sm:justify-center sm:gap-x-6">
                 <Link
                   href="/apply"
-                  className="group relative flex h-20 w-[90%] max-w-[23rem] items-center justify-center rounded-full bg-primary px-7 text-2xl font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
+                  className="group relative flex h-14 w-full max-w-[20rem] items-center justify-center rounded-full bg-primary px-7 text-lg font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Apply
                 </Link>
                 <a
                   href="#"
                   onClick={scrollToBottom}
-                  className="flex h-20 w-[90%] max-w-[23rem] items-center justify-center rounded-full border-2 border-white bg-transparent px-7 text-2xl font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
+                  className="flex h-14 w-full max-w-[20rem] items-center justify-center rounded-full border-2 border-white bg-transparent px-7 text-lg font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Contact Us
                 </a>
@@ -188,7 +183,7 @@ export default function MyComponent() {
                     className="transform text-gray-300 transition-all duration-300 ease-in-out will-change-transform hover:scale-125 hover:text-white"
                   >
                     <link.icon
-                      className="h-10 w-10 sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12"
+                      className="h-8 w-8 sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12"
                       style={{
                         transform: `scale(${link.size})`,
                       }}
@@ -221,12 +216,6 @@ export default function MyComponent() {
             </div>
           </div>
         </Container>
-      </div>
-      <div
-        ref={arrowRef}
-        className="fixed bottom-8 left-1/2 -translate-x-1/2 transform"
-      >
-        <ChevronDown className="h-8 w-8 animate-bounce text-white" />
       </div>
     </div>
   );
