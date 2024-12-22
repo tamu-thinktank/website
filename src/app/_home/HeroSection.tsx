@@ -128,7 +128,7 @@ export default function MyComponent() {
 
       <div className="flex min-h-screen items-center justify-center py-5 md:py-12">
         <Container>
-          <div className="desktop-scale mobile-adjust relative mx-auto flex flex-col justify-center overflow-visible pt-0 sm:pt-16">
+          <div className=" relative mx-auto flex flex-col justify-center overflow-visible pt-0 sm:pt-16">
             <div className="mx-auto w-full text-center lg:w-4/5 xl:w-3/4 2xl:w-2/3">
               <div className="relative pt-5 sm:pt-20">
                 <h1 className="font-poppins relative z-[9999] mb-1 w-full bg-gradient-to-r from-white to-[#617B7F] bg-clip-text text-[7.2em] font-semibold leading-relaxed text-transparent sm:text-[4em] md:text-[5em] lg:text-[6em]">
