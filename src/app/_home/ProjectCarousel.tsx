@@ -45,6 +45,29 @@ const orgImages = [
   "/images/photos/IMG_6121.webp",
 ];
 
+export const ImageWithAspectRatio: React.FC<
+  React.ComponentProps<typeof Image>
+> = (props) => {
+  return (
+    <div
+      style={{
+        position: "relative",
+        paddingBottom: "56.25%",
+      }}
+    >
+      <Image
+        {...props}
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          objectFit: "cover",
+        }}
+      />
+    </div>
+  );
+};
+
 export default function ProjectCarousel() {
   const images = useMemo(() => shuffleArray(orgImages), []);
 
@@ -65,7 +88,7 @@ export default function ProjectCarousel() {
           <CarouselItem key={index}>
             <Card>
               <CardContent className="p-1">
-                <Image
+                <ImageWithAspectRatio
                   src={img}
                   alt="org images"
                   className="w-auto rounded-sm"
