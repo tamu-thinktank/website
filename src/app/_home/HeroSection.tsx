@@ -22,6 +22,20 @@ const scrollItems = [
   "Faculty Mentors ",
   "Professional Presentations",
 ];
+const TAMUlogo: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 247 203"
+    fill="currentColor"
+    {...props}
+  >
+    <path d="M217.9,66.4l-18.2,38l-18.2,-38h-27.5v17.2h6.3v52.5h-6.6v17.2h31v-17.2h-6.7v-37.2l21.85,45l21.85,-45v37.2h-6.6v17.2h31v-17.2h-6.6v-52.5h6.6v-17.3z" />
+    <path d="M27.4,66h36.9v17.1h-4.5l23,53h9.4v17.1h-33.5v-17h5l-3.7,-8.8h-27.6l-3.7,8.8h5v17.1h-33.5v-17.1h9.4l23,-53h-5v-17.1zM46.2,95.5l-6.5,14.8h13z" />
+    <path d="M27.4,0h191v54.7h-37.6v-20.7h-39.5v130.7h21v37.3h-79.2v-37.3h21v-130.7h-39.5v20.7h-37.6v-54.7z" />
+    <path d="M34.5,7.7h172.4l-10.4,8h-153.8z" fill="none" />
+    <path d="M125.7,18.5l7.9,7..."></path>
+  </svg>
+);
 
 const socialLinks = [
   {
@@ -33,8 +47,8 @@ const socialLinks = [
   {
     name: "Facebook",
     url: "https://getinvolved.tamu.edu/org/thinktank",
-    icon: SiFacebook,
-    size: 1.02,
+    icon: TAMUlogo,
+    size: 1.15,
   },
   {
     name: "Instagram",

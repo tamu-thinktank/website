@@ -32,7 +32,7 @@ export default function Officers() {
     },
     {
       id: 4,
-      name: "Arjun Sawheny",
+      name: "Arjun Sawhney",
       role: "Peer Mentor",
       major: "Aerospace Engineering",
       class: "27",
