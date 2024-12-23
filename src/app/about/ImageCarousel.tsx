@@ -31,8 +31,8 @@ export default function ImageCarousel() {
     offset: ["start start", "end start"],
   });
 
-  const scale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1]);
-  const yOffset = useTransform(scrollYProgress, [0, 0.5], ["0%", "10%"]);
+  const scale = useTransform(scrollYProgress, [0, 1.5], [0.8, 1]);
+  const yOffset = useTransform(scrollYProgress, [0, 1.5], ["0%", "10%"]);
 
   const prevSlide = () => {
     setCurrentIndex((prev) => (prev === 0 ? orgImages.length - 1 : prev - 1));
