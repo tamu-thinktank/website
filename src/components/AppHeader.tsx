@@ -168,7 +168,7 @@ export default function Header() {
                       className="navbar-link"
                       onClick={(e) => handleLinkClick(e, "/challenges")}
                     >
-                      <span>Challenges</span>
+                      <span>Design Challenges</span>
                     </a>
                   </li>
                   <li>
