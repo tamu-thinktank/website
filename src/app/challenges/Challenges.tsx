@@ -229,7 +229,7 @@ const Challenges = () => {
         { date: "Acceptance", description: "9/16/24" },
       ],
       researchAreas: [
-        "Orbital Mechanics",
+        "Orbital Logistics",
         "Structural and Thermal Analysis",
         "Power systems",
         "Payload design",
