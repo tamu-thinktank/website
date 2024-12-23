@@ -43,7 +43,7 @@ interface ExpandedProps {
 const fasterDuration = 800;
 const easing = "cubic-bezier(0.25, 0.8, 0.25, 1)";
 
-const Box = styled(motion.div) <ExpandedProps>`
+const Box = styled(motion.div)<ExpandedProps>`
   display: flex;
   flex-direction: ${(props) => (props.expanded ? "column" : "row")};
   align-items: stretch;
@@ -55,10 +55,12 @@ const Box = styled(motion.div) <ExpandedProps>`
   background-color: #1a1a1a;
   border-radius: 10px;
   overflow: hidden;
+  transition: height 0.5s ease-in-out;
 
   @media (max-width: 768px) {
     flex-direction: column;
     height: ${(props) => (props.expanded ? "auto" : "500px")};
+    max-height: ${(props) => (props.expanded ? "none" : "500px")};
     margin: 20px auto;
   }
 `;
@@ -68,6 +70,8 @@ const ImageSection = styled.div<ExpandedProps>`
   height: ${(props) => (props.expanded ? "450px" : "300px")};
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  transition: height 0.5s ease-in-out;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -86,6 +90,7 @@ const TextSection = styled.div<ExpandedProps>`
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  transition: max-height 0.5s ease-in-out;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -93,6 +98,7 @@ const TextSection = styled.div<ExpandedProps>`
   @media (max-width: 768px) {
     padding: 10px 15px;
     max-height: ${(props) => (props.expanded ? "none" : "300px")};
+    overflow-y: auto;
   }
 `;
 
@@ -178,9 +184,9 @@ const ButtonStyle = styled.a<{
     font-size: 14px;
     padding: 8px 16px;
     max-width: ${(props) =>
-    props.expanded
-      ? "100%"
-      : "100%"}; // Ensure full width responsiveness on smaller screens
+      props.expanded
+        ? "100%"
+        : "100%"}; // Ensure full width responsiveness on smaller screens
   }
 `;
 
@@ -408,13 +414,50 @@ const BoxComponent: React.FC<BoxProps> = ({
     setIsLoaded(true);
   }, []);
 
+  useEffect(() => {
+    if (!isExpanded) {
+      const boxElement = document.getElementById(`box-${teamName}`);
+      if (boxElement) {
+        boxElement.scrollTop = 0;
+      }
+      const textSection = boxElement?.querySelector("[data-text-section]");
+      if (textSection) {
+        textSection.scrollTop = 0;
+      }
+    }
+  }, [isExpanded, teamName]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const boxElement = document.getElementById(`box-${teamName}`);
+      if (boxElement) {
+        if (window.innerWidth <= 768) {
+          boxElement.style.height = isExpanded ? "auto" : "500px";
+        } else {
+          boxElement.style.height = isExpanded ? "auto" : "300px";
+        }
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Call once to set initial state
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, [isExpanded, teamName]);
+
   const handleToggle = () => {
     setIsExpanded((prev) => !prev);
   };
 
   const variants = {
-    collapsed: { height: ["auto", "300px"] },
-    expanded: { height: ["300px", "auto"] },
+    collapsed: {
+      height: "auto",
+      transition: { duration: 0.5, ease: "easeInOut" },
+    },
+    expanded: {
+      height: "auto",
+      transition: { duration: 0.5, ease: "easeInOut" },
+    },
   };
   // - timeline functionality isnt working
   const getMarkerColor = (date: string) => {
@@ -425,13 +468,19 @@ const BoxComponent: React.FC<BoxProps> = ({
 
   return (
     <Box
+      id={`box-${teamName}`}
       expanded={isExpanded}
       initial="collapsed"
       animate={isExpanded ? "expanded" : "collapsed"}
       variants={variants}
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
-      <ImageSection expanded={isExpanded}>
+      <ImageSection
+        expanded={isExpanded}
+        onClick={() =>
+          window.open(competitionLink, "_blank", "noopener,noreferrer")
+        }
+      >
         {imageUrl && (
           <Image
             src={imageUrl}
@@ -442,13 +491,14 @@ const BoxComponent: React.FC<BoxProps> = ({
             style={{
               opacity: isLoaded ? 1 : 0,
               transition: "opacity 0.5s ease-in-out",
+              cursor: "pointer", // Add this line to change cursor on hover
             }}
             onLoadingComplete={() => setIsLoaded(true)}
           />
         )}
       </ImageSection>
 
-      <TextSection expanded={isExpanded}>
+      <TextSection expanded={isExpanded} data-text-section>
         <Header expanded={isExpanded}>
           <span className="team-name">{teamName.toUpperCase()}</span>
           <span className="separator">|</span>
@@ -572,7 +622,7 @@ const BoxComponent: React.FC<BoxProps> = ({
               </InfoBlock>
 
               <InfoBlock>
-                <h3>Timeline</h3>
+                <h3>Admission Timeline</h3>
                 <TimelineContainer>
                   <div className="timeline-line" />
                   <div className="timeline-markers">
