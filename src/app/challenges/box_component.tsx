@@ -49,7 +49,7 @@ const Box = styled(motion.div) <ExpandedProps>`
   align-items: stretch;
   justify-content: space-between;
   width: 100%;
-  height: ${(props) => (props.expanded ? "auto" : "300px")};
+  max-height: ${(props) => (props.expanded ? "auto" : "500px")};
   margin: 30px auto;
   border: 2px solid rgba(83, 81, 81, 0.5);
   background-color: #1a1a1a;
@@ -59,6 +59,7 @@ const Box = styled(motion.div) <ExpandedProps>`
   @media (max-width: 768px) {
     flex-direction: column;
     height: ${(props) => (props.expanded ? "auto" : "500px")};
+    min-height: 425px; 
     margin: 20px auto;
   }
 `;
@@ -71,7 +72,8 @@ const ImageSection = styled.div<ExpandedProps>`
 
   @media (max-width: 768px) {
     width: 100%;
-    height: 200px;
+    height: ${(props) => (props.expanded ? "300px" : "200px")}; // Adjust for mobile
+    min-height: 200px; // Ensure it doesn't get too small
   }
 `;
 
@@ -93,6 +95,7 @@ const TextSection = styled.div<ExpandedProps>`
   @media (max-width: 768px) {
     padding: 10px 15px;
     max-height: ${(props) => (props.expanded ? "none" : "300px")};
+    min-height: 225px;
   }
 `;
 
@@ -138,6 +141,7 @@ const ButtonContainer = styled.div`
   gap: 10px;
   margin-top: 15px;
   margin-bottom: 20px;
+  width: 100%
 
   @media (max-width: 768px) {
     margin-top: 10px;
@@ -433,18 +437,20 @@ const BoxComponent: React.FC<BoxProps> = ({
     >
       <ImageSection expanded={isExpanded}>
         {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={`${teamName} visual`}
-            layout="fill"
-            objectFit="cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
-            style={{
-              opacity: isLoaded ? 1 : 0,
-              transition: "opacity 0.5s ease-in-out",
-            }}
-            onLoadingComplete={() => setIsLoaded(true)}
-          />
+          <a href={competitionLink} target="_blank" rel="noopener noreferrer">
+            <Image
+              src={imageUrl}
+              alt={`${teamName} visual`}
+              layout="fill"
+              objectFit="cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              style={{
+                opacity: isLoaded ? 1 : 0,
+                transition: "opacity 0.5s ease-in-out",
+              }}
+              onLoadingComplete={() => setIsLoaded(true)}
+            />
+          </a>
         )}
       </ImageSection>
 
@@ -572,7 +578,7 @@ const BoxComponent: React.FC<BoxProps> = ({
               </InfoBlock>
 
               <InfoBlock>
-                <h3>Timeline</h3>
+                <h3>Admission Timeline</h3>
                 <TimelineContainer>
                   <div className="timeline-line" />
                   <div className="timeline-markers">
