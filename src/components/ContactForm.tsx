@@ -207,25 +207,25 @@ const ContactForm: React.FC = () => {
               <option value="" disabled className="bg-[#1A1A1A] text-gray-400">
                 Select Subject
               </option>
-              <option value="Academic" className="bg-[#1A1A1A] text-gray-400">
+              <option value="App" className="bg-[#1A1A1A] text-gray-400">
                 Applications
               </option>
-              <option value="Financial" className="bg-[#1A1A1A] text-gray-400">
+              <option value="Int" className="bg-[#1A1A1A] text-gray-400">
                 Interviews
               </option>
-              <option value="Housing" className="bg-[#1A1A1A] text-gray-400">
+              <option value="Com" className="bg-[#1A1A1A] text-gray-400">
                 Competitions
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Des" className="bg-[#1A1A1A] text-gray-400 ">
                 Design Teams
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Wor" className="bg-[#1A1A1A] text-gray-400 ">
                 Workshops
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Opp" className="bg-[#1A1A1A] text-gray-400 ">
                 Opportunities
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Oth" className="bg-[#1A1A1A] text-gray-400 ">
                 Other
               </option>
             </select>

@@ -148,11 +148,11 @@ export default function MyComponent() {
                 </h2>
               </div>
 
-              <div className="mt-4 space-y-2 sm:mt-4 sm:space-y-0">
-                <p className="font-dm-sans mx-auto mb-1 max-w-3xl text-xl text-[#B8B8B8] sm:mb-2 sm:text-2xl lg:text-[1.5em]">
+              <div className="mt-2 flex flex-col -space-y-2 sm:-space-y-3 lg:-space-y-4">
+                <p className="font-dm-sans mx-auto max-w-3xl text-xl text-[#B8B8B8] sm:text-2xl lg:text-[1.5em]">
                   From Potential to Professional
                 </p>
-                <p className="font-dm-sans mx-auto mb-2 max-w-3xl text-xl text-[#B8B8B8] sm:mb-4 sm:text-2xl lg:text-[1.5em]">
+                <p className="font-dm-sans mx-auto max-w-3xl text-xl text-[#B8B8B8] sm:text-2xl lg:text-[1.5em]">
                   Start Your Journey with ThinkTank
                 </p>
               </div>
@@ -180,7 +180,7 @@ export default function MyComponent() {
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="transform text-gray-300 transition-all duration-300 ease-in-out will-change-transform hover:scale-125 hover:text-white"
+                    className="transform text-gray-300 transition-all duration-300 ease-in-out will-change-transform hover:scale-110 hover:text-white"
                   >
                     <link.icon
                       className="h-8 w-8 sm:h-8 sm:w-8 lg:h-10 lg:w-10 xl:h-12 xl:w-12"
