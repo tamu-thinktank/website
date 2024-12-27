@@ -9,7 +9,6 @@ import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { Providers } from "./providers";
 
-
 const font = Inter({
   subsets: ["latin"],
 });
