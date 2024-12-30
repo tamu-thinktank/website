@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Container from "../../components/Container";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,6 @@ const logos = [
 ];
 
 function LogoSlider() {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

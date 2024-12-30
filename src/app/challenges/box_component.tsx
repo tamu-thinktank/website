@@ -40,9 +40,6 @@ interface ExpandedProps {
   expanded: boolean;
 }
 
-const fasterDuration = 800;
-const easing = "cubic-bezier(0.25, 0.8, 0.25, 1)";
-
 const Box = styled(motion.div)<ExpandedProps>`
   display: flex;
   flex-direction: ${(props) => (props.expanded ? "column" : "row")};
@@ -399,10 +396,8 @@ const BoxComponent: React.FC<BoxProps> = ({
   image,
   major,
   year,
-  description,
   facultyImage,
   field,
-  interest,
   prize,
   dtype,
 }) => {

@@ -38,8 +38,14 @@ function BenefitBox({
       ease: "power2.out",
     });
 
-    const handleMouseEnter = () => tl.play();
-    const handleMouseLeave = () => tl.reverse(0.3);
+    // Create void functions that handle the timeline animations
+    const handleMouseEnter = () => {
+      void tl.play();
+    };
+
+    const handleMouseLeave = () => {
+      void tl.reverse(0.3);
+    };
 
     box.addEventListener("mouseenter", handleMouseEnter);
     box.addEventListener("mouseleave", handleMouseLeave);
@@ -59,7 +65,7 @@ function BenefitBox({
         offset: scrollOffset,
       }),
     );
-    router.push("/about");
+    void router.push("/about");
   };
 
   const words = title.split(" ");

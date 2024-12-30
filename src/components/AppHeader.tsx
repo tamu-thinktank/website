@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Container from "./Container";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Poppins, DM_Sans } from "next/font/google";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -47,29 +47,30 @@ export default function Header() {
     };
   }, [lastScrollY]);
 
-  const handleLinkClick = async (
+  const handleLinkClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
     viewportMultiplier?: number,
   ) => {
     e.preventDefault();
 
-    const targetPath = href.split("#")[0] || "/";
+    const targetPath = href.split("#")[0] ?? "/";
 
     if (targetPath === pathname && viewportMultiplier !== undefined) {
       scrollToPosition(viewportMultiplier);
     } else {
-      await router.push(href);
+      // router.push returns Promise<boolean>
+      void router.push(href);
       if (viewportMultiplier !== undefined) {
         setTimeout(() => {
           scrollToPosition(viewportMultiplier);
-        }, 500); // Increased from 300 to 500ms
+        }, 500);
       }
     }
   };
 
   const scrollToPosition = (viewportMultiplier: number) => {
-    const isMobile = window.innerWidth < 768; // Assuming 768px as the mobile breakpoint
+    const isMobile = window.innerWidth < 768;
     const scrollMultiplier = isMobile
       ? viewportMultiplier * 1.5
       : viewportMultiplier;

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 
 interface FormData {
@@ -85,6 +86,17 @@ const ContactForm: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const userId = process.env.NEXT_PUBLIC_EMAILJS_USER_ID;
+
+    if (!serviceId || !templateId || !userId) {
+      console.error("EmailJS environment variables are not defined.");
+      setStateMessage("Unable to send message. Configuration error.");
+      return;
+    }
+
     if (
       !validateEmail(formData.email) ||
       !validateUIN(formData.uin) ||
@@ -98,8 +110,8 @@ const ContactForm: React.FC = () => {
 
     try {
       const result = await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        serviceId,
+        templateId,
         {
           name: formData.name,
           email: formData.email,
@@ -107,7 +119,7 @@ const ContactForm: React.FC = () => {
           subject: formData.subject,
           message: formData.message,
         },
-        process.env.NEXT_PUBLIC_EMAILJS_USER_ID,
+        userId,
       );
 
       console.log(result.text);
@@ -195,7 +207,6 @@ const ContactForm: React.FC = () => {
             <label htmlFor="subject" className="sr-only">
               Subject
             </label>
-
             <select
               name="subject"
               id="subject"
@@ -207,25 +218,25 @@ const ContactForm: React.FC = () => {
               <option value="" disabled className="bg-[#1A1A1A] text-gray-400">
                 Select Subject
               </option>
-              <option value="Academic" className="bg-[#1A1A1A] text-gray-400">
+              <option value="App" className="bg-[#1A1A1A] text-gray-400">
                 Applications
               </option>
-              <option value="Financial" className="bg-[#1A1A1A] text-gray-400">
+              <option value="Int" className="bg-[#1A1A1A] text-gray-400">
                 Interviews
               </option>
-              <option value="Housing" className="bg-[#1A1A1A] text-gray-400">
+              <option value="Com" className="bg-[#1A1A1A] text-gray-400">
                 Competitions
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Des" className="bg-[#1A1A1A] text-gray-400 ">
                 Design Teams
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Wor" className="bg-[#1A1A1A] text-gray-400 ">
                 Workshops
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Opp" className="bg-[#1A1A1A] text-gray-400 ">
                 Opportunities
               </option>
-              <option value="Other" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Oth" className="bg-[#1A1A1A] text-gray-400 ">
                 Other
               </option>
             </select>
@@ -262,7 +273,11 @@ const ContactForm: React.FC = () => {
       </form>
       {stateMessage && (
         <p
-          className={`mt-2 text-xs ${stateMessage.includes("successfully") ? "text-green-400" : "text-red-400"} text-center`}
+          className={`mt-2 text-xs ${
+            stateMessage.includes("successfully")
+              ? "text-green-400"
+              : "text-red-400"
+          } text-center`}
         >
           {stateMessage}
         </p>
