@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
 
 interface FormData {
@@ -85,6 +86,17 @@ const ContactForm: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const userId = process.env.NEXT_PUBLIC_EMAILJS_USER_ID;
+
+    if (!serviceId || !templateId || !userId) {
+      console.error("EmailJS environment variables are not defined.");
+      setStateMessage("Unable to send message. Configuration error.");
+      return;
+    }
+
     if (
       !validateEmail(formData.email) ||
       !validateUIN(formData.uin) ||
@@ -97,18 +109,13 @@ const ContactForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const result = await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-        {
-          name: formData.name,
-          email: formData.email,
-          uin: formData.uin,
-          subject: formData.subject,
-          message: formData.message,
-        },
-        process.env.NEXT_PUBLIC_EMAILJS_USER_ID,
-      );
+      const result = await emailjs.send(serviceId, templateId, {
+        name: formData.name,
+        email: formData.email,
+        uin: formData.uin,
+        subject: formData.subject,
+        message: formData.message,
+      }, userId);
 
       console.log(result.text);
       setStateMessage("Message sent successfully!");
@@ -195,7 +202,6 @@ const ContactForm: React.FC = () => {
             <label htmlFor="subject" className="sr-only">
               Subject
             </label>
-
             <select
               name="subject"
               id="subject"
@@ -262,7 +268,9 @@ const ContactForm: React.FC = () => {
       </form>
       {stateMessage && (
         <p
-          className={`mt-2 text-xs ${stateMessage.includes("successfully") ? "text-green-400" : "text-red-400"} text-center`}
+          className={`mt-2 text-xs ${
+            stateMessage.includes("successfully") ? "text-green-400" : "text-red-400"
+          } text-center`}
         >
           {stateMessage}
         </p>

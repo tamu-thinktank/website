@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import Container from "./Container";
 import { useEffect, useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Poppins, DM_Sans } from "next/font/google";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -54,11 +54,12 @@ export default function Header() {
   ) => {
     e.preventDefault();
 
-    const targetPath = href.split("#")[0] || "/";
+    const targetPath = href.split("#")[0] ?? "/"; // Use ?? for safer fallback
 
     if (targetPath === pathname && viewportMultiplier !== undefined) {
       scrollToPosition(viewportMultiplier);
     } else {
+      // Ensure `await` is only used if router.push is async
       await router.push(href);
       if (viewportMultiplier !== undefined) {
         setTimeout(() => {
@@ -72,7 +73,7 @@ export default function Header() {
     const isMobile = window.innerWidth < 768; // Assuming 768px as the mobile breakpoint
     const scrollMultiplier = isMobile
       ? viewportMultiplier * 1.5
-      : viewportMultiplier;
+      : (viewportMultiplier ?? 0); // Use ?? instead of ||
     window.scrollTo({
       top: window.innerHeight * scrollMultiplier,
       behavior: "smooth",

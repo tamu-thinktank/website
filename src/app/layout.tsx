@@ -56,19 +56,20 @@ export const metadata: Metadata = {
   },
 };
 
+// lint fix - made a async wrapper to fetch cookies
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Retrieve cookies asynchronously
-  const cookieValue = cookies().toString();
+  const cookiePromise = await cookies();
+  const allCookies = JSON.stringify(cookiePromise.getAll());
 
   return (
     <html lang="en">
       <body className={`${font.className} bg-gray-900`}>
         <Providers>
-          <TRPCReactProvider cookies={cookieValue}>
+          <TRPCReactProvider cookies={allCookies}>
             {children}
             <Toaster />
             <Sonner />

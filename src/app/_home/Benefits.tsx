@@ -41,12 +41,16 @@ function BenefitBox({
     const handleMouseEnter = () => tl.play();
     const handleMouseLeave = () => tl.reverse(0.3);
 
-    box.addEventListener("mouseenter", handleMouseEnter);
-    box.addEventListener("mouseleave", handleMouseLeave);
+    // lint issue fix - wrapped the event listener callbacks to avoid promise return
+    const onMouseEnter = () => handleMouseEnter();
+    const onMouseLeave = () => handleMouseLeave();
+
+    box.addEventListener("mouseenter", onMouseEnter);
+    box.addEventListener("mouseleave", onMouseLeave);
 
     return () => {
-      box.removeEventListener("mouseenter", handleMouseEnter);
-      box.removeEventListener("mouseleave", handleMouseLeave);
+      box.removeEventListener("mouseenter", onMouseEnter);
+      box.removeEventListener("mouseleave", onMouseLeave);
     };
   }, []);
 

@@ -14,7 +14,6 @@ const logos = [
 ];
 
 function LogoSlider() {
-  const [currentIndex, setCurrentIndex] = useState(0);
   const sliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
