@@ -109,13 +109,18 @@ const ContactForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const result = await emailjs.send(serviceId, templateId, {
-        name: formData.name,
-        email: formData.email,
-        uin: formData.uin,
-        subject: formData.subject,
-        message: formData.message,
-      }, userId);
+      const result = await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          name: formData.name,
+          email: formData.email,
+          uin: formData.uin,
+          subject: formData.subject,
+          message: formData.message,
+        },
+        userId,
+      );
 
       console.log(result.text);
       setStateMessage("Message sent successfully!");
@@ -269,7 +274,9 @@ const ContactForm: React.FC = () => {
       {stateMessage && (
         <p
           className={`mt-2 text-xs ${
-            stateMessage.includes("successfully") ? "text-green-400" : "text-red-400"
+            stateMessage.includes("successfully")
+              ? "text-green-400"
+              : "text-red-400"
           } text-center`}
         >
           {stateMessage}
