@@ -47,33 +47,33 @@ export default function Header() {
     };
   }, [lastScrollY]);
 
-  const handleLinkClick = async (
+  const handleLinkClick = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string,
     viewportMultiplier?: number,
   ) => {
     e.preventDefault();
 
-    const targetPath = href.split("#")[0] ?? "/"; // Use ?? for safer fallback
+    const targetPath = href.split("#")[0] ?? "/";
 
     if (targetPath === pathname && viewportMultiplier !== undefined) {
       scrollToPosition(viewportMultiplier);
     } else {
-      // Ensure `await` is only used if router.push is async
-      await router.push(href);
+      // router.push returns Promise<boolean>
+      void router.push(href);
       if (viewportMultiplier !== undefined) {
         setTimeout(() => {
           scrollToPosition(viewportMultiplier);
-        }, 500); // Increased from 300 to 500ms
+        }, 500);
       }
     }
   };
 
   const scrollToPosition = (viewportMultiplier: number) => {
-    const isMobile = window.innerWidth < 768; // Assuming 768px as the mobile breakpoint
+    const isMobile = window.innerWidth < 768;
     const scrollMultiplier = isMobile
       ? viewportMultiplier * 1.5
-      : (viewportMultiplier ?? 0); // Use ?? instead of ||
+      : viewportMultiplier;
     window.scrollTo({
       top: window.innerHeight * scrollMultiplier,
       behavior: "smooth",

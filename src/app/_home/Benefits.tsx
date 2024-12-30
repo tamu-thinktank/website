@@ -38,19 +38,21 @@ function BenefitBox({
       ease: "power2.out",
     });
 
-    const handleMouseEnter = () => tl.play();
-    const handleMouseLeave = () => tl.reverse(0.3);
+    // Create void functions that handle the timeline animations
+    const handleMouseEnter = () => {
+      void tl.play();
+    };
 
-    // lint issue fix - wrapped the event listener callbacks to avoid promise return
-    const onMouseEnter = () => handleMouseEnter();
-    const onMouseLeave = () => handleMouseLeave();
+    const handleMouseLeave = () => {
+      void tl.reverse(0.3);
+    };
 
-    box.addEventListener("mouseenter", onMouseEnter);
-    box.addEventListener("mouseleave", onMouseLeave);
+    box.addEventListener("mouseenter", handleMouseEnter);
+    box.addEventListener("mouseleave", handleMouseLeave);
 
     return () => {
-      box.removeEventListener("mouseenter", onMouseEnter);
-      box.removeEventListener("mouseleave", onMouseLeave);
+      box.removeEventListener("mouseenter", handleMouseEnter);
+      box.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, []);
 
@@ -63,7 +65,7 @@ function BenefitBox({
         offset: scrollOffset,
       }),
     );
-    router.push("/about");
+    void router.push("/about");
   };
 
   const words = title.split(" ");
