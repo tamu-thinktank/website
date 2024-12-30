@@ -225,7 +225,7 @@ const ContactForm: React.FC = () => {
                 Interviews
               </option>
               <option value="Com" className="bg-[#1A1A1A] text-gray-400">
-                Competitions
+                Design Challenges
               </option>
               <option value="Des" className="bg-[#1A1A1A] text-gray-400 ">
                 Design Teams
