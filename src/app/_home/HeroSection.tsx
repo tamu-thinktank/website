@@ -148,7 +148,7 @@ export default function MyComponent() {
                 </h2>
               </div>
 
-              <div className="mt-2 flex flex-col -space-y-2 sm:-space-y-3 lg:-space-y-4">
+              <div className="mt-2 flex flex-col -space-y-2 sm:-space-y-3 lg:-space-y-1">
                 <p className="font-dm-sans mx-auto max-w-3xl text-xl text-[#B8B8B8] sm:text-2xl lg:text-[1.5em]">
                   From Potential to Professional
                 </p>
@@ -167,7 +167,7 @@ export default function MyComponent() {
                 <a
                   href="#"
                   onClick={scrollToBottom}
-                  className="flex h-14 w-full max-w-[20rem] items-center justify-center rounded-full border-2 border-white bg-transparent px-7 text-lg font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
+                  className="flex h-14 w-full max-w-[20rem] items-center justify-center rounded-full border border-white bg-transparent px-7 text-lg font-medium text-white transition-all duration-300 hover:scale-105 hover:bg-white hover:text-black active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Contact Us
                 </a>

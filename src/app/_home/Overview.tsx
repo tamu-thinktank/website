@@ -9,7 +9,7 @@ export default function Component() {
     <div id="overview" className="bg-[#0C0D0E] py-8 md:py-12">
       <Container>
         <div className="flex flex-col-reverse items-start justify-between space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-          <div className="w-full space-y-6 lg:w-1/2 lg:pt-0">
+          <div className="mt-2 w-full space-y-6 sm:mt-4 lg:w-1/2 lg:pt-0">
             <h2 className="text-2xl font-bold italic text-gray-900 dark:text-white sm:text-3xl md:text-4xl lg:text-5xl">
               <span style={{ color: "#B8B8B8" }}>Our Mission</span>
             </h2>
@@ -32,7 +32,7 @@ export default function Component() {
               </button>
             </div>
           </div>
-          <div className="w-full lg:w-1/2">
+          <div className="w-full pb-4 sm:pb-6 lg:w-1/2">
             <ProjectCarousel />
           </div>
         </div>
