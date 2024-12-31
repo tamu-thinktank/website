@@ -81,7 +81,7 @@ function BenefitBox({
     >
       <div className="absolute inset-0 bg-white opacity-0 blur-xl transition-opacity duration-500 ease-in-out group-hover:opacity-10"></div>
 
-      <div className="relative h-full overflow-hidden rounded-2xl bg-[#1A1A1A] p-6">
+      <div className="relative h-full overflow-hidden rounded-2xl bg-[#141414] p-6">
         <div className="absolute inset-0 rounded-2xl border-2 border-[#535151] opacity-50"></div>
         <div className="relative flex h-full flex-col">
           <div
