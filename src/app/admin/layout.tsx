@@ -9,14 +9,11 @@ import { AdminHeader } from "./admin-header";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-[#0C0D0E]">
-      {children}
       <SessionProvider refetchOnWindowFocus>
         <GradientLayout>
           <Content>{children}</Content>
         </GradientLayout>
       </SessionProvider>
-    </div>
   );
 }
 
