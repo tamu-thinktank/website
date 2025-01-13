@@ -137,38 +137,6 @@ export const InterviewEmail = ({
           dismissal of your application.
         </Text>
         <Text style={paragraph}>
-          Additionally, any student applying for an “open-ended” challenge as
-          their first choice is required to come up with a general solution to
-          their challenge before the interview. This solution doesn't need to be
-          thoroughly thought out but should clearly demonstrate understanding of
-          the rules and conditions of the challenge. Failure to produce a basic
-          high level conceptual solution will result in a harsh consideration
-          against your application.
-        </Text>
-        <Text style={paragraph}>
-          This season, we are offering the following “open-ended” challenges:
-          <br />
-          <a
-            href="https://www.aiaa.org/docs/default-source/uploadedfiles/membership-and-communities/university-students/design-competitions/2024-25-aiaa-undergraduate-team-space-design-competition.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <strong>AIAA:</strong> Mars Exploration Surveyors to Enable Human
-            Exploration
-          </a>
-          <br />
-          <a
-            href="https://blueskies.nianet.org/competition/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "none" }}
-          >
-            <strong>Blue Skies:</strong> AgAir (Aviation Solutions for
-            Agriculture)
-          </a>
-        </Text>
-        <Text style={paragraph}>
           Notify us if you have any questions or issues with links. We're very
           excited to meet you!
         </Text>
