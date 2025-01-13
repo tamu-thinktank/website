@@ -25,7 +25,7 @@ export default async function sendEmail({
   return new Promise((resolve, reject) => {
     transporter.sendMail(
       {
-        from: env.APP_EMAIL,
+        from: `"ThinkTank" <${env.APP_EMAIL}>`,
         to,
         cc,
         subject,
