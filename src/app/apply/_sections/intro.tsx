@@ -27,17 +27,17 @@ export default function FormIntroTab() {
           <br /> <br />
           <strong>
             WE HIGHLY RECOMMEND READING THE FAQ AND COMPLETING THE APPLICATION
-            ON A LAPTOP/DESKTOP */}
-          </strong>
+            ON A LAPTOP/DESKTOP
+          </strong> */}
           <br /> <br />
           <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong>
         </CardContent>
       </Card>
-      {/* <TabsList className="float-right bg-transparent">
-        <TabsTrigger className="bg-white text-black" value="personal">
+      <TabsList className="float-right bg-transparent">
+        {/* <TabsTrigger className="bg-white text-black" value="personal">
           Next
-        </TabsTrigger>
-      </TabsList> */}
+        </TabsTrigger> */}
+      </TabsList>
     </TabsContent>
   );
 }
