@@ -12,7 +12,7 @@ export default function FormIntroTab() {
           <Separator />
         </CardHeader>
         <CardContent className="text-center">
-          Our club's mission is to provide experience and opportunities to all
+          {/* Our club's mission is to provide experience and opportunities to all
           engineering students, regardless of their past experiences. Please
           keep this in mind as you complete your application. <br /> <br />
           There are 5 sections with a resume upload at the end. Make sure you
@@ -27,17 +27,17 @@ export default function FormIntroTab() {
           <br /> <br />
           <strong>
             WE HIGHLY RECOMMEND READING THE FAQ AND COMPLETING THE APPLICATION
-            ON A LAPTOP/DESKTOP
+            ON A LAPTOP/DESKTOP */}
           </strong>
-          {/* <br /> <br />
-          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong> */}
+          <br /> <br />
+          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong>
         </CardContent>
       </Card>
-      <TabsList className="float-right bg-transparent">
+      {/* <TabsList className="float-right bg-transparent">
         <TabsTrigger className="bg-white text-black" value="personal">
           Next
         </TabsTrigger>
-      </TabsList>
+      </TabsList> */}
     </TabsContent>
   );
 }
