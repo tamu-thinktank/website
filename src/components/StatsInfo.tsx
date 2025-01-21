@@ -20,7 +20,6 @@ export interface SeasonData {
   "MATE ROV": TeamData;
 }
 
-// Mock data for different seasons
 export const seasonalData: Record<Season, SeasonData> = {
   "2023-2024": {
     DC: {
