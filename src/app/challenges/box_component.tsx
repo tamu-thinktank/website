@@ -499,7 +499,8 @@ const BoxComponent: React.FC<BoxProps> = ({
           <span className="team-name">{teamName.toUpperCase()}</span>
           <span className="separator">|</span>
           <StatusIndicator isOpen={isOpen}>
-            {isOpen ? "Open" : "Closed"}
+            {/*{isOpen ? "Open" : "Closed"}*/}
+            Closed
           </StatusIndicator>
         </Header>
         {!isExpanded && (
@@ -513,7 +514,8 @@ const BoxComponent: React.FC<BoxProps> = ({
                 disabled={!isOpen}
                 filled={isOpen}
               >
-                {isOpen ? "Apply" : "Closed"}
+                {/*{isOpen ? "Apply" : "Closed"}*/}
+                Closed
               </ButtonStyle>
               <ToggleButton expanded={isExpanded} onClick={handleToggle}>
                 See More
@@ -669,7 +671,8 @@ const BoxComponent: React.FC<BoxProps> = ({
                   filled={true}
                   style={{ backgroundColor: "white", color: "black" }}
                 >
-                  {isOpen ? "Apply" : "Closed"}
+                  {/*{isOpen ? "Apply" : "Closed"}*/}
+                  Closed
                 </ButtonStyle>
               </ButtonContainer>
               <ButtonContainer style={{ marginTop: "10px", width: "100%" }}>
