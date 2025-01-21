@@ -403,7 +403,8 @@ const BoxComponent: React.FC<BoxProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const isOpen = teamName === "Daedalus";
+  // const isOpen = teamName === "Daedalus";
+  const isOpen = false;
 
   useEffect(() => {
     setIsLoaded(true);
