@@ -6,13 +6,14 @@ import { getBaseUrl } from "@/lib/trpc/shared";
 import { Loader2 } from "lucide-react";
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { AdminHeader } from "./admin-header";
+import { ApplicantsPage } from "./applicants/applicantPage";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
       <SessionProvider refetchOnWindowFocus>
-        <GradientLayout>
+        {/* <GradientLayout> */}
           <Content>{children}</Content>
-        </GradientLayout>
+        {/* </GradientLayout> */}
       </SessionProvider>
   );
 }
@@ -28,27 +29,30 @@ function Content({ children }: { children: React.ReactNode }) {
       </section>
     </>
   ) : (
-    <Button
-      disabled={authStatus === "loading"}
-      onClick={() =>
-        void signIn(
-          "auth0",
-          {
-            callbackUrl: getBaseUrl() + "/admin",
-          },
-          {
-            connection: "google-oauth2",
-            response_type: "code",
-          },
-        )
-      }
-      className="rounded-full bg-white/10 px-10 py-3 font-semibold text-primary no-underline transition hover:bg-white/20"
-    >
-      {authStatus === "loading" ? (
-        <Loader2 className="animate-spin" />
-      ) : (
-        "Sign in"
-      )}
-    </Button>
+    <>
+    <ApplicantsPage />
+    </>
+    // <Button
+    //   disabled={authStatus === "loading"}
+    //   onClick={() =>
+    //     void signIn(
+    //       "auth0",
+    //       {
+    //         callbackUrl: getBaseUrl() + "/admin",
+    //       },
+    //       {
+    //         connection: "google-oauth2",
+    //         response_type: "code",
+    //       },
+    //     )
+    //   }
+    //   className="rounded-full bg-white/10 px-10 py-3 font-semibold text-primary no-underline transition hover:bg-white/20"
+    // >
+    //   {authStatus === "loading" ? (
+    //     <Loader2 className="animate-spin" />
+    //   ) : (
+    //     "Sign in"
+    //   )}
+    // </Button>
   );
 }

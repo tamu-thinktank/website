@@ -1,18 +1,19 @@
 "use client";
 
-import ApplicantsTable from "./applicants-table";
+import ApplicantsTable from "./new-applicants-table";
 import { SessionProvider, useSession } from "next-auth/react";
 
 export default function Home() {
   return (
-    <SessionProvider>
-      <AuthenticatedPage />
-    </SessionProvider>
+    <ApplicantsTable />
+    // <SessionProvider>
+    //   <AuthenticatedPage />
+    // </SessionProvider>
   );
 }
 
-function AuthenticatedPage() {
-  const { status: authStatus } = useSession();
+// function AuthenticatedPage() {
+//   const { status: authStatus } = useSession();
 
-  return <>{authStatus === "authenticated" && <ApplicantsTable />}</>;
-}
+//   return <>{authStatus === "authenticated" && <ApplicantsTable />}</>;
+// }
