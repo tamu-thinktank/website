@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { Star, Lock } from "lucide-react";
 
@@ -11,14 +11,19 @@ const GraySection = () => {
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
     const [isLocked, setIsLocked] = useState(false);
+    const [notes, setNotes] = useState("");
 
-    const toggleDropdown = () => {
-        setIsDropdownOpen(prev => !prev);
-    };
+    useEffect(() => {
+        if (selectedOption) {
+            setNotes(localStorage.getItem(`inside_interviewee_notes_${selectedOption}`) || "");
+        }
+    }, [selectedOption]);
 
-    const toggleSecondDropdown = () => {
-        setIsSecondDropdownOpen(prev => !prev);
-    };
+    useEffect(() => {
+        if (selectedOption) {
+            localStorage.setItem(`inside_interviewee_notes_${selectedOption}`, notes);
+        }
+    }, [notes, selectedOption]);
 
     return (
         <section className="p-4 rounded-xl shadow-md w-[1000px] h-[960px] mx-auto mt-40" style={{ backgroundColor: '#2A2A2A' }}>
@@ -41,7 +46,7 @@ const GraySection = () => {
 
             {/* Notes Dropdown */}
             <div className="mt-4">
-                <Select onValueChange={setSelectedOption}>
+                <Select onValueChange={(value) => { setSelectedOption(value); }}>
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select an option" />
                     </SelectTrigger>
@@ -52,7 +57,13 @@ const GraySection = () => {
                 </Select>
                 {selectedOption && (
                     <div className="w-full h-80 mt-4 p-4 bg-gray-500 rounded-lg text-white text-center">
-                        {selectedOption === "interview" ? "Interview Notes Section" : "Application Notes Section"}
+                        <h3 className="text-lg font-semibold">{selectedOption === "interview" ? "Interview Notes" : "Application Notes"}</h3>
+                        <textarea
+                            className="w-full h-64 mt-2 p-2 text-white rounded-lg"
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="Type your notes here..."
+                        />
                     </div>
                 )}
             </div>
@@ -64,16 +75,21 @@ const GraySection = () => {
                         <Star
                             key={star}
                             className={`w-10 h-10 cursor-pointer transition-colors duration-300 ${(hover || rating) >= star ? "text-yellow-400" : "text-gray-500"
-                                }`}
-                            onClick={() => setRating(star)}
-                            onMouseEnter={() => setHover(star)}
-                            onMouseLeave={() => setHover(0)}
+                                } ${isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                            onClick={() => {
+                                if (!isLocked) setRating(star);
+                            }}
+                            onMouseEnter={() => {
+                                if (!isLocked) setHover(star);
+                            }}
+                            onMouseLeave={() => {
+                                if (!isLocked) setHover(0);
+                            }}
                         />
                     ))}
                 </div>
                 <Lock
-                    className={`w-10 h-10 cursor-pointer transition-colors duration-300 ${isLocked ? "text-red-500" : "text-gray-500"
-                        }`}
+                    className={`w-10 h-10 cursor-pointer transition-colors duration-300 ${isLocked ? "text-red-500" : "text-gray-500"}`}
                     onClick={() => setIsLocked(prev => !prev)}
                 />
             </div>

@@ -42,15 +42,9 @@ const GraySection = () => {
         <section className="p-4 rounded-xl shadow-md w-[1000px] h-[960px] mx-auto mt-40" style={{ backgroundColor: '#2A2A2A' }}>
             <div className="flex justify-center items-center mb-4 relative">
                 <div className="text-white font-semibold text-center">
-                    <Select onValueChange={(value) => setApplicantType(value)}>
-                        <SelectTrigger className="w-48">
-                            <SelectValue placeholder="Select Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="member">Member</SelectItem>
-                            <SelectItem value="applicant">Applicant</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <span className="mr-4">Student Name</span> |
+                    <span className="mx-4">UIN</span> |
+                    <span className="ml-4">Submission Date</span>
                 </div>
                 <div className="absolute right-0 w-32 h-8 flex items-center justify-center rounded-full bg-gray-500 text-white font-semibold">
                     Status
@@ -93,16 +87,23 @@ const GraySection = () => {
                     {[1, 2, 3, 4, 5].map((star) => (
                         <Star
                             key={star}
-                            className={`w-10 h-10 cursor-pointer transition-colors duration-300 ${(hover || rating) >= star ? "text-yellow-400" : "text-gray-500"}`}
-                            onClick={() => setRating(star)}
-                            onMouseEnter={() => setHover(star)}
-                            onMouseLeave={() => setHover(0)}
+                            className={`w-10 h-10 cursor-pointer transition-colors duration-300 ${(hover || rating) >= star ? "text-yellow-400" : "text-gray-500"
+                                } ${isLocked ? "cursor-not-allowed opacity-50" : "cursor-pointer"}`}
+                            onClick={() => {
+                                if (!isLocked) setRating(star);
+                            }}
+                            onMouseEnter={() => {
+                                if (!isLocked) setHover(star);
+                            }}
+                            onMouseLeave={() => {
+                                if (!isLocked) setHover(0);
+                            }}
                         />
                     ))}
                 </div>
                 <Lock
                     className={`w-10 h-10 cursor-pointer transition-colors duration-300 ${isLocked ? "text-red-500" : "text-gray-500"}`}
-                    onClick={() => setIsLocked(!isLocked)}
+                    onClick={() => setIsLocked(prev => !prev)}
                 />
             </div>
         </section>
