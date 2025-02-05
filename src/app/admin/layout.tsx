@@ -7,14 +7,17 @@ import { Loader2 } from "lucide-react";
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { AdminHeader } from "./admin-header";
 import { ApplicantsPage } from "./applicants/applicantPage";
+import { MembersPage } from "./members/memberPage";
+import { IntervieweesPage } from "./interviewees/intervieweePage";
+import { MemberProvider } from "./transfer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-      <SessionProvider refetchOnWindowFocus>
-        {/* <GradientLayout> */}
-          <Content>{children}</Content>
-        {/* </GradientLayout> */}
-      </SessionProvider>
+    <SessionProvider refetchOnWindowFocus>
+      {/* <GradientLayout> */}
+      <Content>{children}</Content>
+      {/* </GradientLayout> */}
+    </SessionProvider>
   );
 }
 
@@ -30,7 +33,10 @@ function Content({ children }: { children: React.ReactNode }) {
     </>
   ) : (
     <>
-    <ApplicantsPage />
+      <MemberProvider>
+        <IntervieweesPage />
+        <MembersPage />
+      </MemberProvider>
     </>
     // <Button
     //   disabled={authStatus === "loading"}

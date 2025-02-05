@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { FilterButton } from './filterButton';
 import { TableHeader } from './tableHeader';
-import { ApplicantData, FilterState } from './types';
+import { FilterState } from './membertypes';
+import { useMemberContext } from '../transfer';
 
-export const ApplicantsPage: React.FC = () => {
+export const MembersPage: React.FC = () => {
     const [searchQuery, setSearchQuery] = React.useState('');
     const [selectedCategory, setSelectedCategory] = React.useState('DC');
     const [filters, setFilters] = React.useState<FilterState>({
@@ -13,64 +14,36 @@ export const ApplicantsPage: React.FC = () => {
         major: '',
     });
 
-    const tableHeaders = ['Name', 'Research Interests', 'Team Rankings', 'Major', 'Year'];
+    const { members } = useMemberContext();
+
+    const tableHeaders = ['Name', 'Rating', 'Research Interests', 'Team Rankings', 'Major', 'Year'];
 
     const teamOptions = ['Team A', 'Team B', 'Team C', 'Reset'];
     const ratingOptions = ['1/5', '2/5', '3/5', '4/5', '5/5', 'Reset'];
     const interestOptions = ['AI', 'Robotics', 'Web Development', 'Reset'];
     const majorOptions = ['Computer Science', 'Electrical Engineering', 'Mechanical Engineering', 'Reset'];
 
-    const applicantData: ApplicantData[] = [
-        {
-            name: 'John Doe',
-            interests: ['AI', 'Robotics'],
-            teamRankings: ['Team A', 'Team C'],
-            major: 'Computer Science',
-            year: 'Sophomore',
-            rating: 'High',
-            category: 'DC'
-        },
-        {
-            name: 'Jane Smith',
-            interests: ['Web Development'],
-            teamRankings: ['Team B'],
-            major: 'Electrical Engineering',
-            year: 'Junior',
-            rating: 'Medium',
-            category: 'MATE ROV'
-        },
-        {
-            name: 'Alex Chen',
-            interests: ['Robotics'],
-            teamRankings: ['Team C'],
-            major: 'Mechanical Engineering',
-            year: 'Senior',
-            rating: 'High',
-            category: 'MATE ROV'
-        },
-    ];
 
-    const filteredApplicants = React.useMemo(() => {
-        return applicantData.filter((applicant) => {
-            const matchesCategory = applicant.category === selectedCategory;
-            const matchesSearch = applicant.name.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesMajor = !filters.major || applicant.major === filters.major;
-            const matchesInterests = !filters.interests || applicant.interests.includes(filters.interests);
-            const matchesTeam = !filters.team || applicant.teamRankings.includes(filters.team);
-            const matchesRating = !filters.rating || applicant.rating === filters.rating;
-
-            return matchesCategory && matchesSearch && matchesMajor && matchesInterests && matchesTeam && matchesRating;
+    const filteredMembers = React.useMemo(() => {
+        return members.filter((member) => {
+          const matchesCategory = member.category === selectedCategory;
+          const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase());
+          const matchesMajor = !filters.major || member.major === filters.major;
+          const matchesInterests = !filters.interests || member.interests.includes(filters.interests);
+          const matchesTeam = !filters.team || member.teamRankings.includes(filters.team);
+          const matchesRating = !filters.rating || member.rating === filters.rating;
+          return matchesCategory && matchesSearch && matchesMajor && matchesInterests && matchesTeam && matchesRating;
         });
-    }, [searchQuery, filters, applicantData, selectedCategory]);
-
-    const handleFilterChange = (filterType: keyof FilterState) => (value: string) => {
+      }, [searchQuery, filters, members, selectedCategory]);
+    
+      const handleFilterChange = (filterType: keyof FilterState) => (value: string) => {
         setFilters((prev) => ({
-            ...prev,
-            [filterType]: value === prev[filterType] ? '' : value,
+          ...prev,
+          [filterType]: value === prev[filterType] ? '' : value,
         }));
-    };
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      };
+    
+      const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(event.target.value);
     };
 
@@ -98,7 +71,7 @@ export const ApplicantsPage: React.FC = () => {
             <div className="flex overflow-hidden flex-col items-center px-20 pt-11 pb-96 mt-1 w-full  max-md:px-5 max-md:pb-24 max-md:max-w-full">
                 <div className="flex flex-col mb-0 w-full max-w-[1537px] max-md:mb-2.5 max-md:max-w-full">
                     <div className="pb-10 self-start text-5xl font-semibold text-center max-md:text-4xl">
-                        Applicants
+                        Members
                     </div>
 
                     <div className="flex w-full rounded-[48px] overflow-hidden border border-solid border-neutral-200">
@@ -162,20 +135,17 @@ export const ApplicantsPage: React.FC = () => {
 
                     <div className="flex flex-col mt-7 w-full tracking-wide border border-solid border-neutral-200 rounded-[48px] max-md:pb-24 max-md:max-w-full">
                         <TableHeader headers={tableHeaders} />
-                        {filteredApplicants.map((applicant, index) => (
+                        {filteredMembers.map((applicant, index) => (
                             <React.Fragment key={index}>
                                 <div className="text-sm flex gap-10 justify-center items-center w-full py-4 px-5 hover:bg-neutral-800 transition-colors">
                                     <div className="flex-1 text-center">{applicant.name}</div>
-                                    <div className="flex-1 text-center">
-                                        {applicant.interests.join(', ')}
-                                    </div>
-                                    <div className="flex-1 text-center">
-                                        {applicant.teamRankings.join(', ')}
-                                    </div>
+                                    <div className="flex-1 text-center">{applicant.rating}</div>
+                                    <div className="flex-1 text-center">{applicant.interests.join(', ')}</div>
+                                    <div className="flex-1 text-center">{applicant.teamRankings.join(', ')}</div>
                                     <div className="flex-1 text-center">{applicant.major}</div>
                                     <div className="flex-1 text-center">{applicant.year}</div>
                                 </div>
-                                {index < filteredApplicants.length - 1 && (
+                                {index < filteredMembers.length - 1 && (
                                     <div className="shrink-0 w-full border border-solid border-neutral-200" />
                                 )}
                             </React.Fragment>
