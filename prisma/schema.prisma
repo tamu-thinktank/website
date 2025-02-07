@@ -99,6 +99,67 @@ enum ApplicationStatus {
     REJECTED
 }
 
+enum InterestLevel {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum CommitmentType {
+  CURRENT // Current time commitment (e.g., clubs, jobs)
+  PLANNED // Planned time commitment (e.g., future activities)
+}
+
+enum ReferralSource {
+  MSC_OPEN_HOUSE
+  ESO_OPEN_HOUSE
+  MULTISECTION
+  REFERRAL
+  INSTAGRAM
+  FLYERS
+}
+
+enum Pronoun {
+  HE_HIM
+  SHE_HER
+  THEY_THEM
+  OTHER
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  NON_BINARY
+  OTHER
+}
+
+enum Major {
+  //will add more
+  AERO   // Aerospace Engineering
+  BIOE   // Biomedical Engineering
+  BMEN   // Biomedical Engineering
+  CHEM   // Chemistry
+  CHEN   // Chemical Engineering
+  CIVE   // Civil Engineering
+  COMM   // Communications
+  CSCE   // Computer Science and Engineering
+  ECEN   // Electrical and Computer Engineering
+  ECON   // Economics
+  ENGR   // General Engineering
+  GEOE   // Geospatial Engineering
+  GEOL   // Geology
+  ISEN   // Industrial and Systems Engineering
+  MARA   // Maritime Administration
+  MATH   // Mathematics
+  MEEN   // Mechanical Engineering
+  NUEN   // Nuclear Engineering
+  OCEN   // Oceanography
+  OPEN   // Undecided
+  PETE   // Petroleum Engineering
+  PHYS   // Physics
+  STAT   // Statistics
+}
+
 // Availabilities of applicants
 model ApplicantTime {
     gridTime    String // Temporal.ZonedDateTime ISO in UTC
@@ -109,6 +170,53 @@ model ApplicantTime {
     @@index([applicantId])
 }
 
+// Time commitments (current or planned) for applicants.
+model Commitment {
+  name         String                 // Name of the commitment (e.g., "SAE").
+  hours        Int                    // Hours per week (e.g., range: 0-15).
+  type         CommitmentType         // Enum for "CURRENT" or "PLANNED".
+  applicantId  String                 // Foreign key linking this commitment to an application.
+  applicant    Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@id([name, applicantId, type])     // Composite primary key ensures unique commitments per application and type.
+}
+
+model Team {
+  id           String          @id @default(cuid())
+  name         String          @unique // Name of the team (e.g., TSGC, AIAA)
+  researchAreas ResearchArea[] // Relation to ResearchArea
+  preferences  TeamPreference[] // Relation to TeamPreference
+}
+
+model ResearchArea {
+  id             String             @id @default(cuid())
+  name           String             @unique // Name of the research area (e.g., Propulsion Systems)
+  teamId         String             // Foreign key linking to Team
+  team           Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  preferences    ResearchPreference[] // Relation to ResearchPreference
+}
+
+// Preferred teams and their interest levels (HIGH/MED/LOW).
+model TeamPreference {
+  id           String       @id @default(cuid())
+  teamId       String       // Foreign key linking to Team
+  team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  interest     InterestLevel
+  applicantId  String       // Foreign key linking to Application
+  applicant    Application  @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+}
+
+// Preferred research areas and their interest levels (HIGH/MED/LOW).
+model ResearchPreference {
+  id             String             @id @default(cuid())
+  researchAreaId String             // Foreign key linking to ResearchArea
+  researchArea   ResearchArea       @relation(fields: [researchAreaId], references: [id], onDelete: Cascade)
+  interest       InterestLevel
+  applicantId    String             // Foreign key linking to Application
+  applicant      Application        @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+}
+
+
 model Application {
     id          String            @id @default(cuid())
     submittedAt DateTime          @default(now())
@@ -118,27 +226,30 @@ model Application {
     // personal info section
     fullName        String
     preferredName   String?
-    email           String  @unique
+    preferredPronoun Pronoun?
+    gender          Gender?
     uin             Int     @unique
+    email           String  @unique
     altEmail        String?
     phone           String
-    year            Year
-    major           String
-    availability    Boolean
+    
+    // Academic Information Section:
+   year                 Year              // Current year at TAMU (enum).
+   major                Major             // Major abbreviation (e.g., AERO).
+   currentClasses       String[]          // Current semester classes.
+   nextClasses          String[]          // Next semester classes.
+   timeCommitment       Commitment[]      // Current and planned commitments.
 
-    // Interests and Motivation section
-    interestedAnswer    String
-    challenges          Challenge[]
-    interestedChallenge Challenge
-    passionAnswer       String
-    isLeadership        Boolean
+   // ThinkTank Information Section:
+   meetings             Boolean           // Can attend meetings in person.
+   weeklyCommitment     Boolean           // Can commit to weekly workload.
+   preferredTeams       TeamPreference[]  // Preferred teams with interest levels.
+   researchAreas        ResearchPreference[] // Preferred research areas with interest levels.
+   referral             ReferralSource[]      // How they heard about ThinkTank.
 
-    // Leadership section, empty if `isLeadership` is false
-    skillsAnswer       String?
-    conflictsAnswer    String?
-    timeManagement     String?
-    relevantExperience String?
-    timeCommitment     Boolean?
+   // Open-Ended Questions Section:
+   passion              String            @db.Text // Long answer (<250 words).
+   teamwork             String            @db.Text // Long answer (<250 words).
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeId     String // the id of the resume file in the google drive
