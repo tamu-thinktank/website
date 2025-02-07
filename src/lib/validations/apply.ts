@@ -1,22 +1,22 @@
-import { longAnswerLimit } from "@/consts/apply-form";
 import { Temporal } from "@js-temporal/polyfill";
-import { ApplicationStatus, Challenge, Year } from "@prisma/client";
+import { ApplicationStatus, Challenge, Year, ReferralSource, Pronoun, Gender, InterestLevel, Major } from "@prisma/client";
 import { z } from "zod";
 
 const challengeSchema = z.nativeEnum(Challenge);
 const statusSchema = z.nativeEnum(ApplicationStatus);
 const yearSchema = z.nativeEnum(Year);
+const majorSchema = z.nativeEnum(Major);
 
 export const ApplyFormSchema = z
   .object({
     // Personal info section
     personal: z.object({
-      fullName: z.string().min(1, "Required"),
+      fullName: z.string().min(1, "Full Name is required").max(100, "Name too long"),
       preferredName: z.string().nullable(),
-      email: z
-        .string()
-        .email("Invalid email")
-        .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
+      preferredPronoun: z.nativeEnum(Pronoun).nullable(),
+      pronounsText: z.string().nullable(),
+      gender: z.nativeEnum(Gender).nullable(),
+      genderText: z.string().nullable(),
       uin: z.coerce
         .number({
           invalid_type_error: "Expected a number",
@@ -24,6 +24,10 @@ export const ApplyFormSchema = z
         .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
           message: "Invalid UIN",
         }),
+      email: z
+        .string()
+        .email("Invalid email")
+        .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
       altEmail: z
         .string()
         .nullable()
@@ -41,47 +45,86 @@ export const ApplyFormSchema = z
           },
         ),
       phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
-      year: yearSchema,
-      major: z
-        .string()
-        .regex(/^[A-Za-z]{4}$/, "Not a valid 4 letter major abbreviation"),
-      availability: z.boolean(),
     }),
 
-    // Interests and Motivation section
-    interests: z.object({
-      interestedAnswer: z
-        .string()
-        .min(1, "Required")
-        .max(longAnswerLimit, "Responses must be within 1000 characters"),
-      challenges: z.array(challengeSchema).min(1, "Select at least one"),
-      interestedChallenge: challengeSchema,
-      passionAnswer: z
-        .string()
-        .min(1, "Required")
-        .max(longAnswerLimit, "Responses must be within 1000 characters"),
-      isLeadership: z.boolean(),
+    // Academic Information Section
+    academic: z.object({
+      year: z.nativeEnum(Year),
+      major: majorSchema,
+      currentClasses: z
+        .array(z.string().min(1, "Class cannot be empty"))
+        .max(8)
+        .refine(classes => 
+          classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
+          "All classes must be in format 'XXXX 123'"
+        )
+        .refine(classes => 
+          classes.filter(Boolean).length >= 2, 
+          "Enter at least two valid classes"
+        ),
+      nextClasses: z
+        .array(z.string().min(1, "Class cannot be empty"))
+        .max(8)
+        .refine(classes => 
+          classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
+          "All classes must be in format 'XXXX 123'"
+        )
+        .refine(classes => 
+          classes.filter(Boolean).length >= 2, 
+          "Enter at least two valid classes"
+        ),
+      timeCommitment: z
+        .array(
+          z.object({
+            name: z.string()
+              .max(50, "Commitment name must be under 50 characters")
+              .refine(val => !!val.trim(), "Name is required"),
+            hours: z.number()
+              .min(1, "Minimum 1 hour required")
+              .max(15, "Cannot exceed 15 hours"),
+            type: z.enum(["CURRENT", "PLANNED"]),
+          })
+        )
+        .superRefine((commitments, ctx) => {
+          commitments.forEach((commitment, index) => {
+            if (commitment.hours >= 1 && !commitment.name.trim()) {
+              ctx.addIssue({
+                code: "custom",
+                path: ["academic", "timeCommitment", index, "name"],
+                message: "Name is required when hours are specified",
+              });
+            }
+          });
+        }),
     }),
 
-    // Leadership section
-    leadership: z.object({
-      skillsAnswer: z
-        .string()
-        .max(longAnswerLimit, "Responses must be within 1000 characters")
-        .nullable(),
-      conflictsAnswer: z
-        .string()
-        .max(longAnswerLimit, "Responses must be within 1000 characters")
-        .nullable(),
-      timeManagement: z
-        .string()
-        .max(longAnswerLimit, "Responses must be within 1000 characters")
-        .nullable(),
-      relevantExperience: z
-        .string()
-        .max(longAnswerLimit, "Responses must be within 1000 characters")
-        .nullable(),
-      timeCommitment: z.boolean().nullable(),
+    // ThinkTank Information Section
+    thinkTankInfo: z.object({
+      meetings: z.boolean(), // Can attend meetings in person?
+      weeklyCommitment: z.boolean(), // Can commit to weekly workload?
+      // Preferred Teams Validation
+      preferredTeams: z.array(
+        z.object({
+          teamId: z.string(), // Validate by team ID or name
+          interestLevel: z.nativeEnum(InterestLevel), // HIGH/MEDIUM/LOW
+        })
+      ),
+
+      // Research Areas Validation
+      researchAreas: z.array(
+        z.object({
+          researchAreaId: z.string(), // Validate by research area ID or name
+          interestLevel: z.nativeEnum(InterestLevel), // HIGH/MEDIUM/LOW
+        })
+      ).max(3, "You can select up to three research areas"),
+
+      referralSources: z.array(z.nativeEnum(ReferralSource)),
+    }),
+
+    // Open-Ended Questions Section
+    openEndedQuestions: z.object({
+      passionAnswer: z.string().min(1).max(250, "Answer must be under 250 words"),
+      teamworkAnswer: z.string().min(1).max(250, "Answer must be under 250 words"),
     }),
 
     meetingTimes: z
@@ -122,45 +165,27 @@ export const ApplyFormSchema = z
      */
     resumeId: z.string(),
   })
-  .superRefine(({ interests: { isLeadership }, leadership }, ctx) => {
-    if (isLeadership) {
-      if (!leadership.skillsAnswer) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["leadership.skillsAnswer"],
-          message: "Required for leadership",
-        });
-      }
-      if (!leadership.conflictsAnswer) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["leadership.conflictsAnswer"],
-          message: "Required for leadership",
-        });
-      }
-      if (!leadership.timeManagement) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["leadership.timeManagement"],
-          message: "Required for leadership",
-        });
-      }
-      if (!leadership.relevantExperience) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["leadership.relevantExperience"],
-          message: "Required for leadership",
-        });
-      }
-      if (leadership.timeCommitment === null) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["leadership.timeCommitment"],
-          message: "Required for leadership",
-        });
-      }
+
+  .superRefine((data, ctx) => {
+    // Check if pronounsText is required when preferredPronoun is OTHER
+    if (data.personal.preferredPronoun === "OTHER" && !data.personal.pronounsText?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["personal", "pronounsText"],
+        message: "Please specify your pronouns if 'Other' is selected.",
+      });
+    }
+
+    // Check if genderText is required when gender is OTHER
+    if (data.personal.gender === "OTHER" && !data.personal.genderText?.trim()) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["personal", "genderText"],
+        message: "Please specify your gender if 'Other' is selected.",
+      });
     }
   });
+
 export type ApplyForm = z.infer<typeof ApplyFormSchema>;
 
 /**

@@ -1,8 +1,6 @@
 import type { ApplyForm } from "@/lib/validations/apply";
 import { Challenge } from "@prisma/client";
 
-export const longAnswerLimit = 1000;
-
 type Questions = {
   [Section in Exclude<keyof ApplyForm, "resumeId" | "meetingTimes">]: {
     [QuestionKey in keyof ApplyForm[Section] | "title"]: string;
@@ -13,35 +11,44 @@ export const q: Questions = {
     title: "Personal Information",
     fullName: "Full Name",
     preferredName: "Preferred Name",
-    email: "TAMU Email",
+    preferredPronoun: "Preferred Pronouns",
+    pronounsText: "Pronouns",
+    gender: "Gender",
+    genderText: "Gender",
     uin: "UIN",
+    email: "TAMU Email",
     altEmail: "Additional Email Contact",
     phone: "Contact Number",
+  },
+
+  academic: {
+    title: "Academic Information",
     year: "Current Year at TAMU",
     major: "Major",
-    availability:
-      "Are you able to add a class's worth of work to your schedule?",
+    currentClasses: "Current Semester Classes",
+    nextClasses: "Next Semester Classes",
+    timeCommitment: "Time Commitments",
   },
-  interests: {
-    title: "Interests and Motivation",
-    interestedAnswer: "Why are you interested in joining ThinkTank?",
-    challenges: "Which Design Challenges are you interested in?",
-    interestedChallenge: "Which Design Challenge are you most interested in?",
+  
+  thinkTankInfo: {
+    title: "ThinkTank Information",
+    meetings: "Are you able to attend a majority of meetings in-person?",
+    weeklyCommitment:
+      "Are you able to commit 8-10 hours per week (equivalent to 1 in-major engineering course) for the entire duration of the project?",
+    preferredTeams:
+      "For each selected team, rate your relative interest compared to other teams.",
+    researchAreas:
+      "For each selected research area, rate your relative interest compared to other research areas.",
+    referralSources:
+      "Where did you hear about us? (Select all that apply)",
+  },
+  
+  openEndedQuestions: {
+    title: "Open-Ended Questions",
     passionAnswer:
-      "Describe an instance where you demonstrated your passion for a project, task, or subject matter",
-    isLeadership: "Are you interested in a Team Lead position?",
-  },
-  leadership: {
-    title: "Leadership",
-    skillsAnswer:
-      "Describe a situation where you demonstrated leadership skills",
-    conflictsAnswer: "How do you handle conflicts within a team environment?",
-    timeManagement:
-      "How would you rate your ability to meet deadlines and manage time effectively?",
-    relevantExperience:
-      "Describe any relevant experience you have for this design challenge",
-    timeCommitment:
-      "Are you able to add 2 class's worth of work to your schedule?",
+      "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
+    teamworkAnswer:
+      "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
   },
 };
 
