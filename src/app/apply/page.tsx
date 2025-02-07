@@ -19,12 +19,19 @@ import type { PropsWithChildren, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../../hooks/usePersistForm";
+
+// Updated imports
 import Availability from "./_sections/availability";
-import Interests from "./_sections/interests";
+// Removed Interests and Leadership as they are replaced
 import FormIntroTab from "./_sections/intro";
-import Leadership from "./_sections/leadership";
-import PersonalInfo from "./_sections/personal";
+// Updated PersonalInfo import
+import PersonalInfo from "./_sections/personal"; 
+// AcademicInfo import
+import AcademicInfo from "./_sections/academic";
+// ResumeUpload remains unchanged
 import ResumeUpload from "./_sections/resume";
+// ThinkTankInfo import
+import ThinkTankInfo from "./_sections/thinkTankInfo";
 
 export default function Apply() {
   const { toast } = useToast();
@@ -38,28 +45,37 @@ export default function Apply() {
     "apply-form-S2025-v1",
     {
       resolver: zodResolver(ApplyFormSchema),
-      // include at least the default values of optional fields
       defaultValues: {
         personal: {
           preferredName: null,
           altEmail: null,
+          preferredPronoun: null,
+          pronounsText: null,
+          gender: null,
+          genderText: null,
         },
-        interests: {
-          challenges: [],
+        academic: {
+          currentClasses: [],
+          nextClasses: [],
+          timeCommitment: [],
         },
-        leadership: {
-          skillsAnswer: null,
-          conflictsAnswer: null,
-          timeManagement: null,
-          relevantExperience: null,
-          timeCommitment: null,
+        thinkTankInfo: {
+          meetings: false,
+          weeklyCommitment: false,
+          preferredTeams: [],
+          researchAreas: [],
+          referralSources: [],
+        },
+        openEndedQuestions: {
+          passionAnswer: "",
+          teamworkAnswer: "",
         },
         meetingTimes: [],
         resumeId: "",
       },
     },
   );
-  const isLeadershipSelected = form.getValues("interests.isLeadership");
+
   const viewportRef = useRef<HTMLDivElement>(null);
 
   const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
@@ -67,7 +83,7 @@ export default function Apply() {
       toast({
         title: "Form Submitted!",
         description:
-          "Contact tamuthinktank@gmail.com if you do not recieve an email by Jan. 19th.",
+          "Contact tamuthinktank@gmail.com if you do not receive an email by Jan. 19th.",
         duration: 10000,
       });
 
@@ -156,47 +172,51 @@ export default function Apply() {
       >
         <ScrollArea viewportRef={viewportRef} className="h-full">
           <div className="flex w-screen items-center justify-center">
-            <Tabs
-              defaultValue="start"
-              className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
+          <Tabs
+            defaultValue="start"
+            className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
+          >
+            <FormIntroTab />
+            <ApplyTab
+              previousTab="start"
+              currentTab="personal"
+              nextTab="academic"
+              viewportRef={viewportRef}
             >
-              <FormIntroTab />
-              <ApplyTab
-                previousTab="start"
-                currentTab="personal"
-                nextTab="interests"
-                viewportRef={viewportRef}
-              >
-                <PersonalInfo />
-              </ApplyTab>
-              <ApplyTab
-                previousTab="personal"
-                currentTab="interests"
-                nextTab={isLeadershipSelected ? "leadership" : "meetingTimes"}
-                viewportRef={viewportRef}
-              >
-                <Interests />
-              </ApplyTab>
-              <ApplyTab
-                previousTab="interests"
-                currentTab="leadership"
-                nextTab="meetingTimes"
-                viewportRef={viewportRef}
-              >
-                <Leadership />
-              </ApplyTab>
-              <ApplyTab
-                previousTab={isLeadershipSelected ? "leadership" : "interests"}
-                currentTab="meetingTimes"
-                nextTab="resumeId"
-                viewportRef={viewportRef}
-              >
-                <Availability
-                  userTimezone={userTimezone}
-                  setUserTimezone={setUserTimezone}
-                  table={table}
-                />
-              </ApplyTab>
+              <PersonalInfo />
+            </ApplyTab>
+
+            <ApplyTab
+              previousTab="personal"
+              currentTab="academic"
+              nextTab="thinkTankInfo"
+              viewportRef={viewportRef}
+            >
+              <AcademicInfo />
+            </ApplyTab>
+
+            {/* New ThinkTank Info Section */}
+            <ApplyTab
+              previousTab="academic"
+              currentTab="thinkTankInfo"
+              nextTab="meetingTimes"
+              viewportRef={viewportRef}
+            >
+              <ThinkTankInfo />
+            </ApplyTab>
+
+            <ApplyTab
+              previousTab="thinkTankInfo"
+              currentTab="meetingTimes"
+              nextTab="resumeId"
+              viewportRef={viewportRef}
+            >
+              <Availability
+                userTimezone={userTimezone}
+                setUserTimezone={setUserTimezone}
+                table={table}
+              />
+            </ApplyTab>
               <TabsContent className="space-y-2" value="resumeId">
                 <ResumeUpload setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
@@ -235,8 +255,8 @@ export default function Apply() {
 type ApplyTabType =
   | "start"
   | "personal"
-  | "interests"
-  | "leadership"
+  | "academic" // Updated tab name for academic info
+  | "thinkTankInfo" // Updated tab name for ThinkTank info
   | "meetingTimes"
   | "resumeId";
 
@@ -296,20 +316,12 @@ function ApplyTab({
       if (name?.startsWith(currentTab)) {
         form
           .trigger(currentTab)
-          .then((isValid) => {
-            if (isValid) {
-              setIsValid(true);
-            } else {
-              setIsValid(false);
-            }
-          })
+          .then((isValid) => setIsValid(isValid))
           .catch(() => setIsValid(false));
       }
     });
 
-    return () => {
-      sub.unsubscribe();
-    };
+    return () => sub.unsubscribe();
   }, [form.watch, isChecked]);
 
   return (
