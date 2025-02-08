@@ -1,8 +1,8 @@
 import type { ApplyForm } from "@/lib/validations/apply";
-import { Challenge } from "@prisma/client";
+import { Challenge, InterestLevel } from "@prisma/client";
 
 type Questions = {
-  [Section in Exclude<keyof ApplyForm, "resumeId" | "meetingTimes">]: {
+  [Section in Exclude<keyof ApplyForm, "meetingTimes">]: {
     [QuestionKey in keyof ApplyForm[Section] | "title"]: string;
   };
 };
@@ -50,6 +50,14 @@ export const q: Questions = {
     teamworkAnswer:
       "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
   },
+  
+  resume: {
+    title: "Resume & Agreements",
+    resumeId: "Resume Upload",
+    signatureCommitment: "Commitment Signature",
+    signatureAccountability: "Accountability Signature", 
+    signatureQuality: "Quality Pledge Signature"
+  }
 };
 
 export const challenges: {
@@ -63,3 +71,81 @@ export const challenges: {
     link: "https://ig.utexas.edu/tsgc/design-challenge/",
   },
 ];
+
+// Team and Research Area Types
+interface Team {
+  id: string;
+  name: string;
+  researchAreas: ResearchArea[];
+}
+
+interface ResearchArea {
+  id: string;
+  name: string;
+  relatedTeams: string[];
+}
+
+// Hardcoded Teams and Research Areas
+export const TEAMS: Team[] = [
+  {
+    id: "TEAM_1",
+    name: "Team 1",
+    researchAreas: [
+      {
+        id: "AREA_1A",
+        name: "Research Area 1A",
+        relatedTeams: ["TEAM_1"]
+      },
+      {
+        id: "AREA_1B",
+        name: "Research Area 1B",
+        relatedTeams: ["TEAM_1", "TEAM_2"]
+      }
+    ]
+  },
+  {
+    id: "TEAM_2",
+    name: "Team 2",
+    researchAreas: [
+      {
+        id: "AREA_2A",
+        name: "Research Area 2A",
+        relatedTeams: ["TEAM_2"]
+      },
+      {
+        id: "AREA_2B",
+        name: "Research Area 2B",
+        relatedTeams: ["TEAM_2", "TEAM_3"]
+      }
+    ]
+  },
+  {
+    id: "TEAM_3",
+    name: "Team 3",
+    researchAreas: [
+      {
+        id: "AREA_3A",
+        name: "Research Area 3A",
+        relatedTeams: ["TEAM_3"]
+      }
+    ]
+  }
+];
+
+// Flattened and deduplicated research areas
+export const RESEARCH_AREAS: ResearchArea[] = Array.from(
+  new Map(
+    TEAMS.flatMap(team => 
+      team.researchAreas.map(ra => ({
+        ...ra,
+        relatedTeams: [...new Set([...ra.relatedTeams, team.id])]
+      }))
+    ).map(ra => [ra.id, ra])
+  ).values()
+);
+
+// Interest Level Options (for forms)
+export const INTEREST_LEVELS = Object.values(InterestLevel).map((level) => ({
+  value: level as InterestLevel,
+  label: level.charAt(0) + level.slice(1).toLowerCase(),
+}));

@@ -20,18 +20,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../../hooks/usePersistForm";
 
-// Updated imports
 import Availability from "./_sections/availability";
-// Removed Interests and Leadership as they are replaced
 import FormIntroTab from "./_sections/intro";
-// Updated PersonalInfo import
-import PersonalInfo from "./_sections/personal"; 
-// AcademicInfo import
+import PersonalInfo from "./_sections/personal";
 import AcademicInfo from "./_sections/academic";
-// ResumeUpload remains unchanged
 import ResumeUpload from "./_sections/resume";
-// ThinkTankInfo import
 import ThinkTankInfo from "./_sections/thinkTankInfo";
+import OpenEndedQuestions from "./_sections/openEndedQuestions";
 
 export default function Apply() {
   const { toast } = useToast();
@@ -71,7 +66,12 @@ export default function Apply() {
           teamworkAnswer: "",
         },
         meetingTimes: [],
-        resumeId: "",
+        resume: {
+          resumeId: "",
+          signatureCommitment: "",
+          signatureAccountability: "",
+          signatureQuality: ""
+        },
       },
     },
   );
@@ -126,31 +126,35 @@ export default function Apply() {
         });
         return;
       }
-
+  
       const formData = new FormData();
       formData.append("resume", resumeFile);
-
+  
       try {
-        const resumeId = (await uploadResume(formData)).resumeId;
-        data.resumeId = resumeId;
+        const uploadResult = await uploadResume(formData);
+        const updatedData = {
+          ...data,
+          resume: {
+            ...data.resume,
+            resumeId: uploadResult.resumeId,
+          }
+        };
+  
+        await submitForm(updatedData);
       } catch (err) {
         toast({
           variant: "destructive",
           title: "Error",
           description: (err as Error).message,
         });
-        return;
-      }
-
-      try {
-        await submitForm(data);
-      } catch {
-        await deleteResume({
-          resumeId: data.resumeId,
-        });
+        
+        // Clean up resume if upload failed
+        if (data.resume.resumeId) {
+          await deleteResume({ resumeId: data.resume.resumeId });
+        }
       }
     },
-    [resumeFile, uploadResume, toast, submitForm],
+    [resumeFile, uploadResume, submitForm, deleteResume, toast]
   );
 
   return (
@@ -172,52 +176,60 @@ export default function Apply() {
       >
         <ScrollArea viewportRef={viewportRef} className="h-full">
           <div className="flex w-screen items-center justify-center">
-          <Tabs
-            defaultValue="start"
-            className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
-          >
-            <FormIntroTab />
-            <ApplyTab
-              previousTab="start"
-              currentTab="personal"
-              nextTab="academic"
-              viewportRef={viewportRef}
+            <Tabs
+              defaultValue="start"
+              className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
             >
-              <PersonalInfo />
-            </ApplyTab>
+              <FormIntroTab />
+              <ApplyTab
+                previousTab="start"
+                currentTab="personal"
+                nextTab="academic"
+                viewportRef={viewportRef}
+              >
+                <PersonalInfo />
+              </ApplyTab>
 
-            <ApplyTab
-              previousTab="personal"
-              currentTab="academic"
-              nextTab="thinkTankInfo"
-              viewportRef={viewportRef}
-            >
-              <AcademicInfo />
-            </ApplyTab>
+              <ApplyTab
+                previousTab="personal"
+                currentTab="academic"
+                nextTab="thinkTankInfo"
+                viewportRef={viewportRef}
+              >
+                <AcademicInfo />
+              </ApplyTab>
 
-            {/* New ThinkTank Info Section */}
-            <ApplyTab
-              previousTab="academic"
-              currentTab="thinkTankInfo"
-              nextTab="meetingTimes"
-              viewportRef={viewportRef}
-            >
-              <ThinkTankInfo />
-            </ApplyTab>
+              <ApplyTab
+                previousTab="academic"
+                currentTab="thinkTankInfo"
+                nextTab="openEndedQuestions"
+                viewportRef={viewportRef}
+              >
+                <ThinkTankInfo />
+              </ApplyTab>
 
-            <ApplyTab
-              previousTab="thinkTankInfo"
-              currentTab="meetingTimes"
-              nextTab="resumeId"
-              viewportRef={viewportRef}
-            >
-              <Availability
-                userTimezone={userTimezone}
-                setUserTimezone={setUserTimezone}
-                table={table}
-              />
-            </ApplyTab>
-              <TabsContent className="space-y-2" value="resumeId">
+              <ApplyTab
+                previousTab="thinkTankInfo"
+                currentTab="openEndedQuestions"
+                nextTab="meetingTimes"
+                viewportRef={viewportRef}
+              >
+                <OpenEndedQuestions />
+              </ApplyTab>
+
+              <ApplyTab
+                previousTab="openEndedQuestions"
+                currentTab="meetingTimes"
+                nextTab="resume"
+                viewportRef={viewportRef}
+              >
+                <Availability
+                  userTimezone={userTimezone}
+                  setUserTimezone={setUserTimezone}
+                  table={table}
+                />
+              </ApplyTab>
+              <TabsContent className="space-y-2" value="resume">
                 <ResumeUpload setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
@@ -229,11 +241,15 @@ export default function Apply() {
                   <Button
                     type="submit"
                     disabled={
-                      form.formState.isSubmitting || form.formState.isValidating
+                      form.formState.isSubmitting || 
+                      form.formState.isValidating ||
+                      !form.formState.isValid || // Add validation check
+                      !form.watch("resume.signatureCommitment") ||
+                      !form.watch("resume.signatureAccountability") ||
+                      !form.watch("resume.signatureQuality")
                     }
                   >
-                    {form.formState.isSubmitting ||
-                    form.formState.isValidating ? (
+                    {form.formState.isSubmitting ? (
                       <Loader2 className="animate-spin" />
                     ) : (
                       "Submit"
@@ -255,10 +271,11 @@ export default function Apply() {
 type ApplyTabType =
   | "start"
   | "personal"
-  | "academic" // Updated tab name for academic info
-  | "thinkTankInfo" // Updated tab name for ThinkTank info
+  | "academic"
+  | "thinkTankInfo"
+  | "openEndedQuestions"
   | "meetingTimes"
-  | "resumeId";
+  | "resume";
 
 /**
  * Validate input in section before allowing user to move on to next

@@ -1,11 +1,18 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { ApplicationStatus, Challenge, Year, ReferralSource, Pronoun, Gender, InterestLevel, Major } from "@prisma/client";
+import { ApplicationStatus, Year, ReferralSource, Pronoun, Gender, InterestLevel, Major } from "@prisma/client";
+import { TEAMS } from "@/consts/apply-form";
 import { z } from "zod";
 
-const challengeSchema = z.nativeEnum(Challenge);
 const statusSchema = z.nativeEnum(ApplicationStatus);
 const yearSchema = z.nativeEnum(Year);
 const majorSchema = z.nativeEnum(Major);
+const wordCount = (text: string) => 
+  text.trim().split(/\s+/).filter(Boolean).length;
+const validateSignature = (signature: string, fullName: string): boolean => {
+  const [firstName = "", lastName = ""] = fullName.toLowerCase().split(' ');
+  return signature.toLowerCase().includes(firstName) || 
+         signature.toLowerCase().includes(lastName);
+};
 
 export const ApplyFormSchema = z
   .object({
@@ -49,7 +56,7 @@ export const ApplyFormSchema = z
 
     // Academic Information Section
     academic: z.object({
-      year: z.nativeEnum(Year),
+      year: yearSchema,
       major: majorSchema,
       currentClasses: z
         .array(z.string().min(1, "Class cannot be empty"))
@@ -100,31 +107,35 @@ export const ApplyFormSchema = z
 
     // ThinkTank Information Section
     thinkTankInfo: z.object({
-      meetings: z.boolean(), // Can attend meetings in person?
-      weeklyCommitment: z.boolean(), // Can commit to weekly workload?
-      // Preferred Teams Validation
+      meetings: z.boolean(),
+      weeklyCommitment: z.boolean(),
+      
       preferredTeams: z.array(
         z.object({
-          teamId: z.string(), // Validate by team ID or name
-          interestLevel: z.nativeEnum(InterestLevel), // HIGH/MEDIUM/LOW
+          teamId: z.string(),
+          interestLevel: z.nativeEnum(InterestLevel),
         })
-      ),
+      ).min(1, "Select at least one team"),
 
-      // Research Areas Validation
       researchAreas: z.array(
         z.object({
-          researchAreaId: z.string(), // Validate by research area ID or name
-          interestLevel: z.nativeEnum(InterestLevel), // HIGH/MEDIUM/LOW
+          researchAreaId: z.string(),
+          interestLevel: z.nativeEnum(InterestLevel),
         })
       ).max(3, "You can select up to three research areas"),
 
-      referralSources: z.array(z.nativeEnum(ReferralSource)),
+      referralSources: z.array(z.nativeEnum(ReferralSource))
+        .min(1, "Please select at least one option"),
     }),
 
     // Open-Ended Questions Section
     openEndedQuestions: z.object({
-      passionAnswer: z.string().min(1).max(250, "Answer must be under 250 words"),
-      teamworkAnswer: z.string().min(1).max(250, "Answer must be under 250 words"),
+      passionAnswer: z.string()
+        .min(1, "Answer is required")
+        .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
+      teamworkAnswer: z.string()
+        .min(1, "Answer is required")
+        .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
     }),
 
     meetingTimes: z
@@ -163,7 +174,12 @@ export const ApplyFormSchema = z
     /**
      * File ID of resume in google drive, nullable to allow submitting form to upload file, then updating with actual ID
      */
-    resumeId: z.string(),
+    resume: z.object({
+      resumeId: z.string(),
+      signatureCommitment: z.string().min(1, "Commitment signature required"),
+      signatureAccountability: z.string().min(1, "Accountability signature required"),
+      signatureQuality: z.string().min(1, "Quality pledge required"),
+    })
   })
 
   .superRefine((data, ctx) => {
@@ -184,7 +200,44 @@ export const ApplyFormSchema = z
         message: "Please specify your gender if 'Other' is selected.",
       });
     }
+
+    // Validate that research areas belong to selected teams
+    const selectedTeamIds = data.thinkTankInfo.preferredTeams.map((team) => team.teamId);
+    const validResearchAreaIds = TEAMS.filter((team) =>
+      selectedTeamIds.includes(team.id)
+    )
+      .flatMap((team) => team.researchAreas)
+      .map((ra) => ra.id);
+
+    data.thinkTankInfo.researchAreas.forEach((ra, index) => {
+      if (!validResearchAreaIds.includes(ra.researchAreaId)) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["thinkTankInfo", "researchAreas", index, "researchAreaId"],
+          message:
+            "Selected research area must belong to chosen teams",
+        });
+      }
+    });
+
+    const fullName = data.personal.fullName.toLowerCase();
+    const signatures = [
+      { value: data.resume.signatureCommitment, path: ["resume", "signatureCommitment"] },
+      { value: data.resume.signatureAccountability, path: ["resume", "signatureAccountability"] },
+      { value: data.resume.signatureQuality, path: ["resume", "signatureQuality"] },
+    ];
+
+    signatures.forEach(({ value, path }) => {
+      if (!validateSignature(value, fullName)) {
+        ctx.addIssue({
+          code: "custom",
+          path: path,
+          message: "Signature must contain part of your first or last name",
+        });
+      }
+    });
   });
+
 
 export type ApplyForm = z.infer<typeof ApplyFormSchema>;
 

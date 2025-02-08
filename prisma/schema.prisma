@@ -234,23 +234,26 @@ model Application {
     phone           String
     
     // Academic Information Section:
-   year                 Year              // Current year at TAMU (enum).
-   major                Major             // Major abbreviation (e.g., AERO).
-   currentClasses       String[]          // Current semester classes.
-   nextClasses          String[]          // Next semester classes.
-   timeCommitment       Commitment[]      // Current and planned commitments.
+    year                 Year              // Current year at TAMU (enum).
+    major                Major             // Major abbreviation (e.g., AERO).
+    currentClasses       String[]          // Current semester classes.
+    nextClasses          String[]          // Next semester classes.
+    timeCommitment       Commitment[]      // Current and planned commitments.
 
-   // ThinkTank Information Section:
-   meetings             Boolean           // Can attend meetings in person.
-   weeklyCommitment     Boolean           // Can commit to weekly workload.
-   preferredTeams       TeamPreference[]  // Preferred teams with interest levels.
-   researchAreas        ResearchPreference[] // Preferred research areas with interest levels.
-   referral             ReferralSource[]      // How they heard about ThinkTank.
+    // ThinkTank Information Section:
+    meetings             Boolean           // Can attend meetings in person.
+    weeklyCommitment     Boolean           // Can commit to weekly workload.
+    preferredTeams       TeamPreference[]  // Preferred teams with interest levels.
+    researchAreas        ResearchPreference[] // Preferred research areas with interest levels.
+    referral             ReferralSource[]      // How they heard about ThinkTank.
 
-   // Open-Ended Questions Section:
-   passion              String            @db.Text // Long answer (<250 words).
-   teamwork             String            @db.Text // Long answer (<250 words).
+    // Open-Ended Questions Section:
+    passion              String            @db.Text // Long answer (<250 words).
+    teamwork             String            @db.Text // Long answer (<250 words).
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeId     String // the id of the resume file in the google drive
+    signatureCommitment String
+    signatureAccountability String
+    signatureQuality String
 }

@@ -29,12 +29,9 @@ export default function PersonalInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>{q.personal.title}</CardTitle>
+          <CardTitle className="text-center">{q.personal.title}</CardTitle>
           <Separator />
         </CardHeader>
-        <CardContent>
-          Include contacts where you are mostly likely to response if notified
-        </CardContent>
       </Card>
 
       <FormField

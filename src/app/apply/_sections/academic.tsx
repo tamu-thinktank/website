@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
@@ -31,12 +32,9 @@ export default function AcademicInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>{q.academic.title}</CardTitle>
+          <CardTitle className="text-center">{q.academic.title}</CardTitle>
           <Separator />
         </CardHeader>
-        <CardContent>
-          Provide details about your academic background and commitments.
-        </CardContent>
       </Card>
 
       {/* Current Year at TAMU */}
@@ -91,18 +89,21 @@ export default function AcademicInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <select 
-                    value={field.value || ""} 
-                    onChange={(e) => field.onChange(e.target.value)} 
-                    className="w-full border rounded-md p-2"
+                  <Select
+                    value={field.value}
+                    onValueChange={field.onChange}
                   >
-                    <option value="" disabled>Select your major</option>
-                    {Object.values(Major).map((major) => (
-                      <option key={major} value={major}>
-                        {major}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select your major" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.values(Major).map((major) => (
+                        <SelectItem key={major} value={major}>
+                          {major}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </FormControl>
                 <FormMessage />
               </CardContent>
@@ -254,7 +255,7 @@ export default function AcademicInfo() {
                 <CardContent className="space-y-4">
                   {field.value
                     .filter((c) => c.type === type)
-                    .map((commitment, index) => {
+                    .map((commitment) => {
                       const globalIndex = field.value.findIndex(c => c === commitment);
                       return (
                         <div key={globalIndex} className="grid grid-cols-[1fr_100px_40px] gap-4 items-start">
