@@ -8,9 +8,7 @@ import { MemberProvider } from "../transfer";
 export default function Home() {
   return (
     <div>
-      <MembersPage />
       <IntervieweesPage />
-      <MemberProvider />
     </div>
   );
 }

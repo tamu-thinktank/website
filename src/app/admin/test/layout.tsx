@@ -1,15 +1,15 @@
 "use client";
 
-//import GradientLayout from "@/components/GradientLayout";
-//import { Button } from "@/components/ui/button";
-//import { getBaseUrl } from "@/lib/trpc/shared";
-//import { Loader2 } from "lucide-react";
+import GradientLayout from "@/components/GradientLayout";
+import { Button } from "@/components/ui/button";
+import { getBaseUrl } from "@/lib/trpc/shared";
+import { Loader2 } from "lucide-react";
 import { SessionProvider, signIn, useSession } from "next-auth/react";
-import { AdminHeader } from "./admin-header";
-//import { ApplicantsPage } from "./applicants/applicantPage";
-import { MembersPage } from "./members/memberPage";
-import { IntervieweesPage } from "./interviewees/intervieweePage";
-import { MemberProvider } from "./transfer";
+import { AdminHeader } from "../admin-header";
+import { ApplicantsPage } from "../applicants/applicantPage";
+import { MembersPage } from "../members/memberPage";
+import { IntervieweesPage } from "../interviewees/intervieweePage";
+import { MemberProvider } from "../transfer";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -27,16 +27,12 @@ function Content({ children }: { children: React.ReactNode }) {
   return authStatus === "authenticated" ? (
     <>
       <section className="h-[90vh] w-11/12 space-y-4 md:w-3/4 lg:w-2/3">
-        <AdminHeader />
         {children}
       </section>
     </>
   ) : (
     <>
-      <MemberProvider>
-        <IntervieweesPage />
-        <MembersPage />
-      </MemberProvider>
+      <IntervieweesPage />
     </>
     // <Button
     //   disabled={authStatus === "loading"}
