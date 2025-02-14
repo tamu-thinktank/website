@@ -27,14 +27,18 @@ import AcademicInfo from "./_sections/academic";
 import ResumeUpload from "./_sections/resume";
 import ThinkTankInfo from "./_sections/thinkTankInfo";
 import OpenEndedQuestions from "./_sections/openEndedQuestions";
+import SubmissionConfirmation from "./_sections/confirmation";
 
 export default function Apply() {
   const { toast } = useToast();
   const router = useRouter();
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [userTimezone, setUserTimezone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
+  const [resumeFile, setResumeFile] = useState<File>();
   const table = useCalculateTable(userTimezone);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const form = usePersistForm<RouterInputs["public"]["applyForm"]>(
     "apply-form-S2025-v1",
@@ -74,19 +78,16 @@ export default function Apply() {
     },
   );
 
-  const viewportRef = useRef<HTMLDivElement>(null);
-
   const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
     onSuccess: () => {
+      window.localStorage.removeItem("apply-form-S2025-v1");
+      form.reset();
       toast({
         title: "Form Submitted!",
-        description:
-          "Contact tamuthinktank@gmail.com if you do not receive an email by Jan. 19th.",
+        description: "Contact tamuthinktank@gmail.com if you do not receive an email by Jan. 19th.",
         duration: 10000,
       });
-
-      form.reset();
-      router.push("/");
+      setShowConfirmation(true);
     },
     onError: () => {
       toast({
@@ -99,7 +100,6 @@ export default function Apply() {
     },
   });
 
-  const [resumeFile, setResumeFile] = useState<File>();
   const { mutateAsync: uploadResume } = useMutation<
     UploadResumeResponse,
     unknown,
@@ -112,6 +112,7 @@ export default function Apply() {
       }).then((res) => res.json() as Promise<UploadResumeResponse>);
     },
   });
+
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
@@ -154,6 +155,10 @@ export default function Apply() {
     },
     [resumeFile, uploadResume, submitForm, deleteResume, toast]
   );
+
+  if (showConfirmation) {
+    return <SubmissionConfirmation />;
+  }
 
   return (
     <Form {...form}>
