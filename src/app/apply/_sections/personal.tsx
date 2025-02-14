@@ -17,9 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { q } from "@/consts/apply-form";
+import { q, PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { Gender, Pronoun } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 
 export default function PersonalInfo() {
@@ -84,42 +83,47 @@ export default function PersonalInfo() {
         )}
       />
 
-      {/* Preferred Pronouns */}
       <FormField
         control={form.control}
-        name="personal.preferredPronoun"
+        name="personal.pronouns"
         render={({ field }) => (
           <FormItem>
             <Card>
               <CardHeader>
-                <CardTitle>{q.personal.preferredPronoun}</CardTitle>
+                <CardTitle>{q.personal.pronouns}</CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  onValueChange={(value) => field.onChange(value as Pronoun)}
-                  value={field.value ?? undefined} // Convert null to undefined
+                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value || ""}
+                  onValueChange={(value) => {
+                    if (value === "OTHER") {
+                      field.onChange("OTHER:");
+                    } else {
+                      field.onChange(value);
+                    }
+                  }}
                 >
-                  {Object.values(Pronoun).map((pronoun) => (
-                    <FormItem key={pronoun}>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value={pronoun} id={pronoun} />
-                        {/* Convert enum value to a user-friendly label */}
-                        <FormLabel htmlFor={pronoun}>
-                          {pronoun.replace("_", "/").replace(/_/g, " ")} {/* Replace underscores */}
-                        </FormLabel>
-                      </div>
-
-                      {/* Show text input if "Other" is selected */}
-                      {field.value === "OTHER" && pronoun === "OTHER" && (
-                        <Input
-                          type="text"
-                          placeholder="Specify your pronouns"
-                          {...form.register("personal.pronounsText")}
-                        />
-                      )}
-                    </FormItem>
+                  {PRONOUN_OPTIONS.map((option) => (
+                    <div key={option.value} className="flex items-center space-x-2">
+                      <RadioGroupItem 
+                        value={option.value} 
+                        id={`pronoun-${option.value}`} 
+                      />
+                      <FormLabel htmlFor={`pronoun-${option.value}`}>
+                        {option.label}
+                      </FormLabel>
+                    </div>
                   ))}
                 </RadioGroup>
+                
+                {(field.value?.startsWith("OTHER:") || form.watch("personal.pronouns") === "OTHER") && (
+                  <Input
+                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] || "" : ""}
+                    onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
+                    placeholder="Specify your pronouns"
+                    className="mt-2 ml-6"
+                  />
+                )}
                 <FormMessage />
               </CardContent>
             </Card>
@@ -127,7 +131,6 @@ export default function PersonalInfo() {
         )}
       />
 
-      {/* Gender */}
       <FormField
         control={form.control}
         name="personal.gender"
@@ -139,30 +142,36 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  onValueChange={(value) => field.onChange(value as Gender)}
-                  value={field.value ?? undefined} // Convert null to undefined
+                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value || ""}
+                  onValueChange={(value) => {
+                    if (value === "OTHER") {
+                      field.onChange("OTHER:");
+                    } else {
+                      field.onChange(value);
+                    }
+                  }}
                 >
-                  {Object.values(Gender).map((gender) => (
-                    <FormItem key={gender}>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value={gender} id={gender} />
-                        {/* Convert enum value to a user-friendly label */}
-                        <FormLabel htmlFor={gender}>
-                          {gender.replace("_", " ").replace(/_/g, " ")} {/* Replace underscores */}
-                        </FormLabel>
-                      </div>
-
-                      {/* Show text input if "Other" is selected */}
-                      {field.value === "OTHER" && gender === "OTHER" && (
-                        <Input
-                          type="text"
-                          placeholder="Specify your gender"
-                          {...form.register("personal.genderText")}
-                        />
-                      )}
-                    </FormItem>
+                  {GENDER_OPTIONS.map((option) => (
+                    <div key={option.value} className="flex items-center space-x-2">
+                      <RadioGroupItem 
+                        value={option.value} 
+                        id={`gender-${option.value}`} 
+                      />
+                      <FormLabel htmlFor={`gender-${option.value}`}>
+                        {option.label}
+                      </FormLabel>
+                    </div>
                   ))}
                 </RadioGroup>
+                
+                {(field.value?.startsWith("OTHER:") || form.watch("personal.gender") === "OTHER") && (
+                  <Input
+                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] || "" : ""}
+                    onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
+                    placeholder="Specify your gender"
+                    className="mt-2 ml-6"
+                  />
+                )}
                 <FormMessage />
               </CardContent>
             </Card>

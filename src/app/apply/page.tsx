@@ -44,10 +44,8 @@ export default function Apply() {
         personal: {
           preferredName: null,
           altEmail: null,
-          preferredPronoun: null,
-          pronounsText: null,
-          gender: null,
-          genderText: null,
+          pronouns: "",
+          gender: "",
         },
         academic: {
           currentClasses: [],

@@ -119,20 +119,6 @@ enum ReferralSource {
   FLYERS
 }
 
-enum Pronoun {
-  HE_HIM
-  SHE_HER
-  THEY_THEM
-  OTHER
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  NON_BINARY
-  OTHER
-}
-
 enum Major {
   //will add more
   AERO   // Aerospace Engineering
@@ -226,8 +212,8 @@ model Application {
     // personal info section
     fullName        String
     preferredName   String?
-    preferredPronoun Pronoun?
-    gender          Gender?
+    pronouns        String?
+    gender          String?
     uin             Int     @unique
     email           String  @unique
     altEmail        String?

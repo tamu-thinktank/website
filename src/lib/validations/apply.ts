@@ -1,11 +1,13 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { ApplicationStatus, Year, ReferralSource, Pronoun, Gender, InterestLevel, Major } from "@prisma/client";
+import { ApplicationStatus, Year, ReferralSource, InterestLevel, Major } from "@prisma/client";
 import { TEAMS } from "@/consts/apply-form";
 import { z } from "zod";
 
 const statusSchema = z.nativeEnum(ApplicationStatus);
 const yearSchema = z.nativeEnum(Year);
 const majorSchema = z.nativeEnum(Major);
+const PRESET_PRONOUNS = ["HE_HIM", "SHE_HER", "THEY_THEM"] as const;
+const PRESET_GENDERS = ["MALE", "FEMALE", "NON_BINARY"] as const;
 const wordCount = (text: string) => 
   text.trim().split(/\s+/).filter(Boolean).length;
 const validateSignature = (signature: string, fullName: string): boolean => {
@@ -20,10 +22,18 @@ export const ApplyFormSchema = z
     personal: z.object({
       fullName: z.string().min(1, "Full Name is required").max(100, "Name too long"),
       preferredName: z.string().nullable(),
-      preferredPronoun: z.nativeEnum(Pronoun).nullable(),
-      pronounsText: z.string().nullable(),
-      gender: z.nativeEnum(Gender).nullable(),
-      genderText: z.string().nullable(),
+      pronouns: z.string()
+        .refine(val => 
+          PRESET_PRONOUNS.includes(val as any) || 
+          (val.startsWith("OTHER:") && val.length > 7), 
+          "Invalid or incomplete pronouns"
+        ),
+      gender: z.string()
+        .refine(val => 
+          PRESET_GENDERS.includes(val as any) || 
+          (val.startsWith("OTHER:") && val.length > 7), 
+          "Invalid or incomplete gender"
+        ),
       uin: z.coerce
         .number({
           invalid_type_error: "Expected a number",
@@ -183,24 +193,6 @@ export const ApplyFormSchema = z
   })
 
   .superRefine((data, ctx) => {
-    // Check if pronounsText is required when preferredPronoun is OTHER
-    if (data.personal.preferredPronoun === "OTHER" && !data.personal.pronounsText?.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["personal", "pronounsText"],
-        message: "Please specify your pronouns if 'Other' is selected.",
-      });
-    }
-
-    // Check if genderText is required when gender is OTHER
-    if (data.personal.gender === "OTHER" && !data.personal.genderText?.trim()) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["personal", "genderText"],
-        message: "Please specify your gender if 'Other' is selected.",
-      });
-    }
-
     // Validate that research areas belong to selected teams
     const selectedTeamIds = data.thinkTankInfo.preferredTeams.map((team) => team.teamId);
     const validResearchAreaIds = TEAMS.filter((team) =>

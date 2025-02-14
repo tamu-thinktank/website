@@ -11,10 +11,8 @@ export const q: Questions = {
     title: "Personal Information",
     fullName: "Full Name",
     preferredName: "Preferred Name",
-    preferredPronoun: "Preferred Pronouns",
-    pronounsText: "Pronouns",
+    pronouns: "Preferred Pronouns",
     gender: "Gender",
-    genderText: "Gender",
     uin: "UIN",
     email: "TAMU Email",
     altEmail: "Additional Email Contact",
@@ -149,3 +147,17 @@ export const INTEREST_LEVELS = Object.values(InterestLevel).map((level) => ({
   value: level as InterestLevel,
   label: level.charAt(0) + level.slice(1).toLowerCase(),
 }));
+
+export const PRONOUN_OPTIONS = [
+  { value: "HE_HIM", label: "He/Him" },
+  { value: "SHE_HER", label: "She/Her" },
+  { value: "THEY_THEM", label: "They/Them" },
+  { value: "OTHER", label: "Other" }
+];
+
+export const GENDER_OPTIONS = [
+  { value: "MALE", label: "Male" },
+  { value: "FEMALE", label: "Female" },
+  { value: "NON_BINARY", label: "Non-Binary" },
+  { value: "OTHER", label: "Other" }
+];
