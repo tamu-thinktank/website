@@ -25,15 +25,20 @@ export const ApplyFormSchema = z
       pronouns: z.string()
         .refine(val => 
           PRESET_PRONOUNS.includes(val as any) || 
-          (val.startsWith("OTHER:") && val.length > 7), 
+          (val.startsWith("OTHER:") && val.length > 7) || 
+          !val, // allows empty value
           "Invalid or incomplete pronouns"
-        ),
+        )
+        .optional(), // makes field optional
+
       gender: z.string()
         .refine(val => 
           PRESET_GENDERS.includes(val as any) || 
-          (val.startsWith("OTHER:") && val.length > 7), 
+          (val.startsWith("OTHER:") && val.length > 7) || 
+          !val, // allows empty value
           "Invalid or incomplete gender"
-        ),
+        )
+    .optional(), // makes field optional
       uin: z.coerce
         .number({
           invalid_type_error: "Expected a number",

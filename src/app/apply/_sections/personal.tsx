@@ -96,13 +96,19 @@ export default function PersonalInfo() {
                 <RadioGroup
                   value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value || ""}
                   onValueChange={(value) => {
-                    if (value === "OTHER") {
+                    if (value === "") {
+                      field.onChange(undefined);
+                    } else if (value === "OTHER") {
                       field.onChange("OTHER:");
                     } else {
                       field.onChange(value);
                     }
                   }}
                 >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="" id="pronoun-none" />
+                    <FormLabel htmlFor="pronoun-none">Prefer not to say</FormLabel>
+                  </div>
                   {PRONOUN_OPTIONS.map((option) => (
                     <div key={option.value} className="flex items-center space-x-2">
                       <RadioGroupItem 
@@ -144,13 +150,19 @@ export default function PersonalInfo() {
                 <RadioGroup
                   value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value || ""}
                   onValueChange={(value) => {
-                    if (value === "OTHER") {
+                    if (value === "") {
+                      field.onChange(undefined);
+                    } else if (value === "OTHER") {
                       field.onChange("OTHER:");
                     } else {
                       field.onChange(value);
                     }
                   }}
                 >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="" id="gender-none" />
+                    <FormLabel htmlFor="gender-none">Prefer not to say</FormLabel>
+                  </div>
                   {GENDER_OPTIONS.map((option) => (
                     <div key={option.value} className="flex items-center space-x-2">
                       <RadioGroupItem 
