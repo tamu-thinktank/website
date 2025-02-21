@@ -15,11 +15,18 @@ export const publicRouter = createTRPCRouter({
           // Academic Info
           ...input.academic,
           timeCommitment: {
-            create: input.academic.timeCommitment.map(tc => ({
-              name: tc.name,
-              hours: tc.hours,
-              type: tc.type,
-            })),
+            create: input.academic.timeCommitment
+              .filter((tc): tc is Required<typeof tc> => {
+                return typeof tc.name === 'string' && 
+                       typeof tc.hours === 'number' && 
+                       tc.name.trim().length > 0 && 
+                       tc.hours > 0;
+              })
+              .map(tc => ({
+                name: tc.name,
+                hours: tc.hours,
+                type: tc.type,
+              })),
           },
           
           // ThinkTank Info

@@ -9,9 +9,10 @@ export default function SubmissionConfirmation() {
   const router = useRouter();
 
   const handleReturn = () => {
-    // Clean up any remaining state if needed
+    // Clean up any remaining state
     window.localStorage.removeItem("apply-form-S2025-v1");
-    router.push("/");
+    // Use replace instead of push to prevent back navigation to the form
+    router.replace("/");
   };
 
   return (
@@ -42,7 +43,7 @@ export default function SubmissionConfirmation() {
 
           <Button 
             onClick={handleReturn}
-            className="w-full"
+            className="w-auto bg-white text-black hover:bg-white hover:text-black"
           >
             Return to Home
           </Button>

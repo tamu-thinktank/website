@@ -14,7 +14,6 @@ import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import type { PropsWithChildren, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -31,7 +30,6 @@ import SubmissionConfirmation from "./_sections/confirmation";
 
 export default function Apply() {
   const { toast } = useToast();
-  const router = useRouter();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [userTimezone, setUserTimezone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -52,8 +50,8 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: [],
-          nextClasses: [],
+          currentClasses: [""],
+          nextClasses: [""],
           timeCommitment: [],
         },
         thinkTankInfo: {
@@ -80,8 +78,11 @@ export default function Apply() {
 
   const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
     onSuccess: () => {
-      window.localStorage.removeItem("apply-form-S2025-v1");
+      // Reset form and local storage first
       form.reset();
+      window.localStorage.removeItem("apply-form-S2025-v1");
+      
+      // Then show toast and confirmation
       toast({
         title: "Form Submitted!",
         description: "Contact tamuthinktank@gmail.com if you do not receive an email by Jan. 19th.",
@@ -243,6 +244,7 @@ export default function Apply() {
                   </TabsTrigger>
                   <Button
                     type="submit"
+                    className="bg-white text-black hover:bg-white hover:text-black"
                     disabled={
                       form.formState.isSubmitting || 
                       form.formState.isValidating ||
@@ -313,20 +315,21 @@ function ApplyTab({
     if (currentTab === "start") {
       return;
     }
-
-    const isValid = await form.trigger(currentTab, {
-      shouldFocus: true,
+  
+    // Remove shouldTouch as it's not a valid option for trigger()
+    const result = await form.trigger(currentTab, {
+      shouldFocus: true
     });
-
-    if (isValid) {
+  
+    if (result) {
       setIsValid(true);
       scrollToTop();
     } else {
       setIsValid(false);
     }
-
+  
     setIsChecked(true);
-  }, [form.trigger]);
+  }, [currentTab, form, scrollToTop]);  
 
   useEffect(() => {
     if (!isChecked) return;

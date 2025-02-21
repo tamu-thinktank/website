@@ -74,50 +74,31 @@ export const ApplyFormSchema = z
       year: yearSchema,
       major: majorSchema,
       currentClasses: z
-        .array(z.string().min(1, "Class cannot be empty"))
-        .max(8)
-        .refine(classes => 
-          classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
+        .array(z.string())
+        .min(2, "Enter at least two classes")
+        .refine(
+          classes => classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
           "All classes must be in format 'XXXX 123'"
-        )
-        .refine(classes => 
-          classes.filter(Boolean).length >= 2, 
-          "Enter at least two valid classes"
         ),
       nextClasses: z
-        .array(z.string().min(1, "Class cannot be empty"))
-        .max(8)
-        .refine(classes => 
-          classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
+        .array(z.string())
+        .min(2, "Enter at least two classes")
+        .refine(
+          classes => classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
           "All classes must be in format 'XXXX 123'"
-        )
-        .refine(classes => 
-          classes.filter(Boolean).length >= 2, 
-          "Enter at least two valid classes"
         ),
-      timeCommitment: z
+        timeCommitment: z
         .array(
           z.object({
-            name: z.string()
-              .max(50, "Commitment name must be under 50 characters")
-              .refine(val => !!val.trim(), "Name is required"),
+            name: z.string().min(1, "Name is required"),
             hours: z.number()
               .min(1, "Minimum 1 hour required")
               .max(15, "Cannot exceed 15 hours"),
-            type: z.enum(["CURRENT", "PLANNED"]),
+            type: z.enum(["CURRENT", "PLANNED"])
           })
         )
-        .superRefine((commitments, ctx) => {
-          commitments.forEach((commitment, index) => {
-            if (commitment.hours >= 1 && !commitment.name.trim()) {
-              ctx.addIssue({
-                code: "custom",
-                path: ["academic", "timeCommitment", index, "name"],
-                message: "Name is required when hours are specified",
-              });
-            }
-          });
-        }),
+        .optional()
+        .default([]) 
     }),
 
     // ThinkTank Information Section

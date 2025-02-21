@@ -125,7 +125,7 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Enter at least two classes (e.g., ENGR 102, MATH 151)
+                  Enter at least two classes in format 'XXXX 123' (e.g., ENGR 102)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -138,8 +138,10 @@ export default function AcademicInfo() {
                         <FormItem className="flex-1">
                           <Input
                             {...field}
-                            placeholder={`Class ${index + 1} (e.g., ENGR 102)`}
+                            placeholder="XXXX 123"
+                            pattern="[A-Z]{4} \d{3}"
                           />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -150,26 +152,22 @@ export default function AcademicInfo() {
                       onClick={() => {
                         const updated = [...field.value];
                         updated.splice(index, 1);
-                        form.setValue("academic.currentClasses", updated);
+                        field.onChange(updated);
                       }}
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
-                {field.value.length < 8 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => form.setValue("academic.currentClasses", [...field.value, ""])}
-                  >
-                    Add Class
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => field.onChange([...field.value, ""])}
+                >
+                  Add Class
+                </Button>
+                <FormMessage />
               </CardContent>
-              <FormMessage>
-                {form.formState.errors.academic?.currentClasses?.message}
-              </FormMessage>
             </Card>
           </FormItem>
         )}
@@ -188,7 +186,7 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Enter at least two classes (e.g., ENGR 102, MATH 151)
+                  Enter at least two classes in format 'XXXX 123' (e.g., ENGR 102)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -201,8 +199,10 @@ export default function AcademicInfo() {
                         <FormItem className="flex-1">
                           <Input
                             {...field}
-                            placeholder={`Class ${index + 1} (e.g., ENGR 102)`}
+                            placeholder="XXXX 123"
+                            pattern="[A-Z]{4} \d{3}"
                           />
+                          <FormMessage />
                         </FormItem>
                       )}
                     />
@@ -213,26 +213,22 @@ export default function AcademicInfo() {
                       onClick={() => {
                         const updated = [...field.value];
                         updated.splice(index, 1);
-                        form.setValue("academic.nextClasses", updated);
+                        field.onChange(updated);
                       }}
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
-                {field.value.length < 8 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => form.setValue("academic.nextClasses", [...field.value, ""])}
-                  >
-                    Add Class
-                  </Button>
-                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => field.onChange([...field.value, ""])}
+                >
+                  Add Class
+                </Button>
+                <FormMessage />
               </CardContent>
-              <FormMessage>
-                {form.formState.errors.academic?.nextClasses?.message}
-              </FormMessage>
             </Card>
           </FormItem>
         )}
@@ -251,25 +247,35 @@ export default function AcademicInfo() {
                   <CardTitle>
                     {type === "CURRENT" ? "Current Time Commitments" : "Planned Time Commitments"}
                   </CardTitle>
+                  <CardDescription>
+                    Enter commitments between 1-15 hours per week
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {field.value
+                  {(field.value ?? [])
                     .filter((c) => c.type === type)
-                    .map((commitment) => {
-                      const globalIndex = field.value.findIndex(c => c === commitment);
+                    .map((commitment, idx) => {
+                      const globalIndex = (field.value ?? []).findIndex(c => 
+                        c.type === type && (field.value ?? []).filter(fc => fc.type === type).indexOf(c) === idx
+                      );
                       return (
                         <div key={globalIndex} className="grid grid-cols-[1fr_100px_40px] gap-4 items-start">
                           <FormField
                             control={form.control}
                             name={`academic.timeCommitment.${globalIndex}.name`}
                             render={({ field }) => (
-                              <FormItem className="h-full">
+                              <FormItem>
                                 <Input
                                   {...field}
                                   placeholder="Commitment name"
-                                  value={field.value || ""}
+                                  onBlur={async () => {
+                                    field.onBlur();
+                                    if (field.value) {
+                                      await form.trigger(`academic.timeCommitment.${globalIndex}.name`);
+                                    }
+                                  }}
                                 />
-                                <FormMessage className="text-xs" />
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -277,15 +283,15 @@ export default function AcademicInfo() {
                             control={form.control}
                             name={`academic.timeCommitment.${globalIndex}.hours`}
                             render={({ field }) => (
-                              <FormItem className="h-full">
+                              <FormItem>
                                 <Input
                                   type="number"
                                   {...field}
                                   min={1}
-                                  value={field.value || 1}
+                                  max={15}
                                   onChange={e => field.onChange(Number(e.target.value))}
                                 />
-                                <FormMessage className="text-xs" />
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -293,9 +299,10 @@ export default function AcademicInfo() {
                             type="button"
                             variant="outline"
                             size="icon"
-                            className="mt-[2px]"
                             onClick={() => {
-                              const updated = field.value.filter((_, i) => i !== globalIndex);
+                              const currentValue = field.value ?? [];
+                              const updated = [...currentValue];
+                              updated.splice(globalIndex, 1);
                               form.setValue("academic.timeCommitment", updated);
                             }}
                           >
@@ -307,14 +314,13 @@ export default function AcademicInfo() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => form.setValue("academic.timeCommitment", [
-                      ...field.value,
-                      { 
-                        name: "", 
-                        hours: 1, // Default to minimum 1 hour
-                        type: type as "CURRENT" | "PLANNED" 
-                      }
-                    ])}
+                    onClick={() => {
+                      const currentValue = field.value ?? [];
+                      form.setValue("academic.timeCommitment", [
+                        ...currentValue,
+                        { name: "Commitment Name", hours: 1, type: type as "CURRENT" | "PLANNED" }
+                      ]);
+                    }}
                   >
                     Add Commitment
                   </Button>
@@ -325,5 +331,5 @@ export default function AcademicInfo() {
         />
       ))}
     </div>
-    );
+  );
 }
