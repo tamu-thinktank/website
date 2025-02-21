@@ -120,30 +120,29 @@ enum ReferralSource {
 }
 
 enum Major {
-  //will add more
-  AERO   // Aerospace Engineering
-  BIOE   // Biomedical Engineering
-  BMEN   // Biomedical Engineering
-  CHEM   // Chemistry
-  CHEN   // Chemical Engineering
-  CIVE   // Civil Engineering
-  COMM   // Communications
-  CSCE   // Computer Science and Engineering
-  ECEN   // Electrical and Computer Engineering
-  ECON   // Economics
-  ENGR   // General Engineering
-  GEOE   // Geospatial Engineering
-  GEOL   // Geology
-  ISEN   // Industrial and Systems Engineering
-  MARA   // Maritime Administration
-  MATH   // Mathematics
-  MEEN   // Mechanical Engineering
-  NUEN   // Nuclear Engineering
-  OCEN   // Oceanography
-  OPEN   // Undecided
-  PETE   // Petroleum Engineering
-  PHYS   // Physics
-  STAT   // Statistics
+  ENGR
+  AERO
+  AGSM
+  BAEN
+  BMEN
+  CHEN
+  CPEN
+  CSCE
+  CVEN
+  ECEN
+  ELEN
+  EVEN
+  IDIS
+  INEN
+  ISEN
+  MASE
+  MEEN
+  MMET
+  MXET
+  NUEN
+  OCEN
+  PETE
+  Other
 }
 
 // Availabilities of applicants
