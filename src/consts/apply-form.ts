@@ -113,7 +113,7 @@ export const TEAMS: Team[] = [
       {
         id: "AREA_2B",
         name: "Research Area 2B",
-        relatedTeams: ["TEAM_2", "TEAM_3"]
+        relatedTeams: ["TEAM_2"]
       }
     ]
   },

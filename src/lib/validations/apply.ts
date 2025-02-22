@@ -77,15 +77,23 @@ export const ApplyFormSchema = z
         .array(z.string())
         .min(2, "Enter at least two classes")
         .refine(
-          classes => classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
-          "All classes must be in format 'XXXX 123'"
+          classes =>
+            classes.every(
+              cls =>
+                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls)
+            ),
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
         ),
       nextClasses: z
         .array(z.string())
         .min(2, "Enter at least two classes")
         .refine(
-          classes => classes.every(cls => /^[A-Z]{4} \d{3}$/.test(cls)),
-          "All classes must be in format 'XXXX 123'"
+          classes =>
+            classes.every(
+              cls =>
+                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls)
+            ),
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
         ),
         timeCommitment: z
         .array(

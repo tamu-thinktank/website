@@ -84,7 +84,7 @@ export default function AcademicInfo() {
                   {q.academic.major} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Select your major from the dropdown. If undecided, choose "OPEN".
+                  Select your major from the dropdown. If your major is not listed or you are undecided, choose "Other".
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -125,7 +125,13 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Enter at least two classes in format 'XXXX 123' (e.g., ENGR 102)
+                  Enter at least two classes in one of the following formats:
+                  <br />
+                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
+                  <br />
+                  - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
+                  <br />
+                  If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -186,7 +192,13 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Enter at least two classes in format 'XXXX 123' (e.g., ENGR 102)
+                  Enter at least two classes in one of the following formats:
+                  <br />
+                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
+                  <br />
+                  - Blinn format: 'XXXXb123' (e.g., ENGRb102)
+                  <br />
+                  If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
