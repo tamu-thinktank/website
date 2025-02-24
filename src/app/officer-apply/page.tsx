@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { ApplyFormSchema } from "@/lib/validations/apply";
+import { OfficerApplyFormSchema } from "@/lib/validations/apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -38,10 +38,10 @@ export default function Apply() {
   const table = useCalculateTable(userTimezone);
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const form = usePersistForm<RouterInputs["public"]["applyForm"]>(
-    "apply-form-S2025-v1",
+  const form = usePersistForm<RouterInputs["public"]["applyOfficer"]>(
+    "officer-form-S2025-v1",
     {
-      resolver: zodResolver(ApplyFormSchema),
+      resolver: zodResolver(OfficerApplyFormSchema),
       defaultValues: {
         personal: {
           preferredName: null,
@@ -50,16 +50,13 @@ export default function Apply() {
           gender: "",
         },
         academic: {
+          summerPlans: "",
           currentClasses: [""],
           nextClasses: [""],
           timeCommitment: [],
         },
         thinkTankInfo: {
-          meetings: false,
-          weeklyCommitment: false,
-          preferredTeams: [],
-          researchAreas: [],
-          referralSources: [],
+          preferredPositions: [],
         },
         openEndedQuestions: {
           firstQuestion: "",
@@ -76,7 +73,7 @@ export default function Apply() {
     },
   );
 
-  const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
+  const { mutateAsync: submitForm } = api.public.applyOfficer.useMutation({
     onSuccess: () => {
       // Reset form and local storage first
       form.reset();
@@ -117,7 +114,7 @@ export default function Apply() {
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
-    async (data: RouterInputs["public"]["applyForm"]) => {
+    async (data: RouterInputs["public"]["applyOfficer"]) => {
       if (!resumeFile) {
         toast({
           variant: "destructive",
@@ -297,7 +294,7 @@ function ApplyTab({
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);

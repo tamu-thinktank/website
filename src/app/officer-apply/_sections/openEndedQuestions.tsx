@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { q } from "@/consts/apply-form";
+import { qOfficer } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
@@ -26,13 +26,13 @@ const wordCount = (text: string) => {
 };
 
 export default function OpenEndedQuestions() {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{q.openEndedQuestions.title}</CardTitle>
+          <CardTitle className="text-center">{qOfficer.openEndedQuestions.title}</CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -48,7 +48,7 @@ export default function OpenEndedQuestions() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {q.openEndedQuestions.firstQuestion} <span className="text-red-500">*</span>
+                    {qOfficer.openEndedQuestions.firstQuestion} <span className="text-red-500">*</span>
                   </CardTitle>
                   <CardDescription>250 word maximum length</CardDescription>
                 </CardHeader>
@@ -82,7 +82,7 @@ export default function OpenEndedQuestions() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {q.openEndedQuestions.secondQuestion} <span className="text-red-500">*</span>
+                    {qOfficer.openEndedQuestions.secondQuestion} <span className="text-red-500">*</span>
                   </CardTitle>
                   <CardDescription>250 word maximum length</CardDescription>
                 </CardHeader>

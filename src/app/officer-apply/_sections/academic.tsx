@@ -15,24 +15,31 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { q } from "@/consts/apply-form";
+import { qOfficer } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 import { X } from "lucide-react";
 
+// Utility to count words in a string
+const wordCount = (text: string) => {
+  if (!text.trim()) return 0;
+  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  };
+
 export default function AcademicInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{q.academic.title}</CardTitle>
+          <CardTitle className="text-center">{qOfficer.academic.title}</CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -46,7 +53,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.academic.year} <span className="text-red-500">*</span>
+                  {qOfficer.academic.year} <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -81,7 +88,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.academic.major} <span className="text-red-500">*</span>
+                  {qOfficer.academic.major} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Select your major from the dropdown. If your major is not listed or you are undecided, choose "Other".
@@ -112,6 +119,41 @@ export default function AcademicInfo() {
         )}
       />
 
+      {/* Summer Plans (Officer-specific) */}
+      <FormField
+        control={form.control}
+        name="academic.summerPlans"
+        render={({ field }) => {
+          const count = wordCount(field.value || "");
+          return (
+            <FormItem>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {qOfficer.academic.summerPlans} <span className="text-red-500">*</span>
+                  </CardTitle>
+                  <CardDescription>100 word maximum</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Outline your summer plans..."
+                      className="min-h-[100px]"
+                      // The onChange handler automatically passes the value to react-hook-form
+                    />
+                  </FormControl>
+                  <div className={`text-sm ${count > 100 ? "text-destructive" : "text-muted-foreground"}`}>
+                    {count}/100 words
+                  </div>
+                  <FormMessage />
+                </CardContent>
+              </Card>
+            </FormItem>
+          );
+        }}
+      />
+
       {/* Current Semester Classes */}
       <FormField
         control={form.control}
@@ -121,7 +163,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {q.academic.currentClasses} 
+                  {qOfficer.academic.currentClasses} 
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -188,7 +230,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {q.academic.nextClasses} 
+                  {qOfficer.academic.nextClasses} 
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
