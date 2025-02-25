@@ -94,7 +94,7 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value || ""}
+                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value ?? ""}
                   onValueChange={(value) => {
                     if (value === "") {
                       field.onChange(undefined);
@@ -122,9 +122,9 @@ export default function PersonalInfo() {
                   ))}
                 </RadioGroup>
                 
-                {(field.value?.startsWith("OTHER:") || form.watch("personal.pronouns") === "OTHER") && (
+                {(field.value?.startsWith("OTHER:") ?? form.watch("personal.pronouns") === "OTHER") && (
                   <Input
-                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] || "" : ""}
+                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] ?? "" : ""}
                     onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
                     placeholder="Specify your pronouns"
                     className="mt-2 ml-6"
@@ -148,7 +148,7 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value || ""}
+                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value ?? ""}
                   onValueChange={(value) => {
                     if (value === "") {
                       field.onChange(undefined);
@@ -176,9 +176,9 @@ export default function PersonalInfo() {
                   ))}
                 </RadioGroup>
                 
-                {(field.value?.startsWith("OTHER:") || form.watch("personal.gender") === "OTHER") && (
+                {(field.value?.startsWith("OTHER:") ?? form.watch("personal.gender") === "OTHER") && (
                   <Input
-                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] || "" : ""}
+                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] ?? "" : ""}
                     onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
                     placeholder="Specify your gender"
                     className="mt-2 ml-6"

@@ -24,7 +24,7 @@ export const ApplyFormSchema = z
       preferredName: z.string().nullable(),
       pronouns: z.string()
         .refine(val => 
-          PRESET_PRONOUNS.includes(val as any) || 
+          PRESET_PRONOUNS.includes(val) || 
           (val.startsWith("OTHER:") && val.length > 7) || 
           !val, // allows empty value
           "Invalid or incomplete pronouns"
@@ -33,7 +33,7 @@ export const ApplyFormSchema = z
 
       gender: z.string()
         .refine(val => 
-          PRESET_GENDERS.includes(val as any) || 
+          PRESET_GENDERS.includes(val) || 
           (val.startsWith("OTHER:") && val.length > 7) || 
           !val, // allows empty value
           "Invalid or incomplete gender"
@@ -234,7 +234,7 @@ export const OfficerApplyFormSchema = z.object({
     preferredName: z.string().nullable(),
     pronouns: z.string()
       .refine(val => 
-        PRESET_PRONOUNS.includes(val as any) || 
+        PRESET_PRONOUNS.includes(val) || 
         (val.startsWith("OTHER:") && val.length > 7) || 
         !val, // allows empty value
         "Invalid or incomplete pronouns"
@@ -243,7 +243,7 @@ export const OfficerApplyFormSchema = z.object({
 
     gender: z.string()
       .refine(val => 
-        PRESET_GENDERS.includes(val as any) || 
+        PRESET_GENDERS.includes(val) || 
         (val.startsWith("OTHER:") && val.length > 7) || 
         !val, // allows empty value
         "Invalid or incomplete gender"
