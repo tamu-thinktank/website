@@ -11,7 +11,6 @@ export default function SubmissionConfirmation() {
   const handleReturn = () => {
     // Clean up any remaining state
     window.localStorage.removeItem("officer-form-S2025-v1");
-    // Use replace instead of push to prevent back navigation to the form
     router.replace("/");
   };
 

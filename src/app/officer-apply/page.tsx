@@ -245,7 +245,7 @@ export default function Apply() {
                     disabled={
                       form.formState.isSubmitting || 
                       form.formState.isValidating ||
-                      !form.formState.isValid || // Add validation check
+                      !form.formState.isValid ||
                       !form.watch("resume.signatureCommitment") ||
                       !form.watch("resume.signatureAccountability") ||
                       !form.watch("resume.signatureQuality")
@@ -313,7 +313,6 @@ function ApplyTab({
       return;
     }
   
-    // Remove shouldTouch as it's not a valid option for trigger()
     const result = await form.trigger(currentTab, {
       shouldFocus: true
     });

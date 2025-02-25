@@ -26,7 +26,6 @@ import { Year, Major } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 import { X } from "lucide-react";
 
-// Utility to count words in a string
 const wordCount = (text: string) => {
   if (!text.trim()) return 0;
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -140,7 +139,6 @@ export default function AcademicInfo() {
                       {...field}
                       placeholder="Outline your summer plans..."
                       className="min-h-[100px]"
-                      // The onChange handler automatically passes the value to react-hook-form
                     />
                   </FormControl>
                   <div className={`text-sm ${count > 100 ? "text-destructive" : "text-muted-foreground"}`}>

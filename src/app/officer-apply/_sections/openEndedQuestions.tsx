@@ -19,7 +19,6 @@ import { qOfficer } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
-// Add word count function
 const wordCount = (text: string) => {
   if (!text.trim()) return 0;
   return text.trim().split(/\s+/).filter(word => word.length > 0).length;

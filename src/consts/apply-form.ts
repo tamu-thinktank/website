@@ -139,6 +139,7 @@ interface ResearchArea {
 }
 
 // Hardcoded Teams and Research Areas
+// Must run 'prisma db seed' to update the database with these values
 export const TEAMS: Team[] = [
   {
     id: "TEAM_1",
