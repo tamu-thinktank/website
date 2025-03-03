@@ -17,9 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { q } from "@/consts/apply-form";
+import { q, PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { Year } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 
 export default function PersonalInfo() {
@@ -29,12 +28,9 @@ export default function PersonalInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>{q.personal.title}</CardTitle>
+          <CardTitle className="text-center">{q.personal.title}</CardTitle>
           <Separator />
         </CardHeader>
-        <CardContent>
-          Include contacts where you are mostly likely to response if notified
-        </CardContent>
       </Card>
 
       <FormField
@@ -58,6 +54,7 @@ export default function PersonalInfo() {
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
         name="personal.preferredName"
@@ -85,21 +82,108 @@ export default function PersonalInfo() {
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
-        name="personal.email"
+        name="personal.pronouns"
         render={({ field }) => (
           <FormItem>
             <Card>
               <CardHeader>
-                <CardTitle>
-                  {q.personal.email} <span className="text-red-500">*</span>
-                </CardTitle>
+                <CardTitle>{q.personal.pronouns}</CardTitle>
               </CardHeader>
               <CardContent>
-                <FormControl>
-                  <Input type="text" placeholder="mail@tamu.edu" {...field} />
-                </FormControl>
+                <RadioGroup
+                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value ?? ""}
+                  onValueChange={(value) => {
+                    if (value === "") {
+                      field.onChange(undefined);
+                    } else if (value === "OTHER") {
+                      field.onChange("OTHER:");
+                    } else {
+                      field.onChange(value);
+                    }
+                  }}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="" id="pronoun-none" />
+                    <FormLabel htmlFor="pronoun-none">Prefer not to say</FormLabel>
+                  </div>
+                  {PRONOUN_OPTIONS.map((option) => (
+                    <div key={option.value} className="flex items-center space-x-2">
+                      <RadioGroupItem 
+                        value={option.value} 
+                        id={`pronoun-${option.value}`} 
+                      />
+                      <FormLabel htmlFor={`pronoun-${option.value}`}>
+                        {option.label}
+                      </FormLabel>
+                    </div>
+                  ))}
+                </RadioGroup>
+                
+                {(field.value?.startsWith("OTHER:") ?? form.watch("personal.pronouns") === "OTHER") && (
+                  <Input
+                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] ?? "" : ""}
+                    onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
+                    placeholder="Specify your pronouns"
+                    className="mt-2 ml-6"
+                  />
+                )}
+                <FormMessage />
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="personal.gender"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>{q.personal.gender}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup
+                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value ?? ""}
+                  onValueChange={(value) => {
+                    if (value === "") {
+                      field.onChange(undefined);
+                    } else if (value === "OTHER") {
+                      field.onChange("OTHER:");
+                    } else {
+                      field.onChange(value);
+                    }
+                  }}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="" id="gender-none" />
+                    <FormLabel htmlFor="gender-none">Prefer not to say</FormLabel>
+                  </div>
+                  {GENDER_OPTIONS.map((option) => (
+                    <div key={option.value} className="flex items-center space-x-2">
+                      <RadioGroupItem 
+                        value={option.value} 
+                        id={`gender-${option.value}`} 
+                      />
+                      <FormLabel htmlFor={`gender-${option.value}`}>
+                        {option.label}
+                      </FormLabel>
+                    </div>
+                  ))}
+                </RadioGroup>
+                
+                {(field.value?.startsWith("OTHER:") ?? form.watch("personal.gender") === "OTHER") && (
+                  <Input
+                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] ?? "" : ""}
+                    onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
+                    placeholder="Specify your gender"
+                    className="mt-2 ml-6"
+                  />
+                )}
                 <FormMessage />
               </CardContent>
             </Card>
@@ -132,6 +216,29 @@ export default function PersonalInfo() {
           </FormItem>
         )}
       />
+
+      <FormField
+        control={form.control}
+        name="personal.email"
+        render={({ field }) => (
+          <FormItem>
+            <Card>
+              <CardHeader>
+                <CardTitle>
+                  {q.personal.email} <span className="text-red-500">*</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FormControl>
+                  <Input type="text" placeholder="mail@tamu.edu" {...field} />
+                </FormControl>
+                <FormMessage />
+              </CardContent>
+            </Card>
+          </FormItem>
+        )}
+      />
+
       <FormField
         control={form.control}
         name="personal.altEmail"
@@ -177,157 +284,6 @@ export default function PersonalInfo() {
               <CardContent>
                 <FormControl>
                   <Input type="text" placeholder="123-456-7890" {...field} />
-                </FormControl>
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="personal.year"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {q.personal.year} <span className="text-red-500">*</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={Year.FRESHMAN} id="Freshman" />
-                          <FormLabel htmlFor="Freshman">Freshman</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            value={Year.SOPHOMORE}
-                            id="Sophomore"
-                          />
-                          <FormLabel htmlFor="Sophomore">Sophomore</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={Year.JUNIOR} id="Junior" />
-                          <FormLabel htmlFor="Junior">Junior</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={Year.SENIOR} id="Senior" />
-                          <FormLabel htmlFor="Senior">Senior</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value={Year.GRADUATE} id="Graduate" />
-                          <FormLabel htmlFor="Graduate">Graduate</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
-      <FormField
-        control={form.control}
-        name="personal.major"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {q.personal.major} <span className="text-red-500">*</span>
-                </CardTitle>
-                <CardDescription>
-                  Use the four letter abbreviation of your major. If in general
-                  engineering, respond with intended major
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FormControl>
-                  <Input type="text" placeholder="AERO" {...field} />
-                </FormControl>
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
-
-      <FormField
-        control={form.control}
-        name="personal.availability"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {q.personal.availability}{" "}
-                  <span className="text-red-500">*</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={(value) => {
-                      if (value === "true") {
-                        field.onChange(true);
-                      } else {
-                        field.onChange(false);
-                      }
-                    }}
-                  >
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            onBlur={field.onBlur}
-                            checked={field.value === true}
-                            value="true"
-                            id="yes"
-                          />
-                          <FormLabel htmlFor="yes">Yes</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                    <FormItem>
-                      <FormControl>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem
-                            onBlur={field.onBlur}
-                            checked={field.value === false}
-                            value="false"
-                            id="no"
-                          />
-                          <FormLabel htmlFor="no">No</FormLabel>
-                        </div>
-                      </FormControl>
-                    </FormItem>
-                  </RadioGroup>
                 </FormControl>
                 <FormMessage />
               </CardContent>

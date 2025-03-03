@@ -57,7 +57,7 @@ export default function Availability({
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Interview times</CardTitle>
+          <CardTitle className="text-center">Interview times</CardTitle>
           <CardDescription>
             Select times you're available for an interview. If this application
             is accepted, we'll pick one of your selected times based on our
