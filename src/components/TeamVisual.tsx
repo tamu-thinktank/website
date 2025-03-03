@@ -9,34 +9,67 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Bar,
-  BarChart,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-  Tooltip,
-} from "recharts";
-import type { Season, TeamType } from "./StatsInfo";
-import { seasonalData } from "./StatsInfo";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import type { Season, TeamType, StatisticsData } from "./StatsInfo";
+
+// Define types for chart data
+interface RatioData {
+  name: string;
+  value: number;
+  percentage?: number;
+}
+
+interface PreferenceData {
+  name: string;
+  count: number;
+  highInterest: number;
+  mediumInterest: number;
+  lowInterest: number;
+  score: number;
+}
 
 export function StatisticsVisualizer() {
   const [activeTeam, setActiveTeam] = useState<TeamType>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("selectedTeam") as TeamType;
+      return (localStorage.getItem("selectedTeam") as TeamType) ?? "DC";
     }
     return "DC";
   });
 
   const [selectedSeason, setSelectedSeason] = useState<Season>("2024-2025");
-  const [selectedSubteam, setSelectedSubteam] = useState<string>(() => {
-    return activeTeam === "DC" ? "RASCAL" : "Team 1";
-  });
+  const [loading, setLoading] = useState<boolean>(true);
+  const [stats, setStats] = useState<StatisticsData | null>(null);
 
+  // Fetch data when team or season changes
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          `/api/statistics?season=${selectedSeason}&team=${activeTeam}`,
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch statistics");
+        }
+
+        const data: StatisticsData = await response.json();
+        setStats(data);
+      } catch (error) {
+        console.error("Error fetching statistics:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStatistics();
+  }, [activeTeam, selectedSeason]);
+
+  // Listen for team change events
   useEffect(() => {
     const handleTeamChange = (event: CustomEvent<TeamType>) => {
       setActiveTeam(event.detail);
-      setSelectedSubteam(event.detail === "DC" ? "RASCAL" : "Team 1");
     };
 
     window.addEventListener("teamChange", handleTeamChange as EventListener);
@@ -48,27 +81,87 @@ export function StatisticsVisualizer() {
     };
   }, []);
 
-  const teamData = seasonalData[selectedSeason][activeTeam];
-  const subteamData = teamData.subteams[selectedSubteam];
-
-  const chartData = [
-    { name: "Applicants", value: subteamData?.applicants ?? 0 },
-    { name: "Interviewees", value: subteamData?.interviewees ?? 0 },
-    { name: "Members", value: subteamData?.members ?? 0 },
-  ];
-
-  // Added this function to render subteam options
-  const renderSubteamOptions = () => {
-    const options = Object.keys(teamData.subteams);
-    return options.map((subteam) => (
-      <SelectItem key={subteam} value={subteam}>
-        {subteam}
-      </SelectItem>
-    ));
+  // Prepare chart data based on statistics
+  const getApplicantStats = (): RatioData[] => {
+    if (!stats) return [];
+    return [
+      { name: "Applicants", value: stats.team.applicants },
+      { name: "Interviewees", value: stats.team.interviewees },
+      { name: "Members", value: stats.team.members },
+    ];
   };
 
+  const getGlobalApplicantStats = (): RatioData[] => {
+    if (!stats) return [];
+    return [
+      { name: "Applicants", value: stats.global.applicants },
+      { name: "Interviewees", value: stats.global.interviewees },
+      { name: "Members", value: stats.global.members },
+    ];
+  };
+
+  const getMajorRatios = (): RatioData[] => {
+    if (!stats) return [];
+    return Object.entries(stats.teamDemographics.majors).map(
+      ([major, data]) => ({
+        name: major,
+        value: data.count,
+        percentage: data.percentage,
+      }),
+    );
+  };
+
+  const getYearRatios = (): RatioData[] => {
+    if (!stats) return [];
+    return Object.entries(stats.teamDemographics.years).map(([year, data]) => ({
+      name: year,
+      value: data.count,
+      percentage: data.percentage,
+    }));
+  };
+
+  const getGenderRatios = (): RatioData[] => {
+    if (!stats) return [];
+    return Object.entries(stats.teamDemographics.genders).map(
+      ([gender, data]) => ({
+        name: gender,
+        value: data.count,
+        percentage: data.percentage,
+      }),
+    );
+  };
+
+  const getReferralRatios = (): RatioData[] => {
+    if (!stats) return [];
+    return Object.entries(stats.referralSources).map(([source, data]) => ({
+      name: source,
+      value: data.count,
+      percentage: data.percentage,
+    }));
+  };
+
+  const getTeamPreferences = (): PreferenceData[] => {
+    if (!stats) return [];
+    return Object.entries(stats.teamPreferences).map(([team, data]) => ({
+      name: team,
+      count: data.count,
+      highInterest: data.highInterest,
+      mediumInterest: data.mediumInterest,
+      lowInterest: data.lowInterest,
+      score: data.score,
+    }));
+  };
+
+  if (loading) {
+    return (
+      <div className="mx-auto mt-8 flex h-64 w-full max-w-7xl items-center justify-center">
+        <p className="text-xl text-white">Loading statistics...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto mt-8 w-full max-w-7xl space-y-8">
+    <div className="mx-auto mt-8 w-full max-w-7xl space-y-8 pb-16">
       <div className="mb-8 flex justify-center space-x-4">
         <Select
           value={selectedSeason}
@@ -89,48 +182,27 @@ export function StatisticsVisualizer() {
         {activeTeam} Statistics - {selectedSeason}
       </h2>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <StatCard
-          title="Applicants"
-          value={teamData.applicants}
-          percentage={(teamData.applicants / 300) * 100}
-        />
-        <StatCard
-          title="Interviewees"
-          value={teamData.interviewees}
-          percentage={(teamData.interviewees / teamData.applicants) * 100}
-        />
-        <StatCard
-          title="Members"
-          value={teamData.members}
-          percentage={(teamData.members / teamData.interviewees) * 100}
-        />
-      </div>
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="demographics">Demographics</TabsTrigger>
+          <TabsTrigger value="interests">Interests</TabsTrigger>
+          <TabsTrigger value="marketing">Marketing</TabsTrigger>
+        </TabsList>
 
-      <div className="flex flex-col items-center space-y-4">
-        <Select value={selectedSubteam} onValueChange={setSelectedSubteam}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Subteam" />
-          </SelectTrigger>
-          <SelectContent>{renderSubteamOptions()}</SelectContent>
-        </Select>
-
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>{selectedSubteam} Statistics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={chartData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="value" fill="#8095ec" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <StatCard
+              title="Applicants"
+              value={stats?.team.applicants ?? 0}
+              percentage={
+                stats?.team.applicants ? (stats.team.applicants / 300) * 100 : 0
+              }
+              description="of capacity"
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
@@ -139,10 +211,12 @@ function StatCard({
   title,
   value,
   percentage,
+  description,
 }: {
   title: string;
   value: number;
   percentage: number;
+  description: string;
 }) {
   return (
     <Card>
@@ -152,8 +226,7 @@ function StatCard({
       <CardContent>
         <p className="text-3xl font-bold">{value}</p>
         <p className="text-sm text-gray-500">
-          {percentage.toFixed(1)}%{" "}
-          {title === "Applicants" ? "of capacity" : "conversion rate"}
+          {percentage.toFixed(1)}% {description}
         </p>
       </CardContent>
     </Card>
