@@ -80,6 +80,11 @@ model OfficerTime {
     @@index([officerId])
 }
 
+enum ApplicationType {
+  DCMEMBER
+  OFFICER
+}
+
 enum Year {
     FRESHMAN
     SOPHOMORE
@@ -99,6 +104,66 @@ enum ApplicationStatus {
     REJECTED
 }
 
+enum InterestLevel {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum CommitmentType {
+  CURRENT // Current time commitment (e.g., clubs, jobs)
+  PLANNED // Planned time commitment (e.g., future activities)
+}
+
+enum ReferralSource {
+  MSC_OPEN_HOUSE
+  ESO_OPEN_HOUSE
+  MULTISECTION
+  REFERRAL
+  INSTAGRAM
+  FLYERS
+}
+
+enum Major {
+  ENGR
+  AERO
+  BAEN
+  BMEN
+  CHEN
+  CPEN
+  CSCE
+  CVEN
+  ELEN
+  EVEN
+  ETID
+  ISEN
+  MSEN
+  MEEN
+  MMET
+  MXET
+  NUEN
+  OCEN
+  PETE
+  Other
+}
+
+enum OfficerCommitment {
+  YES
+  PARTIAL
+  NO
+}
+
+enum OfficerPosition {
+  VICE_PRESIDENT
+  PROJECT_MANAGER
+  MARKETING_SPECIALIST
+  GRAPHIC_DESIGNER
+  WEB_DEV_LEAD
+  TREASURER
+  RECURRING_TEAM_PROJECT_MANAGER
+  DC_PROGRAM_MANAGER
+}
+
 // Availabilities of applicants
 model ApplicantTime {
     gridTime    String // Temporal.ZonedDateTime ISO in UTC
@@ -109,37 +174,105 @@ model ApplicantTime {
     @@index([applicantId])
 }
 
+// Time commitments (current or planned) for applicants.
+model Commitment {
+  name         String                 // Name of the commitment (e.g., "SAE").
+  hours        Int                    // Hours per week (e.g., range: 0-15).
+  type         CommitmentType         // Enum for "CURRENT" or "PLANNED".
+  applicantId  String                 // Foreign key linking this commitment to an application.
+  applicant    Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@id([name, applicantId, type])     // Composite primary key ensures unique commitments per application and type.
+}
+
+model Team {
+  id           String          @id @default(cuid())
+  name         String          @unique // Name of the team (e.g., TSGC, AIAA)
+  researchAreas ResearchArea[] // Relation to ResearchArea
+  preferences  TeamPreference[] // Relation to TeamPreference
+}
+
+model ResearchArea {
+  id             String             @id @default(cuid())
+  name           String             @unique // Name of the research area (e.g., Propulsion Systems)
+  teamId         String             // Foreign key linking to Team
+  team           Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  preferences    ResearchPreference[] // Relation to ResearchPreference
+}
+
+// Preferred teams and their interest levels (HIGH/MED/LOW).
+model TeamPreference {
+  id           String       @id @default(cuid())
+  teamId       String       // Foreign key linking to Team
+  team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  interest     InterestLevel
+  applicantId  String       // Foreign key linking to Application
+  applicant    Application  @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+}
+
+// Preferred research areas and their interest levels (HIGH/MED/LOW).
+model ResearchPreference {
+  id             String             @id @default(cuid())
+  researchAreaId String             // Foreign key linking to ResearchArea
+  researchArea   ResearchArea       @relation(fields: [researchAreaId], references: [id], onDelete: Cascade)
+  interest       InterestLevel
+  applicantId    String             // Foreign key linking to Application
+  applicant      Application        @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+}
+
+model PositionPreference {
+  id          String           @id @default(cuid())
+  position    OfficerPosition
+  interest    InterestLevel
+  applicantId String
+  applicant   Application      @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+}
+
 model Application {
     id          String            @id @default(cuid())
     submittedAt DateTime          @default(now())
     status      ApplicationStatus @default(PENDING)
     location    String? // interview location if accepted
+    applicationType ApplicationType
 
     // personal info section
     fullName        String
     preferredName   String?
-    email           String  @unique
+    pronouns        String?
+    gender          String?
     uin             Int     @unique
+    email           String  @unique
     altEmail        String?
     phone           String
-    year            Year
-    major           String
-    availability    Boolean
+    
+    // Academic Information Section:
+    year                 Year              // Current year at TAMU (enum).
+    major                Major             // Major abbreviation (e.g., AERO).
+    currentClasses       String[]          // Current semester classes.
+    nextClasses          String[]          // Next semester classes.
+    timeCommitment       Commitment[]      // Current and planned commitments.
 
-    // Interests and Motivation section
-    interestedAnswer    String
-    challenges          Challenge[]
-    interestedChallenge Challenge
-    passionAnswer       String
-    isLeadership        Boolean
+    // Officer-specific new academic fields:
+    summerPlans          String            @db.Text    // Short answer (<100 words)
 
-    // Leadership section, empty if `isLeadership` is false
-    skillsAnswer       String?
-    conflictsAnswer    String?
-    timeManagement     String?
-    relevantExperience String?
-    timeCommitment     Boolean?
+    // ThinkTank Information Section:
+    meetings             Boolean           // Can attend meetings in person.
+    weeklyCommitment     Boolean           // Can commit to weekly workload.
+    preferredTeams       TeamPreference[]  // Preferred teams with interest levels.
+    researchAreas        ResearchPreference[] // Preferred research areas with interest levels.
+    referral             ReferralSource[]      // How they heard about ThinkTank.
+
+    // Officer-specific ThinkTank information
+    officerCommitment    OfficerCommitment?  // "Are you able to commit 6-8 hrs/week for summer and next 2 semesters?" with options: YES / PARTIAL / NO
+    preferredPositions   PositionPreference[] // Array of officer positions with interest levels
+
+    // Open-Ended Questions Section:
+    firstQuestion              String            @db.Text // Long answer (<250 words).
+    secondQuestion             String            @db.Text // Long answer (<250 words).
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeId     String // the id of the resume file in the google drive
+    signatureCommitment String
+    signatureAccountability String
+    signatureQuality String
 }
