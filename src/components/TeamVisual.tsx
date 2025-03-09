@@ -1,60 +1,72 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-import type { Season, TeamType, StatisticsData } from "./StatsInfo";
-
-// Define types for chart data
-interface RatioData {
-  name: string;
-  value: number;
-  percentage?: number;
+interface StatisticsData {
+  genders: Record<string, number>;
+  years: Record<string, number>;
+  referrals: Record<string, number>;
+  majors: Record<string, number>;
+  statusCounts: Record<string, number>;
+  detailedData: {
+    genders: { name: string; value: string }[];
+    years: { name: string; value: string }[];
+    referrals: { name: string; value: string }[];
+    majors: { name: string; value: string }[];
+  };
 }
 
-interface PreferenceData {
-  name: string;
-  count: number;
-  highInterest: number;
-  mediumInterest: number;
-  lowInterest: number;
-  score: number;
-}
+// More neutral color palette
+const COLORS = [
+  "#94a3b8",
+  "#64748b",
+  "#475569",
+  "#334155",
+  "#1e293b",
+  "#0f172a",
+  "#7f8ea3",
+  "#526480",
+];
 
 export function StatisticsVisualizer() {
-  const [activeTeam, setActiveTeam] = useState<TeamType>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("selectedTeam") as TeamType) ?? "DC";
-    }
-    return "DC";
-  });
-
-  const [selectedSeason, setSelectedSeason] = useState<Season>("2024-2025");
   const [loading, setLoading] = useState<boolean>(true);
   const [stats, setStats] = useState<StatisticsData | null>(null);
 
-  // Fetch data when team or season changes
   useEffect(() => {
     const fetchStatistics = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `/api/statistics?season=${selectedSeason}&team=${activeTeam}`,
-        );
-
+        // Update the endpoint to match your API route
+        const response = await fetch(`/api/test`);
         if (!response.ok) {
           throw new Error("Failed to fetch statistics");
         }
 
-        const data: StatisticsData = await response.json();
+        const data = (await response.json()) as StatisticsData;
         setStats(data);
       } catch (error) {
         console.error("Error fetching statistics:", error);
@@ -64,145 +76,95 @@ export function StatisticsVisualizer() {
     };
 
     fetchStatistics();
-  }, [activeTeam, selectedSeason]);
-
-  // Listen for team change events
-  useEffect(() => {
-    const handleTeamChange = (event: CustomEvent<TeamType>) => {
-      setActiveTeam(event.detail);
-    };
-
-    window.addEventListener("teamChange", handleTeamChange as EventListener);
-    return () => {
-      window.removeEventListener(
-        "teamChange",
-        handleTeamChange as EventListener,
-      );
-    };
   }, []);
-
-  // Prepare chart data based on statistics
-  const getApplicantStats = (): RatioData[] => {
-    if (!stats) return [];
-    return [
-      { name: "Applicants", value: stats.team.applicants },
-      { name: "Interviewees", value: stats.team.interviewees },
-      { name: "Members", value: stats.team.members },
-    ];
-  };
-
-  const getGlobalApplicantStats = (): RatioData[] => {
-    if (!stats) return [];
-    return [
-      { name: "Applicants", value: stats.global.applicants },
-      { name: "Interviewees", value: stats.global.interviewees },
-      { name: "Members", value: stats.global.members },
-    ];
-  };
-
-  const getMajorRatios = (): RatioData[] => {
-    if (!stats) return [];
-    return Object.entries(stats.teamDemographics.majors).map(
-      ([major, data]) => ({
-        name: major,
-        value: data.count,
-        percentage: data.percentage,
-      }),
-    );
-  };
-
-  const getYearRatios = (): RatioData[] => {
-    if (!stats) return [];
-    return Object.entries(stats.teamDemographics.years).map(([year, data]) => ({
-      name: year,
-      value: data.count,
-      percentage: data.percentage,
-    }));
-  };
-
-  const getGenderRatios = (): RatioData[] => {
-    if (!stats) return [];
-    return Object.entries(stats.teamDemographics.genders).map(
-      ([gender, data]) => ({
-        name: gender,
-        value: data.count,
-        percentage: data.percentage,
-      }),
-    );
-  };
-
-  const getReferralRatios = (): RatioData[] => {
-    if (!stats) return [];
-    return Object.entries(stats.referralSources).map(([source, data]) => ({
-      name: source,
-      value: data.count,
-      percentage: data.percentage,
-    }));
-  };
-
-  const getTeamPreferences = (): PreferenceData[] => {
-    if (!stats) return [];
-    return Object.entries(stats.teamPreferences).map(([team, data]) => ({
-      name: team,
-      count: data.count,
-      highInterest: data.highInterest,
-      mediumInterest: data.mediumInterest,
-      lowInterest: data.lowInterest,
-      score: data.score,
-    }));
-  };
 
   if (loading) {
     return (
       <div className="mx-auto mt-8 flex h-64 w-full max-w-7xl items-center justify-center">
-        <p className="text-xl text-white">Loading statistics...</p>
+        <p className="text-xl">Loading statistics...</p>
       </div>
     );
   }
 
+  const totalApplicants = Object.values(stats?.genders || {}).reduce(
+    (a, b) => a + b,
+    0,
+  );
+  const acceptedCount = stats?.statusCounts.ACCEPTED || 0;
+  const rejectedCount = stats?.statusCounts.REJECTED || 0;
+  const pendingCount = stats?.statusCounts.PENDING || 0;
+
   return (
     <div className="mx-auto mt-8 w-full max-w-7xl space-y-8 pb-16">
-      <div className="mb-8 flex justify-center space-x-4">
-        <Select
-          value={selectedSeason}
-          onValueChange={(value) => setSelectedSeason(value as Season)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select Season" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="2023-2024">2023-2024</SelectItem>
-            <SelectItem value="2024-2025">2024-2025</SelectItem>
-            <SelectItem value="2025-2026">2025-2026</SelectItem>
-          </SelectContent>
-        </Select>
+      <h2 className="text-center text-2xl font-bold">Applicant Statistics</h2>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
+        <div className="col-span-1 grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-4 lg:col-span-2">
+          <StatCard title="Total Applicants" value={totalApplicants} />
+          <StatCard
+            title="Accepted"
+            value={acceptedCount}
+            percentage={
+              totalApplicants > 0
+                ? ((acceptedCount / totalApplicants) * 100).toFixed(1) + "%"
+                : "0%"
+            }
+            color="bg-green-100 dark:bg-green-900"
+          />
+          <StatCard
+            title="Rejected"
+            value={rejectedCount}
+            percentage={
+              totalApplicants > 0
+                ? ((rejectedCount / totalApplicants) * 100).toFixed(1) + "%"
+                : "0%"
+            }
+            color="bg-red-100 dark:bg-red-900"
+          />
+          <StatCard
+            title="Pending"
+            value={pendingCount}
+            percentage={
+              totalApplicants > 0
+                ? ((pendingCount / totalApplicants) * 100).toFixed(1) + "%"
+                : "0%"
+            }
+            color="bg-yellow-100 dark:bg-yellow-900"
+          />
+        </div>
+
+        <PieChartCard
+          title="Gender Distribution"
+          data={stats?.genders}
+          detailedData={stats?.detailedData.genders}
+          totalCount={totalApplicants}
+          attribute="Gender"
+        />
+
+        <PieChartCard
+          title="Year Distribution"
+          data={stats?.years}
+          detailedData={stats?.detailedData.years}
+          totalCount={totalApplicants}
+          attribute="Year"
+        />
+
+        <PieChartCard
+          title="Major Distribution"
+          data={stats?.majors}
+          detailedData={stats?.detailedData.majors}
+          totalCount={totalApplicants}
+          attribute="Major"
+        />
+
+        <PieChartCard
+          title="Referral Sources"
+          data={stats?.referrals}
+          detailedData={stats?.detailedData.referrals}
+          totalCount={totalApplicants}
+          attribute="Referral Source"
+        />
       </div>
-
-      <h2 className="text-center text-2xl font-bold text-white">
-        {activeTeam} Statistics - {selectedSeason}
-      </h2>
-
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="demographics">Demographics</TabsTrigger>
-          <TabsTrigger value="interests">Interests</TabsTrigger>
-          <TabsTrigger value="marketing">Marketing</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <StatCard
-              title="Applicants"
-              value={stats?.team.applicants ?? 0}
-              percentage={
-                stats?.team.applicants ? (stats.team.applicants / 300) * 100 : 0
-              }
-              description="of capacity"
-            />
-          </div>
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }
@@ -211,23 +173,162 @@ function StatCard({
   title,
   value,
   percentage,
-  description,
+  color,
 }: {
   title: string;
-  value: number;
-  percentage: number;
-  description: string;
+  value: number | string;
+  percentage?: string;
+  color?: string;
 }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
+    <Card className={`${color || ""}`}>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-bold">{value}</p>
-        <p className="text-sm text-gray-500">
-          {percentage.toFixed(1)}% {description}
-        </p>
+        <p className="text-2xl font-bold">{value}</p>
+        {percentage && (
+          <p className="text-sm text-muted-foreground">{percentage}</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function PieChartCard({
+  title,
+  data,
+  detailedData,
+  totalCount,
+  attribute,
+}: {
+  title: string;
+  data?: Record<string, number>;
+  detailedData?: { name: string; value: string }[];
+  totalCount: number;
+  attribute: string;
+}) {
+  if (!data || Object.keys(data).length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">{title}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-muted-foreground">No data available</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const chartData = Object.entries(data).map(([name, value], index) => ({
+    name,
+    value,
+    color: COLORS[index % COLORS.length],
+  }));
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Dialog>
+          <DialogTrigger asChild>
+            <div className="h-80 cursor-pointer">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      name.length > 10
+                        ? `${name.substring(0, 10)}...: ${(percent * 100).toFixed(0)}%`
+                        : `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {chartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number) => [
+                      `${value} (${((value / totalCount) * 100).toFixed(1)}%)`,
+                      "Count",
+                    ]}
+                  />
+                  <Legend
+                    layout="vertical"
+                    verticalAlign="middle"
+                    align="right"
+                    wrapperStyle={{ fontSize: "12px" }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </DialogTrigger>
+          <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>{title} Details</DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              {detailedData && detailedData.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>{attribute}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {detailedData.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="font-medium">
+                          {item.name}
+                        </TableCell>
+                        <TableCell>{item.value}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="col-span-1">
+                      <h3 className="font-medium">{attribute}</h3>
+                      {chartData.map((item, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 py-1"
+                        >
+                          <div
+                            className="h-3 w-3 rounded-full"
+                            style={{ backgroundColor: item.color }}
+                          ></div>
+                          <span>{item.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="col-span-1">
+                      <h3 className="font-medium">Count (Percentage)</h3>
+                      {chartData.map((item, index) => (
+                        <div key={index} className="py-1">
+                          {item.value} (
+                          {((item.value / totalCount) * 100).toFixed(1)}%)
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
       </CardContent>
     </Card>
   );
