@@ -14,7 +14,7 @@ import type useCalculateTable from "@/hooks/useCalculateTable";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { cn } from "@/lib/utils";
 import type { CSSProperties } from "react";
-import { Fragment, useCallback, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface AvailabilityProps {
@@ -28,10 +28,7 @@ export default function Availability({
   table,
 }: AvailabilityProps) {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
-  const color = useMemo(
-    () => palette[Math.floor(Math.random() * palette.length)],
-    [],
-  );
+  const color = "#137522";
 
   // Ref and state required to rerender but also access static version in callbacks
   const selectingRef = useRef<string[]>([]);
