@@ -239,31 +239,30 @@ const faqData = [
   },
 ];
 
-function FAQ() {
+function DCfaq() {
   return (
     <Container>
-      <div className="space-y-4 px-6 md:px-0">
+      <div className="space-y-4 px-6 md:px-6">
         <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
-          Frequently Asked Questions
+          Design Challenges
         </h2>
         <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
+        <Accordion type="single" collapsible>
+          {faqData.map((item, index) => (
+            <AccordionItem key={index} value={`question-${index + 1}`}>
+              <AccordionTrigger className="w-full text-left">
+                {item.question}
+              </AccordionTrigger>
+              <AccordionContent className="text-gray-200">
+                {item.answer}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+        <div style={{ padding: "40px" }}></div>
       </div>
-
-      <Accordion type="single" collapsible>
-        {faqData.map((item, index) => (
-          <AccordionItem key={index} value={`question-${index + 1}`}>
-            <AccordionTrigger className="w-full text-left">
-              {item.question}
-            </AccordionTrigger>
-            <AccordionContent className="text-gray-200">
-              {item.answer}
-            </AccordionContent>
-          </AccordionItem>
-        ))}
-      </Accordion>
-      <div style={{ padding: "40px" }}></div>
     </Container>
   );
 }
 
-export default FAQ;
+export default DCfaq;

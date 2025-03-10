@@ -5,7 +5,6 @@ import CardStack from "./CardStack";
 import OfficerInterest from "./OfficerInterest";
 import Officers from "./Officers";
 import ImageCarousel from "./ImageCarousel";
-import FAQ from "./FAQ";
 import AboutHeader from "./AboutHeader";
 import SmoothScroll from "@/components/SmoothScroll";
 
@@ -21,7 +20,6 @@ const Home: NextPage = () => {
             <CardStack />
             <Officers />
             <OfficerInterest />
-            <FAQ />
           </div>
           <AppFooter />
         </main>
