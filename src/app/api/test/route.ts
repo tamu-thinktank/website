@@ -3,10 +3,16 @@ import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const applicationType = searchParams.get("applicationType") || "DCMEMBER"
+
   try {
-    // Fetch all applications with more detailed information
+    // Fetch applications filtered by applicationType
     const applications = await prisma.application.findMany({
+      where: {
+        applicationType: applicationType as any, // Cast to any since we know the values match the enum
+      },
       select: {
         id: true,
         fullName: true,

@@ -25,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import type { TeamType } from "./StatsInfo";
 
 interface StatisticsData {
   genders: Record<string, number>;
@@ -55,27 +56,55 @@ const COLORS = [
 export function StatisticsVisualizer() {
   const [loading, setLoading] = useState<boolean>(true);
   const [stats, setStats] = useState<StatisticsData | null>(null);
+  const [selectedTeam, setSelectedTeam] = useState<TeamType>(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("selectedTeam") as TeamType) || "DC";
+    }
+    return "DC";
+  });
+
+  const fetchStatisticsForTeam = async (team: TeamType) => {
+    setLoading(true);
+    try {
+      // Map team to applicationType
+      const applicationType = team === "DC" ? "DCMEMBER" : "OFFICER";
+
+      // Update the endpoint to include the applicationType filter
+      const response = await fetch(
+        `/api/test?applicationType=${applicationType}`,
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch statistics");
+      }
+
+      const data = (await response.json()) as StatisticsData;
+      setStats(data);
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchStatistics = async () => {
-      setLoading(true);
-      try {
-        // Update the endpoint to match your API route
-        const response = await fetch(`/api/test`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch statistics");
-        }
+    // Initial fetch based on the selected team
+    fetchStatisticsForTeam(selectedTeam);
 
-        const data = (await response.json()) as StatisticsData;
-        setStats(data);
-      } catch (error) {
-        console.error("Error fetching statistics:", error);
-      } finally {
-        setLoading(false);
-      }
+    // Listen for team change events
+    const handleTeamChange = (event: CustomEvent<TeamType>) => {
+      const newTeam = event.detail;
+      setSelectedTeam(newTeam);
+      fetchStatisticsForTeam(newTeam);
     };
 
-    fetchStatistics();
+    window.addEventListener("teamChange", handleTeamChange as EventListener);
+
+    return () => {
+      window.removeEventListener(
+        "teamChange",
+        handleTeamChange as EventListener,
+      );
+    };
   }, []);
 
   if (loading) {
@@ -96,7 +125,9 @@ export function StatisticsVisualizer() {
 
   return (
     <div className="mx-auto mt-8 w-full max-w-7xl space-y-8 pb-16">
-      <h2 className="text-center text-2xl font-bold">Applicant Statistics</h2>
+      <h2 className="text-center text-2xl font-bold">
+        {selectedTeam} Applicant Statistics
+      </h2>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
         <div className="col-span-1 grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-4 lg:col-span-2">

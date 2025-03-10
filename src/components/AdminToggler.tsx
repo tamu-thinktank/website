@@ -39,7 +39,7 @@ export function TeamToggler() {
           }}
         />
         <button
-          className={`font-regular relative z-10 h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
+          className={`font-regular z-1 relative h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
             activeTeam === "DC" ? "text-white" : "text-gray-300"
           }`}
           onClick={() => handleToggle("DC")}
@@ -47,7 +47,7 @@ export function TeamToggler() {
           DC
         </button>
         <button
-          className={`font-regular relative z-10 h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
+          className={`font-regular z-1 relative h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
             activeTeam === "MATE ROV" ? "text-white" : "text-gray-300"
           }`}
           onClick={() => handleToggle("MATE ROV")}
