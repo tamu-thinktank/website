@@ -27,7 +27,7 @@ export const q: Questions = {
     nextClasses: "Next Semester Classes",
     timeCommitment: "Time Commitments",
   },
-  
+
   thinkTankInfo: {
     title: "ThinkTank Information",
     meetings: "Are you able to attend a majority of meetings in-person?",
@@ -40,7 +40,7 @@ export const q: Questions = {
     referralSources:
       "Where did you hear about us? (Select all that apply)",
   },
-  
+
   openEndedQuestions: {
     title: "Open-Ended Questions",
     firstQuestion:
@@ -48,12 +48,12 @@ export const q: Questions = {
     secondQuestion:
       "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
   },
-  
+
   resume: {
     title: "Resume & Agreements",
     resumeId: "Resume Upload",
     signatureCommitment: "Commitment Signature",
-    signatureAccountability: "Accountability Signature", 
+    signatureAccountability: "Accountability Signature",
     signatureQuality: "Quality Pledge Signature"
   }
 };
@@ -87,7 +87,7 @@ export const qOfficer: OfficerQuestions = {
     nextClasses: "Next Spring Semester Classes",
     timeCommitment: "Time Commitments",
   },
-  
+
   thinkTankInfo: {
     title: "ThinkTank Information",
     officerCommitment:
@@ -95,7 +95,7 @@ export const qOfficer: OfficerQuestions = {
     preferredPositions:
       "For each selected position, rate your relative interest compared to other positions.",
   },
-  
+
   openEndedQuestions: {
     title: "Open-Ended Questions",
     firstQuestion:
@@ -103,7 +103,56 @@ export const qOfficer: OfficerQuestions = {
     secondQuestion:
       "Why do you want to become a ThinkTank Officer?",
   },
-  
+
+  resume: {
+    title: "Resume & Agreements",
+    resumeId: "Resume Upload",
+    signatureCommitment: "Commitment Signature",
+    signatureAccountability: "Accountability Signature",
+    signatureQuality: "Quality Pledge Signature"
+  }
+};
+
+// Officer-specific question labels
+export const qDC: OfficerQuestions = {
+  personal: {
+    title: "Personal Information",
+    fullName: "Full Name",
+    preferredName: "Preferred First Name",
+    pronouns: "Preferred Pronouns",
+    gender: "Gender",
+    uin: "UIN",
+    email: "TAMU Email",
+    altEmail: "Additional Email Contact",
+    phone: "Contact Number",
+  },
+
+  academic: {
+    title: "Academic Information",
+    year: "Current Year at TAMU (Beginning Next Fall)",
+    major: "Major",
+    summerPlans: "Summer Plans",
+    currentClasses: "Next Fall Semester Classes",
+    nextClasses: "Next Spring Semester Classes",
+    timeCommitment: "Time Commitments",
+  },
+
+  thinkTankInfo: {
+    title: "ThinkTank Information",
+    officerCommitment:
+      "Are you able to commit 6 to 8 hours per week to your position for this summer and the next 2 semesters?",
+    preferredPositions:
+      "For each selected position, rate your relative interest compared to other positions.",
+  },
+
+  openEndedQuestions: {
+    title: "Open-Ended Questions",
+    firstQuestion:
+      "Have you previously applied to ThinkTank? If yes, please specify which design challenge you applied for, and indicate the semester in which you applied.",
+    secondQuestion:
+      "What do you hope to achieve by participating in the Mini Design Challenge Competition?",
+  },
+
   resume: {
     title: "Resume & Agreements",
     resumeId: "Resume Upload",
@@ -118,12 +167,12 @@ export const challenges: {
   label: string;
   link: string;
 }[] = [
-  {
-    id: Challenge.TSGC,
-    label: "Texas Space Grant Consortium Design Challenge (TSGC)",
-    link: "https://ig.utexas.edu/tsgc/design-challenge/",
-  },
-];
+    {
+      id: Challenge.TSGC,
+      label: "Texas Space Grant Consortium Design Challenge (TSGC)",
+      link: "https://ig.utexas.edu/tsgc/design-challenge/",
+    },
+  ];
 
 // Team and Research Area Types
 interface Team {
@@ -189,7 +238,7 @@ export const TEAMS: Team[] = [
 // Flattened and deduplicated research areas
 export const RESEARCH_AREAS: ResearchArea[] = Array.from(
   new Map(
-    TEAMS.flatMap(team => 
+    TEAMS.flatMap(team =>
       team.researchAreas.map(ra => ({
         ...ra,
         relatedTeams: [...new Set([...ra.relatedTeams, team.id])]
