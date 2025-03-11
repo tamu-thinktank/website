@@ -8,7 +8,7 @@ import Container from "../../components/Container";
 
 const faqData = [
   {
-    question: "What Does Competing in Design Challenges Look Like?",
+    question: "What does competing in design challenges look like?",
     answer: (
       <>
         <p className="mb-4">
@@ -64,7 +64,7 @@ const faqData = [
     ),
   },
   {
-    question: "How are Teams Structured?",
+    question: "How are teams structured?",
     answer: (
       <>
         <p className="mb-4">
@@ -103,7 +103,7 @@ const faqData = [
     ),
   },
   {
-    question: "How Much Time Commitment is Expected?",
+    question: "How much time commitment is expected?",
     answer: (
       <>
         <p className="mb-4">
@@ -146,7 +146,7 @@ const faqData = [
     ),
   },
   {
-    question: "Who are Peer and Faculty Mentors?",
+    question: "Who are peer and faculty mentors?",
     answer: (
       <>
         <p className="mb-4">
@@ -177,7 +177,7 @@ const faqData = [
     ),
   },
   {
-    question: "What does ThinkTank Teach?",
+    question: "What does ThinkTank teach?",
     answer: (
       <>
         <p className="mb-4">
@@ -212,7 +212,7 @@ const faqData = [
     ),
   },
   {
-    question: "What do We Value in Applicants?",
+    question: "What do we value in applicants?",
     answer: (
       <>
         <p className="mb-4">
