@@ -318,7 +318,7 @@ const BoxComponent: React.FC<BoxProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const openTeams = ["Communications & Data Handling", "Electrical & Power Systems", "Fluids", "Guidance, Navigation, & Control", "Thermal, Mechanisms, & Structures"];
+  const openTeams = ["Computation and Communications", "Electrical and Power Systems", "Fluids and Propulsion", "Guidance, Navigation, and Control", "Thermal, Mechanisms, and Structures", "MATE ROV Leadership"];
   const isOpen = openTeams.includes(teamName);
   //const isOpen = false;
 

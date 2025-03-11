@@ -30,14 +30,10 @@ const AboutHeader: React.FC = () => {
       </div>
       <Container>
         <div className= "px-8 pb-20 space-y-6">
-          <p className="text-lg text-gray-300 mb-20">
-            The MATE (Marine Advanced Technology Education) ROV Competition challenges students to engineer and operate a remotely operated vehicle to complete mission tasks. Members get hands-on experience with interdisciplinary engineering, along with strengthening teamworking, project management, and complex problem solving skills.
-          </p>
-          <h3 className="text-2xl font-bold italic text-gray-900 dark:text-white sm:text-3xl md:text-4xl lg:text-5xl">
-            <span style={{ color: "#B8B8B8" }}>Subteams</span>
-          </h3>
           <p className="text-lg text-gray-300">
-            ThinkTank's MATE ROV team will be split into specialized subteams, all of whom are responsible for separate yet critical aspects of the competition. The division into subteams will make sure that every component of the team's final product is developed efficiently and equally. Members will also be assigned to specific subteams based on their specific interests and skillsets.
+          The MATE ROV (Marine Advanced Technology Education Remotely Operated Vehicle) Competition challenges students to engineer and operate an 
+          underwater robot to complete a variety of mission tasks in a high-stakes environment against other universities. Members get direct, 
+          hands-on experience in their interests while working with a passionate, interdisciplinary team of peers.
           </p>
         </div>
       </Container>

@@ -7,10 +7,11 @@ import Container from "@/components/Container";
 const Challenges = () => {
   const teams = [
     {
-      teamName: "Communications & Data Handling",
+      teamName: "Computation and Communications",
+      shortOverview: "Build a Robust Onboard Processing System",
       competitionOverview:
-        "The CDH subteam is responsible for enabling reliable data transmission between the operators and the ROV, and developing the software and hardware solutions required for communication and efficient data processing.",
-      duration: "Year Long",
+        "C&C subteam designs the onboard computer and communication architecture for the ROV, integrating with all other subsystems to process and respond to all generated data.",
+      duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
         { date: "Applications", description: "3/24/25" },
@@ -18,17 +19,19 @@ const Challenges = () => {
         { date: "Acceptance", description: "4/2/25" },
       ],
       researchAreas: [
-        "Signal processing",
-        "RF and communication methods",
-        "Data logging",
+        "Microprocessors",
+        "Data Logging and Networking",
+        "Signal Processing",
+        "C/C++/Arduino"
       ],
       competitionLink: "https://materovcompetition.org/",
-      imageUrl: "",
+      imageUrl: "images/materov/CC.png",
     },
     {
-      teamName: "Electrical & Power Systems",
+      teamName: "Electrical and Power Systems",
+      shortOverview: "Build a Reliable Power Delivery System",
       competitionOverview:
-        "The EPS subteam is handling the power distribution and electrical circuit design for the ROV, ensuring the system is efficient, stable, and capable of delivering the power necessary for the ROV to succeed.",
+        "EPS subteam designs the circuitry throughout the ROV, ensuring sufficient power distribution and management to all components while preventing water intrusion.",
       duration: "Year Long",
       teamSize: "2-3",
       admissionTimeline: [
@@ -37,18 +40,19 @@ const Challenges = () => {
         { date: "Acceptance", description: "4/2/25" },
       ],
       researchAreas: [
-        "Circuit design",
-        "Battery selection/management",
-        "Overall power distribution and integration",
+        "PCB Design",
+        "Battery Selection/Configuration",
+        "Power Delivery",
       ],
       competitionLink: "https://materovcompetition.org/",
-      imageUrl: "",
+      imageUrl: "images/materov/EPS.png",
     },
     {
-      teamName: "Fluids",
+      teamName: "Fluids and Propulsion",
+      shortOverview: "Build a Precise Maneuvering System",
       competitionOverview:
-        "The FLD subteam is focusing on propulsion, buoyancy, and the hydrodynamics of the ROV. Their work will ensure the ROV can maneuver effectively with stability in the underwater environment, which poses many challenges.",
-      duration: "Year Long",
+        "F&P subteam designs the movement system for the ROV, optimizing the hydrodynamics and buoyancy effects on the vehicle to ensure robust, precise, and accurate maneuverability.",
+      duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
         { date: "Applications", description: "3/24/25" },
@@ -56,18 +60,19 @@ const Challenges = () => {
         { date: "Acceptance", description: "4/2/25" },
       ],
       researchAreas: [
-        "Propeller and thrust design",
+        "Propeller Design",
         "Hydrodynamics",
-        "Computational fluid dynamics (CFD)",
+        "Computational Fluid Dynamics (CFD)",
       ],
       competitionLink: "https://materovcompetition.org/",
-      imageUrl: "",
+      imageUrl: "images/materov/FP.png",
     },
     {
-      teamName: "Guidance, Navigation, & Control",
+      teamName: "Guidance, Navigation, and Control",
+      shortOverview: "Build an Autonomous Navigation System",
       competitionOverview:
-        "The GNC subteam is responsible for the ROV’s positioning and movement, developing control algorithms to optimize the navigation and sensor feedback of the vehicle through the competition course.",
-      duration: "Year Long",
+        "GNC subteam designs the positioning, orientation, and movement systems of the ROV, developing optimal control algorithms fed by sensors to efficiently navigate competition obstacles autonomously.",
+      duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
         { date: "Applications", description: "3/24/25" },
@@ -75,18 +80,20 @@ const Challenges = () => {
         { date: "Acceptance", description: "4/2/25" },
       ],
       researchAreas: [
-        "Visual navigation",
-        "Path planning and obstacle avoidance",
-        "Sensor fusion",
+        "Optimal Linear Control",
+        "Rigid Body Dynamics",
+        "Sensor Fusion",
+        "Advanced Python"
       ],
       competitionLink: "https://materovcompetition.org/",
-      imageUrl: "",
+      imageUrl: "images/materov/GNC.png",
     },
     {
-      teamName: "Guidance, Navigation, & Control",
+      teamName: "Thermal, Mechanisms, and Structures",
+      shortOverview: "Build a Sturdy Frame and Arms",
       competitionOverview:
-        "The GNC subteam is responsible for the ROV’s positioning and movement, developing control algorithms to optimize the navigation and sensor feedback of the vehicle through the competition course.",
-      duration: "Year Long",
+        "TMS subteam designs the physical aspects of the ROV, ensuring structural integrity, effective thermal management, and manipulation of competition objects.",
+      duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
         { date: "Applications", description: "3/24/25" },
@@ -94,18 +101,20 @@ const Challenges = () => {
         { date: "Acceptance", description: "4/2/25" },
       ],
       researchAreas: [
-        "Visual navigation",
-        "Path planning and obstacle avoidance",
-        "Sensor fusion",
+        "Computer Aided Design (CAD)",
+        "Structural Design and Analysis",
+        "Thermal Design",
+        "Robotic Control"
       ],
       competitionLink: "https://materovcompetition.org/",
-      imageUrl: "",
+      imageUrl: "images/materov/TMS.png",
     },
     {
-      teamName: "Thermal, Mechanisms, & Structures",
+      teamName: "MATE ROV Leadership",
+      shortOverview: "Lead the Team to Success",
       competitionOverview:
-        "The TMS subteam is handling the physical design of the ROV, ensuring its structural integrity and efficient management of thermals. Their work will focus greatly on the mechanisms and general design of the vehicle.",
-      duration: "Year Long",
+        "The team’s leadership consists of a Project Manager and a Chief System Engineer who work with all subteams to ensure the team will succeed.",
+      duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
         { date: "Applications", description: "3/24/25" },
@@ -113,12 +122,12 @@ const Challenges = () => {
         { date: "Acceptance", description: "4/2/25" },
       ],
       researchAreas: [
-        "CAD",
-        "Structural design and stress analysis",
-        "Thermal engineering",
+        "Project Management",
+        "Systems Engineering",
+        "Systems Architecture",
       ],
       competitionLink: "https://materovcompetition.org/",
-      imageUrl: "",
+      imageUrl: "images/materov/Leadership.png",
     },
   ];
 
@@ -128,6 +137,7 @@ const Challenges = () => {
         <BoxComponent
           key={index}
           teamName={team.teamName}
+          shortOverview={team.shortOverview}
           competitionOverview={team.competitionOverview}
           duration={team.duration}
           teamSize={team.teamSize}
