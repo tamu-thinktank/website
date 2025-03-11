@@ -77,14 +77,14 @@ const faqData = [
   function MateRovFaq() {
     return (
       <Container>
-        <div className="space-y-4 px-6 md:px-6">
-          <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
+        <div className="px-6 md:px-6">
+          <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl pb-4">
             MATE ROV
           </h2>
           <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
           <Accordion type="single" collapsible>
             {faqData.map((item, index) => (
-              <AccordionItem key={index} value={`question-${index + 1}`}>
+              <AccordionItem key={index} value={`question-${index + 1}`} className="border-b border-gray-300 dark:border-gray-600">
                 <AccordionTrigger className="w-full text-left">
                   {item.question}
                 </AccordionTrigger>

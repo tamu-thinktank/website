@@ -129,7 +129,7 @@ export default function Header() {
                         onClick={(e) => handleLinkClick(e, "/materov")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
-                        MATE
+                        MATE ROV
                       </a>
                       <a
                         href="/"
@@ -139,15 +139,15 @@ export default function Header() {
                         Articles
                       </a>
                       <a
-                        href="/about"
-                        onClick={(e) => handleLinkClick(e, "/about", 6.3)}
+                        href="/faq"
+                        onClick={(e) => handleLinkClick(e, "/faq")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         FAQ
                       </a>
                       <a
-                        href="/faq"
-                        onClick={(e) => handleLinkClick(e, "/faq")}
+                        href="/apply"
+                        onClick={(e) => handleLinkClick(e, "/apply")}
                         className="inline-flex h-10 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-200"
                       >
                         Join Us
