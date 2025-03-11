@@ -19,21 +19,10 @@ interface BoxProps {
   admissionTimeline: AdmissionTimelineEntry[];
   researchAreas?: string[];
   pastTeams?: string[];
-  mentors: {
-    peer: string;
-    faculty: string;
-  };
   competitionLink?: string;
   imageUrl: string;
-  image: string;
-  major: string;
-  year: string;
-  description: string;
-  facultyImage: string;
   field?: string;
   interest?: string;
-  prize?: string;
-  dtype?: string;
 }
 
 interface ExpandedProps {
@@ -315,72 +304,6 @@ const TimelineContainer = styled.div`
   }
 `;
 
-const MentorSection = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-`;
-
-const MentorCard = styled.div`
-  position: relative;
-  width: 200px;
-  height: 200px;
-  overflow: hidden;
-  border-radius: 10px;
-
-  @media (max-width: 768px) {
-    width: 150px;
-    height: 150px;
-  }
-`;
-
-const MentorInfo = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.7);
-  color: white;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  text-align: center;
-  padding: 1rem;
-
-  &:hover {
-    opacity: 1;
-  }
-
-  h4 {
-    width: 100%;
-    font-size: 1.125rem;
-    font-weight: 700;
-    margin-bottom: 0.25rem;
-  }
-
-  p {
-    width: 100%;
-    font-size: 0.875rem;
-    margin: 0;
-
-    &.role {
-      margin-top: 0.5rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    h4 {
-      font-size: 1rem;
-    }
-
-    p {
-      font-size: 0.75rem;
-    }
-  }
-`;
-
 const BoxComponent: React.FC<BoxProps> = ({
   teamName,
   shortOverview,
@@ -390,16 +313,8 @@ const BoxComponent: React.FC<BoxProps> = ({
   admissionTimeline,
   researchAreas,
   pastTeams,
-  mentors,
   competitionLink,
   imageUrl,
-  image,
-  major,
-  year,
-  facultyImage,
-  field,
-  prize,
-  dtype,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -573,50 +488,9 @@ const BoxComponent: React.FC<BoxProps> = ({
                     <li>
                       <strong>Team Size:</strong> {teamSize}
                     </li>
-                    <li>
-                      <strong>Prize Amount:</strong> {prize}
-                    </li>
-                    <li>
-                      <strong>Deliverable Type:</strong> {dtype}
-                    </li>
                   </ul>
                 </InfoBlock>
               </div>
-
-              <InfoBlock>
-                <h3>Mentors</h3>
-                <MentorSection>
-                  <MentorCard>
-                    <Image
-                      src={image}
-                      alt={`${mentors.peer} avatar`}
-                      layout="fill"
-                      objectFit="cover"
-                    />
-                    <MentorInfo>
-                      <h4>{mentors.peer}</h4>
-                      <p>
-                        {major} '{year}
-                      </p>
-                      <p className="role">Peer Mentor</p>
-                    </MentorInfo>
-                  </MentorCard>
-
-                  <MentorCard>
-                    <Image
-                      src={facultyImage}
-                      alt={`${mentors.faculty} avatar`}
-                      layout="fill"
-                      objectFit="cover"
-                    />
-                    <MentorInfo>
-                      <h4>{mentors.faculty}</h4>
-                      {field && <p>{field}</p>}
-                      <p className="role">Faculty Mentor</p>
-                    </MentorInfo>
-                  </MentorCard>
-                </MentorSection>
-              </InfoBlock>
 
               <InfoBlock>
                 <h3>Admission Timeline</h3>

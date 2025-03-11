@@ -7,7 +7,7 @@ const AboutHeader: React.FC = () => {
       <div className="relative w-full p-8 md:p-12 md:px-24 lg:p-16 lg:px-32">
         <div className="flex flex-col items-start gap-0">
           <span className="font-dm-sans text-[0.93em] font-semibold text-[#B8B8B8] md:text-[0.93em]">
-            2024-2025
+            2025-2026
           </span>
           <h1 className="font-poppins bg-gradient-to-r from-white to-gray-500 bg-clip-text text-[3.9rem] font-semibold text-transparent md:text-[5.2rem] lg:text-[6.5rem]">
             MATE ROV
