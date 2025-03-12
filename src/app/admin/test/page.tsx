@@ -1,14 +1,15 @@
 "use client";
 
-import ApplicantsTable from "./new-applicants-table";
+import { MembersPage } from "../members/memberPage";
+import { IntervieweesPage } from "../interviewees/intervieweePage";
 import { SessionProvider, useSession } from "next-auth/react";
+import { MemberProvider } from "../transfer";
 
 export default function Home() {
   return (
-    <ApplicantsTable />
-    // <SessionProvider>
-    //   <AuthenticatedPage />
-    // </SessionProvider>
+    <div>
+      <IntervieweesPage />
+    </div>
   );
 }
 
