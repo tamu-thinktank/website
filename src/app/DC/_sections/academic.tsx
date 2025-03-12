@@ -342,41 +342,7 @@ export default function AcademicInfo() {
           )}
         />
       ))}
-      <FormField
-        control={form.control}
-        name="academic.commitment"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle>Are you able to commit 5-7 hours per week (equivalent to 1 in-major engineering course) to your team for the entire duration of the project?</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormItem>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Yes" id="Yes" />
-                        <FormLabel htmlFor="Yes">Yes</FormLabel>
-                      </div>
-                    </FormItem>
-                    <FormItem>
-                      <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="No" id="No" />
-                        <FormLabel htmlFor="No">No</FormLabel>
-                      </div>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
+
     </div>
   );
 }

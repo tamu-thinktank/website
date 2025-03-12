@@ -139,18 +139,21 @@ export const qDC: OfficerQuestions = {
 
   thinkTankInfo: {
     title: "ThinkTank Information",
+
     officerCommitment:
-      "Are you able to commit 6 to 8 hours per week to your position for this summer and the next 2 semesters?",
+      "Are you able to commit to and attend weekly team meetings in person, which will take place on Saturdays for the next 2 semesters?",
+
+
+
     preferredPositions:
       "For each selected position, rate your relative interest compared to other positions.",
   },
 
   openEndedQuestions: {
     title: "Open-Ended Questions",
-    firstQuestion:
-      "Have you previously applied to ThinkTank? If yes, please specify which design challenge you applied for, and indicate the semester in which you applied.",
+    firstQuestion: "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
     secondQuestion:
-      "What do you hope to achieve by participating in the Mini Design Challenge Competition?",
+      "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
   },
 
   resume: {

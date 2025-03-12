@@ -23,13 +23,16 @@ export default function SubmissionConfirmation() {
         </CardHeader>
         <CardContent className="space-y-6 text-center">
           <p>
-            Thank you for applying to our Mini Design Challenge Competition! You will receive an email with your responses momentarily.
+            Thank you for applying to our MATE ROV Recurring Team! You will receive an email with your responses momentarily.
           </p>
 
           <p>
-            We will be reviewing your application shortly and start sending acceptances in 1-2 weeks. If you do not receive a response after 3 days past the posted application deadline, please contact us.
+            We will be reviewing your application shortly and scheduling interviews which are optimized to match your availability with ours. If you do not receive a response after 3 days past the posted application deadline, please contact us.
           </p>
 
+          <p>
+            If you want to prepare further for your potential interview, we once again recommend reviewing the MATE ROV Competition Website for the competition you are applying for and to familiarize yourself with what is required of members.
+          </p>
 
 
           <Button

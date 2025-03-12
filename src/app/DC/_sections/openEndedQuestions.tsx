@@ -47,7 +47,7 @@ export default function OpenEndedQuestions() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {qDC.openEndedQuestions.firstQuestion} <span className="text-red-500">*</span>
+                    {"Describe an instance where you worked with a team to accomplish a goal you were passionate about."} <span className="text-red-500">*</span>
                   </CardTitle>
                   <CardDescription>250 word maximum length</CardDescription>
                 </CardHeader>
@@ -81,7 +81,40 @@ export default function OpenEndedQuestions() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {qDC.openEndedQuestions.secondQuestion} <span className="text-red-500">*</span>
+                    {"Describe an instance where you demonstrated your passion for a project, task, or subject matter."} <span className="text-red-500">*</span>
+                  </CardTitle>
+                  <CardDescription>250 word maximum length</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <FormControl>
+                    <Textarea
+                      {...field}
+                      placeholder="Describe your teamwork experience..."
+                      className="min-h-[150px]"
+                    />
+                  </FormControl>
+                  <div className={`text-sm ${count > 250 ? "text-destructive" : "text-muted-foreground"}`}>
+                    {count}/250 words
+                  </div>
+                  <FormMessage />
+                </CardContent>
+              </Card>
+            </FormItem>
+          );
+        }}
+      />
+
+      <FormField
+        control={form.control}
+        name="openEndedQuestions.secondQuestion"
+        render={({ field }) => {
+          const count = wordCount(field.value || "");
+          return (
+            <FormItem>
+              <Card>
+                <CardHeader>
+                  <CardTitle>
+                    {"If you were previously in a ThinkTank design team, which previous team were you a member of and what did you specifically contribute? If you were not previously in ThinkTank, but have participated in an engineering design competition before, what was it and how did you contribute to the team?"} <span className="text-red-500">*</span>
                   </CardTitle>
                   <CardDescription>250 word maximum length</CardDescription>
                 </CardHeader>
