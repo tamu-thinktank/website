@@ -184,27 +184,30 @@ const Scheduler: React.FC = () => {
 
       const data = await response.json();
 
-      // Process and update the interviews state
-      const updatedInterviewers = interviewers.map((interviewer) => {
-        const interviewerInterviews = data.filter(
-          (interview: any) => interview.interviewerId === interviewer.id,
-        );
+      // Process and update the interviews state while preserving openCalendar state
+      setInterviewers((prevInterviewers) => {
+        return prevInterviewers.map((interviewer) => {
+          const interviewerInterviews = data.filter(
+            (interview) => interview.interviewerId === interviewer.id,
+          );
 
-        return {
-          ...interviewer,
-          interviews: interviewerInterviews.map((interview: any) => ({
-            id: interview.id,
-            applicantName: interview.applicantName,
-            applicantId: interview.applicantId,
-            startTime: new Date(interview.startTime),
-            endTime: new Date(interview.endTime),
-            teamId: interview.teamId,
-            location: interview.location || "TBD",
-          })),
-        };
+          return {
+            ...interviewer,
+            // Preserve the openCalendar state
+            openCalendar: interviewer.openCalendar,
+            interviews: interviewerInterviews.map((interview) => ({
+              id: interview.id,
+              applicantName: interview.applicantName,
+              applicantId: interview.applicantId,
+              startTime: new Date(interview.startTime),
+              endTime: new Date(interview.endTime),
+              teamId: interview.teamId,
+              location: interview.location || "TBD",
+            })),
+          };
+        });
       });
 
-      setInterviewers(updatedInterviewers);
       setLastUpdate(new Date());
     } catch (error) {
       console.error("Error fetching interviews:", error);
@@ -215,7 +218,6 @@ const Scheduler: React.FC = () => {
       });
     }
   };
-
   // Fetch applicants from the database
   const fetchApplicants = async () => {
     setIsLoadingApplicants(true);

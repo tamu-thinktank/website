@@ -25,9 +25,6 @@ export async function GET() {
         },
         applicationType: true,
         status: true,
-        interviewerId: true,
-        interviewTime: true,
-        interviewDuration: true,
       },
     });
 
@@ -44,55 +41,11 @@ export async function GET() {
       year: applicant.year,
       rating: applicant.status,
       category: applicant.applicationType,
-      interviewerId: applicant.interviewerId || null,
-      interviewTime: applicant.interviewTime
-        ? new Date(applicant.interviewTime)
-        : null,
-      interviewDuration: applicant.interviewDuration || 15, // Default to 15 minutes if not specified
     }));
 
     return NextResponse.json(formattedInterviewees);
   } catch (error) {
     console.error("Error fetching interviewees:", error);
-    return NextResponse.json(
-      {
-        error: `Internal Server Error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      },
-      { status: 500 },
-    );
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
-// Update an applicant's interview details
-export async function PUT(request: Request) {
-  try {
-    const data = await request.json();
-
-    // Validate required fields
-    if (!data.id || !data.interviewerId || !data.interviewTime) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 },
-      );
-    }
-
-    // Update the applicant with interview details
-    const updatedApplicant = await prisma.application.update({
-      where: {
-        id: data.id,
-      },
-      data: {
-        interviewerId: data.interviewerId,
-        interviewTime: new Date(data.interviewTime),
-        interviewDuration: data.interviewDuration || 15, // Default to 15 minutes
-      },
-    });
-
-    return NextResponse.json(updatedApplicant);
-  } catch (error) {
-    console.error("Error updating applicant interview details:", error);
     return NextResponse.json(
       {
         error: `Internal Server Error: ${error instanceof Error ? error.message : "Unknown error"}`,
