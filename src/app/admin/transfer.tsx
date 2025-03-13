@@ -1,27 +1,21 @@
-import React, { createContext, useState, useContext } from 'react';
-import { ApplicantData } from './interviewees/intervieweetypes';
+"use client";
 
-interface MemberContextType {
-  members: ApplicantData[];
-  setMembers: React.Dispatch<React.SetStateAction<ApplicantData[]>>;
+import React from "react";
+
+// Create a proper type for the context value
+type MemberContextType = null; // Replace with your actual context type
+
+const MemberContext = React.createContext<MemberContextType>(null);
+
+export const useMemberContext = () => React.useContext(MemberContext);
+
+interface MemberProviderProps {
+  children: React.ReactNode;
 }
 
-const MemberContext = createContext<MemberContextType | undefined>(undefined);
-
-export const MemberProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [members, setMembers] = useState<ApplicantData[]>([]);
-
+export const MemberProvider: React.FC<MemberProviderProps> = ({ children }) => {
+  // Add member context logic here if needed
   return (
-    <MemberContext.Provider value={{ members, setMembers }}>
-      {children}
-    </MemberContext.Provider>
+    <MemberContext.Provider value={null}>{children}</MemberContext.Provider>
   );
-};
-
-export const useMemberContext = () => {
-  const context = useContext(MemberContext);
-  if (context === undefined) {
-    throw new Error('useMemberContext must be used within a MemberProvider');
-  }
-  return context;
 };

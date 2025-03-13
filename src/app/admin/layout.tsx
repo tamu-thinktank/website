@@ -1,63 +1,27 @@
 "use client";
 
-//import GradientLayout from "@/components/GradientLayout";
-//import { Button } from "@/components/ui/button";
-//import { getBaseUrl } from "@/lib/trpc/shared";
-//import { Loader2 } from "lucide-react";
-import { SessionProvider, signIn, useSession } from "next-auth/react";
-import { AdminHeader } from "./admin-header";
-//import { ApplicantsPage } from "./applicants/applicantPage";
-import { MembersPage } from "./members/memberPage";
-import { IntervieweesPage } from "./interviewees/intervieweePage";
+import { SessionProvider, useSession } from "next-auth/react";
+import Nav from "../../components/AdminTopFooter";
 import { MemberProvider } from "./transfer";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <SessionProvider refetchOnWindowFocus>
-      {/* <GradientLayout> */}
-      <Content>{children}</Content>
-      {/* </GradientLayout> */}
+      <AuthenticatedLayout>{children}</AuthenticatedLayout>
     </SessionProvider>
   );
 }
 
-function Content({ children }: { children: React.ReactNode }) {
-  const { status: authStatus } = useSession();
-
-  return authStatus === "authenticated" ? (
-    <>
-      <section className="h-[90vh] w-11/12 space-y-4 md:w-3/4 lg:w-2/3">
-        <AdminHeader />
-        {children}
-      </section>
-    </>
-  ) : (
-    <>
-      <MemberProvider>
-        <IntervieweesPage />
-      </MemberProvider>
-    </>
-    // <Button
-    //   disabled={authStatus === "loading"}
-    //   onClick={() =>
-    //     void signIn(
-    //       "auth0",
-    //       {
-    //         callbackUrl: getBaseUrl() + "/admin",
-    //       },
-    //       {
-    //         connection: "google-oauth2",
-    //         response_type: "code",
-    //       },
-    //     )
-    //   }
-    //   className="rounded-full bg-white/10 px-10 py-3 font-semibold text-primary no-underline transition hover:bg-white/20"
-    // >
-    //   {authStatus === "loading" ? (
-    //     <Loader2 className="animate-spin" />
-    //   ) : (
-    //     "Sign in"
-    //   )}
-    // </Button>
+function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  // tmporarily skip authentication
+  return (
+    <MemberProvider>
+      <Nav />
+      <section style={{ background: "#0C0D0E" }}>{children}</section>
+    </MemberProvider>
   );
 }

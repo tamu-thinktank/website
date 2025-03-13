@@ -2,82 +2,82 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider  = "postgresql"
-    // NOTE: When using mysql or sqlserver, use @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
-    directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  provider  = "postgresql"
+  // NOTE: When using mysql or sqlserver, use @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 // ------------------ nextauth tables ------------------
 
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?
-    access_token      String?
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
+  @@index([userId])
 }
 
 // officers
 model User {
-    id            String        @id @default(cuid())
-    name          String
-    email         String        @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    availability  OfficerTime[]
-    targetTeams   Challenge[] // teams officer is interviewing for
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  availability  OfficerTime[]
+  targetTeams   Challenge[] // teams officer is interviewing for
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 }
 
 // ------------------
 
 // Availabilities of officers for each time section in availability grid
 model OfficerTime {
-    gridTime   String // Temporal.ZonedDateTime ISO in UTC
-    officerId  String
-    officer    User   @relation(fields: [officerId], references: [id], onDelete: Cascade)
-    selectedAt String // Temporal.ZonedDateTime ISO in UTC
+  gridTime   String // Temporal.ZonedDateTime ISO in UTC
+  officerId  String
+  officer    User   @relation(fields: [officerId], references: [id], onDelete: Cascade)
+  selectedAt String // Temporal.ZonedDateTime ISO in UTC
 
-    @@id([gridTime, officerId])
-    @@index([officerId])
+  @@id([gridTime, officerId])
+  @@index([officerId])
 }
 
 enum ApplicationType {
@@ -86,22 +86,23 @@ enum ApplicationType {
 }
 
 enum Year {
-    FRESHMAN
-    SOPHOMORE
-    JUNIOR
-    SENIOR
-    GRADUATE
+  FRESHMAN
+  SOPHOMORE
+  JUNIOR
+  SENIOR
+  GRADUATE
 }
 
 enum Challenge {
-    TSGC
-    AIAA
+  TSGC
+  AIAA
 }
 
 enum ApplicationStatus {
-    PENDING
-    ACCEPTED
-    REJECTED
+  PENDING
+  ACCEPTED
+  REJECTED
+  INTERVIEWING
 }
 
 enum InterestLevel {
@@ -166,113 +167,113 @@ enum OfficerPosition {
 
 // Availabilities of applicants
 model ApplicantTime {
-    gridTime    String // Temporal.ZonedDateTime ISO in UTC
-    applicant   Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-    applicantId String
+  gridTime    String // Temporal.ZonedDateTime ISO in UTC
+  applicant   Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  applicantId String
 
-    @@id([gridTime, applicantId])
-    @@index([applicantId])
+  @@id([gridTime, applicantId])
+  @@index([applicantId])
 }
 
 // Time commitments (current or planned) for applicants.
 model Commitment {
-  name         String                 // Name of the commitment (e.g., "SAE").
-  hours        Int                    // Hours per week (e.g., range: 0-15).
-  type         CommitmentType         // Enum for "CURRENT" or "PLANNED".
-  applicantId  String                 // Foreign key linking this commitment to an application.
-  applicant    Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  name        String // Name of the commitment (e.g., "SAE").
+  hours       Int // Hours per week (e.g., range: 0-15).
+  type        CommitmentType // Enum for "CURRENT" or "PLANNED".
+  applicantId String // Foreign key linking this commitment to an application.
+  applicant   Application    @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 
-  @@id([name, applicantId, type])     // Composite primary key ensures unique commitments per application and type.
+  @@id([name, applicantId, type]) // Composite primary key ensures unique commitments per application and type.
 }
 
 model Team {
-  id           String          @id @default(cuid())
-  name         String          @unique // Name of the team (e.g., TSGC, AIAA)
+  id            String           @id @default(cuid())
+  name          String           @unique // Name of the team (e.g., TSGC, AIAA)
   researchAreas ResearchArea[] // Relation to ResearchArea
-  preferences  TeamPreference[] // Relation to TeamPreference
+  preferences   TeamPreference[] // Relation to TeamPreference
 }
 
 model ResearchArea {
-  id             String             @id @default(cuid())
-  name           String             @unique // Name of the research area (e.g., Propulsion Systems)
-  teamId         String             // Foreign key linking to Team
-  team           Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  preferences    ResearchPreference[] // Relation to ResearchPreference
+  id          String               @id @default(cuid())
+  name        String               @unique // Name of the research area (e.g., Propulsion Systems)
+  teamId      String // Foreign key linking to Team
+  team        Team                 @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  preferences ResearchPreference[] // Relation to ResearchPreference
 }
 
 // Preferred teams and their interest levels (HIGH/MED/LOW).
 model TeamPreference {
-  id           String       @id @default(cuid())
-  teamId       String       // Foreign key linking to Team
-  team         Team         @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  interest     InterestLevel
-  applicantId  String       // Foreign key linking to Application
-  applicant    Application  @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  id          String        @id @default(cuid())
+  teamId      String // Foreign key linking to Team
+  team        Team          @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  interest    InterestLevel
+  applicantId String // Foreign key linking to Application
+  applicant   Application   @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 
 // Preferred research areas and their interest levels (HIGH/MED/LOW).
 model ResearchPreference {
-  id             String             @id @default(cuid())
-  researchAreaId String             // Foreign key linking to ResearchArea
-  researchArea   ResearchArea       @relation(fields: [researchAreaId], references: [id], onDelete: Cascade)
+  id             String        @id @default(cuid())
+  researchAreaId String // Foreign key linking to ResearchArea
+  researchArea   ResearchArea  @relation(fields: [researchAreaId], references: [id], onDelete: Cascade)
   interest       InterestLevel
-  applicantId    String             // Foreign key linking to Application
-  applicant      Application        @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  applicantId    String // Foreign key linking to Application
+  applicant      Application   @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 
 model PositionPreference {
-  id          String           @id @default(cuid())
+  id          String          @id @default(cuid())
   position    OfficerPosition
   interest    InterestLevel
   applicantId String
-  applicant   Application      @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  applicant   Application     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 
 model Application {
-    id          String            @id @default(cuid())
-    submittedAt DateTime          @default(now())
-    status      ApplicationStatus @default(PENDING)
-    location    String? // interview location if accepted
-    applicationType ApplicationType
+  id              String            @id @default(cuid())
+  submittedAt     DateTime          @default(now())
+  status          ApplicationStatus @default(PENDING)
+  location        String? // interview location if accepted
+  applicationType ApplicationType
 
-    // personal info section
-    fullName        String
-    preferredName   String?
-    pronouns        String?
-    gender          String?
-    uin             Int     @unique
-    email           String  @unique
-    altEmail        String?
-    phone           String
-    
-    // Academic Information Section:
-    year                 Year              // Current year at TAMU (enum).
-    major                Major             // Major abbreviation (e.g., AERO).
-    currentClasses       String[]          // Current semester classes.
-    nextClasses          String[]          // Next semester classes.
-    timeCommitment       Commitment[]      // Current and planned commitments.
+  // personal info section
+  fullName      String
+  preferredName String?
+  pronouns      String?
+  gender        String?
+  uin           Int     @unique
+  email         String  @unique
+  altEmail      String?
+  phone         String
 
-    // Officer-specific new academic fields:
-    summerPlans          String            @db.Text    // Short answer (<100 words)
+  // Academic Information Section:
+  year           Year // Current year at TAMU (enum).
+  major          Major // Major abbreviation (e.g., AERO).
+  currentClasses String[] // Current semester classes.
+  nextClasses    String[] // Next semester classes.
+  timeCommitment Commitment[] // Current and planned commitments.
 
-    // ThinkTank Information Section:
-    meetings             Boolean           // Can attend meetings in person.
-    weeklyCommitment     Boolean           // Can commit to weekly workload.
-    preferredTeams       TeamPreference[]  // Preferred teams with interest levels.
-    researchAreas        ResearchPreference[] // Preferred research areas with interest levels.
-    referral             ReferralSource[]      // How they heard about ThinkTank.
+  // Officer-specific new academic fields:
+  summerPlans String @db.Text // Short answer (<100 words)
 
-    // Officer-specific ThinkTank information
-    officerCommitment    OfficerCommitment?  // "Are you able to commit 6-8 hrs/week for summer and next 2 semesters?" with options: YES / PARTIAL / NO
-    preferredPositions   PositionPreference[] // Array of officer positions with interest levels
+  // ThinkTank Information Section:
+  meetings         Boolean // Can attend meetings in person.
+  weeklyCommitment Boolean // Can commit to weekly workload.
+  preferredTeams   TeamPreference[] // Preferred teams with interest levels.
+  researchAreas    ResearchPreference[] // Preferred research areas with interest levels.
+  referral         ReferralSource[] // How they heard about ThinkTank.
 
-    // Open-Ended Questions Section:
-    firstQuestion              String            @db.Text // Long answer (<250 words).
-    secondQuestion             String            @db.Text // Long answer (<250 words).
+  // Officer-specific ThinkTank information
+  officerCommitment  OfficerCommitment? // "Are you able to commit 6-8 hrs/week for summer and next 2 semesters?" with options: YES / PARTIAL / NO
+  preferredPositions PositionPreference[] // Array of officer positions with interest levels
 
-    meetingTimes ApplicantTime[] // the time sections that the applicant selected
-    resumeId     String // the id of the resume file in the google drive
-    signatureCommitment String
-    signatureAccountability String
-    signatureQuality String
+  // Open-Ended Questions Section:
+  firstQuestion  String @db.Text // Long answer (<250 words).
+  secondQuestion String @db.Text // Long answer (<250 words).
+
+  meetingTimes            ApplicantTime[] // the time sections that the applicant selected
+  resumeId                String // the id of the resume file in the google drive
+  signatureCommitment     String
+  signatureAccountability String
+  signatureQuality        String
 }

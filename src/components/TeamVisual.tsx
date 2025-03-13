@@ -52,6 +52,16 @@ const COLORS = [
   "#7f8ea3",
   "#526480",
 ];
+/*
+"#1E40AF", // Rich Blue
+  "#3B82F6", // Vibrant Sky Blue
+  "#60A5FA", // Soft Blue
+  "#A78BFA", // Muted Purple
+  "#9333EA", // Deep Violet
+  "#14B8A6", // Teal Cyan
+  "#06B6D4", // Electric Cyan
+  "#0284C7", // Deep Azure
+*/
 
 export function StatisticsVisualizer() {
   const [loading, setLoading] = useState<boolean>(true);

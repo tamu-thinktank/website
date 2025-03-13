@@ -1,12 +1,13 @@
+"use client";
+
 import * as React from "react";
 import { FilterButton } from "./filterButton";
 import { TableHeader } from "./tableHeader";
-import type { FilterState } from "./membertypes";
-import { useMemberContext } from "../transfer";
+import type { ApplicantData, FilterState } from "./membertypes";
 
 export const MembersPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState("DC");
+  const [selectedCategory, setSelectedCategory] = React.useState("DCMEMBER");
   const [filters, setFilters] = React.useState<FilterState>({
     team: "",
     rating: "",
@@ -14,11 +15,35 @@ export const MembersPage: React.FC = () => {
     major: "",
   });
 
-  const { members } = useMemberContext();
+  const [applicantData, setApplicantData] = React.useState<ApplicantData[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    const fetchMemberData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch("/api/members");
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch members");
+        }
+
+        const data = (await response.json()) as ApplicantData[];
+        setApplicantData(data);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError("Failed to load member data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMemberData();
+  }, []);
 
   const tableHeaders = [
     "Name",
-    "Rating",
     "Research Interests",
     "Team Rankings",
     "Major",
@@ -36,17 +61,19 @@ export const MembersPage: React.FC = () => {
   ];
 
   const filteredMembers = React.useMemo(() => {
-    return members.filter((member) => {
-      const matchesCategory = member.category === selectedCategory;
-      const matchesSearch = member.name
+    return applicantData.filter((applicant) => {
+      const matchesCategory = applicant.category === selectedCategory;
+      const matchesSearch = applicant.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
-      const matchesMajor = !filters.major || member.major === filters.major;
+      const matchesMajor = !filters.major || applicant.major === filters.major;
       const matchesInterests =
-        !filters.interests || member.interests.includes(filters.interests);
+        !filters.interests || applicant.interests.includes(filters.interests);
       const matchesTeam =
-        !filters.team || member.teamRankings.includes(filters.team);
-      const matchesRating = !filters.rating || member.rating === filters.rating;
+        !filters.team || applicant.teamRankings.includes(filters.team);
+      const matchesRating =
+        !filters.rating || applicant.rating === filters.rating;
+
       return (
         matchesCategory &&
         matchesSearch &&
@@ -56,7 +83,7 @@ export const MembersPage: React.FC = () => {
         matchesRating
       );
     });
-  }, [searchQuery, filters, members, selectedCategory]);
+  }, [searchQuery, filters, applicantData, selectedCategory]);
 
   const handleFilterChange =
     (filterType: keyof FilterState) => (value: string) => {
@@ -72,41 +99,22 @@ export const MembersPage: React.FC = () => {
 
   return (
     <div className="flex flex-col overflow-hidden bg-neutral-950 text-xl font-medium shadow-[0px_4px_4px_rgba(0,0,0,0.25)]">
-      {/* <div className="flex flex-col justify-center items-center px-16 py-5 w-full tracking-wide whitespace-nowrap bg-neutral-950 text-neutral-200 text-opacity-80 max-md:px-5 max-md:mr-2 max-md:max-w-full">
-                <div className="flex flex-wrap gap-5 justify-between w-full max-w-[1538px] max-md:max-w-full">
-                    <img
-                        loading="lazy"
-                        src="ttt.png"
-                        alt="Logo"
-                        className="object-contain max-w-full aspect-[2.4] w-[139px]"
-                    />
-                    <div className="flex gap-8 my-auto max-md:max-w-full">
-                        <div className="grow">Applicants</div>
-                        <div className="basis-auto">Interviewees</div>
-                        <div>Members</div>
-                        <div>Scheduler</div>
-                        <div>Statistics</div>
-                    </div>
-                </div>
-            </div>
-            <div className='w-full border border-solid border-neutral-200'></div> */}
-
-      <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pb-96 pt-11  max-md:max-w-full max-md:px-5 max-md:pb-24">
+      <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pb-96 pt-11 max-md:max-w-full max-md:px-5 max-md:pb-24">
         <div className="mb-0 flex w-full max-w-[1537px] flex-col max-md:mb-2.5 max-md:max-w-full">
-          <div className="self-start pb-10 text-center text-5xl font-semibold max-md:text-4xl">
+          <div className="self-start pb-10 pt-20 text-center text-5xl font-semibold max-md:text-4xl">
             Members
           </div>
 
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
-              onClick={() => setSelectedCategory("DC")}
+              onClick={() => setSelectedCategory("DCMEMBER")}
               className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 transition-colors max-md:max-w-full max-md:pl-5 ${
-                selectedCategory === "DC"
+                selectedCategory === "DCMEMBER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
               }`}
             >
-              Individual
+              DC
             </div>
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
@@ -139,12 +147,6 @@ export const MembersPage: React.FC = () => {
               selected={filters.team || "Team"}
             />
             <FilterButton
-              label="Rating"
-              options={ratingOptions}
-              onOptionSelect={handleFilterChange("rating")}
-              selected={filters.rating || "Rating"}
-            />
-            <FilterButton
               label="Interests"
               options={interestOptions}
               onOptionSelect={handleFilterChange("interests")}
@@ -160,25 +162,40 @@ export const MembersPage: React.FC = () => {
 
           <div className="mt-7 flex w-full flex-col rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full max-md:pb-24">
             <TableHeader headers={tableHeaders} />
-            {filteredMembers.map((applicant, index) => (
-              <React.Fragment key={index}>
-                <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
-                  <div className="flex-1 text-center">{applicant.name}</div>
-                  <div className="flex-1 text-center">{applicant.rating}</div>
-                  <div className="flex-1 text-center">
-                    {applicant.interests.join(", ")}
-                  </div>
-                  <div className="flex-1 text-center">
-                    {applicant.teamRankings.join(", ")}
-                  </div>
-                  <div className="flex-1 text-center">{applicant.major}</div>
-                  <div className="flex-1 text-center">{applicant.year}</div>
-                </div>
-                {index < filteredMembers.length - 1 && (
-                  <div className="w-full shrink-0 border border-solid border-neutral-200" />
-                )}
-              </React.Fragment>
-            ))}
+            {loading ? (
+              <div className="py-10 text-center text-neutral-200">
+                Loading member data...
+              </div>
+            ) : error ? (
+              <div className="py-10 text-center text-red-500">{error}</div>
+            ) : filteredMembers.length === 0 ? (
+              <div className="py-10 text-center text-neutral-200">
+                No members found matching your criteria.
+              </div>
+            ) : (
+              <>
+                {filteredMembers.map((applicant, index) => (
+                  <React.Fragment key={applicant.id}>
+                    <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
+                      <div className="flex-1 text-center">{applicant.name}</div>
+                      <div className="flex-1 text-center">
+                        {applicant.interests.join(", ")}
+                      </div>
+                      <div className="flex-1 text-center">
+                        {applicant.teamRankings.join(", ")}
+                      </div>
+                      <div className="flex-1 text-center">
+                        {applicant.major}
+                      </div>
+                      <div className="flex-1 text-center">{applicant.year}</div>
+                    </div>
+                    {index < filteredMembers.length - 1 && (
+                      <div className="w-full shrink-0 border border-solid border-neutral-200" />
+                    )}
+                  </React.Fragment>
+                ))}
+              </>
+            )}
           </div>
         </div>
       </div>

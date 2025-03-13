@@ -11,6 +11,7 @@ export interface TableHeaderProps {
 }
 
 export interface ApplicantData {
+  id: string;
   name: string;
   interests: string[];
   teamRankings: string[];
