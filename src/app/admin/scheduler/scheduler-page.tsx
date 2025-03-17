@@ -94,7 +94,7 @@ const Scheduler: React.FC = () => {
   const [interviewers, setInterviewers] = React.useState<Interviewer[]>([
     {
       id: "1",
-      name: "John Doe",
+      name: "off1",
       priorityTeams: [
         { teamId: Challenge.TSGC, priority: 1 },
         { teamId: Challenge.AIAA, priority: 2 },
@@ -104,14 +104,14 @@ const Scheduler: React.FC = () => {
     },
     {
       id: "2",
-      name: "Jane Smith",
+      name: "off2",
       priorityTeams: [{ teamId: Challenge.AIAA, priority: 1 }],
       interviews: [],
       openCalendar: false,
     },
     {
       id: "3",
-      name: "Alex Chen",
+      name: "off3",
       priorityTeams: [{ teamId: Challenge.TSGC, priority: 1 }],
       interviews: [],
       openCalendar: false,

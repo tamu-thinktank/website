@@ -70,7 +70,7 @@ export default function Apply() {
           resumeId: "",
           signatureCommitment: "",
           signatureAccountability: "",
-          signatureQuality: ""
+          signatureQuality: "",
         },
       },
     },
@@ -81,11 +81,12 @@ export default function Apply() {
       // Reset form and local storage first
       form.reset();
       window.localStorage.removeItem("apply-form-S2025-v1");
-      
+
       // Then show toast and confirmation
       toast({
         title: "Form Submitted!",
-        description: "Contact tamuthinktank@gmail.com if you do not receive an email by Jan. 19th.",
+        description:
+          "Contact tamuthinktank@gmail.com if you do not receive an email by April 2nd.",
         duration: 10000,
       });
       setShowConfirmation(true);
@@ -126,10 +127,10 @@ export default function Apply() {
         });
         return;
       }
-  
+
       const formData = new FormData();
       formData.append("resume", resumeFile);
-  
+
       try {
         const uploadResult = await uploadResume(formData);
         const updatedData = {
@@ -137,9 +138,9 @@ export default function Apply() {
           resume: {
             ...data.resume,
             resumeId: uploadResult.resumeId,
-          }
+          },
         };
-  
+
         await submitForm(updatedData);
       } catch (err) {
         toast({
@@ -147,14 +148,14 @@ export default function Apply() {
           title: "Error",
           description: (err as Error).message,
         });
-        
+
         // Clean up resume if upload failed
         if (data.resume.resumeId) {
           await deleteResume({ resumeId: data.resume.resumeId });
         }
       }
     },
-    [resumeFile, uploadResume, submitForm, deleteResume, toast]
+    [resumeFile, uploadResume, submitForm, deleteResume, toast],
   );
 
   if (showConfirmation) {
@@ -246,7 +247,7 @@ export default function Apply() {
                     type="submit"
                     className="bg-white text-black hover:bg-white hover:text-black"
                     disabled={
-                      form.formState.isSubmitting || 
+                      form.formState.isSubmitting ||
                       form.formState.isValidating ||
                       !form.formState.isValid ||
                       !form.watch("resume.signatureCommitment") ||
@@ -315,20 +316,20 @@ function ApplyTab({
     if (currentTab === "start") {
       return;
     }
-  
+
     const result = await form.trigger(currentTab, {
-      shouldFocus: true
+      shouldFocus: true,
     });
-  
+
     if (result) {
       setIsValid(true);
       scrollToTop();
     } else {
       setIsValid(false);
     }
-  
+
     setIsChecked(true);
-  }, [currentTab, form, scrollToTop]);  
+  }, [currentTab, form, scrollToTop]);
 
   useEffect(() => {
     if (!isChecked) return;

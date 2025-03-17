@@ -4,7 +4,7 @@ import * as React from "react";
 import { FilterButton } from "./filterButton";
 import { TableHeader } from "./tableHeader";
 import type { ApplicantData, FilterState } from "./types";
-import { BsFillUnlockFill, BsLockFill } from "react-icons/bs";
+import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 
 export const ApplicantsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -14,17 +14,19 @@ export const ApplicantsPage: React.FC = () => {
     rating: "",
     interests: "",
     major: "",
+    status: "", // Initialize status filter
   });
   const [applicantData, setApplicantData] = React.useState<ApplicantData[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [lockStatus, setLockStatus] = React.useState<Record<string, boolean>>(
-    {},
-  );
   const [transferStatus, setTransferStatus] = React.useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [transferMessage, setTransferMessage] = React.useState("");
+  const [selectedApplicantId, setSelectedApplicantId] = React.useState<
+    string | null
+  >(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const fetchApplicantData = async () => {
     try {
@@ -40,17 +42,6 @@ export const ApplicantsPage: React.FC = () => {
       const data = (await response.json()) as ApplicantData[];
       console.log("Fetched applicant data:", data.length, "records");
       setApplicantData(data);
-
-      // Initialize lock status for each applicant
-      const initialLockState = data.reduce(
-        (acc, applicant) => {
-          acc[applicant.id] = false;
-          return acc;
-        },
-        {} as Record<string, boolean>,
-      );
-
-      setLockStatus(initialLockState);
     } catch (err) {
       console.error("Error fetching data:", err);
       setError(
@@ -71,7 +62,7 @@ export const ApplicantsPage: React.FC = () => {
     "Team Rankings",
     "Major",
     "Year",
-    "Lock",
+    "Status",
   ];
 
   const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
@@ -83,26 +74,27 @@ export const ApplicantsPage: React.FC = () => {
     "Mechanical Engineering",
     "Reset",
   ];
-
-  const toggleLock = (id: string) => {
-    setLockStatus((prevStatus) => ({
-      ...prevStatus,
-      [id]: !prevStatus[id],
-    }));
-  };
+  const statusOptions = [
+    "PENDING",
+    "INTERVIEWING",
+    "ACCEPTED",
+    "REJECTED",
+    "Reset",
+  ];
 
   const handleTransfer = async () => {
-    const lockedApplicants = applicantData.filter(
-      (applicant) => lockStatus[applicant.id],
+    // Get applicants with PENDING status to transfer
+    const applicantsToTransfer = applicantData.filter(
+      (applicant) => applicant.status === "PENDING",
     );
 
-    if (lockedApplicants.length === 0) {
-      alert("No applicants are locked for transfer");
+    if (applicantsToTransfer.length === 0) {
+      alert("No pending applicants to transfer");
       return;
     }
 
     const isConfirmed = window.confirm(
-      `Are you sure you want to transfer ${lockedApplicants.length} applicant(s) to the interview stage?`,
+      `Are you sure you want to transfer ${applicantsToTransfer.length} pending applicant(s) to the interview stage?`,
     );
 
     if (isConfirmed) {
@@ -112,30 +104,30 @@ export const ApplicantsPage: React.FC = () => {
 
         console.log(
           "Transferring applicants:",
-          lockedApplicants.map((app) => app.id),
+          applicantsToTransfer.map((app) => app.id),
         );
 
         const response = await fetch("/api/transfer-to-interviewee", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            applicantIds: lockedApplicants.map((app) => app.id),
+            applicantIds: applicantsToTransfer.map((app) => app.id),
           }),
         });
 
         const result = (await response.json()) as { error?: string };
 
         if (!response.ok) {
-          throw new Error(result.error || "Transfer failed");
+          throw new Error(result.error ?? "Transfer failed");
         }
 
         console.log("Transfer response:", result);
         setTransferStatus("success");
         setTransferMessage(
-          `Transfer complete. ${lockedApplicants.length} applicant(s) transferred to interview stage.`,
+          `Transfer complete. ${applicantsToTransfer.length} applicant(s) transferred to interview stage.`,
         );
         alert(
-          `Transfer complete. ${lockedApplicants.length} applicant(s) transferred to interview stage.`,
+          `Transfer complete. ${applicantsToTransfer.length} applicant(s) transferred to interview stage.`,
         );
         void fetchApplicantData(); // Refresh the list
       } catch (error) {
@@ -169,6 +161,8 @@ export const ApplicantsPage: React.FC = () => {
         !filters.team || applicant.teamRankings.includes(filters.team);
       const matchesRating =
         !filters.rating || applicant.rating === filters.rating;
+      const matchesStatus =
+        !filters.status || applicant.status === filters.status;
 
       return (
         matchesCategory &&
@@ -176,7 +170,8 @@ export const ApplicantsPage: React.FC = () => {
         matchesMajor &&
         matchesInterests &&
         matchesTeam &&
-        matchesRating
+        matchesRating &&
+        matchesStatus
       );
     });
   }, [searchQuery, filters, applicantData, selectedCategory]);
@@ -191,6 +186,26 @@ export const ApplicantsPage: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
+  };
+
+  const openApplicantDetails = (id: string) => {
+    setSelectedApplicantId(id);
+    setIsModalOpen(true);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "text-orange-400";
+      case "INTERVIEWING":
+        return "text-blue-400";
+      case "ACCEPTED":
+        return "text-green-400";
+      case "REJECTED":
+        return "text-red-400";
+      default:
+        return "text-gray-400";
+    }
   };
 
   return (
@@ -254,35 +269,32 @@ export const ApplicantsPage: React.FC = () => {
               label="Team"
               options={teamOptions}
               onOptionSelect={handleFilterChange("team")}
-              selected={filters.team || "Team"}
+              selected={filters.team ?? "Team"}
             />
             <FilterButton
               label="Rating"
               options={ratingOptions}
               onOptionSelect={handleFilterChange("rating")}
-              selected={filters.rating || "Rating"}
+              selected={filters.rating ?? "Rating"}
             />
             <FilterButton
               label="Interests"
               options={interestOptions}
               onOptionSelect={handleFilterChange("interests")}
-              selected={filters.interests || "Interests"}
+              selected={filters.interests ?? "Interests"}
             />
             <FilterButton
               label="Major"
               options={majorOptions}
               onOptionSelect={handleFilterChange("major")}
-              selected={filters.major || "Major"}
+              selected={filters.major ?? "Major"}
             />
-            <button
-              className="rounded-[48px] border border-solid bg-stone-600 px-6 py-3 text-white transition-colors hover:bg-stone-500 disabled:cursor-not-allowed disabled:opacity-50"
-              onClick={handleTransfer}
-              disabled={transferStatus === "loading"}
-            >
-              {transferStatus === "loading"
-                ? "Transferring..."
-                : "Transfer to Interview"}
-            </button>
+            <FilterButton
+              label="Status"
+              options={statusOptions}
+              onOptionSelect={handleFilterChange("status")}
+              selected={filters.status ?? "Status"}
+            />
           </div>
 
           <div className="mt-7 flex w-full flex-col rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full max-md:pb-24">
@@ -302,7 +314,12 @@ export const ApplicantsPage: React.FC = () => {
                 {filteredApplicants.map((applicant, index) => (
                   <React.Fragment key={applicant.id}>
                     <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
-                      <div className="flex-1 text-center">{applicant.name}</div>
+                      <div
+                        className="flex-1 cursor-pointer text-center hover:text-blue-400 hover:underline"
+                        onClick={() => openApplicantDetails(applicant.id)}
+                      >
+                        {applicant.name}
+                      </div>
                       <div className="flex-1 text-center">
                         {applicant.interests.join(", ")}
                       </div>
@@ -313,20 +330,10 @@ export const ApplicantsPage: React.FC = () => {
                         {applicant.major}
                       </div>
                       <div className="flex-1 text-center">{applicant.year}</div>
-                      <div className="flex-1 text-center">
-                        <button
-                          onClick={() => toggleLock(applicant.id)}
-                          className="h-5 w-5 cursor-pointer"
-                        >
-                          {lockStatus[applicant.id] ? (
-                            <BsLockFill className="text-green-400" size={25} />
-                          ) : (
-                            <BsFillUnlockFill
-                              className="text-red-600"
-                              size={25}
-                            />
-                          )}
-                        </button>
+                      <div
+                        className={`flex-1 text-center ${getStatusColor(applicant.status)}`}
+                      >
+                        {applicant.status || "PENDING"}
                       </div>
                     </div>
                     {index < filteredApplicants.length - 1 && (
@@ -339,6 +346,14 @@ export const ApplicantsPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ApplicantDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        applicantId={selectedApplicantId}
+      />
     </div>
   );
 };
+
+export default ApplicantsPage;

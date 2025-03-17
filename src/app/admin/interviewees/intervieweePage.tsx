@@ -5,6 +5,7 @@ import { FilterButton } from "./filterButton";
 import { TableHeader } from "./tableHeader";
 import type { ApplicantData, FilterState } from "./intervieweetypes";
 import { BsFillUnlockFill, BsLockFill } from "react-icons/bs";
+import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 
 export const IntervieweesPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -26,6 +27,10 @@ export const IntervieweesPage: React.FC = () => {
     "idle" | "loading" | "success" | "error"
   >("idle");
   const [transferMessage, setTransferMessage] = React.useState("");
+  const [selectedApplicantId, setSelectedApplicantId] = React.useState<
+    string | null
+  >(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   const fetchIntervieweeData = async () => {
     try {
@@ -157,6 +162,11 @@ export const IntervieweesPage: React.FC = () => {
         }, 5000);
       }
     }
+  };
+
+  const openApplicantDetails = (id: string) => {
+    setSelectedApplicantId(id);
+    setIsModalOpen(true);
   };
 
   const filteredInterviewees = React.useMemo(() => {
@@ -305,7 +315,12 @@ export const IntervieweesPage: React.FC = () => {
                 {filteredInterviewees.map((applicant, index) => (
                   <React.Fragment key={applicant.id}>
                     <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
-                      <div className="flex-1 text-center">{applicant.name}</div>
+                      <div
+                        className="flex-1 cursor-pointer text-center hover:text-blue-400 hover:underline"
+                        onClick={() => openApplicantDetails(applicant.id)}
+                      >
+                        {applicant.name}
+                      </div>
                       <div className="flex-1 text-center">
                         {applicant.interests.join(", ")}
                       </div>
@@ -342,6 +357,14 @@ export const IntervieweesPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ApplicantDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        applicantId={selectedApplicantId}
+      />
     </div>
   );
 };
+
+export default IntervieweesPage;

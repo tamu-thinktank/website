@@ -7,9 +7,7 @@ export async function GET() {
   try {
     // Only get applicants with PENDING status
     const applicants = await prisma.application.findMany({
-      where: {
-        status: "PENDING",
-      },
+    
       select: {
         id: true,
         fullName: true,

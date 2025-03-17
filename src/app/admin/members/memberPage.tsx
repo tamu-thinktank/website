@@ -4,6 +4,7 @@ import * as React from "react";
 import { FilterButton } from "./filterButton";
 import { TableHeader } from "./tableHeader";
 import type { ApplicantData, FilterState } from "./membertypes";
+import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 
 export const MembersPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -18,6 +19,10 @@ export const MembersPage: React.FC = () => {
   const [applicantData, setApplicantData] = React.useState<ApplicantData[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [selectedApplicantId, setSelectedApplicantId] = React.useState<
+    string | null
+  >(null);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     const fetchMemberData = async () => {
@@ -59,6 +64,11 @@ export const MembersPage: React.FC = () => {
     "Mechanical Engineering",
     "Reset",
   ];
+
+  const openApplicantDetails = (id: string) => {
+    setSelectedApplicantId(id);
+    setIsModalOpen(true);
+  };
 
   const filteredMembers = React.useMemo(() => {
     return applicantData.filter((applicant) => {
@@ -177,7 +187,12 @@ export const MembersPage: React.FC = () => {
                 {filteredMembers.map((applicant, index) => (
                   <React.Fragment key={applicant.id}>
                     <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
-                      <div className="flex-1 text-center">{applicant.name}</div>
+                      <div
+                        className="flex-1 cursor-pointer text-center hover:text-blue-400 hover:underline"
+                        onClick={() => openApplicantDetails(applicant.id)}
+                      >
+                        {applicant.name}
+                      </div>
                       <div className="flex-1 text-center">
                         {applicant.interests.join(", ")}
                       </div>
@@ -199,6 +214,14 @@ export const MembersPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ApplicantDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        applicantId={selectedApplicantId}
+      />
     </div>
   );
 };
+
+export default MembersPage;
