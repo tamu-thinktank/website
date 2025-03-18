@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
-import { PrismaClient, ApplicationStatus } from "@prisma/client"
-
-const prisma = new PrismaClient()
+import { ApplicationStatus } from "@prisma/client"
+import { db } from "@/lib/db"
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
   try {
@@ -14,15 +13,37 @@ export async function PATCH(request: Request, { params }: { params: { id: string
       return NextResponse.json({ error: "Invalid application status" }, { status: 400 })
     }
 
-    const updatedApplicant = await prisma.application.update({
+    // Get the applicant details before updating (we need this for email sending)
+    const applicant = await db.application.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+        status: true,
+        assignedTeam: true,
+      },
+    })
+
+    if (!applicant) {
+      return NextResponse.json({ error: "Applicant not found" }, { status: 404 })
+    }
+
+    // Update the application status
+    const updatedApplicant = await db.application.update({
       where: { id },
       data: { status },
       select: {
         id: true,
         fullName: true,
+        email: true,
         status: true,
+        assignedTeam: true,
       },
     })
+
+    // Log status change
+    console.log(`Status updated for ${applicant.fullName} (${applicant.email}): ${applicant.status} -> ${status}`)
 
     return NextResponse.json(updatedApplicant)
   } catch (error) {

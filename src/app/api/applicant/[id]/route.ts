@@ -25,7 +25,17 @@ export async function GET(request: Request, { params }: { params: { id: string }
         secondQuestion: true,
         meetings: true,
         weeklyCommitment: true,
-        // Add other fields as needed
+        preferredTeams: {
+          include: {
+            team: true,
+          },
+        },
+        preferredPositions: true,
+        timeCommitment: true,
+        currentClasses: true,
+        nextClasses: true,
+        summerPlans: true,
+        assignedTeam: true,
       },
     })
 

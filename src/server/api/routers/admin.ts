@@ -333,27 +333,70 @@ export const adminRouter = createTRPCRouter({
         return true;
       },
     ),
-  rejectAppEmail: protectedProcedure
+    rejectAppEmail: protectedProcedure
     .input(
       z.object({
         applicantName: z.string(),
         applicantEmail: z.string().email(),
       }),
     )
-    .mutation(async ({ input: { applicantName, applicantEmail } }) => {
-      try {
-        await sendEmail({
-          to: [applicantEmail],
-          subject: "ThinkTank Application Status",
-          template: RejectAppEmail({
-            userFirstname: applicantName.split(" ")[0] ?? "",
-          }),
-        });
-      } catch (e) {
-        throw new Error("Failed to send email: " + (e as Error).message);
-      }
+    .mutation(async ({ input }) => {
+      const { applicantName, applicantEmail } = input
+      const firstName = applicantName.split(" ")[0] || applicantName
+
+      const emailHtml = renderToString(RejectAppEmail({ userFirstname: firstName }))
+
+      await sendEmail({
+        to: applicantEmail,
+        subject: "TAMU ThinkTank Application Status",
+        html: emailHtml,
+      })
+
+      return { success: true }
     }),
-  getAllApplications: protectedProcedure.query(async () => {
-    return await getAllApplications();
-  }),
-});
+
+  scheduleInterview: protectedProcedure
+    .input(
+      z.object({
+        officerId: z.string(),
+        officerName: z.string(),
+        officerEmail: z.string().email(),
+        applicantName: z.string(),
+        applicantEmail: z.string().email(),
+        startTime: z.string(),
+        location: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { officerName, officerEmail, applicantName, applicantEmail, startTime, location } = input
+
+      const firstName = applicantName.split(" ")[0] || applicantName
+
+      const emailHtml = renderToString(
+        InterviewEmail({
+          userFirstname: firstName,
+          time: new Date(startTime).toLocaleString(),
+          location,
+          eventLink: "#", // You might want to generate this
+          interviewerName: officerName,
+        }),
+      )
+
+      await sendEmail({
+        to: applicantEmail,
+        subject: "TAMU ThinkTank Interview Invitation",
+        html: emailHtml,
+      })
+
+      // You might want to send a separate email to the officer
+      await sendEmail({
+        to: officerEmail,
+        subject: `Interview Scheduled with ${applicantName}`,
+        html: `An interview has been scheduled with ${applicantName} on ${new Date(
+          startTime,
+        ).toLocaleString()} at ${location}.`,
+      })
+
+      return { success: true }
+    }),
+})

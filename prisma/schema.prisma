@@ -11,7 +11,7 @@ datasource db {
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling  
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -48,17 +48,16 @@ model Session {
 
 // officers
 model User {
-  id             String          @id @default(cuid())
-  name           String
-  email          String          @unique
-  emailVerified  DateTime?
-  image          String?
-  accounts       Account[]
-  sessions       Session[]
-  availability   OfficerTime[]
-  targetTeams    Challenge[] // teams officer is interviewing for
-  interviews     Interview[] // interviews conducted by this officer
-  interviewNotes InterviewNote[] // notes written by this officer
+  id            String        @id @default(cuid())
+  name          String
+  email         String        @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  availability  OfficerTime[]
+  targetTeams   Challenge[] // teams officer is interviewing for
+  interviews    Interview[] // interviews conducted by this officer
 }
 
 model VerificationToken {
@@ -282,6 +281,9 @@ model Application {
   // Relations
   interviews     Interview[] // interviews for this applicant
   interviewNotes InterviewNote[] // notes about this applicant
+
+  // Add assigned team field
+  assignedTeam String?
 }
 
 // New model for interviews
@@ -301,17 +303,14 @@ model Interview {
   @@index([interviewerId])
 }
 
-// New model for interview notes
+// Simplified InterviewNote model - only contains applicantId and content
 model InterviewNote {
-  id            String      @id @default(cuid())
-  applicantId   String
-  applicant     Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-  interviewerId String
-  interviewer   User        @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
-  content       String      @db.Text
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id          String      @id @default(cuid())
+  applicantId String
+  applicant   Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  content     String      @db.Text
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@index([applicantId])
-  @@index([interviewerId])
 }

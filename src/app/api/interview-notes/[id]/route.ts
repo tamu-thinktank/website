@@ -10,13 +10,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const notes = await prisma.interviewNote.findMany({
       where: { applicantId },
       orderBy: { createdAt: "desc" },
-      include: {
-        interviewer: {
-          select: {
-            name: true,
-          },
-        },
-      },
     })
 
     return NextResponse.json(notes)
