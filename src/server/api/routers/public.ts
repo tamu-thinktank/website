@@ -1,4 +1,4 @@
-import { ApplyFormSchema, OfficerApplyFormSchema, MATEROVApplyFormSchema } from "@/lib/validations/apply";
+import { ApplyFormSchema, OfficerApplyFormSchema, MATEROVApplyFormSchema, MiniDCApplyFormSchema } from "@/lib/validations/apply";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import DriveService from "@/server/service/google-drive";
 import { z } from "zod";
@@ -215,6 +215,54 @@ export const publicRouter = createTRPCRouter({
         signatureAccountability: input.resume.signatureAccountability,
         signatureQuality: input.resume.signatureQuality,
         applicationType: "MATEROV",
+      },
+    });
+  }),
+
+  // Mini DC application procedure
+  applyMiniDC: publicProcedure
+  .input(MiniDCApplyFormSchema)
+  .mutation(async ({ input, ctx }) => {
+    await ctx.db.application.create({
+      data: {
+        // Personal Info
+        ...input.personal,
+        
+        // Academic Info
+        ...input.academic,
+        timeCommitment: {
+          create: input.academic.timeCommitment
+            .filter((tc): tc is Required<typeof tc> => {
+              return (
+                typeof tc.name === "string" &&
+                typeof tc.hours === "number" &&
+                tc.name.trim().length > 0 &&
+                tc.hours >= 0
+              );
+            })
+            .map(tc => ({
+              name: tc.name,
+              hours: tc.hours,
+              type: tc.type,
+            })),
+        },
+        summerPlans: "",
+        
+        // Mini DC specific info
+        meetings: true, // Implied by weeklyCommitment
+        weeklyCommitment: input.academic.weeklyCommitment, // Now from academic section
+        
+        // Open-Ended Questions
+        // Using firstQuestion for previousApplication and secondQuestion for goals
+        firstQuestion: input.openEndedQuestions.previousApplication,
+        secondQuestion: input.openEndedQuestions.goals,
+        
+        // Resume fields
+        resumeId: input.resume.resumeId,
+        signatureCommitment: input.resume.signatureCommitment,
+        signatureAccountability: input.resume.signatureAccountability,
+        signatureQuality: input.resume.signatureQuality,
+        applicationType: "MINIDC",
       },
     });
   }),
