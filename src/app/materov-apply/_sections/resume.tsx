@@ -22,13 +22,13 @@ export default function ResumeUpload({
 }: {
   setResumeFile: (file?: File) => void;
 }) {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+  const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
   const fullName = useWatch({ control: form.control, name: "personal.fullName" });
 
   const signatureTexts = [
-    `I, ${fullName}, understand that becoming a ThinkTank Officer is a major commitment for an entire year. I benefit only as much as I contribute to my potential team’s success.`,
-    `I, ${fullName}, believe I am able to commit to this position for the duration of the project. If this is to change for unforeseeable circumstances, I understand I must disclose this information to ThinkTank. `,
-    `If selected for this position, I, ${fullName}, understand that my team is counting on me and I am counting on my team to deliver a quality project that I can be proud of. `
+    `I, ${fullName}, understand that joining ThinkTank is a major commitment; I benefit only as much as I contribute to my potential team's success.`,
+    `I, ${fullName}, believe I am able to commit to this position for the duration of the project. If this is to change for unforeseeable circumstances, I understand I must disclose this information to ThinkTank.`,
+    `If selected for this position, I, ${fullName}, understand that my team is counting on me and I am counting on my team to deliver a quality project that I can be proud of.`
   ];
 
   return (

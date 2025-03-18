@@ -83,6 +83,7 @@ model OfficerTime {
 enum ApplicationType {
   DCMEMBER
   OFFICER
+  MATEROV
 }
 
 enum Year {
@@ -164,6 +165,21 @@ enum OfficerPosition {
   DC_PROGRAM_MANAGER
 }
 
+enum ExperienceLevel {
+  UNFAMILIAR
+  MARGINAL
+  COMFORTABLE
+  EXPERT
+}
+
+enum LearningInterestLevel {
+  NOT_INTERESTED
+  MILD
+  MODERATE
+  STRONG
+  MOST_INTERESTED
+}
+
 // Availabilities of applicants
 model ApplicantTime {
     gridTime    String // Temporal.ZonedDateTime ISO in UTC
@@ -228,6 +244,36 @@ model PositionPreference {
   applicant   Application      @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 
+model SubteamPreference {
+  id           String          @id @default(cuid())
+  name         String
+  interest     InterestLevel
+  applicantId  String
+  applicant    Application     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  
+  @@index([applicantId])
+}
+
+model Skill {
+  id           String          @id @default(cuid())
+  name         String
+  experienceLevel ExperienceLevel
+  applicantId  String
+  applicant    Application     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  
+  @@index([applicantId])
+}
+
+model LearningInterest {
+  id           String          @id @default(cuid())
+  area         String
+  interestLevel LearningInterestLevel
+  applicantId  String
+  applicant    Application     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  
+  @@index([applicantId])
+}
+
 model Application {
     id          String            @id @default(cuid())
     submittedAt DateTime          @default(now())
@@ -266,9 +312,16 @@ model Application {
     officerCommitment    OfficerCommitment?  // "Are you able to commit 6-8 hrs/week for summer and next 2 semesters?" with options: YES / PARTIAL / NO
     preferredPositions   PositionPreference[] // Array of officer positions with interest levels
 
+    // MATE ROV-specific ThinkTank information
+    previousParticipation Boolean?
+    subteamPreferences   SubteamPreference[]
+    skills               Skill[]
+    learningInterests    LearningInterest[]
+
     // Open-Ended Questions Section:
     firstQuestion              String            @db.Text // Long answer (<250 words).
     secondQuestion             String            @db.Text // Long answer (<250 words).
+    thirdQuestion              String?            @db.Text // Long answer (<250 words).
 
     meetingTimes ApplicantTime[] // the time sections that the applicant selected
     resumeId     String // the id of the resume file in the google drive

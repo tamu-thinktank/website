@@ -19,20 +19,20 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { q } from "@/consts/apply-form";
+import { qMateROV } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 import { X } from "lucide-react";
 
-export default function AcademicInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+export default function MateROVAcademicInfo() {
+  const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{q.academic.title}</CardTitle>
+          <CardTitle className="text-center">{qMateROV.academic.title}</CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -46,7 +46,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.academic.year} <span className="text-red-500">*</span>
+                  {qMateROV.academic.year} <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -81,10 +81,10 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.academic.major} <span className="text-red-500">*</span>
+                  {qMateROV.academic.major} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Select your major from the dropdown. If your major is not listed or you are undecided, choose "Other".
+                  Use the 4 letter uppercase abbreviation of your major. If in general engineering, respond with your intended major. If undecided, respond with 'OPEN'
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -112,7 +112,7 @@ export default function AcademicInfo() {
         )}
       />
 
-      {/* Current Semester Classes */}
+      {/* Next Fall Semester Classes */}
       <FormField
         control={form.control}
         name="academic.currentClasses"
@@ -121,7 +121,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {q.academic.currentClasses}
+                  {qMateROV.academic.currentClasses} 
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -179,7 +179,7 @@ export default function AcademicInfo() {
         )}
       />
 
-      {/* Next Semester Classes */}
+      {/* Next Spring Semester Classes */}
       <FormField
         control={form.control}
         name="academic.nextClasses"
@@ -188,7 +188,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {q.academic.nextClasses}
+                  {qMateROV.academic.nextClasses} 
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -260,14 +260,16 @@ export default function AcademicInfo() {
                     {type === "CURRENT" ? "Current Time Commitments" : "Planned Time Commitments"}
                   </CardTitle>
                   <CardDescription>
-                    Enter commitments between 1-15 hours per week
+                    {type === "CURRENT" 
+                      ? "List any and all current time commitments which includes anything academic, social, technical, work-related, religious, etc. Assign an estimated number of hours spent per week for each time commitment."
+                      : "List any and all planned time commitments for the next year. See previous question for specific details."}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {(field.value ?? [])
                     .filter((c) => c.type === type)
                     .map((commitment, idx) => {
-                      const globalIndex = (field.value ?? []).findIndex(c =>
+                      const globalIndex = (field.value ?? []).findIndex(c => 
                         c.type === type && (field.value ?? []).filter(fc => fc.type === type).indexOf(c) === idx
                       );
                       return (
@@ -342,7 +344,6 @@ export default function AcademicInfo() {
           )}
         />
       ))}
-
     </div>
   );
 }

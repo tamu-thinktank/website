@@ -10,7 +10,7 @@ export default function SubmissionConfirmation() {
 
   const handleReturn = () => {
     // Clean up any remaining state
-    window.localStorage.removeItem("officer-form-S2025-v1");
+    window.localStorage.removeItem("materov-form-S2025-v1");
     router.replace("/");
   };
 
@@ -33,7 +33,6 @@ export default function SubmissionConfirmation() {
           <p>
             If you want to prepare further for your potential interview, we once again recommend reviewing the MATE ROV Competition Website for the competition you are applying for and to familiarize yourself with what is required of members.
           </p>
-
 
           <Button
             onClick={handleReturn}

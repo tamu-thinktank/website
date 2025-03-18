@@ -17,18 +17,18 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { qOfficer, PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
+import { qMateROV, PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
-export default function PersonalInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+export default function MateROVPersonalInfo() {
+  const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{qOfficer.personal.title}</CardTitle>
+          <CardTitle className="text-center">{qMateROV.personal.title}</CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -41,7 +41,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.fullName} <span className="text-red-500">*</span>
+                  {qMateROV.personal.fullName} <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -63,7 +63,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.preferredName}{" "}
+                  {qMateROV.personal.preferredName}{" "}
                   <span className="text-red-500"></span>
                 </CardTitle>
               </CardHeader>
@@ -90,7 +90,7 @@ export default function PersonalInfo() {
           <FormItem>
             <Card>
               <CardHeader>
-                <CardTitle>{qOfficer.personal.pronouns}</CardTitle>
+                <CardTitle>{qMateROV.personal.pronouns}</CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup
@@ -144,7 +144,7 @@ export default function PersonalInfo() {
           <FormItem>
             <Card>
               <CardHeader>
-                <CardTitle>{qOfficer.personal.gender}</CardTitle>
+                <CardTitle>{qMateROV.personal.gender}</CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup
@@ -199,7 +199,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.uin} <span className="text-red-500">*</span>
+                  {qMateROV.personal.uin} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   If you have a special UIN that doesn't match the format
@@ -225,7 +225,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.email} <span className="text-red-500">*</span>
+                  {qMateROV.personal.email} <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -246,10 +246,10 @@ export default function PersonalInfo() {
           <FormItem>
             <Card>
               <CardHeader>
-                <CardTitle>{qOfficer.personal.altEmail}</CardTitle>
+                <CardTitle>{qMateROV.personal.altEmail}</CardTitle>
                 <CardDescription>
                   Provide any other email that is a good point of contact in
-                  addition to your TAMU email
+                  the event your TAMU email is unavailable
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -275,7 +275,7 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.phone} <span className="text-red-500">*</span>
+                  {qMateROV.personal.phone} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Enter phone number as 123-456-7890

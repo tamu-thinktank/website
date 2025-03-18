@@ -1,5 +1,5 @@
-import type { ApplyForm, OfficerApplyForm } from "@/lib/validations/apply";
-import { Challenge, InterestLevel } from "@prisma/client";
+import type { ApplyForm, OfficerApplyForm, MATEROVApplyForm } from "@/lib/validations/apply";
+import { Challenge, InterestLevel, ExperienceLevel, LearningInterestLevel } from "@prisma/client";
 
 type Questions = {
   [Section in Exclude<keyof ApplyForm, "meetingTimes">]: {
@@ -113,8 +113,13 @@ export const qOfficer: OfficerQuestions = {
   }
 };
 
-// Officer-specific question labels
-export const qDC: OfficerQuestions = {
+type MATEROVQuestions = {
+  [Section in Exclude<keyof MATEROVApplyForm, "meetingTimes">]: {
+    [QuestionKey in keyof MATEROVApplyForm[Section] | "title"]: string;
+  };
+};
+
+export const qMateROV: MATEROVQuestions = {
   personal: {
     title: "Personal Information",
     fullName: "Full Name",
@@ -131,7 +136,6 @@ export const qDC: OfficerQuestions = {
     title: "Academic Information",
     year: "Current Year at TAMU (Beginning Next Fall)",
     major: "Major",
-    summerPlans: "Summer Plans",
     currentClasses: "Next Fall Semester Classes",
     nextClasses: "Next Spring Semester Classes",
     timeCommitment: "Time Commitments",
@@ -139,21 +143,20 @@ export const qDC: OfficerQuestions = {
 
   thinkTankInfo: {
     title: "ThinkTank Information",
-
-    officerCommitment:
-      "Are you able to commit to and attend weekly team meetings in person, which will take place on Saturdays for the next 2 semesters?",
-
-
-
-    preferredPositions:
-      "For each selected position, rate your relative interest compared to other positions.",
+    meetings: "Are you able to commit to and attend weekly team meetings in person, which will take place on Saturdays for the next 2 semesters?",
+    weeklyCommitment: "Are you able to commit 8-10 hours per week (equivalent to 1 in-major engineering course) to your team for the entire duration of the project?",
+    subteamPreferences: "Preferred Subteams",
+    skills: "Experience & Skills",
+    learningInterests: "What do you most want to learn?",
+    previousParticipation: "Have you participated in a ThinkTank Design Challenge before?",
+    referralSources: "Where did you hear about us?",
   },
 
   openEndedQuestions: {
     title: "Open-Ended Questions",
     firstQuestion: "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
-    secondQuestion:
-      "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
+    secondQuestion: "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
+    thirdQuestion: "If you were previously in a ThinkTank design team, which previous team were you a member of and what did you specifically contribute? If you were not previously in ThinkTank, but have participated in an engineering design competition before, what was it and how did you contribute to the team?",
   },
 
   resume: {
@@ -250,11 +253,27 @@ export const RESEARCH_AREAS: ResearchArea[] = Array.from(
   ).values()
 );
 
-// Interest Level Options (for forms)
 export const INTEREST_LEVELS = Object.values(InterestLevel).map((level) => ({
   value: level as InterestLevel,
   label: level.charAt(0) + level.slice(1).toLowerCase(),
 }));
+
+export const EXPERIENCE_LEVELS = Object.values(ExperienceLevel).map((level) => ({
+  value: level as ExperienceLevel,
+  label: level.charAt(0) + level.slice(1).toLowerCase(),
+}));
+
+export const LEARNING_INTEREST_LEVELS = Object.values(LearningInterestLevel).map((level) => {
+  const label = level
+    .split('_')
+    .map(word => word.charAt(0) + word.slice(1).toLowerCase())
+    .join(' ');
+  
+  return {
+    value: level as LearningInterestLevel,
+    label
+  };
+});
 
 export const PRONOUN_OPTIONS = [
   { value: "HE_HIM", label: "He/Him" },
@@ -268,4 +287,32 @@ export const GENDER_OPTIONS = [
   { value: "FEMALE", label: "Female" },
   { value: "NON_BINARY", label: "Non-Binary" },
   { value: "OTHER", label: "Other" }
+];
+
+export const MATEROV_SUBTEAM_OPTIONS = [
+  { value: "COMPUTATION_COMMUNICATIONS", label: "Computation and Communications" },
+  { value: "ELECTRICAL_POWER", label: "Electrical and Power Systems" },
+  { value: "FLUIDS_PROPULSION", label: "Fluids and Propulsion" },
+  { value: "GNC", label: "Guidance, Navigation, and Control" },
+  { value: "THERMAL_MECHANISMS_STRUCTURES", label: "Thermal, Mechanisms, and Structures" },
+  { value: "LEADERSHIP", label: "MATE ROV Leadership" },
+];
+
+export const SKILL_OPTIONS = [
+  { value: "CAD", label: "CAD (SolidWorks, Siemens NX, Catia, etc)" },
+  { value: "PROGRAMMING", label: "Programming (Python, C, C++)" },
+  { value: "C_PLUS", label: "C+" },
+  { value: "FEA_CFD", label: "FEA & CFD" },
+  { value: "EMBEDDED", label: "Arduino/Raspberry Pi/Related" },
+  { value: "CIRCUIT_DESIGN", label: "Circuit Design" },
+  { value: "OTHER", label: "Other" },
+];
+
+export const LEARNING_AREA_OPTIONS = [
+  { value: "SOFTWARE", label: "Software" },
+  { value: "CAD", label: "CAD" },
+  { value: "POWER", label: "Power" },
+  { value: "FLUIDS", label: "Fluids" },
+  { value: "GNC", label: "GNC" },
+  { value: "OTHER", label: "Other" },
 ];

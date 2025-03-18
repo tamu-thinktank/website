@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { OfficerApplyFormSchema } from "@/lib/validations/apply";
+import { MATEROVApplyFormSchema } from "@/lib/validations/apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -21,14 +21,14 @@ import { usePersistForm } from "../../hooks/usePersistForm";
 
 import Availability from "./_sections/availability";
 import FormIntroTab from "./_sections/intro";
-import PersonalInfo from "./_sections/personal";
-import AcademicInfo from "./_sections/academic";
+import MateROVPersonalInfo from "./_sections/personal";
+import MateROVAcademicInfo from "./_sections/academic";
 import ResumeUpload from "./_sections/resume";
-import ThinkTankInfo from "./_sections/thinkTankInfo";
+import MateROVThinkTankInfo from "./_sections/thinkTankInfo";
 import OpenEndedQuestions from "./_sections/openEndedQuestions";
 import SubmissionConfirmation from "./_sections/confirmation";
 
-export default function Apply() {
+export default function MateROVApply() {
   const { toast } = useToast();
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [userTimezone, setUserTimezone] = useState(
@@ -38,10 +38,10 @@ export default function Apply() {
   const table = useCalculateTable(userTimezone);
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const form = usePersistForm<RouterInputs["public"]["applyOfficer"]>(
-    "officer-form-S2025-v1",
+  const form = usePersistForm<RouterInputs["public"]["applyMateROV"]>(
+    "materov-form-S2025-v1",
     {
-      resolver: zodResolver(OfficerApplyFormSchema),
+      resolver: zodResolver(MATEROVApplyFormSchema),
       defaultValues: {
         personal: {
           preferredName: null,
@@ -50,17 +50,23 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          summerPlans: "",
           currentClasses: [""],
           nextClasses: [""],
           timeCommitment: [],
         },
         thinkTankInfo: {
-          preferredPositions: [],
+          meetings: false,
+          weeklyCommitment: false,
+          subteamPreferences: [],
+          skills: [],
+          learningInterests: [],
+          previousParticipation: false,
+          referralSources: [],
         },
         openEndedQuestions: {
           firstQuestion: "",
           secondQuestion: "",
+          thirdQuestion: "",
         },
         meetingTimes: [],
         resume: {
@@ -73,16 +79,16 @@ export default function Apply() {
     },
   );
 
-  const { mutateAsync: submitForm } = api.public.applyOfficer.useMutation({
+  const { mutateAsync: submitForm } = api.public.applyMateROV.useMutation({
     onSuccess: () => {
       // Reset form and local storage first
       form.reset();
-      window.localStorage.removeItem("apply-form-S2025-v1");
+      window.localStorage.removeItem("materov-form-S2025-v1");
       
       // Then show toast and confirmation
       toast({
         title: "Form Submitted!",
-        description: "Contact tamuthinktank@gmail.com if you do not receive an email by Jan. 19th.",
+        description: "Contact tamuthinktank@gmail.com if you do not receive an email within 3 days.",
         duration: 10000,
       });
       setShowConfirmation(true);
@@ -114,7 +120,7 @@ export default function Apply() {
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
-    async (data: RouterInputs["public"]["applyOfficer"]) => {
+    async (data: RouterInputs["public"]["applyMateROV"]) => {
       if (!resumeFile) {
         toast({
           variant: "destructive",
@@ -188,7 +194,7 @@ export default function Apply() {
                 nextTab="academic"
                 viewportRef={viewportRef}
               >
-                <PersonalInfo />
+                <MateROVPersonalInfo />
               </ApplyTab>
 
               <ApplyTab
@@ -197,7 +203,7 @@ export default function Apply() {
                 nextTab="thinkTankInfo"
                 viewportRef={viewportRef}
               >
-                <AcademicInfo />
+                <MateROVAcademicInfo />
               </ApplyTab>
 
               <ApplyTab
@@ -206,7 +212,7 @@ export default function Apply() {
                 nextTab="openEndedQuestions"
                 viewportRef={viewportRef}
               >
-                <ThinkTankInfo />
+                <MateROVThinkTankInfo />
               </ApplyTab>
 
               <ApplyTab
@@ -294,7 +300,7 @@ function ApplyTab({
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+  const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -325,7 +331,7 @@ function ApplyTab({
     }
   
     setIsChecked(true);
-  }, [currentTab, form, scrollToTop]);  
+  }, [currentTab, form]);  
 
   useEffect(() => {
     if (!isChecked) return;
@@ -341,7 +347,7 @@ function ApplyTab({
     });
 
     return () => sub.unsubscribe();
-  }, [form.watch, isChecked]);
+  }, [form, isChecked, currentTab]);
 
   return (
     <TabsContent className="space-y-2" value={currentTab}>
