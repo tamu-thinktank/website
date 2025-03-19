@@ -289,9 +289,6 @@ export default function AcademicInfo() {
                 <CardTitle>
                   {qMiniDC.academic.weeklyCommitment} <span className="text-red-500">*</span>
                 </CardTitle>
-                <CardDescription>
-                  Applicants who respond "No" are automatically rejected after 24 hrs
-                </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>

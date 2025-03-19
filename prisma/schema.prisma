@@ -113,8 +113,8 @@ enum InterestLevel {
 }
 
 enum CommitmentType {
-  CURRENT // Current time commitment (e.g., clubs, jobs)
-  PLANNED // Planned time commitment (e.g., future activities)
+  CURRENT
+  PLANNED
 }
 
 enum ReferralSource {
@@ -127,7 +127,7 @@ enum ReferralSource {
 }
 
 enum Major {
-  ENGR
+  OPEN
   AERO
   BAEN
   BMEN
@@ -146,7 +146,7 @@ enum Major {
   NUEN
   OCEN
   PETE
-  Other
+  OTHER
 }
 
 enum OfficerCommitment {

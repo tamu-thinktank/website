@@ -160,10 +160,8 @@ export default function ThinkTankInfo() {
                                 }]
                               : field.value.filter(t => t.teamId !== team.id);
 
-                            // First update the teams
                             form.setValue("thinkTankInfo.preferredTeams", updatedTeams);
 
-                            // Then filter research areas to only those belonging to remaining teams
                             const remainingTeamIds = updatedTeams.map(t => t.teamId);
                             const validResearchIds = TEAMS
                               .filter(t => remainingTeamIds.includes(t.id))

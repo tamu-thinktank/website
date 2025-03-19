@@ -27,7 +27,8 @@ export default function SubmissionConfirmation() {
           </p>
 
           <p>
-            We will be reviewing your application shortly and scheduling interviews which are optimized to match your availability with ours. If you do not receive a response after 3 days past the posted application deadline, please contact us.
+            We will be reviewing your application shortly and scheduling interviews which are optimized to match your availability with ours. 
+            If you do not receive a response after 3 days past the posted application deadline, please contact us.
           </p>
 
           <p>

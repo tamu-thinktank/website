@@ -249,11 +249,10 @@ export const publicRouter = createTRPCRouter({
         summerPlans: "",
         
         // Mini DC specific info
-        meetings: true, // Implied by weeklyCommitment
-        weeklyCommitment: input.academic.weeklyCommitment, // Now from academic section
+        meetings: true,
+        weeklyCommitment: input.academic.weeklyCommitment,
         
         // Open-Ended Questions
-        // Using firstQuestion for previousApplication and secondQuestion for goals
         firstQuestion: input.openEndedQuestions.previousApplication,
         secondQuestion: input.openEndedQuestions.goals,
         
