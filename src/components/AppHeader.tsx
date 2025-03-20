@@ -125,6 +125,13 @@ export default function Header() {
                         Design Challenges
                       </a>
                       <a
+                        href="/materov"
+                        onClick={(e) => handleLinkClick(e, "/materov")}
+                        className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
+                      >
+                        MATE ROV
+                      </a>
+                      <a
                         href="/"
                         onClick={(e) => handleLinkClick(e, "/", 2.55)}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
@@ -132,8 +139,8 @@ export default function Header() {
                         Articles
                       </a>
                       <a
-                        href="/about"
-                        onClick={(e) => handleLinkClick(e, "/about", 6.3)}
+                        href="/faq"
+                        onClick={(e) => handleLinkClick(e, "/faq")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         FAQ
@@ -174,6 +181,15 @@ export default function Header() {
                   </li>
                   <li>
                     <a
+                      href="/materov"
+                      className="navbar-link"
+                      onClick={(e) => handleLinkClick(e, "/materov")}
+                    >
+                      <span>MATE ROV</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a
                       href="/"
                       className="navbar-link"
                       onClick={(e) => handleLinkClick(e, "/", 2.75)}
@@ -183,9 +199,9 @@ export default function Header() {
                   </li>
                   <li>
                     <a
-                      href="/about"
+                      href="/faq"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/about", 8)}
+                      onClick={(e) => handleLinkClick(e, "/faq")}
                     >
                       <span>FAQ</span>
                     </a>

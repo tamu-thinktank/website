@@ -36,6 +36,6 @@
     "**/*.cjs",
     "**/*.js",
     ".next/types/**/*.ts"
-  ],
+, "src/app/apply/_sections/openEndedQuestions.tsx"  ],
   "exclude": ["node_modules"]
 }

@@ -14,7 +14,7 @@ const OfficerInterest = () => {
         helping us grow TAMU ThinkTank for future students?
       </p>
       <a
-        href="#"
+        href="/officer-apply"
         className="rounded-full border border-white px-4 py-2 text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-white hover:text-black"
       >
         Apply Now

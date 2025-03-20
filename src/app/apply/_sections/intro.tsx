@@ -12,18 +12,18 @@ export default function FormIntroTab() {
           <Separator />
         </CardHeader>
         <CardContent className="text-center">
-          {/* Our club's mission is to provide experience and opportunities to all
-          engineering students, regardless of their past experiences. Please
-          keep this in mind as you complete your application. <br /> <br />
-          There are 5 sections with a resume upload at the end. Make sure you
-          have your resume downloaded on your current device before proceeding.{" "}
+          Our club’s mission is to provide experience and opportunities to all 
+          engineering students, regardless of their prior experiences. 
+          Please keep this in mind as you complete your application.
           <br /> <br />
-          Please note: Applications with missing or incomplete responses will be
-          automatically rejected. We encourage you to take your time and
-          thoroughly fill out the application. TAMU ThinkTank (TTT) reserves the
-          right to vary the evaluation criteria from semester to semester based
-          on the number of applicants, available teams, competition
-          requirements, and other relevant factors.
+          There are 3 multiple-choice sections and 1 open-end question section with a resume upload at the end. 
+          We recommend writing your free responses in a separate document and transferring them to the application. 
+          Additionally, we recommend having your resume downloaded on your device before continuing.{" "}
+          <br /> <br />
+          Please note: Applications with missing or incomplete responses will be automatically rejected. 
+          We encourage you to take your time and thoroughly fill out the application. 
+          ThinkTank reserves the right to vary evaluation criteria each recruitment cycle 
+          based on number of applications, available teams, competition requirements, and other relevant factors.
           <br /> <br />
           <strong>
             WE HIGHLY RECOMMEND READING THE FAQ AND COMPLETING THE APPLICATION

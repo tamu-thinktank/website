@@ -14,65 +14,82 @@ import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import type { PropsWithChildren, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../../hooks/usePersistForm";
+
 import Availability from "./_sections/availability";
-import Interests from "./_sections/interests";
 import FormIntroTab from "./_sections/intro";
-import Leadership from "./_sections/leadership";
 import PersonalInfo from "./_sections/personal";
+import AcademicInfo from "./_sections/academic";
 import ResumeUpload from "./_sections/resume";
+import ThinkTankInfo from "./_sections/thinkTankInfo";
+import OpenEndedQuestions from "./_sections/openEndedQuestions";
+import SubmissionConfirmation from "./_sections/confirmation";
 
 export default function Apply() {
   const { toast } = useToast();
-  const router = useRouter();
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [userTimezone, setUserTimezone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
+  const [resumeFile, setResumeFile] = useState<File>();
   const table = useCalculateTable(userTimezone);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const form = usePersistForm<RouterInputs["public"]["applyForm"]>(
     "apply-form-S2025-v1",
     {
       resolver: zodResolver(ApplyFormSchema),
-      // include at least the default values of optional fields
       defaultValues: {
         personal: {
           preferredName: null,
           altEmail: null,
+          pronouns: "",
+          gender: "",
         },
-        interests: {
-          challenges: [],
+        academic: {
+          currentClasses: [""],
+          nextClasses: [""],
+          timeCommitment: [],
         },
-        leadership: {
-          skillsAnswer: null,
-          conflictsAnswer: null,
-          timeManagement: null,
-          relevantExperience: null,
-          timeCommitment: null,
+        thinkTankInfo: {
+          meetings: false,
+          weeklyCommitment: false,
+          preferredTeams: [],
+          researchAreas: [],
+          referralSources: [],
+        },
+        openEndedQuestions: {
+          firstQuestion: "",
+          secondQuestion: "",
         },
         meetingTimes: [],
-        resumeId: "",
+        resume: {
+          resumeId: "",
+          signatureCommitment: "",
+          signatureAccountability: "",
+          signatureQuality: "",
+        },
       },
     },
   );
-  const isLeadershipSelected = form.getValues("interests.isLeadership");
-  const viewportRef = useRef<HTMLDivElement>(null);
 
   const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
     onSuccess: () => {
+      // Reset form and local storage first
+      form.reset();
+      window.localStorage.removeItem("apply-form-S2025-v1");
+
+      // Then show toast and confirmation
       toast({
         title: "Form Submitted!",
         description:
-          "Contact tamuthinktank@gmail.com if you do not recieve an email by Jan. 19th.",
+          "Contact tamuthinktank@gmail.com if you do not receive an email by April 2nd.",
         duration: 10000,
       });
-
-      form.reset();
-      router.push("/");
+      setShowConfirmation(true);
     },
     onError: () => {
       toast({
@@ -85,7 +102,6 @@ export default function Apply() {
     },
   });
 
-  const [resumeFile, setResumeFile] = useState<File>();
   const { mutateAsync: uploadResume } = useMutation<
     UploadResumeResponse,
     unknown,
@@ -98,6 +114,7 @@ export default function Apply() {
       }).then((res) => res.json() as Promise<UploadResumeResponse>);
     },
   });
+
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
@@ -115,27 +132,35 @@ export default function Apply() {
       formData.append("resume", resumeFile);
 
       try {
-        const resumeId = (await uploadResume(formData)).resumeId;
-        data.resumeId = resumeId;
+        const uploadResult = await uploadResume(formData);
+        const updatedData = {
+          ...data,
+          resume: {
+            ...data.resume,
+            resumeId: uploadResult.resumeId,
+          },
+        };
+
+        await submitForm(updatedData);
       } catch (err) {
         toast({
           variant: "destructive",
           title: "Error",
           description: (err as Error).message,
         });
-        return;
-      }
 
-      try {
-        await submitForm(data);
-      } catch {
-        await deleteResume({
-          resumeId: data.resumeId,
-        });
+        // Clean up resume if upload failed
+        if (data.resume.resumeId) {
+          await deleteResume({ resumeId: data.resume.resumeId });
+        }
       }
     },
-    [resumeFile, uploadResume, toast, submitForm],
+    [resumeFile, uploadResume, submitForm, deleteResume, toast],
   );
+
+  if (showConfirmation) {
+    return <SubmissionConfirmation />;
+  }
 
   return (
     <Form {...form}>
@@ -164,31 +189,43 @@ export default function Apply() {
               <ApplyTab
                 previousTab="start"
                 currentTab="personal"
-                nextTab="interests"
+                nextTab="academic"
                 viewportRef={viewportRef}
               >
                 <PersonalInfo />
               </ApplyTab>
+
               <ApplyTab
                 previousTab="personal"
-                currentTab="interests"
-                nextTab={isLeadershipSelected ? "leadership" : "meetingTimes"}
+                currentTab="academic"
+                nextTab="thinkTankInfo"
                 viewportRef={viewportRef}
               >
-                <Interests />
+                <AcademicInfo />
               </ApplyTab>
+
               <ApplyTab
-                previousTab="interests"
-                currentTab="leadership"
+                previousTab="academic"
+                currentTab="thinkTankInfo"
+                nextTab="openEndedQuestions"
+                viewportRef={viewportRef}
+              >
+                <ThinkTankInfo />
+              </ApplyTab>
+
+              <ApplyTab
+                previousTab="thinkTankInfo"
+                currentTab="openEndedQuestions"
                 nextTab="meetingTimes"
                 viewportRef={viewportRef}
               >
-                <Leadership />
+                <OpenEndedQuestions />
               </ApplyTab>
+
               <ApplyTab
-                previousTab={isLeadershipSelected ? "leadership" : "interests"}
+                previousTab="openEndedQuestions"
                 currentTab="meetingTimes"
-                nextTab="resumeId"
+                nextTab="resume"
                 viewportRef={viewportRef}
               >
                 <Availability
@@ -197,7 +234,7 @@ export default function Apply() {
                   table={table}
                 />
               </ApplyTab>
-              <TabsContent className="space-y-2" value="resumeId">
+              <TabsContent className="space-y-2" value="resume">
                 <ResumeUpload setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
@@ -208,12 +245,17 @@ export default function Apply() {
                   </TabsTrigger>
                   <Button
                     type="submit"
+                    className="bg-white text-black hover:bg-white hover:text-black"
                     disabled={
-                      form.formState.isSubmitting || form.formState.isValidating
+                      form.formState.isSubmitting ||
+                      form.formState.isValidating ||
+                      !form.formState.isValid ||
+                      !form.watch("resume.signatureCommitment") ||
+                      !form.watch("resume.signatureAccountability") ||
+                      !form.watch("resume.signatureQuality")
                     }
                   >
-                    {form.formState.isSubmitting ||
-                    form.formState.isValidating ? (
+                    {form.formState.isSubmitting ? (
                       <Loader2 className="animate-spin" />
                     ) : (
                       "Submit"
@@ -235,10 +277,11 @@ export default function Apply() {
 type ApplyTabType =
   | "start"
   | "personal"
-  | "interests"
-  | "leadership"
+  | "academic"
+  | "thinkTankInfo"
+  | "openEndedQuestions"
   | "meetingTimes"
-  | "resumeId";
+  | "resume";
 
 /**
  * Validate input in section before allowing user to move on to next
@@ -274,11 +317,11 @@ function ApplyTab({
       return;
     }
 
-    const isValid = await form.trigger(currentTab, {
+    const result = await form.trigger(currentTab, {
       shouldFocus: true,
     });
 
-    if (isValid) {
+    if (result) {
       setIsValid(true);
       scrollToTop();
     } else {
@@ -286,7 +329,7 @@ function ApplyTab({
     }
 
     setIsChecked(true);
-  }, [form.trigger]);
+  }, [currentTab, form, scrollToTop]);
 
   useEffect(() => {
     if (!isChecked) return;
@@ -296,20 +339,12 @@ function ApplyTab({
       if (name?.startsWith(currentTab)) {
         form
           .trigger(currentTab)
-          .then((isValid) => {
-            if (isValid) {
-              setIsValid(true);
-            } else {
-              setIsValid(false);
-            }
-          })
+          .then((isValid) => setIsValid(isValid))
           .catch(() => setIsValid(false));
       }
     });
 
-    return () => {
-      sub.unsubscribe();
-    };
+    return () => sub.unsubscribe();
   }, [form.watch, isChecked]);
 
   return (

@@ -7,6 +7,7 @@
     "build": "next build",
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
+    "db:seed": "prisma db seed",
     "dev": "next dev",
     "postinstall": "prisma generate",
     "lint": "eslint",
@@ -15,6 +16,9 @@
     "format": "prettier --check . --ignore-path .gitignore",
     "format:fix": "pnpm format --write",
     "email": "email dev --port 3001"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
@@ -59,8 +63,9 @@
     "@react-email/components": "0.0.12",
     "@react-email/render": "0.0.10",
     "@studio-freight/lenis": "^1.0.42",
+    "@supabase/supabase-js": "^2.49.1",
     "@t3-oss/env-nextjs": "^0.7.1",
-    "@tanstack/react-query": "^5.51.23",
+    "@tanstack/react-query": "^5.62.8",
     "@tanstack/react-query-devtools": "^5.51.23",
     "@tanstack/react-table": "^8.11.2",
     "@trpc/client": "11.0.0-rc.477",
@@ -89,6 +94,8 @@
     "pdfjs-dist": "3.11.174",
     "react": "18.3.1",
     "react-day-picker": "^8.9.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "18.3.1",
     "react-email": "1.10.0",
     "react-hook-form": "^7.49.2",
@@ -97,6 +104,7 @@
     "react-pdf": "^7.6.0",
     "react-resizable-panels": "^1.0.5",
     "react-simple-icons": "1.0.0-beta.5",
+    "recharts": "^2.15.1",
     "server-only": "^0.0.1",
     "sonner": "^1.3.1",
     "styled-components": "^6.1.13",
@@ -128,6 +136,7 @@
     "prettier-plugin-tailwindcss": "^0.5.7",
     "prisma": "^5.17.0",
     "tailwindcss": "^3.3.5",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "typescript-eslint": "^7.5.0"
   },
