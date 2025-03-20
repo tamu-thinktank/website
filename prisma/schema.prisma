@@ -283,7 +283,7 @@ model Application {
   submittedAt     DateTime          @default(now())
   status          ApplicationStatus @default(PENDING)
   location        String? // interview location if accepted
-  applicationType ApplicationType
+  applicationType ApplicationType?
 
   // personal info section
   fullName      String
@@ -297,17 +297,17 @@ model Application {
 
   // Academic Information Section:
   year           Year // Current year at TAMU (enum).
-  major          Major // Major abbreviation (e.g., AERO).
+  major          String // Major abbreviation (e.g., AERO).
   currentClasses String[] // Current semester classes.
   nextClasses    String[] // Next semester classes.
   timeCommitment Commitment[] // Current and planned commitments.
 
   // Officer-specific new academic fields:
-  summerPlans String @db.Text // Short answer (<100 words)
+  summerPlans String? @db.Text // Short answer (<100 words)
 
   // ThinkTank Information Section:
-  meetings         Boolean // Can attend meetings in person.
-  weeklyCommitment Boolean // Can commit to weekly workload.
+  meetings         Boolean? // Can attend meetings in person.
+  weeklyCommitment Boolean? // Can commit to weekly workload.
   preferredTeams   TeamPreference[] // Preferred teams with interest levels.
   researchAreas    ResearchPreference[] // Preferred research areas with interest levels.
   referral         ReferralSource[] // How they heard about ThinkTank.
@@ -323,15 +323,15 @@ model Application {
   learningInterests     LearningInterest[]
 
   // Open-Ended Questions Section:
-  firstQuestion  String  @db.Text // Long answer (<250 words).
-  secondQuestion String  @db.Text // Long answer (<250 words).
+  firstQuestion  String? @db.Text // Long answer (<250 words).
+  secondQuestion String? @db.Text // Long answer (<250 words).
   thirdQuestion  String? @db.Text // Long answer (<250 words).
 
   meetingTimes            ApplicantTime[] // the time sections that the applicant selected
   resumeId                String // the id of the resume file in the google drive
-  signatureCommitment     String
-  signatureAccountability String
-  signatureQuality        String
+  signatureCommitment     String?
+  signatureAccountability String?
+  signatureQuality        String?
 
   // Relations
   interviews     Interview[] // interviews for this applicant

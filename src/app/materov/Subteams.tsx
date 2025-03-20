@@ -14,7 +14,7 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/24/25" },
+        { date: "Applications", description: "3/26/25" },
         { date: "Interviews", description: "3/31/25" },
         { date: "Acceptance", description: "4/2/25" },
       ],
@@ -22,7 +22,7 @@ const Challenges = () => {
         "Microprocessors",
         "Data Logging and Networking",
         "Signal Processing",
-        "C/C++/Arduino"
+        "C/C++/Arduino",
       ],
       competitionLink: "https://materovcompetition.org/",
       imageUrl: "images/materov/CC.png",
@@ -35,7 +35,7 @@ const Challenges = () => {
       duration: "Year Long",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/24/25" },
+        { date: "Applications", description: "3/26/25" },
         { date: "Interviews", description: "3/31/25" },
         { date: "Acceptance", description: "4/2/25" },
       ],
@@ -55,7 +55,7 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/24/25" },
+        { date: "Applications", description: "3/26/25" },
         { date: "Interviews", description: "3/31/25" },
         { date: "Acceptance", description: "4/2/25" },
       ],
@@ -75,7 +75,7 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/24/25" },
+        { date: "Applications", description: "3/26/25" },
         { date: "Interviews", description: "3/31/25" },
         { date: "Acceptance", description: "4/2/25" },
       ],
@@ -83,7 +83,7 @@ const Challenges = () => {
         "Optimal Linear Control",
         "Rigid Body Dynamics",
         "Sensor Fusion",
-        "Advanced Python"
+        "Advanced Python",
       ],
       competitionLink: "https://materovcompetition.org/",
       imageUrl: "images/materov/GNC.png",
@@ -96,7 +96,7 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/24/25" },
+        { date: "Applications", description: "3/26/25" },
         { date: "Interviews", description: "3/31/25" },
         { date: "Acceptance", description: "4/2/25" },
       ],
@@ -104,7 +104,7 @@ const Challenges = () => {
         "Computer Aided Design (CAD)",
         "Structural Design and Analysis",
         "Thermal Design",
-        "Robotic Control"
+        "Robotic Control",
       ],
       competitionLink: "https://materovcompetition.org/",
       imageUrl: "images/materov/TMS.png",
@@ -117,7 +117,7 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/24/25" },
+        { date: "Applications", description: "3/26/25" },
         { date: "Interviews", description: "3/31/25" },
         { date: "Acceptance", description: "4/2/25" },
       ],

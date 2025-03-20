@@ -318,7 +318,14 @@ const BoxComponent: React.FC<BoxProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const openTeams = ["Computation and Communications", "Electrical and Power Systems", "Fluids and Propulsion", "Guidance, Navigation, and Control", "Thermal, Mechanisms, and Structures", "MATE ROV Leadership"];
+  const openTeams = [
+    "Computation and Communications",
+    "Electrical and Power Systems",
+    "Fluids and Propulsion",
+    "Guidance, Navigation, and Control",
+    "Thermal, Mechanisms, and Structures",
+    "MATE ROV Leadership",
+  ];
   const isOpen = openTeams.includes(teamName);
   //const isOpen = false;
 
@@ -424,7 +431,7 @@ const BoxComponent: React.FC<BoxProps> = ({
             <p className="mb-2 text-center font-semibold">{shortOverview}</p>
             <ButtonContainer>
               <ButtonStyle
-                href="/apply"
+                href="/materov-apply"
                 target="_blank"
                 rel="noopener noreferrer"
                 disabled={!isOpen}
@@ -537,7 +544,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                   Competition Link
                 </ButtonStyle>
                 <ButtonStyle
-                  href="/apply"
+                  href="/materov-apply"
                   target="_blank"
                   rel="noopener noreferrer"
                   disabled={!isOpen}
