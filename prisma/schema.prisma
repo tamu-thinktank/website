@@ -289,14 +289,14 @@ model Application {
   preferredName String?
   pronouns      String?
   gender        String?
-  uin           Int     @unique
-  email         String  @unique
+  uin           Int
+  email         String
   altEmail      String?
   phone         String
 
   // Academic Information Section:
   year           Year // Current year at TAMU (enum).
-  major          String // Major abbreviation (e.g., AERO).
+  major          Major // Major abbreviation (e.g., AERO).
   currentClasses String[] // Current semester classes.
   nextClasses    String[] // Next semester classes.
   timeCommitment Commitment[] // Current and planned commitments.
@@ -338,6 +338,9 @@ model Application {
 
   // Add assigned team field
   assignedTeam String?
+
+  @@unique([uin, applicationType])
+  @@unique([email, applicationType])
 }
 
 // New model for interviews
