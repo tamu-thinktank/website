@@ -295,7 +295,9 @@ export const adminRouter = createTRPCRouter({
         }
 
         // remove meeting time from soonestOfficer's availabilities
+
         const treefiddy = Array(GRID_SLOTS_INTERVIEW_LEN).fill(0)
+
           .map((_, i) => i * 15)
           .map((minutes) => {
             return startTimeObj.add({ minutes }).toString();
