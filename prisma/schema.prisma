@@ -296,7 +296,7 @@ model Application {
 
   // Academic Information Section:
   year           Year // Current year at TAMU (enum).
-  major          String // Major abbreviation (e.g., AERO).
+  major          Major // Major abbreviation (e.g., AERO).
   currentClasses String[] // Current semester classes.
   nextClasses    String[] // Next semester classes.
   timeCommitment Commitment[] // Current and planned commitments.
