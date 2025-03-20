@@ -11,7 +11,9 @@ export default function AdminLayout({
 }) {
   return (
     <SessionProvider refetchOnWindowFocus>
-      <AuthenticatedLayout>{children}</AuthenticatedLayout>
+      <GradientLayout>
+        <Content>{children}</Content>
+      </GradientLayout>
     </SessionProvider>
   );
 }
