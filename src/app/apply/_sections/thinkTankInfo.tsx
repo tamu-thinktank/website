@@ -23,17 +23,23 @@ import type { InterestLevel } from "@prisma/client";
 import { ReferralSource } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 import { X } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ThinkTankInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
   const selectedTeams = form.watch("thinkTankInfo.preferredTeams");
 
   // Get available research areas based on selected teams
-  const availableResearch = RESEARCH_AREAS.filter(ra =>
-    ra.relatedTeams.some(teamId => 
-      selectedTeams.map(t => t.teamId).includes(teamId)
-    )
+  const availableResearch = RESEARCH_AREAS.filter((ra) =>
+    ra.relatedTeams.some((teamId) =>
+      selectedTeams.map((t) => t.teamId).includes(teamId),
+    ),
   );
 
   return (
@@ -54,10 +60,12 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.thinkTankInfo.meetings} <span className="text-red-500">*</span>
+                  {q.thinkTankInfo.meetings}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Workshops: Thursdays 6-7pm in RICH 106, team meetings scheduled post-Onboarding
+                  Workshops: Thursdays 6-7pm in RICH 106, team meetings
+                  scheduled post-Onboarding
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -69,13 +77,17 @@ export default function ThinkTankInfo() {
                     <FormItem>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="true" id="meetings-yes" />
-                        <FormLabel htmlFor="meetings-yes">Yes, I can attend</FormLabel>
+                        <FormLabel htmlFor="meetings-yes">
+                          Yes, I can attend
+                        </FormLabel>
                       </div>
                     </FormItem>
                     <FormItem>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="false" id="meetings-no" />
-                        <FormLabel htmlFor="meetings-no">No, I cannot attend regularly</FormLabel>
+                        <FormLabel htmlFor="meetings-no">
+                          No, I cannot attend regularly
+                        </FormLabel>
                       </div>
                     </FormItem>
                   </div>
@@ -96,7 +108,8 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.thinkTankInfo.weeklyCommitment} <span className="text-red-500">*</span>
+                  {q.thinkTankInfo.weeklyCommitment}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -108,13 +121,17 @@ export default function ThinkTankInfo() {
                     <FormItem>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="true" id="commitment-yes" />
-                        <FormLabel htmlFor="commitment-yes">Yes, I can commit</FormLabel>
+                        <FormLabel htmlFor="commitment-yes">
+                          Yes, I can commit
+                        </FormLabel>
                       </div>
                     </FormItem>
                     <FormItem>
                       <div className="flex items-center space-x-2">
                         <RadioGroupItem value="false" id="commitment-no" />
-                        <FormLabel htmlFor="commitment-no">No, I cannot commit</FormLabel>
+                        <FormLabel htmlFor="commitment-no">
+                          No, I cannot commit
+                        </FormLabel>
                       </div>
                     </FormItem>
                   </div>
@@ -135,46 +152,67 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.thinkTankInfo.preferredTeams} <span className="text-red-500">*</span>
+                  {q.thinkTankInfo.preferredTeams}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Select at least one team and rate your interest
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-              {TEAMS.map((team) => {
-                const isSelected = field.value.some(t => t.teamId === team.id);
-                
-                return (
-                  <div key={team.id} className="relative flex flex-col gap-2 border p-4 rounded-lg">
-                    {/* Checkbox and Label Container */}
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-4 flex-1">
-                        <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={(checked) => {
-                            const updatedTeams = checked
-                              ? [...field.value, { 
-                                  teamId: team.id, 
-                                  interestLevel: "MEDIUM" as InterestLevel
-                                }]
-                              : field.value.filter(t => t.teamId !== team.id);
+                {TEAMS.map((team) => {
+                  const isSelected = field.value.some(
+                    (t) => t.teamId === team.id,
+                  );
 
-                            // First update the teams
-                            form.setValue("thinkTankInfo.preferredTeams", updatedTeams);
+                  return (
+                    <div
+                      key={team.id}
+                      className="relative flex flex-col gap-2 rounded-lg border p-4"
+                    >
+                      {/* Checkbox and Label Container */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-1 items-center gap-4">
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={(checked) => {
+                              const updatedTeams = checked
+                                ? [
+                                    ...field.value,
+                                    {
+                                      teamId: team.id,
+                                      interestLevel: "MEDIUM" as InterestLevel,
+                                    },
+                                  ]
+                                : field.value.filter(
+                                    (t) => t.teamId !== team.id,
+                                  );
 
-                            // Then filter research areas to only those belonging to remaining teams
-                            const remainingTeamIds = updatedTeams.map(t => t.teamId);
-                            const validResearchIds = TEAMS
-                              .filter(t => remainingTeamIds.includes(t.id))
-                              .flatMap(t => t.researchAreas)
-                              .map(ra => ra.id);
+                              form.setValue(
+                                "thinkTankInfo.preferredTeams",
+                                updatedTeams,
+                              );
 
-                            const updatedResearch = form.getValues("thinkTankInfo.researchAreas")
-                              .filter(ra => validResearchIds.includes(ra.researchAreaId));
+                              const remainingTeamIds = updatedTeams.map(
+                                (t) => t.teamId,
+                              );
+                              const validResearchIds = TEAMS.filter((t) =>
+                                remainingTeamIds.includes(t.id),
+                              )
+                                .flatMap((t) => t.researchAreas)
+                                .map((ra) => ra.id);
 
-                            form.setValue("thinkTankInfo.researchAreas", updatedResearch);
-                          }}
+                              const updatedResearch = form
+                                .getValues("thinkTankInfo.researchAreas")
+                                .filter((ra) =>
+                                  validResearchIds.includes(ra.researchAreaId),
+                                );
+
+                              form.setValue(
+                                "thinkTankInfo.researchAreas",
+                                updatedResearch,
+                              );
+                            }}
                           />
                           <FormLabel className="m-0">{team.name}</FormLabel>
                         </div>
@@ -185,8 +223,13 @@ export default function ThinkTankInfo() {
                             size="sm"
                             className="absolute right-4 top-1/2 -translate-y-1/2"
                             onClick={() => {
-                              const updated = field.value.filter(t => t.teamId !== team.id);
-                              form.setValue("thinkTankInfo.preferredTeams", updated);
+                              const updated = field.value.filter(
+                                (t) => t.teamId !== team.id,
+                              );
+                              form.setValue(
+                                "thinkTankInfo.preferredTeams",
+                                updated,
+                              );
                             }}
                           >
                             <X className="h-4 w-4" />
@@ -196,14 +239,23 @@ export default function ThinkTankInfo() {
                       {isSelected && (
                         <div className="mt-2">
                           <Select
-                            value={field.value.find(t => t.teamId === team.id)?.interestLevel ?? "MEDIUM"}
+                            value={
+                              field.value.find((t) => t.teamId === team.id)
+                                ?.interestLevel ?? "MEDIUM"
+                            }
                             onValueChange={(value) => {
-                              const updated = field.value.map(t => 
-                                t.teamId === team.id 
-                                  ? { ...t, interestLevel: value as InterestLevel }
-                                  : t
+                              const updated = field.value.map((t) =>
+                                t.teamId === team.id
+                                  ? {
+                                      ...t,
+                                      interestLevel: value as InterestLevel,
+                                    }
+                                  : t,
                               );
-                              form.setValue("thinkTankInfo.preferredTeams", updated);
+                              form.setValue(
+                                "thinkTankInfo.preferredTeams",
+                                updated,
+                              );
                             }}
                           >
                             <SelectTrigger className="w-[140px]">
@@ -238,28 +290,44 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.thinkTankInfo.researchAreas} <span className="text-red-500">*</span>
+                  {q.thinkTankInfo.researchAreas}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
-                <CardDescription>Select up to 3 research areas from your chosen teams</CardDescription>
+                <CardDescription>
+                  Select up to 3 research areas from your chosen teams
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-              {availableResearch.map((area) => {
-                const isSelected = field.value.some(ra => ra.researchAreaId === area.id);
-                
-                return (
-                  <div key={area.id} className="relative flex flex-col gap-2 border p-4 rounded-lg">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-4 flex-1">
-                        <Checkbox
+                {availableResearch.map((area) => {
+                  const isSelected = field.value.some(
+                    (ra) => ra.researchAreaId === area.id,
+                  );
+
+                  return (
+                    <div
+                      key={area.id}
+                      className="relative flex flex-col gap-2 rounded-lg border p-4"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex flex-1 items-center gap-4">
+                          <Checkbox
                             checked={isSelected}
                             onCheckedChange={(checked) => {
                               const updated = checked
-                                ? [...field.value, { 
-                                    researchAreaId: area.id, 
-                                    interestLevel: "MEDIUM" as InterestLevel
-                                  }]
-                                : field.value.filter(ra => ra.researchAreaId !== area.id);
-                              form.setValue("thinkTankInfo.researchAreas", updated);
+                                ? [
+                                    ...field.value,
+                                    {
+                                      researchAreaId: area.id,
+                                      interestLevel: "MEDIUM" as InterestLevel,
+                                    },
+                                  ]
+                                : field.value.filter(
+                                    (ra) => ra.researchAreaId !== area.id,
+                                  );
+                              form.setValue(
+                                "thinkTankInfo.researchAreas",
+                                updated,
+                              );
                             }}
                             disabled={!isSelected && field.value.length >= 3}
                           />
@@ -272,8 +340,13 @@ export default function ThinkTankInfo() {
                             size="sm"
                             className="absolute right-4 top-1/2 -translate-y-1/2"
                             onClick={() => {
-                              const updated = field.value.filter(ra => ra.researchAreaId !== area.id);
-                              form.setValue("thinkTankInfo.researchAreas", updated);
+                              const updated = field.value.filter(
+                                (ra) => ra.researchAreaId !== area.id,
+                              );
+                              form.setValue(
+                                "thinkTankInfo.researchAreas",
+                                updated,
+                              );
                             }}
                           >
                             <X className="h-4 w-4" />
@@ -283,14 +356,24 @@ export default function ThinkTankInfo() {
                       {isSelected && (
                         <div className="mt-2">
                           <Select
-                            value={field.value.find(ra => ra.researchAreaId === area.id)?.interestLevel ?? "MEDIUM"}
+                            value={
+                              field.value.find(
+                                (ra) => ra.researchAreaId === area.id,
+                              )?.interestLevel ?? "MEDIUM"
+                            }
                             onValueChange={(value) => {
-                              const updated = field.value.map(ra => 
-                                ra.researchAreaId === area.id 
-                                  ? { ...ra, interestLevel: value as InterestLevel }
-                                  : ra
+                              const updated = field.value.map((ra) =>
+                                ra.researchAreaId === area.id
+                                  ? {
+                                      ...ra,
+                                      interestLevel: value as InterestLevel,
+                                    }
+                                  : ra,
                               );
-                              form.setValue("thinkTankInfo.researchAreas", updated);
+                              form.setValue(
+                                "thinkTankInfo.researchAreas",
+                                updated,
+                              );
                             }}
                           >
                             <SelectTrigger className="w-[140px]">
@@ -325,7 +408,8 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.thinkTankInfo.referralSources} <span className="text-red-500">*</span>
+                  {q.thinkTankInfo.referralSources}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>Select all that apply</CardDescription>
               </CardHeader>
@@ -339,11 +423,14 @@ export default function ThinkTankInfo() {
                           const updated = checked
                             ? [...field.value, source]
                             : field.value.filter((s) => s !== source);
-                          form.setValue("thinkTankInfo.referralSources", updated);
+                          form.setValue(
+                            "thinkTankInfo.referralSources",
+                            updated,
+                          );
                         }}
                       />
                       <FormLabel className="leading-none">
-                        {source.replace(/_/g, ' ')}
+                        {source.replace(/_/g, " ")}
                       </FormLabel>
                     </div>
                   </FormItem>

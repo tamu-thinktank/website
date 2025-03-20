@@ -11,7 +11,7 @@ datasource db {
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
   // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling  
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
@@ -84,6 +84,8 @@ model OfficerTime {
 enum ApplicationType {
   DCMEMBER
   OFFICER
+  MATEROV
+  MINIDC
 }
 
 enum Year {
@@ -113,8 +115,8 @@ enum InterestLevel {
 }
 
 enum CommitmentType {
-  CURRENT // Current time commitment (e.g., clubs, jobs)
-  PLANNED // Planned time commitment (e.g., future activities)
+  CURRENT
+  PLANNED
 }
 
 enum ReferralSource {
@@ -128,6 +130,7 @@ enum ReferralSource {
 
 enum Major {
   ENGR
+  OPEN
   AERO
   BAEN
   BMEN
@@ -146,7 +149,7 @@ enum Major {
   NUEN
   OCEN
   PETE
-  Other
+  OTHER
 }
 
 enum OfficerCommitment {
@@ -164,6 +167,21 @@ enum OfficerPosition {
   TREASURER
   RECURRING_TEAM_PROJECT_MANAGER
   DC_PROGRAM_MANAGER
+}
+
+enum ExperienceLevel {
+  UNFAMILIAR
+  MARGINAL
+  COMFORTABLE
+  EXPERT
+}
+
+enum LearningInterestLevel {
+  NOT_INTERESTED
+  MILD
+  MODERATE
+  STRONG
+  MOST_INTERESTED
 }
 
 // Availabilities of applicants
@@ -230,6 +248,36 @@ model PositionPreference {
   applicant   Application     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 }
 
+model SubteamPreference {
+  id          String        @id @default(cuid())
+  name        String
+  interest    InterestLevel
+  applicantId String
+  applicant   Application   @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@index([applicantId])
+}
+
+model Skill {
+  id              String          @id @default(cuid())
+  name            String
+  experienceLevel ExperienceLevel
+  applicantId     String
+  applicant       Application     @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@index([applicantId])
+}
+
+model LearningInterest {
+  id            String                @id @default(cuid())
+  area          String
+  interestLevel LearningInterestLevel
+  applicantId   String
+  applicant     Application           @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@index([applicantId])
+}
+
 model Application {
   id              String            @id @default(cuid())
   submittedAt     DateTime          @default(now())
@@ -268,9 +316,16 @@ model Application {
   officerCommitment  OfficerCommitment? // "Are you able to commit 6-8 hrs/week for summer and next 2 semesters?" with options: YES / PARTIAL / NO
   preferredPositions PositionPreference[] // Array of officer positions with interest levels
 
+  // MATE ROV-specific ThinkTank information
+  previousParticipation Boolean?
+  subteamPreferences    SubteamPreference[]
+  skills                Skill[]
+  learningInterests     LearningInterest[]
+
   // Open-Ended Questions Section:
-  firstQuestion  String @db.Text // Long answer (<250 words).
-  secondQuestion String @db.Text // Long answer (<250 words).
+  firstQuestion  String  @db.Text // Long answer (<250 words).
+  secondQuestion String  @db.Text // Long answer (<250 words).
+  thirdQuestion  String? @db.Text // Long answer (<250 words).
 
   meetingTimes            ApplicantTime[] // the time sections that the applicant selected
   resumeId                String // the id of the resume file in the google drive
