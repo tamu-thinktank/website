@@ -289,8 +289,8 @@ model Application {
   preferredName String?
   pronouns      String?
   gender        String?
-  uin           Int     @unique
-  email         String  @unique
+  uin           Int     
+  email         String  
   altEmail      String?
   phone         String
 
@@ -338,6 +338,9 @@ model Application {
 
   // Add assigned team field
   assignedTeam String?
+
+  @@unique([uin, applicationType])
+  @@unique([email, applicationType])
 }
 
 // New model for interviews
