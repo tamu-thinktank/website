@@ -1,4 +1,7 @@
-import { eventTimezone } from "@/consts/availability-grid";
+import {
+  eventTimezone,
+  GRID_SLOTS_INTERVIEW_LEN,
+} from "@/consts/availability-grid";
 import {
   RESUME_ACCEPTED_ID,
   RESUME_PENDING_ID,
@@ -279,7 +282,7 @@ export const adminRouter = createTRPCRouter({
         >;
         try {
           eventLink = await CalendarService.addCalenderEvent({
-            startTime: startTimeObj,
+            startTime: startTimeObj.add({ minutes: 15 }),
             location,
             emails: [officerEmail, applicantEmail],
             intervieweeName: applicantName,
@@ -292,8 +295,7 @@ export const adminRouter = createTRPCRouter({
         }
 
         // remove meeting time from soonestOfficer's availabilities
-        const thirty = Array(2)
-          .fill(0)
+        const treefiddy = Array(GRID_SLOTS_INTERVIEW_LEN).fill(0)
           .map((_, i) => i * 15)
           .map((minutes) => {
             return startTimeObj.add({ minutes }).toString();
@@ -302,7 +304,7 @@ export const adminRouter = createTRPCRouter({
           where: {
             officerId,
             gridTime: {
-              in: thirty,
+              in: treefiddy,
             },
           },
         });
@@ -317,6 +319,7 @@ export const adminRouter = createTRPCRouter({
               userFirstname: applicantName.split(" ")[0] ?? "",
               time: startTimeObj
                 .withTimeZone(eventTimezone)
+                .add({ minutes: 15 })
                 .toLocaleString("en-US", {
                   dateStyle: "short",
                   timeStyle: "short",
