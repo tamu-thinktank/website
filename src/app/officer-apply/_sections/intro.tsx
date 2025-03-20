@@ -8,7 +8,7 @@ export default function FormIntroTab() {
     <TabsContent className="space-y-2" value="start">
       <Card>
         <CardHeader className="text-center">
-          <CardTitle>ThinkTank Membership Application Form</CardTitle>
+          <CardTitle>ThinkTank Officer Application Form</CardTitle>
           <Separator />
         </CardHeader>
         <CardContent className="text-center">
