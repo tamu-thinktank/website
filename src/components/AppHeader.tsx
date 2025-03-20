@@ -185,7 +185,7 @@ export default function Header() {
                     <a
                       href="/about"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/about", 8)}
+                      onClick={(e) => handleLinkClick(e, "/apphub", 8)}
                     >
                       <span>FAQ</span>
                     </a>
@@ -195,9 +195,9 @@ export default function Header() {
 
               <div className="mt-12 lg:mt-0">
                 <a
-                  href="/apply"
+                  href="/apphub"
                   className="navbar-button"
-                  onClick={(e) => handleLinkClick(e, "/apply")}
+                  onClick={(e) => handleLinkClick(e, "/apphub")}
                 >
                   <span className="navbar-button-text">Apply</span>
                 </a>
