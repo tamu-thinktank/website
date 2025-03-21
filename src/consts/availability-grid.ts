@@ -55,3 +55,5 @@ export const palette = (
   colors[color][600],
   colors[color][700],
 ]);
+
+export const GRID_SLOTS_INTERVIEW_LEN = 3; // 45 mins

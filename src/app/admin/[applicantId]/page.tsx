@@ -24,13 +24,17 @@ import {
 } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { challenges, q } from "@/consts/apply-form";
-import { eventTimezone } from "@/consts/availability-grid";
+import {
+  eventTimezone,
+  GRID_SLOTS_INTERVIEW_LEN,
+} from "@/consts/availability-grid";
 import { api, clientErrorHandler } from "@/lib/trpc/react";
 import type { RouterOutputs } from "@/lib/trpc/shared";
 import type { FileDataResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Temporal } from "@js-temporal/polyfill";
 import type { Challenge } from "@prisma/client";
+
 import { useQuery } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -315,7 +319,7 @@ function Buttons({
       if (currOfficerTime.startTime.add({ minutes: 15 }).equals(gridTime)) {
         overlapCount++;
 
-        if (overlapCount === 2) {
+        if (overlapCount === GRID_SLOTS_INTERVIEW_LEN) {
           soonest = {
             ...currOfficerTime.officer,
             startTime: currOfficerTime.startTime.toString(),
