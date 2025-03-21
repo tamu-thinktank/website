@@ -12,7 +12,7 @@ const Home: NextPage = () => {
                     <main className="bg mb-40 space-y-20">
                         <ChallengesHeader />
                         <AppHeader />
-                        <Challenges />
+
                     </main>
                     <AppFooter />
                 </div>
