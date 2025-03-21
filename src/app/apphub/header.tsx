@@ -32,7 +32,7 @@ const linksData = [
         name: 'MiniDC Application',
         url: '/minidc-apply',
         description: '• Shorter, hands-on engineering projects curated by ThinkTank to teach basic engineering principles.\n• Open to everyone.',
-        status: 'soon',
+        status: 'open',
         seemore: '/MATE'
     }
 ];
