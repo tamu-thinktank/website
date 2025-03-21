@@ -19,11 +19,11 @@ const linksData = [
     description:
       "• Underwater robotics team where members design and build an autonomous rover for the MATE ROV competition.\n• Sophomores/Juniors preferred.",
     status: "open",
-    seemore: "/MATE",
+    seemore: "/materov",
   },
   {
     type: "General",
-    name: "Design Application",
+    name: "Design Challenges Application",
     url: "#",
     description:
       "• Engineering capstone projects where members learn to design systems for real-world problems.\n• Freshmen/Sophomores preferred.",
@@ -36,7 +36,7 @@ const linksData = [
     url: "/minidc-apply",
     description:
       "• Shorter, hands-on engineering projects curated by ThinkTank to teach basic engineering principles.\n• Open to everyone.",
-    status: "soon",
+    status: "closed",
     seemore: "/MATE",
   },
 ];
@@ -48,7 +48,6 @@ const LinkCollectionPage: React.FC = () => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  // Helper function to split description into bullet points
   const formatDescription = (description: string) => {
     return description.split("\n").map((line, index) => (
       <p key={index} className="text-white-600 text-sm">
@@ -58,77 +57,61 @@ const LinkCollectionPage: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full p-8 pt-32 md:p-12 md:pl-24 md:pt-72 lg:p-16 lg:pl-32 lg:pt-40">
+    <div className="relative w-full p-4 pt-16 sm:p-8 sm:pt-24 lg:p-12 lg:pt-32">
       <div className="flex flex-col items-start gap-0">
         <span className="font-dm-sans text-[0.93em] font-semibold text-[#B8B8B8] md:text-[0.93em]">
           2025-2026
         </span>
-        <h1 className="font-poppins bg-gradient-to-r from-white to-gray-500 bg-clip-text text-[3.9rem] font-semibold text-transparent md:text-[5.2rem] lg:text-[6.5rem]">
+        <h1 className="font-poppins bg-gradient-to-r from-white to-gray-500 bg-clip-text text-[2rem] font-semibold text-transparent sm:text-[3rem] md:text-[4rem] lg:text-[5rem]">
           Application Hub
         </h1>
       </div>
-      <svg
-        className="absolute bottom-4 right-16 h-8 w-8 rotate-180 md:bottom-12 md:right-24 md:h-10 md:w-10 lg:bottom-16 lg:right-32 lg:h-12 lg:w-12"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M7 17L17 7M17 7H7M17 7V17"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
 
-      <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {linksData.map((link, index) => (
           <div
             key={index}
-            className="relative flex flex-col items-start justify-between rounded-2xl bg-gradient-to-r from-gray-800 to-gray-700 p-6 shadow-md"
+            className="flex w-full flex-col justify-between rounded-xl bg-gradient-to-r from-gray-800 to-gray-700 p-6 shadow-lg"
           >
-            <h2 className="text-2xl font-semibold text-white">{link.name}</h2>
-            {/* Add a gap between the title and description */}
+            <h2 className="text-lg font-semibold text-white sm:text-xl md:text-2xl">
+              {link.name}
+            </h2>
             <div className="mt-4">{formatDescription(link.description)}</div>
 
-            {/* Apply Button */}
             {link.status === "open" && (
-              <div className="mt-6 flex gap-4">
+              <div className="mt-6 flex flex-col gap-4 sm:flex-row">
                 <a
                   href={link.url}
-                  className="inline-block rounded-lg bg-white px-6 py-2 text-blue-500"
+                  className="w-full rounded-md bg-white px-4 py-2 text-center text-blue-600 sm:w-auto"
                 >
                   Apply
                 </a>
                 <a
                   href={link.seemore}
-                  className="inline-block rounded-lg border-2 border-white px-6 py-2 text-white"
+                  className="w-full rounded-md border-2 border-white px-4 py-2 text-center text-white sm:w-auto"
                 >
                   See More Info
                 </a>
               </div>
             )}
 
-            {/* Disabled Button (Closed) */}
             {link.status === "closed" && (
-              <div className="mt-6 flex gap-4">
-                <button className="inline-block cursor-not-allowed rounded-lg bg-gray-400 px-6 py-2 text-gray-700">
+              <div className="mt-6 flex flex-col gap-4 sm:flex-row">
+                <button className="w-full cursor-not-allowed rounded-md bg-gray-400 px-4 py-2 text-center text-gray-700 sm:w-auto">
                   Apply
                 </button>
-                <button className="inline-block cursor-not-allowed rounded-lg border-2 border-gray-400 px-6 py-2 text-gray-700">
+                <button className="w-full cursor-not-allowed rounded-md border-2 border-gray-400 px-4 py-2 text-center text-gray-700 sm:w-auto">
                   See More Info
                 </button>
               </div>
             )}
 
-            {/* Soon Button */}
             {link.status === "soon" && (
-              <div className="mt-6 flex gap-4">
-                <button className="inline-block cursor-not-allowed rounded-lg bg-yellow-500 px-6 py-2 text-white">
+              <div className="mt-6 flex flex-col gap-4 sm:flex-row">
+                <button className="w-full cursor-not-allowed rounded-md bg-yellow-500 px-4 py-2 text-center text-white sm:w-auto">
                   Apply
                 </button>
-                <button className="inline-block cursor-not-allowed rounded-lg border-2 border-yellow-500 px-6 py-2 text-yellow-500">
+                <button className="w-full cursor-not-allowed rounded-md border-2 border-yellow-500 px-4 py-2 text-center text-yellow-500 sm:w-auto">
                   See More Info
                 </button>
               </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import Nav from "../../components/AdminTopFooter";
 import { MemberProvider } from "./transfer";
 
@@ -11,9 +11,7 @@ export default function AdminLayout({
 }) {
   return (
     <SessionProvider refetchOnWindowFocus>
-      <GradientLayout>
-        <Content>{children}</Content>
-      </GradientLayout>
+      <AuthenticatedLayout>{children}</AuthenticatedLayout>
     </SessionProvider>
   );
 }
