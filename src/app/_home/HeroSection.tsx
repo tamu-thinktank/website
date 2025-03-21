@@ -159,7 +159,7 @@ export default function MyComponent() {
 
               <div className="mb-8 flex flex-col items-center gap-y-4 pt-8 sm:mb-16 sm:flex-row sm:justify-center sm:gap-x-6">
                 <Link
-                  href="/apply"
+                  href="/apphub"
                   className="group relative flex h-14 w-full max-w-[20rem] items-center justify-center rounded-full bg-primary px-7 text-lg font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Apply

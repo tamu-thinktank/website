@@ -146,8 +146,8 @@ export default function Header() {
                         FAQ
                       </a>
                       <a
-                        href="/apply"
-                        onClick={(e) => handleLinkClick(e, "/apply")}
+                        href="/apphub"
+                        onClick={(e) => handleLinkClick(e, "/apphub")}
                         className="inline-flex h-10 items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-gray-200"
                       >
                         Join Us
@@ -211,9 +211,9 @@ export default function Header() {
 
               <div className="mt-12 lg:mt-0">
                 <a
-                  href="/apply"
+                  href="/apphub"
                   className="navbar-button"
-                  onClick={(e) => handleLinkClick(e, "/apply")}
+                  onClick={(e) => handleLinkClick(e, "/apphub")}
                 >
                   <span className="navbar-button-text">Apply</span>
                 </a>

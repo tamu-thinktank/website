@@ -28,6 +28,13 @@ const articles = [
       "https://d253pvgap36xx8.cloudfront.net/challenges/thumbnail/8d50149c82f611ec8d16862fe09b0a86/8c0628a682f611eca2ab8a8fe6f2b952.webp",
     link: "https://www.herox.com/events/154-meet-the-winners-nasas-waste-jettison-mechanism-ch",
   },
+  {
+    id: 4,
+    title: "NASA Selects Texas A&M Team for the 2025 RASC-AL Competition",
+    shortTitle: "Team Servus Wins",
+    image: "/images/photos/rascalwin.png",
+    link: "https://www.nasa.gov/general/nasa-selects-14-finalist-teams-for-the-2025-rasc-al-competition/",
+  },
 ];
 <style jsx global>{`
   .fade-overlay {
@@ -37,7 +44,8 @@ const articles = [
     right: 0;
     bottom: 0;
     pointer-events: none;
-    background: linear-gradient(
+    background:
+      linear-gradient(
         to right,
         #0c0d0e 0%,
         rgba(12, 13, 14, 0.738) 19.27%,
