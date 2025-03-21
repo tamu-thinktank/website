@@ -125,6 +125,7 @@ enum ReferralSource {
   REFERRAL
   INSTAGRAM
   FLYERS
+  OTHER
 }
 
 enum Major {
@@ -164,7 +165,6 @@ enum OfficerPosition {
   GRAPHIC_DESIGNER
   WEB_DEV_LEAD
   TREASURER
-  RECURRING_TEAM_PROJECT_MANAGER
   DC_PROGRAM_MANAGER
 }
 
