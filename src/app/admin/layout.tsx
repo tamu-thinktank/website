@@ -7,13 +7,17 @@ import { Loader2 } from "lucide-react";
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { AdminHeader } from "./admin-header";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-      <SessionProvider refetchOnWindowFocus>
-        <GradientLayout>
-          <Content>{children}</Content>
-        </GradientLayout>
-      </SessionProvider>
+    <SessionProvider refetchOnWindowFocus>
+      <GradientLayout>
+        <Content>{children}</Content>
+      </GradientLayout>
+    </SessionProvider>
   );
 }
 
