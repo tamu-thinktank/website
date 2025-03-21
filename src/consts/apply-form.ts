@@ -91,7 +91,7 @@ export const qOfficer: OfficerQuestions = {
   thinkTankInfo: {
     title: "ThinkTank Information",
     officerCommitment:
-      "Are you able to commit 6 to 8 hours per week to your position for this summer and the next 2 semesters?",
+      "Are you able to commit to and attend weekly team meetings in person on campus for the next 2 semesters? ",
     preferredPositions:
       "For each selected position, rate your relative interest compared to other positions.",
   },
@@ -338,9 +338,10 @@ export const MATEROV_SUBTEAM_OPTIONS = [
 
 export const SKILL_OPTIONS = [
   { value: "CAD", label: "CAD (SolidWorks, Siemens NX, Catia, etc)" },
-  { value: "PROGRAMMING", label: "Programming (Python, C, C++)" },
-  { value: "C_PLUS", label: "C+" },
-  { value: "FEA_CFD", label: "FEA & CFD" },
+  { value: "PROGRAMMING", label: "Python (Numpy and SciPy)" },
+  { value: "C_PLUS", label: "C, C++" },
+  { value: "FEA", label: "FEA" },
+  { value: "CFD", label: "CFD" },
   { value: "EMBEDDED", label: "Arduino/Raspberry Pi/Related" },
   { value: "CIRCUIT_DESIGN", label: "Circuit Design" },
   { value: "OTHER", label: "Other" },
