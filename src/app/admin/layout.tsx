@@ -1,8 +1,11 @@
 "use client";
 
-import { SessionProvider, useSession } from "next-auth/react";
-import Nav from "../../components/AdminTopFooter";
-import { MemberProvider } from "./transfer";
+import GradientLayout from "@/components/GradientLayout";
+import { Button } from "@/components/ui/button";
+import { getBaseUrl } from "@/lib/trpc/shared";
+import { Loader2 } from "lucide-react";
+import { SessionProvider, signIn, useSession } from "next-auth/react";
+import { AdminHeader } from "./admin-header";
 
 export default function AdminLayout({
   children,
@@ -11,17 +14,45 @@ export default function AdminLayout({
 }) {
   return (
     <SessionProvider refetchOnWindowFocus>
-      <AuthenticatedLayout>{children}</AuthenticatedLayout>
+      <GradientLayout>
+        <Content>{children}</Content>
+      </GradientLayout>
     </SessionProvider>
   );
 }
 
-function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
-  // tmporarily skip authentication
-  return (
-    <MemberProvider>
-      <Nav />
-      <section style={{ background: "#0C0D0E" }}>{children}</section>
-    </MemberProvider>
+function Content({ children }: { children: React.ReactNode }) {
+  const { status: authStatus } = useSession();
+
+  return authStatus === "authenticated" ? (
+    <>
+      <section className="h-[90vh] w-11/12 space-y-4 md:w-3/4 lg:w-2/3">
+        <AdminHeader />
+        {children}
+      </section>
+    </>
+  ) : (
+    <Button
+      disabled={authStatus === "loading"}
+      onClick={() =>
+        void signIn(
+          "auth0",
+          {
+            callbackUrl: getBaseUrl() + "/admin",
+          },
+          {
+            connection: "google-oauth2",
+            response_type: "code",
+          },
+        )
+      }
+      className="rounded-full bg-white/10 px-10 py-3 font-semibold text-primary no-underline transition hover:bg-white/20"
+    >
+      {authStatus === "loading" ? (
+        <Loader2 className="animate-spin" />
+      ) : (
+        "Sign in"
+      )}
+    </Button>
   );
 }
