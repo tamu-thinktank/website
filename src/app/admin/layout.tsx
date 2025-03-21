@@ -1,6 +1,6 @@
 "use client";
 
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import Nav from "../../components/AdminTopFooter";
 import { MemberProvider } from "./transfer";
 
