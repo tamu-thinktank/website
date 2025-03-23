@@ -36,6 +36,13 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { api } from "@/lib/trpc/react";
 
+// Define application types
+export enum ApplicationType {
+  OFFICER = "OFFICER",
+  MATEROV = "MATEROV",
+  GENERAL = "GENERAL",
+}
+
 interface ApplicantDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -67,6 +74,7 @@ interface ApplicantDetails {
     type: string;
   }[];
   assignedTeam?: string;
+  applicationType?: ApplicationType;
   preferredTeams?: {
     id: string;
     teamId: string;
@@ -110,6 +118,7 @@ export const ApplicantDetailsModal = ({
   const [newNote, setNewNote] = useState("");
   const [isLocked, setIsLocked] = useState(false);
   const [isStatusDialogOpen, setIsStatusDialogOpen] = useState(false);
+  const [isInterviewDialogOpen, setIsInterviewDialogOpen] = useState(false);
   const [newStatus, setNewStatus] = useState<ApplicationStatus | null>(null);
   const [interviewers, setInterviewers] = useState<
     { id: string; name: string }[]
@@ -119,6 +128,9 @@ export const ApplicantDetailsModal = ({
   const [interviewRoom, setInterviewRoom] = useState("");
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [assignedTeam, setAssignedTeam] = useState("");
+  const [applicationType, setApplicationType] = useState<ApplicationType>(
+    ApplicationType.GENERAL,
+  );
   const _router = useRouter();
   const { data: _session } = useSession();
 
@@ -156,13 +168,15 @@ export const ApplicantDetailsModal = ({
       setInterviewTime("");
       setInterviewRoom("");
       setAssignedTeam("");
+      setApplicationType(ApplicationType.GENERAL);
     }
   }, [isOpen, applicantId]);
 
-  // Add useEffect to initialize assignedTeam when applicant data is loaded
+  // Add useEffect to initialize assignedTeam and applicationType when applicant data is loaded
   useEffect(() => {
     if (applicant) {
       setAssignedTeam(applicant.assignedTeam ?? "NONE");
+      setApplicationType(applicant.applicationType ?? ApplicationType.GENERAL);
     }
   }, [applicant]);
 
@@ -183,6 +197,7 @@ export const ApplicantDetailsModal = ({
       console.log("Fetched applicant details:", data);
       setApplicant(data);
       setAssignedTeam(data.assignedTeam ?? "NONE");
+      setApplicationType(data.applicationType ?? ApplicationType.GENERAL);
     } catch (err) {
       console.error("Error fetching applicant details:", err);
       setError(
@@ -331,8 +346,8 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-  // Update the scheduleInterview function to use the tRPC endpoint
-  const scheduleInterview = async () => {
+  // Update the scheduleInterview function to use the tRPC endpoint and show confirmation dialog
+  const confirmScheduleInterview = () => {
     if (
       !applicantId ||
       !selectedInterviewer ||
@@ -345,6 +360,21 @@ export const ApplicantDetailsModal = ({
         description: "Please fill in all interview details",
         variant: "destructive",
       });
+      return;
+    }
+
+    setIsInterviewDialogOpen(true);
+  };
+
+  // Function to actually schedule the interview after confirmation
+  const scheduleInterview = async () => {
+    if (
+      !applicantId ||
+      !selectedInterviewer ||
+      !interviewTime ||
+      !interviewRoom ||
+      !applicant
+    ) {
       return;
     }
 
@@ -377,8 +407,11 @@ export const ApplicantDetailsModal = ({
         throw new Error("Selected interviewer not found");
       }
 
-      // Send the interview email using the tRPC endpoint
-      await fetch("/api/trpc", {
+      // Generate the interviewer email (in a real app, this would come from the database)
+      const officerEmail = `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`;
+
+      // Send the interview email using a direct fetch to the tRPC endpoint
+      const emailResponse = await fetch("/api/trpc", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -388,12 +421,43 @@ export const ApplicantDetailsModal = ({
           input: {
             officerId: interviewer.id,
             officerName: interviewer.name,
-            officerEmail: `${interviewer.name.toLowerCase()}@example.com`, // This is a placeholder
+            officerEmail: officerEmail,
             applicantName: applicant.fullName,
             applicantEmail: applicant.email,
             startTime: interviewTime,
             location: interviewRoom,
+            team: assignedTeam === "NONE" ? undefined : assignedTeam,
+            applicationType: applicationType,
           },
+        }),
+      });
+
+      if (!emailResponse.ok) {
+        throw new Error(
+          `Failed to send interview email: ${emailResponse.status}`,
+        );
+      }
+
+      // Update the applicant status to INTERVIEWING
+      await fetch(`/api/applicant/${applicantId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: ApplicationStatus.INTERVIEWING,
+        }),
+      });
+
+      // Update the applicant type and team if needed
+      await fetch(`/api/applicant/${applicantId}/application-info`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          applicationType: applicationType,
+          assignedTeam: assignedTeam === "NONE" ? null : assignedTeam,
         }),
       });
 
@@ -401,7 +465,7 @@ export const ApplicantDetailsModal = ({
 
       toast({
         title: "Success",
-        description: "Interview scheduled successfully",
+        description: `Interview scheduled with ${interviewer.name} and email sent to ${applicant.fullName}`,
       });
 
       // Refresh applicant details to get updated status
@@ -415,6 +479,7 @@ export const ApplicantDetailsModal = ({
       });
     } finally {
       setIsSendingEmail(false);
+      setIsInterviewDialogOpen(false);
     }
   };
 
@@ -459,6 +524,16 @@ export const ApplicantDetailsModal = ({
         description: `Failed to update team assignment: ${err instanceof Error ? err.message : "Unknown error"}`,
         variant: "destructive",
       });
+    }
+  };
+
+  // Add function to update application type
+  const updateApplicationType = async (type: ApplicationType) => {
+    setApplicationType(type);
+
+    // Reset assigned team when application type changes
+    if (assignedTeam !== "NONE" && assignedTeam !== "INTERVIEWING") {
+      setAssignedTeam("NONE");
     }
   };
 
@@ -546,26 +621,87 @@ export const ApplicantDetailsModal = ({
           };
         });
 
-        // Send rejection email using the tRPC mutation
-        sendRejectEmail({
-          applicantName: applicant.fullName,
-          applicantEmail: applicant.email,
-        });
+        // Send rejection email using a direct fetch to the tRPC endpoint
+        fetch("/api/trpc", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            path: "admin.rejectAppEmail",
+            input: {
+              applicantName: applicant.fullName,
+              applicantEmail: applicant.email,
+            },
+          }),
+        })
+          .then((emailResponse) => {
+            if (!emailResponse.ok) {
+              throw new Error(
+                `Failed to send rejection email: ${emailResponse.status}`,
+              );
+            }
 
-        toast({
-          title: "Success",
-          description: `Application status updated to REJECTED`,
-        });
+            toast({
+              title: "Success",
+              description: `Application status updated to REJECTED and rejection email sent`,
+            });
+          })
+          .catch((emailErr) => {
+            console.error("Error sending rejection email:", emailErr);
+            toast({
+              title: "Warning",
+              description: `Application status updated but failed to send rejection email: ${emailErr instanceof Error ? emailErr.message : "Unknown error"}`,
+              variant: "destructive",
+            });
+          });
       })
       .catch((err) => {
         console.error("Error updating application status:", err);
         toast({
           title: "Error",
           description: `Failed to update application status: ${err instanceof Error ? err.message : "Unknown error"}`,
-          variant: "destructive",
         });
       });
-  }, [applicantId, applicant, sendRejectEmail, toast]);
+  }, [applicantId, applicant, toast]);
+
+  // Function to get team options based on application type
+  const getTeamOptions = () => {
+    const commonOptions = [
+      { value: "NONE", label: "None" },
+      { value: "INTERVIEWING", label: "Interviewing" },
+    ];
+
+    if (applicationType === ApplicationType.OFFICER) {
+      return [
+        ...commonOptions,
+        { value: "PRESIDENT", label: "President" },
+        { value: "VICE_PRESIDENT", label: "Vice President" },
+        { value: "SECRETARY", label: "Secretary" },
+        { value: "TREASURER", label: "Treasurer" },
+        { value: "OUTREACH", label: "Outreach" },
+      ];
+    } else if (applicationType === ApplicationType.MATEROV) {
+      return [
+        ...commonOptions,
+        { value: "MATEROV_TEAM1", label: "MateROV Team 1" },
+        { value: "MATEROV_TEAM2", label: "MateROV Team 2" },
+        { value: "MATEROV_TEAM3", label: "MateROV Team 3" },
+        { value: "MATEROV_TEAM4", label: "MateROV Team 4" },
+        { value: "MATEROV_TEAM5", label: "MateROV Team 5" },
+        { value: "MATEROV_TEAM6", label: "MateROV Team 6" },
+      ];
+    } else {
+      // Default/General teams
+      return [
+        ...commonOptions,
+        { value: "TEAM1", label: "Team 1" },
+        { value: "TEAM2", label: "Team 2" },
+        { value: "TEAM3", label: "Team 3" },
+        { value: "TEAM4", label: "Team 4" },
+      ];
+    }
+  };
 
   const updateApplicant = api.admin.updateApplicant.useMutation();
 
@@ -616,6 +752,13 @@ export const ApplicantDetailsModal = ({
                   <div className={statusColors[applicant.status]}>
                     {applicant.status}
                   </div>
+                </div>
+
+                <div className="space-y-1">
+                  <div className="text-sm text-neutral-400">
+                    Application Type
+                  </div>
+                  <div>{applicant.applicationType || "GENERAL"}</div>
                 </div>
               </div>
 
@@ -830,6 +973,50 @@ export const ApplicantDetailsModal = ({
 
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div className="space-y-2">
+                    <Label>Application Type</Label>
+                    <Select
+                      value={applicationType}
+                      onValueChange={(value) =>
+                        updateApplicationType(value as ApplicationType)
+                      }
+                    >
+                      <SelectTrigger className="w-full border-neutral-700 bg-neutral-900">
+                        <SelectValue placeholder="Select application type" />
+                      </SelectTrigger>
+                      <SelectContent className="border-neutral-700 bg-neutral-900">
+                        <SelectItem value={ApplicationType.GENERAL}>
+                          General
+                        </SelectItem>
+                        <SelectItem value={ApplicationType.OFFICER}>
+                          Officer
+                        </SelectItem>
+                        <SelectItem value={ApplicationType.MATEROV}>
+                          MateROV
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Assign Team</Label>
+                    <Select
+                      value={assignedTeam}
+                      onValueChange={setAssignedTeam}
+                    >
+                      <SelectTrigger className="w-full border-neutral-700 bg-neutral-900">
+                        <SelectValue placeholder="Select team" />
+                      </SelectTrigger>
+                      <SelectContent className="border-neutral-700 bg-neutral-900">
+                        {getTeamOptions().map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label>Interviewer</Label>
                     <Select
                       value={selectedInterviewer}
@@ -892,33 +1079,11 @@ export const ApplicantDetailsModal = ({
                       </Button>
                     </div>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label>Assign Team</Label>
-                    <Select
-                      value={assignedTeam}
-                      onValueChange={setAssignedTeam}
-                    >
-                      <SelectTrigger className="w-full border-neutral-700 bg-neutral-900">
-                        <SelectValue placeholder="Select team" />
-                      </SelectTrigger>
-                      <SelectContent className="border-neutral-700 bg-neutral-900">
-                        <SelectItem value="NONE">None</SelectItem>
-                        <SelectItem value="INTERVIEWING">
-                          Interviewing
-                        </SelectItem>
-                        <SelectItem value="TEAM1">Team 1</SelectItem>
-                        <SelectItem value="TEAM2">Team 2</SelectItem>
-                        <SelectItem value="TEAM3">Team 3</SelectItem>
-                        <SelectItem value="TEAM4">Team 4</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-3 pt-2">
                   <Button
-                    onClick={() => void scheduleInterview()}
+                    onClick={confirmScheduleInterview}
                     className="bg-blue-600 hover:bg-blue-700"
                     disabled={
                       !selectedInterviewer ||
@@ -1050,6 +1215,58 @@ export const ApplicantDetailsModal = ({
               }`}
             >
               Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Confirmation Dialog for Interview Scheduling */}
+      <AlertDialog
+        open={isInterviewDialogOpen}
+        onOpenChange={setIsInterviewDialogOpen}
+      >
+        <AlertDialogContent className="border-neutral-700 bg-neutral-900 text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirm Interview Schedule</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to schedule an interview with the following
+              details?
+              <div className="mt-2 space-y-1 rounded-md bg-neutral-800 p-3 text-white">
+                <p>
+                  <strong>Applicant:</strong> {applicant?.fullName}
+                </p>
+                <p>
+                  <strong>Application Type:</strong> {applicationType}
+                </p>
+                <p>
+                  <strong>Team:</strong>{" "}
+                  {assignedTeam === "NONE" ? "Not Assigned" : assignedTeam}
+                </p>
+                <p>
+                  <strong>Interviewer:</strong>{" "}
+                  {interviewers.find((i) => i.id === selectedInterviewer)?.name}
+                </p>
+                <p>
+                  <strong>Time:</strong> {interviewTime}
+                </p>
+                <p>
+                  <strong>Location:</strong> {interviewRoom}
+                </p>
+              </div>
+              <p className="mt-2 text-blue-300">
+                This will send an interview invitation email to the applicant.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-neutral-700 bg-neutral-800 hover:bg-neutral-700">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => void scheduleInterview()}
+              className="bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Schedule Interview
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
