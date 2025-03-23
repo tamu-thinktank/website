@@ -248,6 +248,8 @@ export const adminRouter = createTRPCRouter({
         applicantEmail: z.string().email(),
         startTime: z.string(),
         location: z.string(),
+        team: z.string().optional(),
+        applicationType: z.string().optional(),
       }),
     )
     .mutation(
@@ -260,6 +262,8 @@ export const adminRouter = createTRPCRouter({
           applicantEmail,
           startTime,
           location,
+          team,
+          applicationType,
         },
         ctx,
       }) => {
@@ -324,6 +328,8 @@ export const adminRouter = createTRPCRouter({
               location,
               eventLink: eventLink,
               interviewerName: officerName,
+              team,
+              applicationType,
             }),
           });
         } catch (e) {

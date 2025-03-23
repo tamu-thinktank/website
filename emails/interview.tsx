@@ -33,6 +33,7 @@ export const InterviewEmail = ({
   }).format(Date.now()),
   location = "TBD",
   interviewerName = "John Doe",
+  eventLink,
   team,
   applicationType = "General",
 }: InterviewEmailProps) => {
@@ -120,6 +121,14 @@ export const InterviewEmail = ({
             )}
             <strong>Application Type:</strong> {applicationType}
           </Text>
+          {eventLink && (
+            <Text style={paragraph}>
+              <strong>Google Calendar Event:</strong>{" "}
+              <a href={eventLink} style={{ color: "#4285F4" }}>
+                Add to Calendar
+              </a>
+            </Text>
+          )}
           <Text style={paragraph}>
             These details are optimized to match your availability with ours,
             but let us know if these do not work for you and we will try and
