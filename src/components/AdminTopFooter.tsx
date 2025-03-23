@@ -39,7 +39,7 @@ export default function Header() {
           <div className="navbar-content">
             <div className="relative z-20 flex w-full justify-between md:px-0 lg:w-max">
               <div className="flex items-center space-x-2">
-                <Link href="/">
+                <Link href="/admin">
                   <Image
                     src="/ttt.svg"
                     alt="art cover"
