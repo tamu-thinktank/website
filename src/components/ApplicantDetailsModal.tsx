@@ -153,23 +153,14 @@ export const ApplicantDetailsModal = ({
   });
 
   // Add the sendInterviewEmail mutation right after the sendRejectEmail mutation
-  const { mutate: sendInterviewEmail } =
-    api.admin.scheduleInterview.useMutation({
-      onSuccess: (data, input) => {
-        toast({
-          title: "Success",
-          description: `Interview email sent to ${input.applicantName}`,
-        });
-      },
-      onError: (err) => {
-        console.error("Error sending interview email:", err);
-        toast({
-          title: "Error",
-          description: "Failed to send interview email. Please try again.",
-          variant: "destructive",
-        });
-      },
-    });
+  // Remove this mutation
+  // Add useEffect to initialize assignedTeam and applicationType when applicant data is loaded
+  useEffect(() => {
+    if (applicant) {
+      setAssignedTeam(applicant.assignedTeam ?? "NONE");
+      setApplicationType(applicant.applicationType ?? ApplicationType.GENERAL);
+    }
+  }, [applicant]);
 
   // Fetch applicant details when the modal opens and applicantId changes
   useEffect(() => {
@@ -190,14 +181,6 @@ export const ApplicantDetailsModal = ({
       setApplicationType(ApplicationType.GENERAL);
     }
   }, [isOpen, applicantId]);
-
-  // Add useEffect to initialize assignedTeam and applicationType when applicant data is loaded
-  useEffect(() => {
-    if (applicant) {
-      setAssignedTeam(applicant.assignedTeam ?? "NONE");
-      setApplicationType(applicant.applicationType ?? ApplicationType.GENERAL);
-    }
-  }, [applicant]);
 
   const fetchApplicantDetails = async (id: string) => {
     try {
@@ -429,18 +412,33 @@ export const ApplicantDetailsModal = ({
       // Generate the interviewer email (in a real app, this would come from the database)
       const officerEmail = `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`;
 
-      // Send the interview email using the tRPC mutation directly
-      sendInterviewEmail({
-        officerId: interviewer.id,
-        officerName: interviewer.name,
-        officerEmail: officerEmail,
-        applicantName: applicant.fullName,
-        applicantEmail: applicant.email,
-        startTime: interviewTime,
-        location: interviewRoom,
-        team: assignedTeam === "NONE" ? undefined : assignedTeam,
-        applicationType: applicationType,
+      // Send the interview email using a direct fetch to the tRPC endpoint
+      const emailResponse = await fetch("/api/trpc", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          path: "admin.scheduleInterview",
+          input: {
+            officerId: interviewer.id,
+            officerName: interviewer.name,
+            officerEmail: officerEmail,
+            applicantName: applicant.fullName,
+            applicantEmail: applicant.email,
+            startTime: interviewTime,
+            location: interviewRoom,
+            team: assignedTeam === "NONE" ? undefined : assignedTeam,
+            applicationType: applicationType,
+          },
+        }),
       });
+
+      if (!emailResponse.ok) {
+        throw new Error(
+          `Failed to send interview email: ${emailResponse.status}`,
+        );
+      }
 
       // Update the applicant status to INTERVIEWING
       await fetch(`/api/applicant/${applicantId}/status`, {
