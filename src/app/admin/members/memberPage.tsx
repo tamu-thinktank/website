@@ -8,7 +8,7 @@ import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 
 export const MembersPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState("DCMEMBER");
+  const [selectedCategory, setSelectedCategory] = React.useState("OFFICER");
   const [filters, setFilters] = React.useState<FilterState>({
     team: "",
     rating: "",
@@ -117,19 +117,19 @@ export const MembersPage: React.FC = () => {
 
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
-              onClick={() => setSelectedCategory("DCMEMBER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 transition-colors max-md:max-w-full max-md:pl-5 ${
-                selectedCategory === "DCMEMBER"
+              onClick={() => setSelectedCategory("OFFICER")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+                selectedCategory === "OFFICER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
               }`}
             >
-              DC
+              OFFICER
             </div>
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MATE ROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 pl-20 pr-5 transition-colors max-md:max-w-full max-md:pl-5 ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
                 selectedCategory === "MATE ROV"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"

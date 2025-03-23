@@ -25,7 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { TeamType } from "./StatsInfo";
 
 interface StatisticsData {
   genders: Record<string, number>;
@@ -52,42 +51,31 @@ const COLORS = [
   "#7f8ea3",
   "#526480",
 ];
-/*
-"#1E40AF", // Rich Blue
-  "#3B82F6", // Vibrant Sky Blue
-  "#60A5FA", // Soft Blue
-  "#A78BFA", // Muted Purple
-  "#9333EA", // Deep Violet
-  "#14B8A6", // Teal Cyan
-  "#06B6D4", // Electric Cyan
-  "#0284C7", // Deep Azure
-*/
 
 export function StatisticsVisualizer() {
   const [loading, setLoading] = useState<boolean>(true);
   const [stats, setStats] = useState<StatisticsData | null>(null);
-  const [selectedTeam, setSelectedTeam] = useState<TeamType>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("selectedTeam") as TeamType) || "DC";
-    }
-    return "DC";
-  });
+  const [selectedCategory, setSelectedCategory] = useState<string>("OFFICER");
 
-  const fetchStatisticsForTeam = async (team: TeamType) => {
+  // Update the fetchStatisticsForTeam function to ensure it's correctly passing the applicationType
+  const fetchStatisticsForTeam = async (applicationType: string) => {
     setLoading(true);
     try {
-      // Map team to applicationType
-      const applicationType = team === "DC" ? "DCMEMBER" : "OFFICER";
-
-      // Update the endpoint to include the applicationType filter
+      console.log(
+        `Fetching statistics for application type: ${applicationType}`,
+      );
+      // Make sure we're using the correct API endpoint and parameter name
       const response = await fetch(
-        `/api/test?applicationType=${applicationType}`,
+        `/api/statistics?applicationType=${applicationType}`,
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch statistics");
+        throw new Error(
+          `Failed to fetch statistics: ${response.status} ${response.statusText}`,
+        );
       }
 
       const data = (await response.json()) as StatisticsData;
+      console.log(`Received statistics data for ${applicationType}:`, data);
       setStats(data);
     } catch (error) {
       console.error("Error fetching statistics:", error);
@@ -96,26 +84,11 @@ export function StatisticsVisualizer() {
     }
   };
 
+  // Make sure the useEffect dependency array includes selectedCategory
   useEffect(() => {
-    // Initial fetch based on the selected team
-    fetchStatisticsForTeam(selectedTeam);
-
-    // Listen for team change events
-    const handleTeamChange = (event: CustomEvent<TeamType>) => {
-      const newTeam = event.detail;
-      setSelectedTeam(newTeam);
-      fetchStatisticsForTeam(newTeam);
-    };
-
-    window.addEventListener("teamChange", handleTeamChange as EventListener);
-
-    return () => {
-      window.removeEventListener(
-        "teamChange",
-        handleTeamChange as EventListener,
-      );
-    };
-  }, []);
+    console.log(`Selected category changed to: ${selectedCategory}`);
+    fetchStatisticsForTeam(selectedCategory);
+  }, [selectedCategory]);
 
   if (loading) {
     return (
@@ -132,79 +105,131 @@ export function StatisticsVisualizer() {
   const acceptedCount = stats?.statusCounts.ACCEPTED || 0;
   const rejectedCount = stats?.statusCounts.REJECTED || 0;
   const pendingCount = stats?.statusCounts.PENDING || 0;
+  const interviewingCount = stats?.statusCounts.INTERVIEWING || 0;
 
   return (
-    <div className="mx-auto mt-8 w-full max-w-7xl space-y-8 pb-16">
-      <h2 className="text-center text-2xl font-bold">
-        {selectedTeam} Applicant Statistics
-      </h2>
+    <div className="flex flex-col overflow-hidden bg-neutral-950 text-xl font-medium shadow-[0px_4px_4px_rgba(0,0,0,0.25)]">
+      <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pb-96 pt-11 max-md:max-w-full max-md:px-5 max-md:pb-24">
+        <div className="mb-0 flex w-full max-w-[1537px] flex-col max-md:mb-2.5 max-md:max-w-full">
+          <div className="self-start pb-10 pt-20 text-center text-5xl font-semibold max-md:text-4xl">
+            Statistics
+          </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
-        <div className="col-span-1 grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-4 lg:col-span-2">
-          <StatCard title="Total Applicants" value={totalApplicants} />
-          <StatCard
-            title="Accepted"
-            value={acceptedCount}
-            percentage={
-              totalApplicants > 0
-                ? ((acceptedCount / totalApplicants) * 100).toFixed(1) + "%"
-                : "0%"
-            }
-            color="bg-green-100 dark:bg-green-900"
-          />
-          <StatCard
-            title="Rejected"
-            value={rejectedCount}
-            percentage={
-              totalApplicants > 0
-                ? ((rejectedCount / totalApplicants) * 100).toFixed(1) + "%"
-                : "0%"
-            }
-            color="bg-red-100 dark:bg-red-900"
-          />
-          <StatCard
-            title="Pending"
-            value={pendingCount}
-            percentage={
-              totalApplicants > 0
-                ? ((pendingCount / totalApplicants) * 100).toFixed(1) + "%"
-                : "0%"
-            }
-            color="bg-yellow-100 dark:bg-yellow-900"
-          />
+          <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
+            <div
+              onClick={() => setSelectedCategory("OFFICER")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 text-center transition-colors max-md:max-w-full ${
+                selectedCategory === "OFFICER"
+                  ? "bg-gradient-to-r from-stone-700 to-stone-600 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
+              }`}
+            >
+              OFFICER
+            </div>
+            <div className="w-[1.5px] bg-neutral-200"></div>
+            <div
+              onClick={() => setSelectedCategory("MATEROV")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 text-center transition-colors max-md:max-w-full ${
+                selectedCategory === "MATEROV"
+                  ? "bg-gradient-to-r from-stone-600 to-stone-700 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
+              }`}
+            >
+              MATE ROV
+            </div>
+          </div>
+
+          <div className="mt-9 h-px w-full shrink-0 border border-solid border-neutral-200" />
+
+          <div className="mx-auto mt-8 w-full max-w-7xl space-y-8 pb-16">
+            <h2 className="text-center text-2xl font-bold">
+              {selectedCategory} Applicant Statistics
+            </h2>
+
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-2">
+              <div className="col-span-1 grid grid-cols-1 gap-4 md:col-span-2 md:grid-cols-5 lg:col-span-2">
+                <StatCard title="Total Applicants" value={totalApplicants} />
+                <StatCard
+                  title="Accepted"
+                  value={acceptedCount}
+                  percentage={
+                    totalApplicants > 0
+                      ? ((acceptedCount / totalApplicants) * 100).toFixed(1) +
+                        "%"
+                      : "0%"
+                  }
+                  color="bg-green-100 dark:bg-green-900"
+                />
+                <StatCard
+                  title="Interviewing"
+                  value={interviewingCount}
+                  percentage={
+                    totalApplicants > 0
+                      ? ((interviewingCount / totalApplicants) * 100).toFixed(
+                          1,
+                        ) + "%"
+                      : "0%"
+                  }
+                  color="bg-blue-100 dark:bg-blue-900"
+                />
+                <StatCard
+                  title="Rejected"
+                  value={rejectedCount}
+                  percentage={
+                    totalApplicants > 0
+                      ? ((rejectedCount / totalApplicants) * 100).toFixed(1) +
+                        "%"
+                      : "0%"
+                  }
+                  color="bg-red-100 dark:bg-red-900"
+                />
+                <StatCard
+                  title="Pending"
+                  value={pendingCount}
+                  percentage={
+                    totalApplicants > 0
+                      ? ((pendingCount / totalApplicants) * 100).toFixed(1) +
+                        "%"
+                      : "0%"
+                  }
+                  color="bg-yellow-100 dark:bg-yellow-900"
+                />
+              </div>
+
+              <PieChartCard
+                title="Gender Distribution"
+                data={stats?.genders}
+                detailedData={stats?.detailedData.genders}
+                totalCount={totalApplicants}
+                attribute="Gender"
+              />
+
+              <PieChartCard
+                title="Year Distribution"
+                data={stats?.years}
+                detailedData={stats?.detailedData.years}
+                totalCount={totalApplicants}
+                attribute="Year"
+              />
+
+              <PieChartCard
+                title="Major Distribution"
+                data={stats?.majors}
+                detailedData={stats?.detailedData.majors}
+                totalCount={totalApplicants}
+                attribute="Major"
+              />
+
+              <PieChartCard
+                title="Referral Sources"
+                data={stats?.referrals}
+                detailedData={stats?.detailedData.referrals}
+                totalCount={totalApplicants}
+                attribute="Referral Source"
+              />
+            </div>
+          </div>
         </div>
-
-        <PieChartCard
-          title="Gender Distribution"
-          data={stats?.genders}
-          detailedData={stats?.detailedData.genders}
-          totalCount={totalApplicants}
-          attribute="Gender"
-        />
-
-        <PieChartCard
-          title="Year Distribution"
-          data={stats?.years}
-          detailedData={stats?.detailedData.years}
-          totalCount={totalApplicants}
-          attribute="Year"
-        />
-
-        <PieChartCard
-          title="Major Distribution"
-          data={stats?.majors}
-          detailedData={stats?.detailedData.majors}
-          totalCount={totalApplicants}
-          attribute="Major"
-        />
-
-        <PieChartCard
-          title="Referral Sources"
-          data={stats?.referrals}
-          detailedData={stats?.detailedData.referrals}
-          totalCount={totalApplicants}
-          attribute="Referral Source"
-        />
       </div>
     </div>
   );
