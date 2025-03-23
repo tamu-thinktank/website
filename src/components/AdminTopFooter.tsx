@@ -61,36 +61,38 @@ export default function Header() {
                   >
                     <div className="flex h-full flex-col gap-8 pt-16">
                       <a
-                        href="/applicants"
-                        onClick={(e) => handleLinkClick(e, "/applicants")}
+                        href="/admin/applicants"
+                        onClick={(e) => handleLinkClick(e, "/admin/applicants")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         Applicants
                       </a>
                       <a
-                        href="/interviewees"
-                        onClick={(e) => handleLinkClick(e, "/interviewees")}
+                        href="/admin/interviewees"
+                        onClick={(e) =>
+                          handleLinkClick(e, "/admin/interviewees")
+                        }
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         Interviewees
                       </a>
                       <a
-                        href="/members"
-                        onClick={(e) => handleLinkClick(e, "/members")}
+                        href="/admin/members"
+                        onClick={(e) => handleLinkClick(e, "/admin/members")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         Members
                       </a>
                       <a
-                        href="/scheduler"
-                        onClick={(e) => handleLinkClick(e, "/scheduler")}
+                        href="/admin/scheduler"
+                        onClick={(e) => handleLinkClick(e, "/admin/scheduler")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         Scheduler
                       </a>
                       <a
-                        href="/statistics"
-                        onClick={(e) => handleLinkClick(e, "/statistics")}
+                        href="/admin/stats"
+                        onClick={(e) => handleLinkClick(e, "/admin/stats")}
                         className="text-lg font-medium text-gray-200 transition-colors hover:text-white"
                       >
                         Statistics
@@ -106,45 +108,45 @@ export default function Header() {
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
                     <a
-                      href="/applicants"
+                      href="/admin/applicants"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/applicants")}
+                      onClick={(e) => handleLinkClick(e, "/admin/applicants")}
                     >
                       <span>Applicants</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="/interviewees"
+                      href="/admin/interviewees"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/interviewees")}
+                      onClick={(e) => handleLinkClick(e, "/admin/interviewees")}
                     >
                       <span>Interviewees</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="/members"
+                      href="/admin/members"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/members")}
+                      onClick={(e) => handleLinkClick(e, "/admin/members")}
                     >
                       <span>Members</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="/scheduler"
+                      href="/admin/scheduler"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/scheduler")}
+                      onClick={(e) => handleLinkClick(e, "/admin/scheduler")}
                     >
                       <span>Scheduler</span>
                     </a>
                   </li>
                   <li>
                     <a
-                      href="/statistics"
+                      href="/admin/stats"
                       className="navbar-link"
-                      onClick={(e) => handleLinkClick(e, "/statistics")}
+                      onClick={(e) => handleLinkClick(e, "/admin/stats")}
                     >
                       <span>Statistics</span>
                     </a>
