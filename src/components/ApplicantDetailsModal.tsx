@@ -36,12 +36,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { api } from "@/lib/trpc/react";
 
-interface ApplicantDetailsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  applicantId: string | null;
-}
-
+// Update the ApplicantDetails interface to include the new fields for MATEROV applications
 interface ApplicantDetails {
   id: string;
   fullName: string;
@@ -56,6 +51,7 @@ interface ApplicantDetails {
   year: string;
   firstQuestion: string;
   secondQuestion: string;
+  thirdQuestion?: string;
   meetings: boolean;
   weeklyCommitment: boolean;
   currentClasses: string[];
@@ -82,12 +78,35 @@ interface ApplicantDetails {
     interest: string;
   }[];
   resumeId?: string;
+  applicationType?: "DCMEMBER" | "OFFICER" | "MATEROV" | "MINIDC";
+  subteamPreferences?: {
+    id: string;
+    name: string;
+    interest: string;
+  }[];
+  skills?: {
+    id: string;
+    name: string;
+    experienceLevel: string;
+  }[];
+  learningInterests?: {
+    id: string;
+    area: string;
+    interestLevel: string;
+  }[];
+  previousParticipation?: boolean;
 }
 
 interface InterviewNote {
   id: string;
   applicantId: string;
   content: string;
+}
+
+interface ApplicantDetailsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  applicantId?: string;
 }
 
 const statusColors = {
@@ -139,6 +158,25 @@ export const ApplicantDetailsModal = ({
       });
     },
   });
+
+  // Add the scheduleInterviewEmail mutation
+  const { mutate: sendInterviewEmail } =
+    api.admin.scheduleInterview.useMutation({
+      onSuccess: (data, input) => {
+        toast({
+          title: "Success",
+          description: `Interview email sent to ${input.applicantName}`,
+        });
+      },
+      onError: (err) => {
+        console.error("Error sending interview email:", err);
+        toast({
+          title: "Error",
+          description: "Failed to send interview email. Please try again.",
+          variant: "destructive",
+        });
+      },
+    });
 
   // Fetch applicant details when the modal opens and applicantId changes
   useEffect(() => {
@@ -377,24 +415,17 @@ export const ApplicantDetailsModal = ({
         throw new Error("Selected interviewer not found");
       }
 
-      // Send the interview email using the tRPC endpoint
-      await fetch("/api/trpc", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          path: "admin.scheduleInterview",
-          input: {
-            officerId: interviewer.id,
-            officerName: interviewer.name,
-            officerEmail: `${interviewer.name.toLowerCase()}@example.com`, // This is a placeholder
-            applicantName: applicant.fullName,
-            applicantEmail: applicant.email,
-            startTime: interviewTime,
-            location: interviewRoom,
-          },
-        }),
+      // Send interview email using the tRPC mutation
+      sendInterviewEmail({
+        officerId: interviewer.id,
+        officerName: interviewer.name,
+        officerEmail: `${interviewer.name.toLowerCase()}@example.com`, // This is a placeholder
+        applicantName: applicant.fullName,
+        applicantEmail: applicant.email,
+        startTime: interviewTime,
+        location: interviewRoom,
+        team: assignedTeam === "NONE" ? undefined : assignedTeam,
+        applicationType: applicant.applicationType || "General",
       });
 
       console.log("Interview email sent to:", applicant.email);
@@ -824,6 +855,104 @@ export const ApplicantDetailsModal = ({
                 </div>
               </div>
 
+              {applicant.applicationType === "MATEROV" && (
+                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                  <h3 className="text-lg font-semibold">
+                    MATE ROV Information
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-neutral-400">
+                        Previous Participation
+                      </Label>
+                      <div className="mt-1">
+                        {applicant.previousParticipation ? "Yes" : "No"}
+                      </div>
+                    </div>
+
+                    {applicant.thirdQuestion && (
+                      <div>
+                        <Label className="text-neutral-400">
+                          Previous Experience
+                        </Label>
+                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                          {applicant.thirdQuestion}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Preferred Subteams
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.subteamPreferences &&
+                        applicant.subteamPreferences.length > 0 ? (
+                          applicant.subteamPreferences.map((subteam, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {subteam.name} ({subteam.interest})
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No subteam preferences listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Technical Experience
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.skills && applicant.skills.length > 0 ? (
+                          applicant.skills.map((skill, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {skill.name} ({skill.experienceLevel})
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No skills listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Learning Interests
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.learningInterests &&
+                        applicant.learningInterests.length > 0 ? (
+                          applicant.learningInterests.map((interest, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {interest.area} ({interest.interestLevel})
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No learning interests listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Interview Controls */}
               <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
                 <h3 className="text-lg font-semibold">Interview Controls</h3>
@@ -907,10 +1036,55 @@ export const ApplicantDetailsModal = ({
                         <SelectItem value="INTERVIEWING">
                           Interviewing
                         </SelectItem>
-                        <SelectItem value="TEAM1">Team 1</SelectItem>
-                        <SelectItem value="TEAM2">Team 2</SelectItem>
-                        <SelectItem value="TEAM3">Team 3</SelectItem>
-                        <SelectItem value="TEAM4">Team 4</SelectItem>
+
+                        {applicant.applicationType === "OFFICER" ? (
+                          <>
+                            <SelectItem value="PROJECT_MANAGER">
+                              PROJECT MANAGER
+                            </SelectItem>
+                            <SelectItem value="MARKETING_SPECIALIST">
+                              MARKETING SPECIALIST
+                            </SelectItem>
+                            <SelectItem value="GRAPHIC_DESIGNER">
+                              GRAPHIC DESIGNER
+                            </SelectItem>
+                            <SelectItem value="WEB_DEV_LEAD">
+                              WEB DEV LEAD
+                            </SelectItem>
+                            <SelectItem value="TREASURER">TREASURER</SelectItem>
+                            <SelectItem value="DC_PROGRAM_MANAGER">
+                              DC PROGRAM MANAGER
+                            </SelectItem>
+                          </>
+                        ) : applicant.applicationType === "MATEROV" ? (
+                          <>
+                            <SelectItem value="COMPUTATION_COMMUNICATIONS">
+                              Computation and Communications
+                            </SelectItem>
+                            <SelectItem value="ELECTRICAL_POWER">
+                              Electrical and Power Systems
+                            </SelectItem>
+                            <SelectItem value="FLUIDS_PROPULSION">
+                              Fluids and Propulsion
+                            </SelectItem>
+                            <SelectItem value="GNC">
+                              Guidance, Navigation, and Control
+                            </SelectItem>
+                            <SelectItem value="THERMAL_MECHANISMS">
+                              Thermal, Mechanisms, and Structures
+                            </SelectItem>
+                            <SelectItem value="MATEROV_LEADERSHIP">
+                              MATE ROV Leadership
+                            </SelectItem>
+                          </>
+                        ) : (
+                          <>
+                            <SelectItem value="TEAM1">Team 1</SelectItem>
+                            <SelectItem value="TEAM2">Team 2</SelectItem>
+                            <SelectItem value="TEAM3">Team 3</SelectItem>
+                            <SelectItem value="TEAM4">Team 4</SelectItem>
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>

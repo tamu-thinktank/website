@@ -246,6 +246,8 @@ export const adminRouter = createTRPCRouter({
         officerEmail: z.string().email(),
         applicantName: z.string(),
         applicantEmail: z.string().email(),
+        team: z.string().optional(),
+        applicationType: z.string().optional(),
         startTime: z.string(),
         location: z.string(),
       }),

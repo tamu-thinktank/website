@@ -361,7 +361,7 @@ export const IntervieweesPage: React.FC = () => {
       <ApplicantDetailsModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        applicantId={selectedApplicantId}
+        applicantId={selectedApplicantId ?? undefined}
       />
     </div>
   );
