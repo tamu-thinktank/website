@@ -40,7 +40,27 @@ import { api } from "@/lib/trpc/react";
 export enum ApplicationType {
   OFFICER = "OFFICER",
   MATEROV = "MATEROV",
-  GENERAL = "GENERAL",
+}
+
+// Define officer positions
+export enum OfficerPosition {
+  VICE_PRESIDENT = "VICE_PRESIDENT",
+  PROJECT_MANAGER = "PROJECT_MANAGER",
+  MARKETING_SPECIALIST = "MARKETING_SPECIALIST",
+  GRAPHIC_DESIGNER = "GRAPHIC_DESIGNER",
+  WEB_DEV_LEAD = "WEB_DEV_LEAD",
+  TREASURER = "TREASURER",
+  DC_PROGRAM_MANAGER = "DC_PROGRAM_MANAGER",
+}
+
+// Define MATEROV subteams
+export enum MaterovSubteam {
+  COMPUTATION_COMMUNICATIONS = "Computation and Communications",
+  ELECTRICAL_POWER = "Electrical and Power Systems",
+  FLUIDS_PROPULSION = "Fluids and Propulsion",
+  GUIDANCE_NAVIGATION = "Guidance, Navigation, and Control",
+  THERMAL_MECHANISMS = "Thermal, Mechanisms, and Structures",
+  LEADERSHIP = "MATE ROV Leadership",
 }
 
 interface ApplicantDetailsModalProps {
@@ -90,6 +110,22 @@ interface ApplicantDetails {
     interest: string;
   }[];
   resumeId?: string;
+  // MATEROV specific fields
+  skills?: {
+    id: string;
+    name: string;
+    experienceLevel: string;
+  }[];
+  learningInterests?: {
+    id: string;
+    area: string;
+    interestLevel: string;
+  }[];
+  subteamPreferences?: {
+    id: string;
+    name: string;
+    interest: string;
+  }[];
 }
 
 interface InterviewNote {
@@ -129,7 +165,7 @@ export const ApplicantDetailsModal = ({
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [assignedTeam, setAssignedTeam] = useState("");
   const [applicationType, setApplicationType] = useState<ApplicationType>(
-    ApplicationType.GENERAL,
+    ApplicationType.OFFICER,
   );
   const _router = useRouter();
   const { data: _session } = useSession();
@@ -152,16 +188,6 @@ export const ApplicantDetailsModal = ({
     },
   });
 
-  // Add the sendInterviewEmail mutation right after the sendRejectEmail mutation
-  // Remove this mutation
-  // Add useEffect to initialize assignedTeam and applicationType when applicant data is loaded
-  useEffect(() => {
-    if (applicant) {
-      setAssignedTeam(applicant.assignedTeam ?? "NONE");
-      setApplicationType(applicant.applicationType ?? ApplicationType.GENERAL);
-    }
-  }, [applicant]);
-
   // Fetch applicant details when the modal opens and applicantId changes
   useEffect(() => {
     if (isOpen && applicantId) {
@@ -178,9 +204,17 @@ export const ApplicantDetailsModal = ({
       setInterviewTime("");
       setInterviewRoom("");
       setAssignedTeam("");
-      setApplicationType(ApplicationType.GENERAL);
+      setApplicationType(ApplicationType.OFFICER);
     }
   }, [isOpen, applicantId]);
+
+  // Add useEffect to initialize assignedTeam and applicationType when applicant data is loaded
+  useEffect(() => {
+    if (applicant) {
+      setAssignedTeam(applicant.assignedTeam ?? "NONE");
+      setApplicationType(applicant.applicationType ?? ApplicationType.OFFICER);
+    }
+  }, [applicant]);
 
   const fetchApplicantDetails = async (id: string) => {
     try {
@@ -199,7 +233,7 @@ export const ApplicantDetailsModal = ({
       console.log("Fetched applicant details:", data);
       setApplicant(data);
       setAssignedTeam(data.assignedTeam ?? "NONE");
-      setApplicationType(data.applicationType ?? ApplicationType.GENERAL);
+      setApplicationType(data.applicationType ?? ApplicationType.OFFICER);
     } catch (err) {
       console.error("Error fetching applicant details:", err);
       setError(
@@ -609,9 +643,9 @@ export const ApplicantDetailsModal = ({
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error(
-            `Failed to update application status: ${response.status}`,
-          );
+          throw new Error(`Failed to update application  => {
+        if (!response.ok) {
+          throw new Error(\`Failed to update application status: ${response.status}`);
         }
 
         // Update local state
@@ -677,31 +711,36 @@ export const ApplicantDetailsModal = ({
     if (applicationType === ApplicationType.OFFICER) {
       return [
         ...commonOptions,
-        { value: "PRESIDENT", label: "President" },
         { value: "VICE_PRESIDENT", label: "Vice President" },
-        { value: "SECRETARY", label: "Secretary" },
+        { value: "PROJECT_MANAGER", label: "Project Manager" },
+        { value: "MARKETING_SPECIALIST", label: "Marketing Specialist" },
+        { value: "GRAPHIC_DESIGNER", label: "Graphic Designer" },
+        { value: "WEB_DEV_LEAD", label: "Web Dev Lead" },
         { value: "TREASURER", label: "Treasurer" },
-        { value: "OUTREACH", label: "Outreach" },
+        { value: "DC_PROGRAM_MANAGER", label: "DC Program Manager" },
       ];
     } else if (applicationType === ApplicationType.MATEROV) {
       return [
         ...commonOptions,
-        { value: "MATEROV_TEAM1", label: "MateROV Team 1" },
-        { value: "MATEROV_TEAM2", label: "MateROV Team 2" },
-        { value: "MATEROV_TEAM3", label: "MateROV Team 3" },
-        { value: "MATEROV_TEAM4", label: "MateROV Team 4" },
-        { value: "MATEROV_TEAM5", label: "MateROV Team 5" },
-        { value: "MATEROV_TEAM6", label: "MateROV Team 6" },
+        {
+          value: "COMPUTATION_COMMUNICATIONS",
+          label: "Computation and Communications",
+        },
+        { value: "ELECTRICAL_POWER", label: "Electrical and Power Systems" },
+        { value: "FLUIDS_PROPULSION", label: "Fluids and Propulsion" },
+        {
+          value: "GUIDANCE_NAVIGATION",
+          label: "Guidance, Navigation, and Control",
+        },
+        {
+          value: "THERMAL_MECHANISMS",
+          label: "Thermal, Mechanisms, and Structures",
+        },
+        { value: "MATEROV_LEADERSHIP", label: "MATE ROV Leadership" },
       ];
     } else {
-      // Default/General teams
-      return [
-        ...commonOptions,
-        { value: "TEAM1", label: "Team 1" },
-        { value: "TEAM2", label: "Team 2" },
-        { value: "TEAM3", label: "Team 3" },
-        { value: "TEAM4", label: "Team 4" },
-      ];
+      // Default teams
+      return commonOptions;
     }
   };
 
@@ -760,7 +799,7 @@ export const ApplicantDetailsModal = ({
                   <div className="text-sm text-neutral-400">
                     Application Type
                   </div>
-                  <div>{applicant.applicationType || "GENERAL"}</div>
+                  <div>{applicant.applicationType || "OFFICER"}</div>
                 </div>
               </div>
 
@@ -823,6 +862,64 @@ export const ApplicantDetailsModal = ({
                     <div>{applicant.meetings ? "Yes" : "No"}</div>
                   </div>
                 </div>
+
+                {/* MATEROV-specific fields */}
+                {applicant.applicationType === ApplicationType.MATEROV && (
+                  <>
+                    <div className="mt-4">
+                      <Label className="text-neutral-400">
+                        Skills and Experience
+                      </Label>
+                      <div className="mt-1 space-y-2">
+                        {applicant.skills && applicant.skills.length > 0 ? (
+                          applicant.skills.map((skill, idx) => (
+                            <div
+                              key={idx}
+                              className="rounded bg-neutral-900 p-2"
+                            >
+                              <span className="font-medium">{skill.name}</span>
+                              <span className="ml-2 text-neutral-400">
+                                ({skill.experienceLevel})
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No skills listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mt-4">
+                      <Label className="text-neutral-400">
+                        Learning Interests
+                      </Label>
+                      <div className="mt-1 space-y-2">
+                        {applicant.learningInterests &&
+                        applicant.learningInterests.length > 0 ? (
+                          applicant.learningInterests.map((interest, idx) => (
+                            <div
+                              key={idx}
+                              className="rounded bg-neutral-900 p-2"
+                            >
+                              <span className="font-medium">
+                                {interest.area}
+                              </span>
+                              <span className="ml-2 text-neutral-400">
+                                ({interest.interestLevel})
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No learning interests listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                )}
 
                 <div className="mt-4">
                   <Label className="text-neutral-400">Current Classes</Label>
@@ -911,29 +1008,55 @@ export const ApplicantDetailsModal = ({
                     </div>
                   </div>
 
-                  <div>
-                    <Label className="text-neutral-400">
-                      Which Design Challenges are you interested in?
-                    </Label>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                      {applicant.preferredTeams &&
-                      applicant.preferredTeams.length > 0 ? (
-                        applicant.preferredTeams.map((teamPref, idx) => (
-                          <span
-                            key={idx}
-                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
-                          >
-                            {teamPref.team?.name || teamPref.teamId} (
-                            {teamPref.interest})
-                          </span>
-                        ))
-                      ) : (
-                        <div className="text-neutral-500">
-                          No team preferences listed
-                        </div>
-                      )}
+                  {applicant.applicationType === ApplicationType.MATEROV && (
+                    <div>
+                      <Label className="text-neutral-400">
+                        Preferred MATE ROV Subteams
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.subteamPreferences &&
+                        applicant.subteamPreferences.length > 0 ? (
+                          applicant.subteamPreferences.map((subteam, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {subteam.name} ({subteam.interest})
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No subteam preferences listed
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {applicant.applicationType === ApplicationType.OFFICER && (
+                    <div>
+                      <Label className="text-neutral-400">
+                        Preferred Officer Positions
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.preferredPositions &&
+                        applicant.preferredPositions.length > 0 ? (
+                          applicant.preferredPositions.map((position, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {position.position} ({position.interest})
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No position preferences listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                   <div>
                     <Label className="text-neutral-400">
@@ -941,29 +1064,6 @@ export const ApplicantDetailsModal = ({
                     </Label>
                     <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
                       {applicant.secondQuestion}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-neutral-400">
-                      Are you interested in a Team Lead position?
-                    </Label>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                      {applicant.preferredPositions &&
-                      applicant.preferredPositions.length > 0 ? (
-                        applicant.preferredPositions.map((position, idx) => (
-                          <span
-                            key={idx}
-                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
-                          >
-                            {position.position} ({position.interest})
-                          </span>
-                        ))
-                      ) : (
-                        <div className="text-neutral-500">
-                          No leadership preferences listed
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -986,27 +1086,24 @@ export const ApplicantDetailsModal = ({
                         <SelectValue placeholder="Select application type" />
                       </SelectTrigger>
                       <SelectContent className="border-neutral-700 bg-neutral-900">
-                        <SelectItem value={ApplicationType.GENERAL}>
-                          General
-                        </SelectItem>
                         <SelectItem value={ApplicationType.OFFICER}>
                           Officer
                         </SelectItem>
                         <SelectItem value={ApplicationType.MATEROV}>
-                          MateROV
+                          MATE ROV
                         </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Assign Team</Label>
+                    <Label>Assign Team/Position</Label>
                     <Select
                       value={assignedTeam}
                       onValueChange={setAssignedTeam}
                     >
                       <SelectTrigger className="w-full border-neutral-700 bg-neutral-900">
-                        <SelectValue placeholder="Select team" />
+                        <SelectValue placeholder="Select team/position" />
                       </SelectTrigger>
                       <SelectContent className="border-neutral-700 bg-neutral-900">
                         {getTeamOptions().map((option) => (
@@ -1241,7 +1338,7 @@ export const ApplicantDetailsModal = ({
                   <strong>Application Type:</strong> {applicationType}
                 </p>
                 <p>
-                  <strong>Team:</strong>{" "}
+                  <strong>Team/Position:</strong>{" "}
                   {assignedTeam === "NONE" ? "Not Assigned" : assignedTeam}
                 </p>
                 <p>
