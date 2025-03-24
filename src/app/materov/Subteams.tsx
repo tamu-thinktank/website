@@ -14,9 +14,9 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/26/25" },
-        { date: "Interviews", description: "3/31/25" },
-        { date: "Acceptance", description: "4/2/25" },
+        { date: "Applications", description: "3/29/25" },
+        { date: "Interviews", description: "4/4/25" },
+        { date: "Acceptance", description: "4/7/25" },
       ],
       researchAreas: [
         "Microprocessors",
@@ -35,9 +35,9 @@ const Challenges = () => {
       duration: "Year Long",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/26/25" },
-        { date: "Interviews", description: "3/31/25" },
-        { date: "Acceptance", description: "4/2/25" },
+        { date: "Applications", description: "3/29/25" },
+        { date: "Interviews", description: "4/4/25" },
+        { date: "Acceptance", description: "4/7/25" },
       ],
       researchAreas: [
         "PCB Design",
@@ -55,9 +55,9 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/26/25" },
-        { date: "Interviews", description: "3/31/25" },
-        { date: "Acceptance", description: "4/2/25" },
+        { date: "Applications", description: "3/29/25" },
+        { date: "Interviews", description: "4/4/25" },
+        { date: "Acceptance", description: "4/7/25" },
       ],
       researchAreas: [
         "Propeller Design",
@@ -75,9 +75,9 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/26/25" },
-        { date: "Interviews", description: "3/31/25" },
-        { date: "Acceptance", description: "4/2/25" },
+        { date: "Applications", description: "3/29/25" },
+        { date: "Interviews", description: "4/4/25" },
+        { date: "Acceptance", description: "4/7/25" },
       ],
       researchAreas: [
         "Optimal Linear Control",
@@ -96,9 +96,9 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/26/25" },
-        { date: "Interviews", description: "3/31/25" },
-        { date: "Acceptance", description: "4/2/25" },
+        { date: "Applications", description: "3/29/25" },
+        { date: "Interviews", description: "4/4/25" },
+        { date: "Acceptance", description: "4/7/25" },
       ],
       researchAreas: [
         "Computer Aided Design (CAD)",
@@ -117,9 +117,9 @@ const Challenges = () => {
       duration: "1 Calendar Year",
       teamSize: "2-3",
       admissionTimeline: [
-        { date: "Applications", description: "3/26/25" },
-        { date: "Interviews", description: "3/31/25" },
-        { date: "Acceptance", description: "4/2/25" },
+        { date: "Applications", description: "3/29/25" },
+        { date: "Interviews", description: "4/4/25" },
+        { date: "Acceptance", description: "4/7/25" },
       ],
       researchAreas: [
         "Project Management",
