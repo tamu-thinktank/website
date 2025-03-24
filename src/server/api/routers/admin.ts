@@ -1,7 +1,4 @@
-import {
-  eventTimezone,
-  GRID_SLOTS_INTERVIEW_LEN,
-} from "@/consts/availability-grid";
+import { eventTimezone } from "@/consts/availability-grid";
 import {
   RESUME_ACCEPTED_ID,
   RESUME_PENDING_ID,
@@ -249,6 +246,8 @@ export const adminRouter = createTRPCRouter({
         officerEmail: z.string().email(),
         applicantName: z.string(),
         applicantEmail: z.string().email(),
+        team: z.string().optional(),
+        applicationType: z.string().optional(),
         startTime: z.string(),
         location: z.string(),
       }),
@@ -263,6 +262,8 @@ export const adminRouter = createTRPCRouter({
           applicantEmail,
           startTime,
           location,
+          team, 
+          applicationType
         },
         ctx,
       }) => {
@@ -282,7 +283,7 @@ export const adminRouter = createTRPCRouter({
         >;
         try {
           eventLink = await CalendarService.addCalenderEvent({
-            startTime: startTimeObj.add({ minutes: 15 }),
+            startTime: startTimeObj,
             location,
             emails: [officerEmail, applicantEmail],
             intervieweeName: applicantName,
@@ -295,9 +296,8 @@ export const adminRouter = createTRPCRouter({
         }
 
         // remove meeting time from soonestOfficer's availabilities
-
-        const treefiddy = Array(GRID_SLOTS_INTERVIEW_LEN).fill(0)
-
+        const thirty = Array(2)
+          .fill(0)
           .map((_, i) => i * 15)
           .map((minutes) => {
             return startTimeObj.add({ minutes }).toString();
@@ -306,7 +306,7 @@ export const adminRouter = createTRPCRouter({
           where: {
             officerId,
             gridTime: {
-              in: treefiddy,
+              in: thirty,
             },
           },
         });
@@ -321,14 +321,15 @@ export const adminRouter = createTRPCRouter({
               userFirstname: applicantName.split(" ")[0] ?? "",
               time: startTimeObj
                 .withTimeZone(eventTimezone)
-                .add({ minutes: 15 })
                 .toLocaleString("en-US", {
                   dateStyle: "short",
                   timeStyle: "short",
                 }),
               location,
               eventLink: eventLink,
-              interviewerName: officerName,
+              interviewerName: officerName, 
+              team, 
+              applicationType,
             }),
           });
         } catch (e) {
@@ -338,70 +339,27 @@ export const adminRouter = createTRPCRouter({
         return true;
       },
     ),
-    rejectAppEmail: protectedProcedure
+  rejectAppEmail: protectedProcedure
     .input(
       z.object({
         applicantName: z.string(),
         applicantEmail: z.string().email(),
       }),
     )
-    .mutation(async ({ input }) => {
-      const { applicantName, applicantEmail } = input
-      const firstName = applicantName.split(" ")[0] || applicantName
-
-      const emailHtml = renderToString(RejectAppEmail({ userFirstname: firstName }))
-
-      await sendEmail({
-        to: applicantEmail,
-        subject: "TAMU ThinkTank Application Status",
-        html: emailHtml,
-      })
-
-      return { success: true }
+    .mutation(async ({ input: { applicantName, applicantEmail } }) => {
+      try {
+        await sendEmail({
+          to: [applicantEmail],
+          subject: "ThinkTank Application Status",
+          template: RejectAppEmail({
+            userFirstname: applicantName.split(" ")[0] ?? "",
+          }),
+        });
+      } catch (e) {
+        throw new Error("Failed to send email: " + (e as Error).message);
+      }
     }),
-
-  scheduleInterview: protectedProcedure
-    .input(
-      z.object({
-        officerId: z.string(),
-        officerName: z.string(),
-        officerEmail: z.string().email(),
-        applicantName: z.string(),
-        applicantEmail: z.string().email(),
-        startTime: z.string(),
-        location: z.string(),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      const { officerName, officerEmail, applicantName, applicantEmail, startTime, location } = input
-
-      const firstName = applicantName.split(" ")[0] || applicantName
-
-      const emailHtml = renderToString(
-        InterviewEmail({
-          userFirstname: firstName,
-          time: new Date(startTime).toLocaleString(),
-          location,
-          eventLink: "#", // You might want to generate this
-          interviewerName: officerName,
-        }),
-      )
-
-      await sendEmail({
-        to: applicantEmail,
-        subject: "TAMU ThinkTank Interview Invitation",
-        html: emailHtml,
-      })
-
-      // You might want to send a separate email to the officer
-      await sendEmail({
-        to: officerEmail,
-        subject: `Interview Scheduled with ${applicantName}`,
-        html: `An interview has been scheduled with ${applicantName} on ${new Date(
-          startTime,
-        ).toLocaleString()} at ${location}.`,
-      })
-
-      return { success: true }
-    }),
-})
+  getAllApplications: protectedProcedure.query(async () => {
+    return await getAllApplications();
+  }),
+});

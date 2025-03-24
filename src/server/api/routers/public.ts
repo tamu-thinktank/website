@@ -72,7 +72,7 @@ export const publicRouter = createTRPCRouter({
           signatureCommitment: input.resume.signatureCommitment,
           signatureAccountability: input.resume.signatureAccountability,
           signatureQuality: input.resume.signatureQuality,
-          applicationType: "DCMEMBER",
+          applicationType: "OFFICER",
         },
       });
     }),

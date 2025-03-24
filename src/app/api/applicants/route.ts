@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
-    // Only get applicants with PENDING status
+    
     const applicants = await prisma.application.findMany({
     
       select: {

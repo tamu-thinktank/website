@@ -6,6 +6,7 @@ import { getBaseUrl } from "@/lib/trpc/shared";
 import { Loader2 } from "lucide-react";
 import { SessionProvider, signIn, useSession } from "next-auth/react";
 import { AdminHeader } from "./admin-header";
+import Nav from "../../components/AdminTopFooter";
 
 export default function AdminLayout({
   children,
@@ -14,9 +15,7 @@ export default function AdminLayout({
 }) {
   return (
     <SessionProvider refetchOnWindowFocus>
-      <GradientLayout>
-        <Content>{children}</Content>
-      </GradientLayout>
+      <Content>{children}</Content>
     </SessionProvider>
   );
 }
@@ -26,10 +25,8 @@ function Content({ children }: { children: React.ReactNode }) {
 
   return authStatus === "authenticated" ? (
     <>
-      <section className="h-[90vh] w-11/12 space-y-4 md:w-3/4 lg:w-2/3">
-        <AdminHeader />
-        {children}
-      </section>
+      <Nav />
+      <section>{children}</section>
     </>
   ) : (
     <Button
