@@ -262,6 +262,8 @@ export const adminRouter = createTRPCRouter({
           applicantEmail,
           startTime,
           location,
+          team, 
+          applicationType
         },
         ctx,
       }) => {
@@ -325,7 +327,9 @@ export const adminRouter = createTRPCRouter({
                 }),
               location,
               eventLink: eventLink,
-              interviewerName: officerName,
+              interviewerName: officerName, 
+              team, 
+              applicationType,
             }),
           });
         } catch (e) {
