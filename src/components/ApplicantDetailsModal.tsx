@@ -408,6 +408,7 @@ export const ApplicantDetailsModal = ({
           interviewerId: selectedInterviewer,
           time: interviewTime,
           location: interviewRoom,
+          teamId: assignedTeam === "NONE" ? undefined : assignedTeam,
         }),
       });
 
