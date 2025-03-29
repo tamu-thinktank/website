@@ -1,77 +1,47 @@
 import { NextResponse } from "next/server"
-import { ApplicationStatus } from "@prisma/client"
-import { db } from "@/lib/db"
+import { PrismaClient, ApplicationStatus } from "@prisma/client"
+
+const prisma = new PrismaClient()
 
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { applicantId, interviewerId, time, location } = body as {
+    const { applicantId, interviewerId, time, location, teamId } = body as {
       applicantId: string
       interviewerId: string
       time: string
       location: string
+      teamId?: string
     }
 
     if (!applicantId || !interviewerId || !time || !location) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
 
-    // Get the applicant and interviewer details
-    const [applicant, interviewer] = await Promise.all([
-      db.application.findUnique({
-        where: { id: applicantId },
-        select: {
-          id: true,
-          fullName: true,
-          email: true,
-          status: true,
-        },
-      }),
-      db.user.findUnique({
-        where: { id: interviewerId },
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      }),
-    ])
-
-    if (!applicant) {
-      return NextResponse.json({ error: "Applicant not found" }, { status: 404 })
-    }
-
-    if (!interviewer) {
-      return NextResponse.json({ error: "Interviewer not found" }, { status: 404 })
-    }
-
     // Create the interview
-    const interview = await db.interview.create({
+    const interview = await prisma.interview.create({
       data: {
         applicantId,
         interviewerId,
         startTime: new Date(time),
         endTime: new Date(new Date(time).getTime() + 15 * 60000), // 15 minutes later
         location,
+        teamId: teamId || undefined, // Add teamId if provided
       },
     })
 
     // Update the application status to INTERVIEWING if it's not already
-    if (applicant.status !== ApplicationStatus.INTERVIEWING) {
-      await db.application.update({
-        where: { id: applicantId },
-        data: {
+    await prisma.application.updateMany({
+      where: {
+        id: applicantId,
+        NOT: {
           status: ApplicationStatus.INTERVIEWING,
         },
-      })
-
-      console.log(`Status updated for ${applicant.fullName}: ${applicant.status} -> INTERVIEWING`)
-    }
-
-    // Log interview scheduling
-    console.log(
-      `Interview scheduled for ${applicant.fullName} with ${interviewer.name} at ${new Date(time).toLocaleString()} in ${location}`,
-    )
+      },
+      data: {
+        status: ApplicationStatus.INTERVIEWING,
+      },
+    })
 
     return NextResponse.json(interview)
   } catch (error) {

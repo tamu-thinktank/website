@@ -400,6 +400,7 @@ export const ApplicantDetailsModal = ({
           interviewerId: selectedInterviewer,
           time: interviewTime,
           location: interviewRoom,
+          teamId: assignedTeam === "NONE" ? undefined : assignedTeam,
         }),
       });
 
@@ -419,7 +420,7 @@ export const ApplicantDetailsModal = ({
       sendInterviewEmail({
         officerId: interviewer.id,
         officerName: interviewer.name,
-        officerEmail: `${interviewer.name.toLowerCase()}@example.com`, // This is a placeholder
+        officerEmail: `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`, // This is a placeholder
         applicantName: applicant.fullName,
         applicantEmail: applicant.email,
         startTime: interviewTime,
@@ -428,8 +429,6 @@ export const ApplicantDetailsModal = ({
         applicationType: applicant.applicationType || "General",
       });
 
-      console.log("Interview email sent to:", applicant.email);
-
       toast({
         title: "Success",
         description: "Interview scheduled successfully",
@@ -437,6 +436,12 @@ export const ApplicantDetailsModal = ({
 
       // Refresh applicant details to get updated status
       await fetchApplicantDetails(applicantId);
+
+      // If isLocked is true, update the scheduler with a reserved block
+      if (isLocked) {
+        // Refresh the scheduler data
+        await fetch("/api/interviews", { method: "GET" });
+      }
     } catch (err) {
       console.error("Error scheduling interview:", err);
       toast({
@@ -447,6 +452,25 @@ export const ApplicantDetailsModal = ({
     } finally {
       setIsSendingEmail(false);
     }
+  };
+
+  // Update the toggleLock function to handle locking and scheduling
+  // Add this new function after the scheduleInterview function:
+
+  const toggleLock = () => {
+    if (
+      !isLocked &&
+      selectedInterviewer &&
+      interviewTime &&
+      interviewRoom &&
+      applicant
+    ) {
+      // If we're locking, schedule the interview
+      void scheduleInterview();
+    }
+
+    // Toggle the lock state
+    setIsLocked(!isLocked);
   };
 
   // Add function to update assigned team
@@ -1006,7 +1030,7 @@ export const ApplicantDetailsModal = ({
                         variant="outline"
                         size="sm"
                         className="border-neutral-700 bg-neutral-800 hover:bg-neutral-700"
-                        onClick={() => setIsLocked(!isLocked)}
+                        onClick={toggleLock}
                         title={
                           isLocked
                             ? "Unlock time and interviewer fields"
