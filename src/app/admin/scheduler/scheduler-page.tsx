@@ -7,7 +7,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ChevronLeft, ChevronRight, Plus, Search } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Search,
+  Edit,
+  Trash,
+} from "lucide-react";
 import {
   format,
   addDays,
@@ -21,6 +28,7 @@ import {
 } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Challenge } from "@prisma/client";
+import type { ApplicationStatus } from "@prisma/client";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TableHeader } from "./tableHeader";
@@ -42,6 +50,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Types
 type Availability = "available" | "busy" | "filled";
@@ -49,6 +58,8 @@ type Availability = "available" | "busy" | "filled";
 interface Applicant {
   id: string;
   name: string;
+  email?: string;
+  status?: ApplicationStatus;
   interests?: string[];
   teamRankings?: string[];
   major?: string;
@@ -76,6 +87,7 @@ interface TeamPriority {
 interface Interviewer {
   id: string;
   name: string;
+  email?: string;
   priorityTeams: TeamPriority[];
   interviews: Interview[];
   openCalendar?: boolean;
@@ -89,34 +101,38 @@ interface TimeSlot {
   formatted: string;
 }
 
+interface SelectedTimeRange {
+  startDate: Date;
+  startTimeSlot: TimeSlot;
+  endDate?: Date;
+  endTimeSlot?: TimeSlot;
+}
+
+interface InterviewerResponse {
+  id: string;
+  name: string;
+  email?: string;
+  targetTeams?: string[];
+}
+
+interface InterviewResponse {
+  id: string;
+  applicantId: string;
+  interviewerId: string;
+  startTime: string;
+  endTime: string;
+  teamId?: string;
+  location: string;
+  applicant?: {
+    fullName: string;
+  };
+}
+
 const Scheduler: React.FC = () => {
   const { toast } = useToast();
-  const [interviewers, setInterviewers] = React.useState<Interviewer[]>([
-    {
-      id: "1",
-      name: "off1",
-      priorityTeams: [
-        { teamId: Challenge.TSGC, priority: 1 },
-        { teamId: Challenge.AIAA, priority: 2 },
-      ],
-      interviews: [],
-      openCalendar: false,
-    },
-    {
-      id: "2",
-      name: "off2",
-      priorityTeams: [{ teamId: Challenge.AIAA, priority: 1 }],
-      interviews: [],
-      openCalendar: false,
-    },
-    {
-      id: "3",
-      name: "off3",
-      priorityTeams: [{ teamId: Challenge.TSGC, priority: 1 }],
-      interviews: [],
-      openCalendar: false,
-    },
-  ]);
+  const [interviewers, setInterviewers] = React.useState<Interviewer[]>([]);
+  const [isLoadingInterviewers, setIsLoadingInterviewers] =
+    React.useState(true);
 
   // State for applicants
   const [applicants, setApplicants] = React.useState<Applicant[]>([]);
@@ -141,6 +157,17 @@ const Scheduler: React.FC = () => {
   } | null>(null);
   const [selectedInterview, setSelectedInterview] =
     React.useState<Interview | null>(null);
+  const [isEditingInterview, setIsEditingInterview] = React.useState(false);
+  const [editedInterview, setEditedInterview] = React.useState<{
+    location: string;
+    teamId: string;
+  }>({ location: "", teamId: "" });
+
+  // State for multi-select time slots
+  const [isMultiSelectMode, setIsMultiSelectMode] = React.useState(false);
+  const [selectedTimeRange, setSelectedTimeRange] =
+    React.useState<SelectedTimeRange | null>(null);
+
   const [newInterview, setNewInterview] = React.useState({
     applicantId: "",
     applicantName: "",
@@ -149,7 +176,7 @@ const Scheduler: React.FC = () => {
   });
 
   // For real-time updates
-  const [lastUpdate, setLastUpdate] = React.useState<Date>(new Date());
+  const [lastUpdate] = React.useState<Date>(new Date());
 
   // Team options
   const teams = [
@@ -163,26 +190,109 @@ const Scheduler: React.FC = () => {
 
   // Fetch data from the database
   React.useEffect(() => {
-    fetchInterviews();
-    fetchApplicants();
+    void fetchInterviewers();
+    void fetchInterviews();
+    void fetchApplicants();
 
     // Set up polling for real-time updates
     const intervalId = setInterval(() => {
-      fetchInterviews();
+      void fetchInterviews();
     }, 10000); // Poll every 10 seconds
 
     return () => clearInterval(intervalId);
   }, []);
 
+  // Fetch interviewers from the database
+  const fetchInterviewers = async () => {
+    setIsLoadingInterviewers(true);
+    try {
+      const response = await fetch("/api/interviewers");
+      if (!response.ok) {
+        throw new Error("Failed to fetch interviewers");
+      }
+
+      const data = (await response.json()) as InterviewerResponse[];
+
+      // Add a dummy interviewer for testing
+      const dummyInterviewer: Interviewer = {
+        id: "dummy-interviewer",
+        name: "Test Interviewer",
+        email: "test@example.com",
+        priorityTeams: [
+          { teamId: Challenge.TSGC, priority: 1 },
+          { teamId: Challenge.AIAA, priority: 2 },
+        ],
+        interviews: [],
+        openCalendar: false,
+      };
+
+      // Transform the data to match our Interviewer interface
+      const formattedInterviewers: Interviewer[] = data.map((interviewer) => ({
+        id: interviewer.id,
+        name: interviewer.name,
+        email: interviewer.email,
+        priorityTeams:
+          interviewer.targetTeams?.map((teamId, index) => ({
+            teamId: teamId as Challenge,
+            priority: index + 1,
+          })) || [],
+        interviews: [],
+        openCalendar: false,
+      }));
+
+      // Add the dummy interviewer
+      formattedInterviewers.push(dummyInterviewer);
+
+      setInterviewers(formattedInterviewers);
+    } catch (error) {
+      console.error("Error fetching interviewers:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch interviewers. Using default data.",
+        variant: "destructive",
+      });
+
+      // Set default interviewers if fetch fails
+      setInterviewers([
+        {
+          id: "1",
+          name: "John Doe",
+          priorityTeams: [
+            { teamId: Challenge.TSGC, priority: 1 },
+            { teamId: Challenge.AIAA, priority: 2 },
+          ],
+          interviews: [],
+          openCalendar: false,
+        },
+        {
+          id: "2",
+          name: "Jane Smith",
+          priorityTeams: [{ teamId: Challenge.AIAA, priority: 1 }],
+          interviews: [],
+          openCalendar: false,
+        },
+        {
+          id: "3",
+          name: "Alex Chen",
+          priorityTeams: [{ teamId: Challenge.TSGC, priority: 1 }],
+          interviews: [],
+          openCalendar: false,
+        },
+      ]);
+    } finally {
+      setIsLoadingInterviewers(false);
+    }
+  };
+
   // Fetch interviews from the database
   const fetchInterviews = async () => {
     try {
-      const response = await fetch("/api/ints");
+      const response = await fetch("/api/interviews");
       if (!response.ok) {
         throw new Error("Failed to fetch interviews");
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as InterviewResponse[];
 
       // Process and update the interviews state while preserving openCalendar state
       setInterviewers((prevInterviewers) => {
@@ -197,18 +307,17 @@ const Scheduler: React.FC = () => {
             openCalendar: interviewer.openCalendar,
             interviews: interviewerInterviews.map((interview) => ({
               id: interview.id,
-              applicantName: interview.applicantName,
+              applicantName: interview.applicant?.fullName || "Unknown",
               applicantId: interview.applicantId,
               startTime: new Date(interview.startTime),
               endTime: new Date(interview.endTime),
-              teamId: interview.teamId,
+              teamId: interview.teamId || "TEAM1",
               location: interview.location || "TBD",
+              interviewerId: interview.interviewerId,
             })),
           };
         });
       });
-
-      setLastUpdate(new Date());
     } catch (error) {
       console.error("Error fetching interviews:", error);
       toast({
@@ -218,12 +327,39 @@ const Scheduler: React.FC = () => {
       });
     }
   };
+
+  // Refresh interviews when the lock button is clicked in the ApplicantDetailsModal
+  React.useEffect(() => {
+    // Create an event listener for interview updates
+    const handleInterviewUpdate = () => {
+      void fetchInterviews();
+    };
+
+    // Listen for fetch requests to the interviews endpoint
+    const originalFetch = window.fetch;
+    window.fetch = async (input, init) => {
+      const response = await originalFetch(input, init);
+
+      // If this was a request to the interviews endpoint, refresh our data
+      if (typeof input === "string" && input.includes("/api/interviews")) {
+        handleInterviewUpdate();
+      }
+
+      return response;
+    };
+
+    // Cleanup function to restore original fetch
+    return () => {
+      window.fetch = originalFetch;
+    };
+  }, []);
+
   // Fetch applicants from the database
   const fetchApplicants = async () => {
     setIsLoadingApplicants(true);
     try {
       console.log("Fetching applicants with INTERVIEWING status");
-      const response = await fetch("/api/apps");
+      const response = await fetch("/api/applicants?status=INTERVIEWING");
 
       if (!response.ok) {
         throw new Error(
@@ -231,7 +367,7 @@ const Scheduler: React.FC = () => {
         );
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as Applicant[];
       console.log(`Received ${data.length} applicants:`, data);
 
       setApplicants(data);
@@ -261,16 +397,16 @@ const Scheduler: React.FC = () => {
   // Save interview to the database
   const saveInterview = async (interview: Interview, interviewerId: string) => {
     try {
-      const response = await fetch("/api/ints", {
+      const response = await fetch("/api/schedule-interview", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          ...interview,
+          applicantId: interview.applicantId,
           interviewerId,
-          startTime: interview.startTime.toISOString(),
-          endTime: interview.endTime.toISOString(),
+          time: interview.startTime.toISOString(),
+          location: interview.location,
         }),
       });
 
@@ -284,7 +420,7 @@ const Scheduler: React.FC = () => {
       });
 
       // Trigger a refresh to get the latest data
-      fetchInterviews();
+      void fetchInterviews();
 
       return true;
     } catch (error) {
@@ -292,6 +428,75 @@ const Scheduler: React.FC = () => {
       toast({
         title: "Error",
         description: "Failed to schedule interview. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  // Update an existing interview
+  const updateInterview = async (
+    interviewId: string,
+    updates: { location?: string; teamId?: string },
+  ) => {
+    try {
+      const response = await fetch(`/api/interviews/${interviewId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updates),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update interview");
+      }
+
+      toast({
+        title: "Success",
+        description: "Interview updated successfully.",
+      });
+
+      // Trigger a refresh to get the latest data
+      void fetchInterviews();
+
+      return true;
+    } catch (error) {
+      console.error("Error updating interview:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update interview. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
+  // Delete an interview
+  const deleteInterview = async (interviewId: string) => {
+    try {
+      const response = await fetch(`/api/interviews/${interviewId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete interview");
+      }
+
+      toast({
+        title: "Success",
+        description: "Interview deleted successfully.",
+      });
+
+      // Trigger a refresh to get the latest data
+      void fetchInterviews();
+
+      return true;
+    } catch (error) {
+      console.error("Error deleting interview:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete interview. Please try again.",
         variant: "destructive",
       });
       return false;
@@ -409,6 +614,247 @@ const Scheduler: React.FC = () => {
     }
   };
 
+  // Add multiple interviews for a time range
+  const addMultipleInterviews = async () => {
+    if (
+      !selectedInterviewer ||
+      !selectedTimeRange ||
+      !newInterview.applicantId ||
+      !newInterview.teamId
+    ) {
+      toast({
+        title: "Missing Information",
+        description:
+          "Please fill in all required fields and select a time range.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Find the selected applicant
+    const selectedApplicant = applicants.find(
+      (a) => a.id === newInterview.applicantId,
+    );
+    if (!selectedApplicant) {
+      toast({
+        title: "Error",
+        description: "Selected applicant not found or no longer available.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // If we only have a start time, schedule a single interview
+    if (!selectedTimeRange.endTimeSlot) {
+      const startTime = new Date(selectedTimeRange.startDate);
+      startTime.setHours(
+        selectedTimeRange.startTimeSlot.hour,
+        selectedTimeRange.startTimeSlot.minute,
+        0,
+        0,
+      );
+
+      const endTime = new Date(startTime);
+      endTime.setMinutes(endTime.getMinutes() + 15); // 15 minute interview
+
+      const interview: Interview = {
+        id: Math.random().toString(36).substring(2, 9),
+        applicantName: selectedApplicant.name,
+        applicantId: selectedApplicant.id,
+        startTime,
+        endTime,
+        teamId: newInterview.teamId,
+        location: newInterview.location || "TBD",
+        interviewerId: selectedInterviewer,
+      };
+
+      // Save to database
+      const success = await saveInterview(interview, selectedInterviewer);
+
+      if (success) {
+        // Update local state
+        setInterviewers((prev) =>
+          prev.map((interviewer) =>
+            interviewer.id === selectedInterviewer
+              ? {
+                  ...interviewer,
+                  interviews: [...interviewer.interviews, interview],
+                }
+              : interviewer,
+          ),
+        );
+      }
+    } else {
+      // We have a range, schedule multiple interviews
+      // First, determine the start and end times
+      const startDate = selectedTimeRange.startDate;
+      const startHour = selectedTimeRange.startTimeSlot.hour;
+      const startMinute = selectedTimeRange.startTimeSlot.minute;
+
+      const endDate = selectedTimeRange.endDate ?? selectedTimeRange.startDate;
+      const endHour = selectedTimeRange.endTimeSlot.hour ?? startHour;
+      const endMinute = selectedTimeRange.endTimeSlot.minute ?? startMinute;
+
+      // Create a list of all 15-minute slots in the range
+      const timeSlots: { date: Date; hour: number; minute: number }[] = [];
+
+      // If same day, just iterate through the time slots
+      if (isSameDay(startDate, endDate)) {
+        let currentHour = startHour;
+        let currentMinute = startMinute;
+
+        while (
+          currentHour < endHour ||
+          (currentHour === endHour && currentMinute <= endMinute)
+        ) {
+          timeSlots.push({
+            date: new Date(startDate),
+            hour: currentHour,
+            minute: currentMinute,
+          });
+
+          // Move to next 15-minute slot
+          currentMinute += 15;
+          if (currentMinute >= 60) {
+            currentHour += 1;
+            currentMinute = 0;
+          }
+        }
+      } else if (endDate) {
+        // Multiple days, iterate through each day
+        const days = eachDayOfInterval({ start: startDate, end: endDate });
+
+        days.forEach((day, index) => {
+          // For first day, start from the selected start time
+          if (index === 0) {
+            let currentHour = startHour;
+            let currentMinute = startMinute;
+
+            while (currentHour <= 22) {
+              // End at 10 PM
+              timeSlots.push({
+                date: new Date(day),
+                hour: currentHour,
+                minute: currentMinute,
+              });
+
+              // Move to next 15-minute slot
+              currentMinute += 15;
+              if (currentMinute >= 60) {
+                currentHour += 1;
+                currentMinute = 0;
+              }
+            }
+          }
+          // For last day, end at the selected end time
+          else if (index === days.length - 1) {
+            let currentHour = 8; // Start at 8 AM
+            let currentMinute = 0;
+
+            while (
+              currentHour < endHour ||
+              (currentHour === endHour && currentMinute <= endMinute)
+            ) {
+              timeSlots.push({
+                date: new Date(day),
+                hour: currentHour,
+                minute: currentMinute,
+              });
+
+              // Move to next 15-minute slot
+              currentMinute += 15;
+              if (currentMinute >= 60) {
+                currentHour += 1;
+                currentMinute = 0;
+              }
+            }
+          }
+          // For middle days, include all slots from 8 AM to 10 PM
+          else {
+            for (let hour = 8; hour <= 22; hour++) {
+              for (let minute = 0; minute < 60; minute += 15) {
+                timeSlots.push({
+                  date: new Date(day),
+                  hour,
+                  minute,
+                });
+              }
+            }
+          }
+        });
+      }
+
+      // Now create and save interviews for each time slot
+      let successCount = 0;
+      let failCount = 0;
+
+      for (const slot of timeSlots) {
+        const startTime = new Date(slot.date);
+        startTime.setHours(slot.hour, slot.minute, 0, 0);
+
+        const endTime = new Date(startTime);
+        endTime.setMinutes(endTime.getMinutes() + 15);
+
+        const interview: Interview = {
+          id: Math.random().toString(36).substring(2, 9),
+          applicantName: selectedApplicant.name,
+          applicantId: selectedApplicant.id,
+          startTime,
+          endTime,
+          teamId: newInterview.teamId,
+          location: newInterview.location || "TBD",
+          interviewerId: selectedInterviewer,
+        };
+
+        // Save to database
+        const success = await saveInterview(interview, selectedInterviewer);
+
+        if (success) {
+          successCount++;
+          // Update local state
+          setInterviewers((prev) =>
+            prev.map((interviewer) =>
+              interviewer.id === selectedInterviewer
+                ? {
+                    ...interviewer,
+                    interviews: [...interviewer.interviews, interview],
+                  }
+                : interviewer,
+            ),
+          );
+        } else {
+          failCount++;
+        }
+      }
+
+      // Show summary toast
+      if (successCount > 0) {
+        toast({
+          title: "Success",
+          description: `Scheduled ${successCount} interviews successfully${failCount > 0 ? ` (${failCount} failed)` : ""}.`,
+        });
+      } else if (failCount > 0) {
+        toast({
+          title: "Error",
+          description: `Failed to schedule ${failCount} interviews.`,
+        });
+      }
+    }
+
+    // Reset form and close modal
+    setNewInterview({
+      applicantId: "",
+      applicantName: "",
+      location: "",
+      teamId: "",
+    });
+    setApplicantSearch("");
+    setSelectedTimeRange(null);
+    setSelectedInterviewer(null);
+    setIsMultiSelectMode(false);
+    setIsScheduleModalOpen(false);
+  };
+
   // Toggle calendar open/close
   const toggleCalendar = (interviewerId: string) => {
     setInterviewers((prev) =>
@@ -443,12 +889,13 @@ const Scheduler: React.FC = () => {
             };
             return { ...interviewer, priorityTeams: updatedPriorities };
           } else {
-            // Add new priority
+            // Add new priority - ensure teamId is a valid Challenge
+            const validTeamId = teamId as Challenge;
             return {
               ...interviewer,
               priorityTeams: [
                 ...interviewer.priorityTeams,
-                { teamId: teamId as Challenge, priority },
+                { teamId: validTeamId, priority },
               ],
             };
           }
@@ -510,12 +957,12 @@ const Scheduler: React.FC = () => {
   // Generate time slots from 8am to 10pm in 15-minute increments
   const generateTimeSlots = () => {
     const slots: TimeSlot[] = [];
-    for (let hour = 8; hour <= 22; hour++) {
+    for (let hourr = 8; hourr <= 22; hourr++) {
       for (let minute = 0; minute < 60; minute += 15) {
-        const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
-        const period = hour < 12 ? "AM" : "PM";
+        const formattedHour = hourr % 12 === 0 ? 12 : hourr % 12;
+        const period = hourr < 12 ? "AM" : "PM";
         slots.push({
-          hour,
+          hour: hourr,
           minute,
           formatted: `${formattedHour}:${minute === 0 ? "00" : minute} ${period}`,
         });
@@ -531,6 +978,38 @@ const Scheduler: React.FC = () => {
   };
 
   const tableHeaders = ["Name", "Availability", "Priority Teams", "Calendar"];
+
+  // Handle time slot selection for multi-select mode
+  const handleTimeSlotSelect = (
+    interviewerId: string,
+    date: Date,
+    timeSlot: TimeSlot,
+  ) => {
+    if (isMultiSelectMode) {
+      // If we're in multi-select mode, handle range selection
+      if (!selectedTimeRange) {
+        // First selection - set the start of the range
+        setSelectedTimeRange({
+          startDate: date,
+          startTimeSlot: timeSlot,
+        });
+      } else if (!selectedTimeRange.endTimeSlot) {
+        // Second selection - set the end of the range
+        setSelectedTimeRange({
+          ...selectedTimeRange,
+          endDate: date,
+          endTimeSlot: timeSlot,
+        });
+
+        // Open the schedule modal with the selected range
+        setSelectedInterviewer(interviewerId);
+        setIsScheduleModalOpen(true);
+      }
+    } else {
+      // Regular single slot selection
+      openScheduleModal(interviewerId, date, timeSlot);
+    }
+  };
 
   // Open schedule modal
   const openScheduleModal = (
@@ -554,6 +1033,11 @@ const Scheduler: React.FC = () => {
     if (existingInterview) {
       // If there's an existing interview, open the view modal instead
       setSelectedInterview(existingInterview);
+      setEditedInterview({
+        location: existingInterview.location,
+        teamId: existingInterview.teamId,
+      });
+      setIsEditingInterview(false);
       setIsViewModalOpen(true);
       return;
     }
@@ -571,6 +1055,74 @@ const Scheduler: React.FC = () => {
     }
 
     setIsScheduleModalOpen(true);
+  };
+
+  // Handle saving edited interview
+  const handleSaveEditedInterview = async () => {
+    if (!selectedInterview) return;
+
+    const success = await updateInterview(selectedInterview.id, {
+      location: editedInterview.location,
+      teamId: editedInterview.teamId,
+    });
+
+    if (success) {
+      // Update local state
+      setInterviewers((prev) =>
+        prev.map((interviewer) => {
+          if (interviewer.id === selectedInterview.interviewerId) {
+            return {
+              ...interviewer,
+              interviews: interviewer.interviews.map((interview) =>
+                interview.id === selectedInterview.id
+                  ? {
+                      ...interview,
+                      location: editedInterview.location,
+                      teamId: editedInterview.teamId,
+                    }
+                  : interview,
+              ),
+            };
+          }
+          return interviewer;
+        }),
+      );
+
+      setIsEditingInterview(false);
+      setIsViewModalOpen(false);
+    }
+  };
+
+  // Handle deleting an interview
+  const handleDeleteInterview = async () => {
+    if (!selectedInterview) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete this interview with ${selectedInterview.applicantName}?`,
+    );
+
+    if (confirmed) {
+      const success = await deleteInterview(selectedInterview.id);
+
+      if (success) {
+        // Update local state
+        setInterviewers((prev) =>
+          prev.map((interviewer) => {
+            if (interviewer.id === selectedInterview.interviewerId) {
+              return {
+                ...interviewer,
+                interviews: interviewer.interviews.filter(
+                  (interview) => interview.id !== selectedInterview.id,
+                ),
+              };
+            }
+            return interviewer;
+          }),
+        );
+
+        setIsViewModalOpen(false);
+      }
+    }
   };
 
   return (
@@ -671,241 +1223,285 @@ const Scheduler: React.FC = () => {
                 >
                   Week
                 </button>
+                <div className="ml-4 flex items-center gap-2">
+                  <Checkbox
+                    id="multi-select"
+                    checked={isMultiSelectMode}
+                    onCheckedChange={(checked) => {
+                      setIsMultiSelectMode(!!checked);
+                      setSelectedTimeRange(null);
+                    }}
+                  />
+                  <Label htmlFor="multi-select" className="cursor-pointer">
+                    Multi-select mode
+                  </Label>
+                </div>
               </div>
             </div>
 
-            <div className="mt-7 flex w-full flex-col overflow-hidden rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full">
-              <div className="overflow-hidden rounded-t-[48px]">
-                <TableHeader headers={tableHeaders} />
+            {isLoadingInterviewers ? (
+              <div className="mt-7 flex w-full items-center justify-center p-10 text-neutral-200">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-600 border-t-white"></div>
+                <span className="ml-3">Loading interviewers...</span>
               </div>
+            ) : (
+              <div className="mt-7 flex w-full flex-col overflow-hidden rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full">
+                <div className="overflow-hidden rounded-t-[48px]">
+                  <TableHeader headers={tableHeaders} />
+                </div>
 
-              {interviewers.map((interviewer, index) => (
-                <React.Fragment key={interviewer.id}>
-                  <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
-                    <div className="flex-1 text-center">{interviewer.name}</div>
+                {interviewers.map((interviewer, index) => (
+                  <React.Fragment key={interviewer.id}>
+                    <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
+                      <div className="flex-1 text-center">
+                        {interviewer.name}
+                      </div>
 
-                    <div className="flex-1 text-center">
-                      {viewDates.map((date, i) => {
-                        const availability = getAvailability(interviewer, date);
-                        const color =
-                          availability === "available"
-                            ? "text-green-400"
-                            : availability === "busy"
-                              ? "text-yellow-400"
-                              : "text-red-400";
+                      <div className="flex-1 text-center">
+                        {viewDates.map((date, i) => {
+                          const availability = getAvailability(
+                            interviewer,
+                            date,
+                          );
+                          const color =
+                            availability === "available"
+                              ? "text-green-400"
+                              : availability === "busy"
+                                ? "text-yellow-400"
+                                : "text-red-400";
 
-                        return (
-                          <span key={i} className="mx-1">
-                            <span className={color}>●</span>
-                            <span className="ml-1 text-xs">
-                              {format(date, "E")}
+                          return (
+                            <span key={i} className="mx-1">
+                              <span className={color}>●</span>
+                              <span className="ml-1 text-xs">
+                                {format(date, "E")}
+                              </span>
                             </span>
-                          </span>
-                        );
-                      })}
-                    </div>
+                          );
+                        })}
+                      </div>
 
-                    <div className="flex-1 text-center">
-                      <div className="flex flex-wrap justify-center gap-2">
-                        {interviewer.priorityTeams
-                          .sort((a, b) => a.priority - b.priority)
-                          .map((teamPriority, i) => {
-                            const team = teams.find(
-                              (t) => t.id === teamPriority.teamId,
-                            );
-                            return (
-                              <div
-                                key={i}
-                                className="inline-flex h-8 items-center rounded-full bg-stone-700/80 px-3 py-1 text-xs backdrop-blur-sm"
-                              >
-                                <span>
-                                  {team?.name} (#{teamPriority.priority})
-                                </span>
-                                <button
-                                  className="ml-2 text-red-400 hover:text-red-300"
-                                  onClick={() =>
-                                    removeTeamPriority(
-                                      interviewer.id,
-                                      teamPriority.teamId,
-                                    )
-                                  }
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            );
-                          })}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="inline-flex h-8 items-center rounded-full bg-stone-800 px-2 py-1 text-xs hover:bg-stone-700">
-                              <Plus className="h-3 w-3" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent className="border-neutral-700 bg-neutral-900 text-white">
-                            {teams
-                              .filter(
-                                (team) =>
-                                  !interviewer.priorityTeams.some(
-                                    (pt) => pt.teamId === team.id,
-                                  ),
-                              )
-                              .map((team, i) => (
-                                <DropdownMenuItem
+                      <div className="flex-1 text-center">
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {interviewer.priorityTeams
+                            .sort((a, b) => a.priority - b.priority)
+                            .map((teamPriority, i) => {
+                              const team = teams.find(
+                                (t) => t.id === teamPriority.teamId,
+                              );
+                              return (
+                                <div
                                   key={i}
-                                  className="hover:bg-stone-800 focus:bg-stone-800"
-                                  onClick={() =>
-                                    updateTeamPriority(
-                                      interviewer.id,
-                                      team.id,
-                                      interviewer.priorityTeams.length + 1,
-                                    )
-                                  }
+                                  className="inline-flex h-8 items-center rounded-full bg-stone-700/80 px-3 py-1 text-xs backdrop-blur-sm"
                                 >
-                                  {team.name}
-                                </DropdownMenuItem>
-                              ))}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                                  <span>
+                                    {team?.name ?? "Unknown"} (#
+                                    {teamPriority.priority})
+                                  </span>
+                                  <button
+                                    className="ml-2 text-red-400 hover:text-red-300"
+                                    onClick={() =>
+                                      removeTeamPriority(
+                                        interviewer.id,
+                                        teamPriority.teamId,
+                                      )
+                                    }
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              );
+                            })}
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="inline-flex h-8 items-center rounded-full bg-stone-800 px-2 py-1 text-xs hover:bg-stone-700">
+                                <Plus className="h-3 w-3" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="border-neutral-700 bg-neutral-900 text-white">
+                              {teams
+                                .filter(
+                                  (team) =>
+                                    !interviewer.priorityTeams.some(
+                                      (pt) => pt.teamId === team.id,
+                                    ),
+                                )
+                                .map((team, i) => (
+                                  <DropdownMenuItem
+                                    key={i}
+                                    className="hover:bg-stone-800 focus:bg-stone-800"
+                                    onClick={() =>
+                                      updateTeamPriority(
+                                        interviewer.id,
+                                        team.id,
+                                        interviewer.priorityTeams.length + 1,
+                                      )
+                                    }
+                                  >
+                                    {team.name}
+                                  </DropdownMenuItem>
+                                ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+
+                      <div className="flex-1 text-center">
+                        <button
+                          className="rounded-[48px] border border-solid bg-stone-600 px-6 py-2 text-white transition-colors hover:bg-stone-500"
+                          onClick={() => toggleCalendar(interviewer.id)}
+                        >
+                          {interviewer.openCalendar
+                            ? "Close Calendar"
+                            : "Open Calendar"}
+                        </button>
                       </div>
                     </div>
 
-                    <div className="flex-1 text-center">
-                      <button
-                        className="rounded-[48px] border border-solid bg-stone-600 px-6 py-2 text-white transition-colors hover:bg-stone-500"
-                        onClick={() => toggleCalendar(interviewer.id)}
-                      >
-                        {interviewer.openCalendar
-                          ? "Close Calendar"
-                          : "Open Calendar"}
-                      </button>
-                    </div>
-                  </div>
-
-                  {interviewer.openCalendar && (
-                    <div className="border-t border-neutral-200 bg-neutral-900/50 p-4">
-                      <div className="overflow-visible">
-                        <div className="min-w-[800px]">
-                          {/* Calendar Header */}
-                          <div className="grid grid-cols-[100px_1fr] rounded-t-lg border border-neutral-700 bg-neutral-800">
-                            <div className="p-2 text-center text-neutral-400">
-                              Time
+                    {interviewer.openCalendar && (
+                      <div className="border-t border-neutral-200 bg-neutral-900/50 p-4">
+                        <div className="overflow-visible">
+                          <div className="min-w-[800px]">
+                            {/* Calendar Header */}
+                            <div className="grid grid-cols-[100px_1fr] rounded-t-lg border border-neutral-700 bg-neutral-800">
+                              <div className="p-2 text-center text-neutral-400">
+                                Time
+                              </div>
+                              <div
+                                className={`grid ${viewMode === "day" ? "grid-cols-1" : "grid-cols-7"}`}
+                              >
+                                {viewDates.map((date, i) => (
+                                  <div
+                                    key={i}
+                                    className={cn(
+                                      "border-l border-neutral-700 p-2 text-center font-medium",
+                                      isWeekend(date) && "bg-neutral-800",
+                                    )}
+                                  >
+                                    <div>{format(date, "EEE")}</div>
+                                    <div className="text-lg">
+                                      {format(date, "d")}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                            <div
-                              className={`grid ${viewMode === "day" ? "grid-cols-1" : "grid-cols-7"}`}
-                            >
-                              {viewDates.map((date, i) => (
+
+                            {/* Time Slots - No scrollbar, all expanded */}
+                            <div className="rounded-b-lg border-x border-b border-neutral-700">
+                              {timeSlots.map((timeSlot, timeIndex) => (
                                 <div
-                                  key={i}
-                                  className={cn(
-                                    "border-l border-neutral-700 p-2 text-center font-medium",
-                                    isWeekend(date) && "bg-neutral-800",
-                                  )}
+                                  key={timeIndex}
+                                  className="grid grid-cols-[100px_1fr] border-b border-neutral-700"
                                 >
-                                  <div>{format(date, "EEE")}</div>
-                                  <div className="text-lg">
-                                    {format(date, "d")}
+                                  <div className="border-r border-neutral-700 p-2 text-center text-sm text-neutral-400">
+                                    {timeSlot.formatted}
+                                  </div>
+                                  <div
+                                    className={`grid ${viewMode === "day" ? "grid-cols-1" : "grid-cols-7"} h-16`}
+                                  >
+                                    {viewDates.map((date, dateIndex) => {
+                                      // Find interviews that overlap with this time slot
+                                      const slotInterviews =
+                                        interviewer.interviews.filter(
+                                          (interview) => {
+                                            const interviewStart = new Date(
+                                              interview.startTime,
+                                            );
+
+                                            // Check if this interview is on this date and overlaps with this time slot
+                                            return (
+                                              isSameDay(interviewStart, date) &&
+                                              interviewStart.getHours() ===
+                                                timeSlot.hour &&
+                                              interviewStart.getMinutes() ===
+                                                timeSlot.minute
+                                            );
+                                          },
+                                        );
+
+                                      const hasInterview =
+                                        slotInterviews.length > 0;
+
+                                      // Check if this slot is part of the selected range
+                                      const isInSelectedRange =
+                                        selectedTimeRange &&
+                                        isSameDay(
+                                          date,
+                                          selectedTimeRange.startDate,
+                                        ) &&
+                                        timeSlot.hour ===
+                                          selectedTimeRange.startTimeSlot
+                                            .hour &&
+                                        timeSlot.minute ===
+                                          selectedTimeRange.startTimeSlot
+                                            .minute;
+
+                                      return (
+                                        <div
+                                          key={dateIndex}
+                                          className={cn(
+                                            "relative cursor-pointer border-l border-neutral-700 p-1 hover:bg-neutral-800",
+                                            isWeekend(date) &&
+                                              "bg-neutral-800/50",
+                                            hasInterview && "bg-stone-700/50",
+                                            isInSelectedRange &&
+                                              "ring-2 ring-blue-500",
+                                            isMultiSelectMode &&
+                                              !hasInterview &&
+                                              "hover:bg-blue-900/30",
+                                          )}
+                                          onClick={() =>
+                                            handleTimeSlotSelect(
+                                              interviewer.id,
+                                              date,
+                                              timeSlot,
+                                            )
+                                          }
+                                        >
+                                          {hasInterview ? (
+                                            slotInterviews.map(
+                                              (interview, i) => (
+                                                <div
+                                                  key={i}
+                                                  className="absolute inset-0 m-1 overflow-hidden rounded bg-stone-600 p-1"
+                                                >
+                                                  <div className="truncate text-xs font-medium">
+                                                    {interview.applicantName}
+                                                  </div>
+                                                  <div className="truncate text-[10px] text-neutral-300">
+                                                    {interview.location}
+                                                  </div>
+                                                </div>
+                                              ),
+                                            )
+                                          ) : (
+                                            <div className="flex h-full w-full items-center justify-center opacity-0 transition-opacity hover:opacity-100">
+                                              <Plus className="h-4 w-4 text-neutral-400" />
+                                            </div>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 </div>
                               ))}
                             </div>
                           </div>
-
-                          {/* Time Slots - No scrollbar, all expanded */}
-                          <div className="rounded-b-lg border-x border-b border-neutral-700">
-                            {timeSlots.map((timeSlot, timeIndex) => (
-                              <div
-                                key={timeIndex}
-                                className="grid grid-cols-[100px_1fr] border-b border-neutral-700"
-                              >
-                                <div className="border-r border-neutral-700 p-2 text-center text-sm text-neutral-400">
-                                  {timeSlot.formatted}
-                                </div>
-                                <div
-                                  className={`grid ${viewMode === "day" ? "grid-cols-1" : "grid-cols-7"} h-16`}
-                                >
-                                  {viewDates.map((date, dateIndex) => {
-                                    // Find interviews that overlap with this time slot
-                                    const slotInterviews =
-                                      interviewer.interviews.filter(
-                                        (interview) => {
-                                          const interviewStart = new Date(
-                                            interview.startTime,
-                                          );
-                                          const interviewEnd = new Date(
-                                            interview.endTime,
-                                          );
-
-                                          // Check if this interview is on this date and overlaps with this time slot
-                                          return (
-                                            isSameDay(interviewStart, date) &&
-                                            interviewStart.getHours() ===
-                                              timeSlot.hour &&
-                                            interviewStart.getMinutes() ===
-                                              timeSlot.minute
-                                          );
-                                        },
-                                      );
-
-                                    const hasInterview =
-                                      slotInterviews.length > 0;
-
-                                    return (
-                                      <div
-                                        key={dateIndex}
-                                        className={cn(
-                                          "relative cursor-pointer border-l border-neutral-700 p-1 hover:bg-neutral-800",
-                                          isWeekend(date) &&
-                                            "bg-neutral-800/50",
-                                          hasInterview && "bg-stone-700/50",
-                                        )}
-                                        onClick={() =>
-                                          openScheduleModal(
-                                            interviewer.id,
-                                            date,
-                                            timeSlot,
-                                          )
-                                        }
-                                      >
-                                        {hasInterview ? (
-                                          slotInterviews.map((interview, i) => (
-                                            <div
-                                              key={i}
-                                              className="absolute inset-0 m-1 overflow-hidden rounded bg-stone-600 p-1"
-                                            >
-                                              <div className="truncate text-xs font-medium">
-                                                {interview.applicantName}
-                                              </div>
-                                              <div className="truncate text-[10px] text-neutral-300">
-                                                {interview.location}
-                                              </div>
-                                            </div>
-                                          ))
-                                        ) : (
-                                          <div className="flex h-full w-full items-center justify-center opacity-0 transition-opacity hover:opacity-100">
-                                            <Plus className="h-4 w-4 text-neutral-400" />
-                                          </div>
-                                        )}
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {index < interviewers.length - 1 && (
-                    <div className="w-full shrink-0 border border-solid border-neutral-200" />
-                  )}
-                </React.Fragment>
-              ))}
+                    {index < interviewers.length - 1 && (
+                      <div className="w-full shrink-0 border border-solid border-neutral-200" />
+                    )}
+                  </React.Fragment>
+                ))}
 
-              {/* Add padding at the end of the table */}
-              <div className="border-t border-neutral-200 py-4"></div>
-            </div>
+                {/* Add padding at the end of the table */}
+                <div className="border-t border-neutral-200 py-4"></div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -914,7 +1510,11 @@ const Scheduler: React.FC = () => {
       <Dialog open={isScheduleModalOpen} onOpenChange={setIsScheduleModalOpen}>
         <DialogContent className="border-neutral-700 bg-neutral-900 text-white">
           <DialogHeader>
-            <DialogTitle className="text-xl">Schedule Interview</DialogTitle>
+            <DialogTitle className="text-xl">
+              {isMultiSelectMode && selectedTimeRange?.endTimeSlot
+                ? "Schedule Multiple Interviews"
+                : "Schedule Interview"}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="grid gap-4 py-4">
@@ -923,11 +1523,32 @@ const Scheduler: React.FC = () => {
                 Date & Time
               </Label>
               <div className="col-span-3">
-                {selectedTimeSlot && (
+                {isMultiSelectMode && selectedTimeRange ? (
+                  <div className="text-neutral-200">
+                    {format(selectedTimeRange.startDate, "MMMM d, yyyy")} at{" "}
+                    {selectedTimeRange.startTimeSlot.formatted}
+                    {selectedTimeRange.endTimeSlot && (
+                      <>
+                        {" to "}
+                        {selectedTimeRange.endDate &&
+                        !isSameDay(
+                          selectedTimeRange.startDate,
+                          selectedTimeRange.endDate,
+                        )
+                          ? format(selectedTimeRange.endDate, "MMMM d, yyyy") +
+                            " at "
+                          : ""}
+                        {selectedTimeRange.endTimeSlot.formatted}
+                      </>
+                    )}
+                  </div>
+                ) : selectedTimeSlot ? (
                   <div className="text-neutral-200">
                     {format(selectedTimeSlot.date, "MMMM d, yyyy")} at{" "}
                     {selectedTimeSlot.timeSlot.formatted}
                   </div>
+                ) : (
+                  <div className="text-neutral-400">No time selected</div>
                 )}
               </div>
             </div>
@@ -1023,26 +1644,37 @@ const Scheduler: React.FC = () => {
           <DialogFooter>
             <Button
               variant="outline"
-              onClick={() => setIsScheduleModalOpen(false)}
+              onClick={() => {
+                setIsScheduleModalOpen(false);
+                setSelectedTimeRange(null);
+              }}
               className="border-neutral-600 bg-transparent hover:bg-neutral-800 hover:text-white"
             >
               Cancel
             </Button>
             <Button
-              onClick={addInterview}
+              onClick={
+                isMultiSelectMode && selectedTimeRange?.endTimeSlot
+                  ? addMultipleInterviews
+                  : addInterview
+              }
               className="bg-stone-600 hover:bg-stone-500"
             >
-              Schedule
+              {isMultiSelectMode && selectedTimeRange?.endTimeSlot
+                ? "Schedule Multiple"
+                : "Schedule"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* View Interview Modal */}
+      {/* View/Edit Interview Modal */}
       <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
         <DialogContent className="border-neutral-700 bg-neutral-900 text-white">
           <DialogHeader>
-            <DialogTitle className="text-xl">Interview Details</DialogTitle>
+            <DialogTitle className="text-xl">
+              {isEditingInterview ? "Edit Interview" : "Interview Details"}
+            </DialogTitle>
           </DialogHeader>
 
           {selectedInterview && (
@@ -1065,29 +1697,99 @@ const Scheduler: React.FC = () => {
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right font-medium">Location</Label>
-                <div className="col-span-3 text-neutral-200">
-                  {selectedInterview.location}
-                </div>
+                {isEditingInterview ? (
+                  <Input
+                    value={editedInterview.location}
+                    onChange={(e) =>
+                      setEditedInterview({
+                        ...editedInterview,
+                        location: e.target.value,
+                      })
+                    }
+                    className="col-span-3 border-neutral-700 bg-neutral-800"
+                  />
+                ) : (
+                  <div className="col-span-3 text-neutral-200">
+                    {selectedInterview.location}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right font-medium">Team</Label>
-                <div className="col-span-3 text-neutral-200">
-                  {teams.find((t) => t.id === selectedInterview.teamId)?.name ||
-                    "Unknown Team"}
-                </div>
+                {isEditingInterview ? (
+                  <Select
+                    value={editedInterview.teamId}
+                    onValueChange={(value) =>
+                      setEditedInterview({ ...editedInterview, teamId: value })
+                    }
+                  >
+                    <SelectTrigger className="col-span-3 border-neutral-700 bg-neutral-800">
+                      <SelectValue placeholder="Select a team" />
+                    </SelectTrigger>
+                    <SelectContent className="border-neutral-700 bg-neutral-800">
+                      {teams.map((team) => (
+                        <SelectItem key={team.id} value={team.id}>
+                          {team.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="col-span-3 text-neutral-200">
+                    {teams.find((t) => t.id === selectedInterview.teamId)
+                      ?.name ?? "Unknown Team"}
+                  </div>
+                )}
               </div>
             </div>
           )}
 
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsViewModalOpen(false)}
-              className="border-neutral-600 bg-transparent hover:bg-neutral-800 hover:text-white"
-            >
-              Close
-            </Button>
+            {isEditingInterview ? (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditingInterview(false)}
+                  className="border-neutral-600 bg-transparent hover:bg-neutral-800 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSaveEditedInterview}
+                  className="bg-stone-600 hover:bg-stone-500"
+                >
+                  Save Changes
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="flex flex-1 justify-start">
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteInterview}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Trash className="mr-2 h-4 w-4" />
+                    Delete
+                  </Button>
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsViewModalOpen(false)}
+                  className="border-neutral-600 bg-transparent hover:bg-neutral-800 hover:text-white"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => setIsEditingInterview(true)}
+                  className="bg-stone-600 hover:bg-stone-500"
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit
+                </Button>
+              </>
+            )}
           </DialogFooter>
         </DialogContent>
       </Dialog>
