@@ -567,6 +567,26 @@ const Scheduler: React.FC = () => {
     return "available";
   };
 
+  // Add this function to check for conflicts
+  const hasTimeConflict = (
+    interviewer: Interviewer,
+    startTime: Date,
+    endTime: Date,
+  ): boolean => {
+    return interviewer.interviews.some((interview) => {
+      const interviewStart = new Date(interview.startTime);
+      const interviewEnd = new Date(interview.endTime);
+
+      // Check if the new interview overlaps with an existing one
+      // Overlap occurs if new interview starts before existing ends AND ends after existing starts
+      return (
+        isSameDay(interviewStart, startTime) &&
+        startTime < interviewEnd &&
+        endTime > interviewStart
+      );
+    });
+  };
+
   // Add a new interview
   const addInterview = async () => {
     if (!selectedInterviewer || !selectedTimeSlot) {
@@ -594,6 +614,18 @@ const Scheduler: React.FC = () => {
 
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 15); // 15 minute interview
+
+    // Check for time conflicts
+    const interviewer = interviewers.find((i) => i.id === selectedInterviewer);
+    if (interviewer && hasTimeConflict(interviewer, startTime, endTime)) {
+      toast({
+        title: "Time Conflict",
+        description:
+          "There is already an interview scheduled during this time slot.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     // Find the selected applicant if not a placeholder
     let applicantName = "Reserved Slot";
@@ -659,7 +691,7 @@ const Scheduler: React.FC = () => {
     }
   };
 
-  // Add multiple interviews for selected time slots
+  // Also modify the addMultipleInterviews function to check for conflicts
   const addMultipleInterviews = async () => {
     if (!selectedInterviewer || selectedTimeSlots.length === 0) {
       toast({
@@ -701,6 +733,30 @@ const Scheduler: React.FC = () => {
 
     let successCount = 0;
     let failCount = 0;
+
+    // Check for conflicts in all selected time slots
+    const interviewer = interviewers.find((i) => i.id === selectedInterviewer);
+    if (interviewer) {
+      const hasConflicts = selectedTimeSlots.some((slot) => {
+        const startTime = new Date(slot.date);
+        startTime.setHours(slot.timeSlot.hour, slot.timeSlot.minute, 0, 0);
+
+        const endTime = new Date(startTime);
+        endTime.setMinutes(endTime.getMinutes() + 15);
+
+        return hasTimeConflict(interviewer, startTime, endTime);
+      });
+
+      if (hasConflicts) {
+        toast({
+          title: "Time Conflict",
+          description:
+            "One or more selected time slots conflict with existing interviews.",
+          variant: "destructive",
+        });
+        return;
+      }
+    }
 
     // Create and save an interview for each selected time slot
     for (const slot of selectedTimeSlots) {
@@ -1458,14 +1514,30 @@ const Scheduler: React.FC = () => {
                                             const interviewStart = new Date(
                                               interview.startTime,
                                             );
+                                            const interviewEnd = new Date(
+                                              interview.endTime,
+                                            );
 
-                                            // Check if this interview is on this date and overlaps with this time slot
+                                            // Create a time slot start and end time for comparison
+                                            const slotStart = new Date(date);
+                                            slotStart.setHours(
+                                              timeSlot.hour,
+                                              timeSlot.minute,
+                                              0,
+                                              0,
+                                            );
+
+                                            const slotEnd = new Date(slotStart);
+                                            slotEnd.setMinutes(
+                                              slotEnd.getMinutes() + 15,
+                                            );
+
+                                            // Check if the interview overlaps with this time slot
+                                            // An interview overlaps if it starts before the slot ends AND ends after the slot starts
                                             return (
                                               isSameDay(interviewStart, date) &&
-                                              interviewStart.getHours() ===
-                                                timeSlot.hour &&
-                                              interviewStart.getMinutes() ===
-                                                timeSlot.minute
+                                              interviewStart < slotEnd &&
+                                              interviewEnd > slotStart
                                             );
                                           },
                                         );

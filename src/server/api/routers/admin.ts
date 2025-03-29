@@ -9,7 +9,8 @@ import CalendarService from "@/server/service/google-calendar"
 import DriveService from "@/server/service/google-drive"
 import { Temporal } from "@js-temporal/polyfill"
 import { Challenge } from "@prisma/client"
-import InterviewEmail from "emails/interview"
+// import InterviewEmail from "emails/interview"
+import SimpleInterviewEmail from "emails/interview"
 import RejectAppEmail from "emails/reject-app"
 import { z } from "zod"
 
@@ -216,7 +217,7 @@ export const adminRouter = createTRPCRouter({
 
       return true
     }),
-  scheduleInterview: protectedProcedure
+    scheduleInterview: protectedProcedure
     .input(
       z.object({
         officerId: z.string().cuid2(),
@@ -242,9 +243,9 @@ export const adminRouter = createTRPCRouter({
         team,
         applicationType,
       } = input
-
+  
       const startTimeObj = Temporal.ZonedDateTime.from(startTime)
-
+  
       // add meeting time to google calendar
       let eventLink
       try {
@@ -258,7 +259,7 @@ export const adminRouter = createTRPCRouter({
       } catch (e) {
         throw new Error("Failed to add event to calendar: " + (e as Error).message)
       }
-
+  
       // remove meeting time from officer's availabilities
       const thirty = Array(2)
         .fill(0)
@@ -274,30 +275,19 @@ export const adminRouter = createTRPCRouter({
           },
         },
       })
-
-      // send email to interview attendees
+  
+      // send email to interview attendees using the simplified template
       try {
         await sendEmail({
           to: [applicantEmail],
           cc: [officerEmail],
           subject: "ThinkTank Interview",
-          template: InterviewEmail({
-            userFirstname: applicantName.split(" ")[0] ?? "",
-            time: startTimeObj.withTimeZone(eventTimezone).toLocaleString("en-US", {
-              dateStyle: "short",
-              timeStyle: "short",
-            }),
-            location,
-            eventLink: eventLink,
-            interviewerName: officerName,
-            team,
-            applicationType: applicationType || "General",
-          }),
+          template: SimpleInterviewEmail(), // No props needed
         })
       } catch (e) {
         throw new Error("Failed to send email: " + (e as Error).message)
       }
-
+  
       return true
     }),
   rejectAppEmail: protectedProcedure
