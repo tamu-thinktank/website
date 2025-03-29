@@ -21,6 +21,13 @@ interface ApplicantRowProps {
   showStatus?: boolean;
 }
 
+// Define a type for the API response
+interface ApplicantResponse {
+  id: string;
+  status: ApplicationStatus;
+  // Add other fields if needed
+}
+
 export const ApplicantRow: React.FC<ApplicantRowProps> = ({
   applicant,
   isLocked,
@@ -44,6 +51,34 @@ export const ApplicantRow: React.FC<ApplicantRowProps> = ({
     }
   };
 
+  // Fetch the current status if not already available
+  const [currentStatus, setCurrentStatus] = React.useState<
+    ApplicationStatus | undefined
+  >(applicant.status);
+
+  React.useEffect(() => {
+    if (!applicant.status && applicant.id) {
+      const fetchStatus = async () => {
+        try {
+          const response = await fetch(`/api/applicant/${applicant.id}`);
+          if (response.ok) {
+            const data = (await response.json()) as ApplicantResponse;
+            if (data.status) {
+              setCurrentStatus(data.status);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch applicant status:", error);
+        }
+      };
+
+      // Use void to explicitly mark the promise as ignored
+      void fetchStatus();
+    } else {
+      setCurrentStatus(applicant.status);
+    }
+  }, [applicant.id, applicant.status]);
+
   return (
     <>
       <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
@@ -54,19 +89,19 @@ export const ApplicantRow: React.FC<ApplicantRowProps> = ({
           {applicant.name}
         </div>
         <div className="flex-1 text-center">
-          {applicant.interests?.join(", ") || "N/A"}
+          {applicant.interests?.join(", ") ?? "N/A"}
         </div>
         <div className="flex-1 text-center">
-          {applicant.teamRankings?.join(", ") || "N/A"}
+          {applicant.teamRankings?.join(", ") ?? "N/A"}
         </div>
-        <div className="flex-1 text-center">{applicant.major || "N/A"}</div>
-        <div className="flex-1 text-center">{applicant.year || "N/A"}</div>
+        <div className="flex-1 text-center">{applicant.major ?? "N/A"}</div>
+        <div className="flex-1 text-center">{applicant.year ?? "N/A"}</div>
 
         {showStatus ? (
           <div
-            className={`flex-1 text-center ${getStatusColor(applicant.status)}`}
+            className={`flex-1 text-center ${getStatusColor(currentStatus)}`}
           >
-            {applicant.status || "PENDING"}
+            {currentStatus ?? "PENDING"}
           </div>
         ) : onToggleLock ? (
           <div className="flex-1 text-center">

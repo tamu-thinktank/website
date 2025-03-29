@@ -9,8 +9,7 @@ import CalendarService from "@/server/service/google-calendar"
 import DriveService from "@/server/service/google-drive"
 import { Temporal } from "@js-temporal/polyfill"
 import { Challenge } from "@prisma/client"
-// import InterviewEmail from "emails/interview"
-import SimpleInterviewEmail from "emails/interview"
+import InterviewEmail from "emails/interview"
 import RejectAppEmail from "emails/reject-app"
 import { z } from "zod"
 
@@ -217,7 +216,7 @@ export const adminRouter = createTRPCRouter({
 
       return true
     }),
-    scheduleInterview: protectedProcedure
+  scheduleInterview: protectedProcedure
     .input(
       z.object({
         officerId: z.string().cuid2(),
@@ -225,71 +224,85 @@ export const adminRouter = createTRPCRouter({
         officerEmail: z.string().email(),
         applicantName: z.string(),
         applicantEmail: z.string().email(),
-        team: z.string().optional(),
-        applicationType: z.string().optional(),
         startTime: z.string(),
         location: z.string(),
+        team: z.string().optional(),
+        applicationType: z.string().optional(),
       }),
     )
-    .mutation(async ({ input, ctx }) => {
-      const {
-        officerId,
-        officerName,
-        officerEmail,
-        applicantName,
-        applicantEmail,
-        startTime,
-        location,
-        team,
-        applicationType,
-      } = input
-  
-      const startTimeObj = Temporal.ZonedDateTime.from(startTime)
-  
-      // add meeting time to google calendar
-      let eventLink
-      try {
-        eventLink = await CalendarService.addCalenderEvent({
-          startTime: startTimeObj,
-          location,
-          emails: [officerEmail, applicantEmail],
-          intervieweeName: applicantName,
-          interviewerName: officerName,
-        })
-      } catch (e) {
-        throw new Error("Failed to add event to calendar: " + (e as Error).message)
-      }
-  
-      // remove meeting time from officer's availabilities
-      const thirty = Array(2)
-        .fill(0)
-        .map((_, i) => i * 15)
-        .map((minutes) => {
-          return startTimeObj.add({ minutes }).toString()
-        })
-      await ctx.db.officerTime.deleteMany({
-        where: {
+    .mutation(
+      async ({
+        input: {
           officerId,
-          gridTime: {
-            in: thirty,
-          },
+          officerName,
+          officerEmail,
+          applicantName,
+          applicantEmail,
+          startTime,
+          location,
+          team,
+          applicationType,
         },
-      })
-  
-      // send email to interview attendees using the simplified template
-      try {
-        await sendEmail({
-          to: [applicantEmail],
-          cc: [officerEmail],
-          subject: "ThinkTank Interview",
-          template: SimpleInterviewEmail(), // No props needed
+        ctx,
+      }) => {
+        const startTimeObj = Temporal.ZonedDateTime.from(startTime)
+
+        // add meeting time to google calendar
+        let eventLink: Awaited<ReturnType<(typeof CalendarService)["addCalenderEvent"]>>
+        try {
+          eventLink = await CalendarService.addCalenderEvent({
+            startTime: startTimeObj,
+            location,
+            emails: [officerEmail, applicantEmail],
+            intervieweeName: applicantName,
+            interviewerName: officerName,
+          })
+        } catch (e) {
+          throw new Error("Failed to add event to calendar: " + (e as Error).message)
+        }
+
+        // remove meeting time from soonestOfficer's availabilities
+        const thirty = Array(2)
+          .fill(0)
+          .map((_, i) => i * 15)
+          .map((minutes) => {
+            return startTimeObj.add({ minutes }).toString()
+          })
+        await ctx.db.officerTime.deleteMany({
+          where: {
+            officerId,
+            gridTime: {
+              in: thirty,
+            },
+          },
         })
-      } catch (e) {
-        throw new Error("Failed to send email: " + (e as Error).message)
-      }
-  
-      return true
-    }),
+
+        // send email to interview attendees
+        try {
+          await sendEmail({
+            to: [applicantEmail],
+            cc: [officerEmail],
+            subject: "ThinkTank Interview",
+            template: InterviewEmail({
+              userFirstname: applicantName.split(" ")[0] ?? "",
+              time: startTimeObj.withTimeZone(eventTimezone).toLocaleString("en-US", {
+                dateStyle: "short",
+                timeStyle: "short",
+              }),
+              location,
+              eventLink: eventLink,
+              interviewerName: officerName,
+              team,
+              applicationType,
+            }),
+          })
+        } catch (e) {
+          throw new Error("Failed to send email: " + (e as Error).message)
+        }
+
+        return true
+      },
+    ),
   rejectAppEmail: protectedProcedure
     .input(
       z.object({
