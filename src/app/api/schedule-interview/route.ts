@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         startTime: new Date(time),
         endTime: new Date(new Date(time).getTime() + 15 * 60000), // 15 minutes later
         location,
-        teamId: teamId || undefined, // Add teamId if provided
+        // Don't include teamId in the create call if it's not in the schema
       },
     })
 
