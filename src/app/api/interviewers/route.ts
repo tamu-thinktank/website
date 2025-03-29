@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
-import type { Challenge } from "@prisma/client"
+import { Challenge } from "@prisma/client"
 
 export async function GET() {
   try {
@@ -42,10 +42,13 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: "Interviewer ID is required" }, { status: 400 })
     }
 
+    // Ensure targetTeams is an array of valid Challenge enums
+    const validTargetTeams = targetTeams?.filter((team) => Object.values(Challenge).includes(team))
+
     const updatedInterviewer = await db.user.update({
       where: { id: interviewerId },
       data: {
-        targetTeams: targetTeams ? { set: targetTeams } : undefined,
+        targetTeams: validTargetTeams ? { set: validTargetTeams } : undefined,
       },
       select: {
         id: true,

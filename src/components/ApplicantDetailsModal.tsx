@@ -95,6 +95,8 @@ interface ApplicantDetails {
     interestLevel: string;
   }[];
   previousParticipation?: boolean;
+  referral?: string[];
+  officerCommitment?: "YES" | "NO" | "PARTIAL";
 }
 
 interface InterviewNote {
@@ -874,32 +876,120 @@ export const ApplicantDetailsModal = ({
                 </div>
               </div>
 
-              {applicant.applicationType === "MATEROV" && (
+              {/* Application Type Specific Information */}
+              {applicant.applicationType === "OFFICER" ? (
                 <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
                   <h3 className="text-lg font-semibold">
-                    MATE ROV Information
+                    Officer Application Information
                   </h3>
 
                   <div className="space-y-4">
                     <div>
                       <Label className="text-neutral-400">
-                        Previous Participation
+                        Are you able to commit to and attend weekly team
+                        meetings in person on campus for the next 2 semesters?
                       </Label>
-                      <div className="mt-1">
-                        {applicant.previousParticipation ? "Yes" : "No"}
+                      <div className="mt-1 text-white">
+                        {applicant.officerCommitment === "YES"
+                          ? "Yes"
+                          : applicant.officerCommitment === "PARTIAL"
+                            ? "Partially"
+                            : "No"}
                       </div>
                     </div>
 
-                    {applicant.thirdQuestion && (
-                      <div>
-                        <Label className="text-neutral-400">
-                          Previous Experience
-                        </Label>
-                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                          {applicant.thirdQuestion}
-                        </div>
+                    <div>
+                      <Label className="text-neutral-400">
+                        Interest in each position
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.preferredPositions &&
+                        applicant.preferredPositions.length > 0 ? (
+                          applicant.preferredPositions.map((position, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {position.position} ({position.interest})
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No position preferences listed
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Why do you want to become a ThinkTank Officer?
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.firstQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Which previous team were you a member of and what did
+                        you specifically contribute?
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.secondQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Where did you hear about us?
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.referral && applicant.referral.length > 0 ? (
+                          applicant.referral.map((ref, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {ref}
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No referral sources listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : applicant.applicationType === "MATEROV" ? (
+                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                  <h3 className="text-lg font-semibold">
+                    MATE ROV Application Information
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-neutral-400">
+                        Are you able to commit to and attend weekly team
+                        meetings in person, which will take place on Saturdays
+                        for the next 2 semesters?
+                      </Label>
+                      <div className="mt-1 text-white">
+                        {applicant.meetings ? "Yes" : "No"}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Are you able to commit 8-10 hours per week to your team
+                        for the entire duration of the project?
+                      </Label>
+                      <div className="mt-1 text-white">
+                        {applicant.weeklyCommitment ? "Yes" : "No"}
+                      </div>
+                    </div>
 
                     <div>
                       <Label className="text-neutral-400">
@@ -926,7 +1016,7 @@ export const ApplicantDetailsModal = ({
 
                     <div>
                       <Label className="text-neutral-400">
-                        Technical Experience
+                        Experience & Skills
                       </Label>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {applicant.skills && applicant.skills.length > 0 ? (
@@ -948,7 +1038,7 @@ export const ApplicantDetailsModal = ({
 
                     <div>
                       <Label className="text-neutral-400">
-                        Learning Interests
+                        What do you most want to learn?
                       </Label>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {applicant.learningInterests &&
@@ -966,6 +1056,95 @@ export const ApplicantDetailsModal = ({
                             No learning interests listed
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Have you participated in a ThinkTank Design Challenge
+                        before?
+                      </Label>
+                      <div className="mt-1 text-white">
+                        {applicant.previousParticipation ? "Yes" : "No"}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Where did you hear about us?
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.referral && applicant.referral.length > 0 ? (
+                          applicant.referral.map((ref, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {ref}
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No referral sources listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Describe an instance where you worked with a team to
+                        accomplish a goal
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.firstQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Describe an instance where you demonstrated your passion
+                        for a project
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.secondQuestion}
+                      </div>
+                    </div>
+
+                    {applicant.thirdQuestion && (
+                      <div>
+                        <Label className="text-neutral-400">
+                          Previous team experience
+                        </Label>
+                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                          {applicant.thirdQuestion}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                  <h3 className="text-lg font-semibold">
+                    Application Information
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-neutral-400">
+                        Why are you interested in joining ThinkTank?
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.firstQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Describe an instance where you demonstrated your passion
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.secondQuestion}
                       </div>
                     </div>
                   </div>
