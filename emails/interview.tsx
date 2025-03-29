@@ -14,6 +14,7 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import * as React from "react";
 
 interface InterviewEmailProps {
   userFirstname: string;

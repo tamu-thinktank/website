@@ -291,7 +291,7 @@ export const adminRouter = createTRPCRouter({
             eventLink: eventLink,
             interviewerName: officerName,
             team,
-            applicationType,
+            applicationType: applicationType || "General",
           }),
         })
       } catch (e) {

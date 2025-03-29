@@ -71,12 +71,13 @@ interface Applicant {
 interface Interview {
   id: string;
   applicantName: string;
-  applicantId: string;
+  applicantId?: string;
   startTime: Date;
   endTime: Date;
   teamId?: string;
   location: string;
   interviewerId?: string;
+  isPlaceholder?: boolean;
 }
 
 interface TeamPriority {
@@ -113,16 +114,19 @@ interface InterviewerResponse {
   name: string;
   email?: string;
   targetTeams?: string[];
+  interviews?: any[];
 }
 
 interface InterviewResponse {
   id: string;
-  applicantId: string;
+  applicantId?: string;
   interviewerId: string;
   startTime: string;
   endTime: string;
   teamId?: string;
   location: string;
+  isPlaceholder?: boolean;
+  placeholderName?: string;
   applicant?: {
     fullName: string;
   };
@@ -161,6 +165,8 @@ const Scheduler: React.FC = () => {
   const [editedInterview, setEditedInterview] = React.useState<{
     location: string;
     teamId: string;
+    applicantId?: string;
+    applicantName?: string;
   }>({ location: "", teamId: "" });
 
   // State for multi-select time slots
@@ -174,10 +180,11 @@ const Scheduler: React.FC = () => {
     applicantName: "",
     location: "",
     teamId: "",
+    isPlaceholder: false,
   });
 
   // For real-time updates
-  const [_lastUpdate, _setLastUpdate] = React.useState<Date>(new Date());
+  const [lastUpdate, setLastUpdate] = React.useState<Date>(new Date());
 
   // Team options
   const teams = [
@@ -214,35 +221,37 @@ const Scheduler: React.FC = () => {
 
       const data = (await response.json()) as InterviewerResponse[];
 
-      // Add a dummy interviewer for testing
-      const dummyInterviewer: Interviewer = {
-        id: "dummy-interviewer",
-        name: "Test Interviewer",
-        email: "test@example.com",
-        priorityTeams: [
-          { teamId: Challenge.TSGC, priority: 1 },
-          { teamId: Challenge.AIAA, priority: 2 },
-        ],
-        interviews: [],
-        openCalendar: false,
-      };
-
       // Transform the data to match our Interviewer interface
-      const formattedInterviewers: Interviewer[] = data.map((interviewer) => ({
-        id: interviewer.id,
-        name: interviewer.name,
-        email: interviewer.email,
-        priorityTeams:
-          interviewer.targetTeams?.map((teamId, index) => ({
-            teamId: teamId as Challenge,
-            priority: index + 1,
-          })) ?? [],
-        interviews: [],
-        openCalendar: false,
-      }));
+      const formattedInterviewers: Interviewer[] = data.map((interviewer) => {
+        // Process interviews if they exist
+        const interviewsData = interviewer.interviews || [];
+        const interviews = interviewsData.map((interview: any) => ({
+          id: interview.id,
+          applicantName: interview.isPlaceholder
+            ? interview.placeholderName || "Reserved Slot"
+            : interview.applicant?.fullName || "Unknown",
+          applicantId: interview.applicantId,
+          startTime: new Date(interview.startTime),
+          endTime: new Date(interview.endTime),
+          teamId: interview.teamId,
+          location: interview.location,
+          interviewerId: interview.interviewerId,
+          isPlaceholder: interview.isPlaceholder || false,
+        }));
 
-      // Add the dummy interviewer
-      formattedInterviewers.push(dummyInterviewer);
+        return {
+          id: interviewer.id,
+          name: interviewer.name,
+          email: interviewer.email,
+          priorityTeams:
+            interviewer.targetTeams?.map((teamId: string, index: number) => ({
+              teamId: teamId as Challenge,
+              priority: index + 1,
+            })) || [],
+          interviews: interviews,
+          openCalendar: false,
+        };
+      });
 
       setInterviewers(formattedInterviewers);
     } catch (error) {
@@ -288,7 +297,10 @@ const Scheduler: React.FC = () => {
   // Fetch interviews from the database
   const fetchInterviews = async () => {
     try {
-      const response = await fetch("/api/interviews");
+      const response = await fetch("/api/schedule-interview", {
+        method: "GET",
+      });
+
       if (!response.ok) {
         throw new Error("Failed to fetch interviews");
       }
@@ -308,17 +320,22 @@ const Scheduler: React.FC = () => {
             openCalendar: interviewer.openCalendar,
             interviews: interviewerInterviews.map((interview) => ({
               id: interview.id,
-              applicantName: interview.applicant?.fullName ?? "Unknown",
+              applicantName: interview.isPlaceholder
+                ? (interview.placeholderName ?? "Reserved Slot")
+                : (interview.applicant?.fullName ?? "Unknown"),
               applicantId: interview.applicantId,
               startTime: new Date(interview.startTime),
               endTime: new Date(interview.endTime),
               teamId: interview.teamId,
-              location: interview.location ?? "TBD",
+              location: interview.location,
               interviewerId: interview.interviewerId,
+              isPlaceholder: interview.isPlaceholder ?? false,
             })),
           };
         });
       });
+
+      setLastUpdate(new Date());
     } catch (error) {
       console.error("Error fetching interviews:", error);
       // Don't show toast on every error to prevent spam
@@ -338,7 +355,11 @@ const Scheduler: React.FC = () => {
       const response = await originalFetch(input, init);
 
       // If this was a request to the interviews endpoint, refresh our data
-      if (typeof input === "string" && input.includes("/api/interviews")) {
+      if (
+        typeof input === "string" &&
+        (input.includes("/api/interviews") ||
+          input.includes("/api/schedule-interview"))
+      ) {
         handleInterviewUpdate();
       }
 
@@ -404,6 +425,9 @@ const Scheduler: React.FC = () => {
           interviewerId,
           time: interview.startTime.toISOString(),
           location: interview.location,
+          teamId: interview.teamId,
+          isPlaceholder: interview.isPlaceholder || false,
+          applicantName: interview.applicantName,
         }),
       });
 
@@ -411,15 +435,19 @@ const Scheduler: React.FC = () => {
         throw new Error("Failed to save interview");
       }
 
+      const savedInterview = await response.json();
+
       toast({
         title: "Success",
-        description: "Interview scheduled successfully.",
+        description: interview.isPlaceholder
+          ? "Time slot reserved successfully."
+          : "Interview scheduled successfully.",
       });
 
       // Trigger a refresh to get the latest data
       void fetchInterviews();
 
-      return true;
+      return savedInterview;
     } catch (error) {
       console.error("Error saving interview:", error);
       toast({
@@ -434,7 +462,12 @@ const Scheduler: React.FC = () => {
   // Update an existing interview
   const updateInterview = async (
     interviewId: string,
-    updates: { location?: string; teamId?: string },
+    updates: {
+      location?: string;
+      teamId?: string;
+      applicantId?: string;
+      applicantName?: string;
+    },
   ) => {
     try {
       const response = await fetch(`/api/interviews/${interviewId}`, {
@@ -536,14 +569,20 @@ const Scheduler: React.FC = () => {
 
   // Add a new interview
   const addInterview = async () => {
-    if (
-      !selectedInterviewer ||
-      !selectedTimeSlot ||
-      !newInterview.applicantId
-    ) {
+    if (!selectedInterviewer || !selectedTimeSlot) {
       toast({
         title: "Missing Information",
-        description: "Please fill in all required fields.",
+        description: "Please select an interviewer and time slot.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // For placeholder bookings, we don't need an applicant
+    if (!newInterview.isPlaceholder && !newInterview.applicantId) {
+      toast({
+        title: "Missing Information",
+        description: "Please select an applicant or mark as a reserved slot.",
         variant: "destructive",
       });
       return;
@@ -556,28 +595,37 @@ const Scheduler: React.FC = () => {
     const endTime = new Date(startTime);
     endTime.setMinutes(endTime.getMinutes() + 15); // 15 minute interview
 
-    // Find the selected applicant
-    const selectedApplicant = applicants.find(
-      (a) => a.id === newInterview.applicantId,
-    );
-    if (!selectedApplicant) {
-      toast({
-        title: "Error",
-        description: "Selected applicant not found or no longer available.",
-        variant: "destructive",
-      });
-      return;
+    // Find the selected applicant if not a placeholder
+    let applicantName = "Reserved Slot";
+    if (!newInterview.isPlaceholder) {
+      const selectedApplicant = applicants.find(
+        (a) => a.id === newInterview.applicantId,
+      );
+      if (!selectedApplicant) {
+        toast({
+          title: "Error",
+          description: "Selected applicant not found or no longer available.",
+          variant: "destructive",
+        });
+        return;
+      }
+      applicantName = selectedApplicant.name;
     }
 
     const interview: Interview = {
       id: Math.random().toString(36).substring(2, 9),
-      applicantName: selectedApplicant.name,
-      applicantId: selectedApplicant.id,
+      applicantName: newInterview.isPlaceholder
+        ? "Reserved Slot"
+        : applicantName,
+      applicantId: newInterview.isPlaceholder
+        ? undefined
+        : newInterview.applicantId,
       startTime,
       endTime,
       teamId: newInterview.teamId || undefined,
       location: newInterview.location || "TBD",
       interviewerId: selectedInterviewer,
+      isPlaceholder: newInterview.isPlaceholder,
     };
 
     // Save to database first
@@ -602,6 +650,7 @@ const Scheduler: React.FC = () => {
         applicantName: "",
         location: "",
         teamId: "",
+        isPlaceholder: false,
       });
       setApplicantSearch("");
       setSelectedTimeSlot(null);
@@ -612,31 +661,42 @@ const Scheduler: React.FC = () => {
 
   // Add multiple interviews for selected time slots
   const addMultipleInterviews = async () => {
-    if (
-      !selectedInterviewer ||
-      selectedTimeSlots.length === 0 ||
-      !newInterview.applicantId
-    ) {
+    if (!selectedInterviewer || selectedTimeSlots.length === 0) {
       toast({
         title: "Missing Information",
-        description:
-          "Please select an interviewer, applicant, and at least one time slot.",
+        description: "Please select an interviewer and at least one time slot.",
         variant: "destructive",
       });
       return;
     }
 
-    // Find the selected applicant
-    const selectedApplicant = applicants.find(
-      (a) => a.id === newInterview.applicantId,
-    );
-    if (!selectedApplicant) {
+    // For placeholder bookings, we don't need an applicant
+    if (!newInterview.isPlaceholder && !newInterview.applicantId) {
       toast({
-        title: "Error",
-        description: "Selected applicant not found or no longer available.",
+        title: "Missing Information",
+        description: "Please select an applicant or mark as a reserved slot.",
         variant: "destructive",
       });
       return;
+    }
+
+    // Find the selected applicant if not a placeholder
+    let applicantName = "Reserved Slot";
+    let applicantId = undefined;
+    if (!newInterview.isPlaceholder) {
+      const selectedApplicant = applicants.find(
+        (a) => a.id === newInterview.applicantId,
+      );
+      if (!selectedApplicant) {
+        toast({
+          title: "Error",
+          description: "Selected applicant not found or no longer available.",
+          variant: "destructive",
+        });
+        return;
+      }
+      applicantName = selectedApplicant.name;
+      applicantId = selectedApplicant.id;
     }
 
     let successCount = 0;
@@ -652,13 +712,16 @@ const Scheduler: React.FC = () => {
 
       const interview: Interview = {
         id: Math.random().toString(36).substring(2, 9),
-        applicantName: selectedApplicant.name,
-        applicantId: selectedApplicant.id,
+        applicantName: newInterview.isPlaceholder
+          ? "Reserved Slot"
+          : applicantName,
+        applicantId: newInterview.isPlaceholder ? undefined : applicantId,
         startTime,
         endTime,
         teamId: newInterview.teamId || undefined,
         location: newInterview.location || "TBD",
         interviewerId: selectedInterviewer,
+        isPlaceholder: newInterview.isPlaceholder,
       };
 
       // Save to database
@@ -686,12 +749,12 @@ const Scheduler: React.FC = () => {
     if (successCount > 0) {
       toast({
         title: "Success",
-        description: `Scheduled ${successCount} interviews successfully${failCount > 0 ? ` (${failCount} failed)` : ""}.`,
+        description: `Scheduled ${successCount} ${newInterview.isPlaceholder ? "reserved slots" : "interviews"} successfully${failCount > 0 ? ` (${failCount} failed)` : ""}.`,
       });
     } else if (failCount > 0) {
       toast({
         title: "Error",
-        description: `Failed to schedule ${failCount} interviews.`,
+        description: `Failed to schedule ${failCount} ${newInterview.isPlaceholder ? "reserved slots" : "interviews"}.`,
       });
     }
 
@@ -701,6 +764,7 @@ const Scheduler: React.FC = () => {
       applicantName: "",
       location: "",
       teamId: "",
+      isPlaceholder: false,
     });
     setApplicantSearch("");
     setSelectedTimeSlots([]);
@@ -721,11 +785,12 @@ const Scheduler: React.FC = () => {
   };
 
   // Update team priorities
-  const updateTeamPriority = (
+  const updateTeamPriority = async (
     interviewerId: string,
     teamId: string,
     priority: number,
   ) => {
+    // First update the local state for immediate feedback
     setInterviewers((prev) =>
       prev.map((interviewer) => {
         if (interviewer.id === interviewerId) {
@@ -733,36 +798,71 @@ const Scheduler: React.FC = () => {
           const existingIndex = interviewer.priorityTeams.findIndex(
             (pt) => pt.teamId === teamId,
           );
+          const updatedPriorities = [...interviewer.priorityTeams];
 
           if (existingIndex >= 0) {
             // Update existing priority
-            const updatedPriorities = [...interviewer.priorityTeams];
             updatedPriorities[existingIndex] = {
               ...updatedPriorities[existingIndex],
               priority,
             };
-            return { ...interviewer, priorityTeams: updatedPriorities };
           } else {
             // Add new priority - ensure teamId is a valid Challenge
             if (Object.values(Challenge).includes(teamId as Challenge)) {
-              return {
-                ...interviewer,
-                priorityTeams: [
-                  ...interviewer.priorityTeams,
-                  { teamId: teamId as Challenge, priority },
-                ],
-              };
+              updatedPriorities.push({ teamId: teamId as Challenge, priority });
             }
-            return interviewer;
           }
+
+          return { ...interviewer, priorityTeams: updatedPriorities };
         }
         return interviewer;
       }),
     );
+
+    // Then update in the database
+    try {
+      const interviewer = interviewers.find((i) => i.id === interviewerId);
+      if (!interviewer) return;
+
+      // Get all current team priorities
+      const currentTeams = interviewer.priorityTeams.map((pt) => pt.teamId);
+
+      // Add or update the new team
+      const updatedTeams = [...currentTeams];
+      if (!currentTeams.includes(teamId as Challenge)) {
+        updatedTeams.push(teamId as Challenge);
+      }
+
+      // Send the update to the server
+      const response = await fetch("/api/interviewers", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          interviewerId,
+          targetTeams: updatedTeams,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update team priorities");
+      }
+
+      // No need to update local state again as we already did it above
+    } catch (error) {
+      console.error("Error updating team priorities:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update team priorities. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Remove a team priority
-  const removeTeamPriority = (interviewerId: string, teamId: string) => {
+  const removeTeamPriority = async (interviewerId: string, teamId: string) => {
+    // First update the local state for immediate feedback
     setInterviewers((prev) =>
       prev.map((interviewer) => {
         if (interviewer.id === interviewerId) {
@@ -776,6 +876,42 @@ const Scheduler: React.FC = () => {
         return interviewer;
       }),
     );
+
+    // Then update in the database
+    try {
+      const interviewer = interviewers.find((i) => i.id === interviewerId);
+      if (!interviewer) return;
+
+      // Get all current team priorities except the one to remove
+      const updatedTeams = interviewer.priorityTeams
+        .filter((pt) => pt.teamId !== teamId)
+        .map((pt) => pt.teamId);
+
+      // Send the update to the server
+      const response = await fetch("/api/interviewers", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          interviewerId,
+          targetTeams: updatedTeams,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to remove team priority");
+      }
+
+      // No need to update local state again as we already did it above
+    } catch (error) {
+      console.error("Error removing team priority:", error);
+      toast({
+        title: "Error",
+        description: "Failed to remove team priority. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Navigation functions
@@ -919,6 +1055,8 @@ const Scheduler: React.FC = () => {
       setEditedInterview({
         location: existingInterview.location,
         teamId: existingInterview.teamId ?? "",
+        applicantId: existingInterview.applicantId,
+        applicantName: existingInterview.applicantName,
       });
       setIsEditingInterview(false);
       setIsViewModalOpen(true);
@@ -944,10 +1082,19 @@ const Scheduler: React.FC = () => {
   const handleSaveEditedInterview = async () => {
     if (!selectedInterview) return;
 
-    const success = await updateInterview(selectedInterview.id, {
-      location: editedInterview.location,
-      teamId: editedInterview.teamId,
-    });
+    const updates: {
+      location?: string;
+      teamId?: string;
+      applicantId?: string;
+      applicantName?: string;
+    } = {};
+
+    if (editedInterview.location) updates.location = editedInterview.location;
+    if (editedInterview.teamId) updates.teamId = editedInterview.teamId;
+    if (editedInterview.applicantId)
+      updates.applicantId = editedInterview.applicantId;
+
+    const success = await updateInterview(selectedInterview.id, updates);
 
     if (success) {
       // Update local state
@@ -960,8 +1107,10 @@ const Scheduler: React.FC = () => {
                 interview.id === selectedInterview.id
                   ? {
                       ...interview,
-                      location: editedInterview.location,
-                      teamId: editedInterview.teamId,
+                      ...updates,
+                      applicantName:
+                        editedInterview.applicantName ||
+                        interview.applicantName,
                     }
                   : interview,
               ),
@@ -981,7 +1130,7 @@ const Scheduler: React.FC = () => {
     if (!selectedInterview) return;
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete this interview with ${selectedInterview.applicantName}?`,
+      `Are you sure you want to delete this ${selectedInterview.isPlaceholder ? "reserved slot" : "interview"} with ${selectedInterview.applicantName}?`,
     );
 
     if (confirmed) {
@@ -1354,7 +1503,12 @@ const Scheduler: React.FC = () => {
                                               (interview, i) => (
                                                 <div
                                                   key={i}
-                                                  className="absolute inset-0 m-1 overflow-hidden rounded bg-stone-600 p-1"
+                                                  className={cn(
+                                                    "absolute inset-0 m-1 overflow-hidden rounded p-1",
+                                                    interview.isPlaceholder
+                                                      ? "bg-blue-600"
+                                                      : "bg-stone-600",
+                                                  )}
                                                 >
                                                   <div className="truncate text-xs font-medium">
                                                     {interview.applicantName}
@@ -1439,53 +1593,74 @@ const Scheduler: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="applicantName" className="text-right">
-                Applicant
-              </Label>
-              <div className="col-span-3 space-y-2">
-                <div className="relative">
-                  <Search className="absolute left-2 top-2.5 h-4 w-4 text-neutral-500" />
-                  <Input
-                    placeholder="Search applicants..."
-                    value={applicantSearch}
-                    onChange={(e) => setApplicantSearch(e.target.value)}
-                    className="border-neutral-700 bg-neutral-800 pl-8"
-                  />
-                </div>
-                <div className="max-h-40 overflow-y-auto rounded-md border border-neutral-700 bg-neutral-800 p-1">
-                  {isLoadingApplicants ? (
-                    <div className="px-2 py-1 text-sm text-neutral-500">
-                      Loading applicants...
-                    </div>
-                  ) : filteredApplicants.length > 0 ? (
-                    filteredApplicants.map((applicant) => (
-                      <div
-                        key={applicant.id}
-                        className={cn(
-                          "cursor-pointer rounded-sm px-2 py-1 text-sm",
-                          newInterview.applicantId === applicant.id
-                            ? "bg-stone-600 text-white"
-                            : "hover:bg-neutral-700",
-                        )}
-                        onClick={() =>
-                          setNewInterview({
-                            ...newInterview,
-                            applicantId: applicant.id,
-                            applicantName: applicant.name,
-                          })
-                        }
-                      >
-                        {applicant.name}
-                      </div>
-                    ))
-                  ) : (
-                    <div className="px-2 py-1 text-sm text-neutral-500">
-                      No applicants with INTERVIEWING status found
-                    </div>
-                  )}
-                </div>
+              <Label className="text-right">Reserve Only</Label>
+              <div className="col-span-3 flex items-center space-x-2">
+                <Checkbox
+                  id="reserve-only"
+                  checked={newInterview.isPlaceholder}
+                  onCheckedChange={(checked) => {
+                    setNewInterview({
+                      ...newInterview,
+                      isPlaceholder: !!checked,
+                    });
+                  }}
+                />
+                <Label htmlFor="reserve-only" className="cursor-pointer">
+                  Book as reserved slot (no applicant)
+                </Label>
               </div>
             </div>
+
+            {!newInterview.isPlaceholder && (
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="applicantName" className="text-right">
+                  Applicant
+                </Label>
+                <div className="col-span-3 space-y-2">
+                  <div className="relative">
+                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-neutral-500" />
+                    <Input
+                      placeholder="Search applicants..."
+                      value={applicantSearch}
+                      onChange={(e) => setApplicantSearch(e.target.value)}
+                      className="border-neutral-700 bg-neutral-800 pl-8"
+                    />
+                  </div>
+                  <div className="max-h-40 overflow-y-auto rounded-md border border-neutral-700 bg-neutral-800 p-1">
+                    {isLoadingApplicants ? (
+                      <div className="px-2 py-1 text-sm text-neutral-500">
+                        Loading applicants...
+                      </div>
+                    ) : filteredApplicants.length > 0 ? (
+                      filteredApplicants.map((applicant) => (
+                        <div
+                          key={applicant.id}
+                          className={cn(
+                            "cursor-pointer rounded-sm px-2 py-1 text-sm",
+                            newInterview.applicantId === applicant.id
+                              ? "bg-stone-600 text-white"
+                              : "hover:bg-neutral-700",
+                          )}
+                          onClick={() =>
+                            setNewInterview({
+                              ...newInterview,
+                              applicantId: applicant.id,
+                              applicantName: applicant.name,
+                            })
+                          }
+                        >
+                          {applicant.name}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-2 py-1 text-sm text-neutral-500">
+                        No applicants with INTERVIEWING status found
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="location" className="text-right">
@@ -1536,6 +1711,13 @@ const Scheduler: React.FC = () => {
                 } else {
                   setSelectedTimeSlot(null);
                 }
+                setNewInterview({
+                  applicantId: "",
+                  applicantName: "",
+                  location: "",
+                  teamId: "",
+                  isPlaceholder: false,
+                });
               }}
               className="border-neutral-600 bg-transparent hover:bg-neutral-800 hover:text-white"
             >
@@ -1549,9 +1731,13 @@ const Scheduler: React.FC = () => {
               }
               className="bg-stone-600 hover:bg-stone-500"
             >
-              {isMultiSelectMode && selectedTimeSlots.length > 0
-                ? "Schedule Multiple"
-                : "Schedule"}
+              {newInterview.isPlaceholder
+                ? isMultiSelectMode && selectedTimeSlots.length > 0
+                  ? "Reserve Multiple"
+                  : "Reserve Slot"
+                : isMultiSelectMode && selectedTimeSlots.length > 0
+                  ? "Schedule Multiple"
+                  : "Schedule"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1562,7 +1748,13 @@ const Scheduler: React.FC = () => {
         <DialogContent className="border-neutral-700 bg-neutral-900 text-white">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              {isEditingInterview ? "Edit Interview" : "Interview Details"}
+              {isEditingInterview
+                ? selectedInterview?.isPlaceholder
+                  ? "Edit Reserved Slot"
+                  : "Edit Interview"
+                : selectedInterview?.isPlaceholder
+                  ? "Reserved Slot Details"
+                  : "Interview Details"}
             </DialogTitle>
           </DialogHeader>
 
@@ -1571,18 +1763,27 @@ const Scheduler: React.FC = () => {
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right font-medium">Date & Time</Label>
                 <div className="col-span-3 text-neutral-200">
-                  {format(selectedInterview.startTime, "MMMM d, yyyy")} at{" "}
-                  {format(selectedInterview.startTime, "h:mm a")} -{" "}
-                  {format(selectedInterview.endTime, "h:mm a")}
+                  {selectedInterview && selectedInterview.startTime && (
+                    <>
+                      {format(selectedInterview.startTime, "MMMM d, yyyy")} at{" "}
+                      {selectedInterview.startTime &&
+                        format(selectedInterview.startTime, "h:mm a")}{" "}
+                      -
+                      {selectedInterview.endTime &&
+                        format(selectedInterview.endTime, "h:mm a")}
+                    </>
+                  )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label className="text-right font-medium">Applicant</Label>
-                <div className="col-span-3 text-neutral-200">
-                  {selectedInterview.applicantName}
+              {!selectedInterview.isPlaceholder && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label className="text-right font-medium">Applicant</Label>
+                  <div className="col-span-3 text-neutral-200">
+                    {selectedInterview.applicantName}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right font-medium">Location</Label>

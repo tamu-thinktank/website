@@ -4,6 +4,8 @@ import { db } from "@/lib/db"
 interface UpdateInterviewRequest {
   location?: string
   teamId?: string
+  applicantId?: string
+  applicantName?: string
 }
 
 export async function PATCH(request: Request, { params }: { params: { id: string } }) {
@@ -12,19 +14,32 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const body = (await request.json()) as UpdateInterviewRequest
 
     // Validate the request body
-    if (!body.location && !body.teamId) {
+    if (!body.location && !body.teamId && !body.applicantId && !body.applicantName) {
       return NextResponse.json({ error: "At least one field to update must be provided" }, { status: 400 })
     }
 
     // Prepare the update data
-    const updateData: { location?: string; teamId?: string } = {}
+    const updateData: { location?: string; teamId?: string; applicantId?: string } = {}
     if (body.location) updateData.location = body.location
     if (body.teamId) updateData.teamId = body.teamId
+    if (body.applicantId) updateData.applicantId = body.applicantId
 
     // Update the interview
     const updatedInterview = await db.interview.update({
       where: { id },
       data: updateData,
+      include: {
+        applicant: {
+          select: {
+            fullName: true,
+          },
+        },
+        interviewer: {
+          select: {
+            name: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(updatedInterview)
