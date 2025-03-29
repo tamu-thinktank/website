@@ -371,7 +371,7 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-  // Schedule interview and send email
+  // Update scheduleInterview function to include team and applicationType
   const scheduleInterview = async () => {
     if (
       !applicantId ||
