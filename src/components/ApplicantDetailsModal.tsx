@@ -369,7 +369,7 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-  // Update the scheduleInterview function to use the tRPC endpoint
+  // Schedule interview and send email
   const scheduleInterview = async () => {
     if (
       !applicantId ||
@@ -389,7 +389,15 @@ export const ApplicantDetailsModal = ({
     try {
       setIsSendingEmail(true);
 
-      // First create the interview record
+      // Get the interviewer details
+      const interviewer = interviewers.find(
+        (i) => i.id === selectedInterviewer,
+      );
+      if (!interviewer) {
+        throw new Error("Selected interviewer not found");
+      }
+
+      // Create the interview record
       const response = await fetch("/api/schedule-interview", {
         method: "POST",
         headers: {
@@ -400,7 +408,6 @@ export const ApplicantDetailsModal = ({
           interviewerId: selectedInterviewer,
           time: interviewTime,
           location: interviewRoom,
-          teamId: assignedTeam === "NONE" ? undefined : assignedTeam,
         }),
       });
 
@@ -408,19 +415,11 @@ export const ApplicantDetailsModal = ({
         throw new Error(`Failed to schedule interview: ${response.status}`);
       }
 
-      // Get the interviewer details
-      const interviewer = interviewers.find(
-        (i) => i.id === selectedInterviewer,
-      );
-      if (!interviewer) {
-        throw new Error("Selected interviewer not found");
-      }
-
-      // Send interview email using the tRPC mutation
+      // Send interview email using the tRPC mutation - similar to how rejection email is sent
       sendInterviewEmail({
         officerId: interviewer.id,
         officerName: interviewer.name,
-        officerEmail: `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`, // This is a placeholder
+        officerEmail: `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`,
         applicantName: applicant.fullName,
         applicantEmail: applicant.email,
         startTime: interviewTime,
@@ -429,19 +428,16 @@ export const ApplicantDetailsModal = ({
         applicationType: applicant.applicationType || "General",
       });
 
+      // Refresh the scheduler data to show the new interview
+      await fetch("/api/interviews", { method: "GET" });
+
       toast({
         title: "Success",
-        description: "Interview scheduled successfully",
+        description: "Interview scheduled successfully and email sent",
       });
 
       // Refresh applicant details to get updated status
       await fetchApplicantDetails(applicantId);
-
-      // If isLocked is true, update the scheduler with a reserved block
-      if (isLocked) {
-        // Refresh the scheduler data
-        await fetch("/api/interviews", { method: "GET" });
-      }
     } catch (err) {
       console.error("Error scheduling interview:", err);
       toast({
@@ -454,9 +450,7 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-  // Update the toggleLock function to handle locking and scheduling
-  // Add this new function after the scheduleInterview function:
-
+  // Toggle lock and schedule interview if locking
   const toggleLock = () => {
     if (
       !isLocked &&

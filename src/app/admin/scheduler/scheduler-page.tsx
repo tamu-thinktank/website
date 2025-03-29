@@ -74,7 +74,7 @@ interface Interview {
   applicantId: string;
   startTime: Date;
   endTime: Date;
-  teamId: string;
+  teamId?: string;
   location: string;
   interviewerId?: string;
 }
@@ -165,8 +165,9 @@ const Scheduler: React.FC = () => {
 
   // State for multi-select time slots
   const [isMultiSelectMode, setIsMultiSelectMode] = React.useState(false);
-  const [selectedTimeRange, setSelectedTimeRange] =
-    React.useState<SelectedTimeRange | null>(null);
+  const [selectedTimeSlots, setSelectedTimeSlots] = React.useState<
+    { date: Date; timeSlot: TimeSlot }[]
+  >([]);
 
   const [newInterview, setNewInterview] = React.useState({
     applicantId: "",
@@ -176,7 +177,7 @@ const Scheduler: React.FC = () => {
   });
 
   // For real-time updates
-  const [lastUpdate] = React.useState<Date>(new Date());
+  const [_lastUpdate, _setLastUpdate] = React.useState<Date>(new Date());
 
   // Team options
   const teams = [
@@ -197,7 +198,7 @@ const Scheduler: React.FC = () => {
     // Set up polling for real-time updates
     const intervalId = setInterval(() => {
       void fetchInterviews();
-    }, 10000); // Poll every 10 seconds
+    }, 30000); // Poll every 30 seconds instead of 10 to reduce spam
 
     return () => clearInterval(intervalId);
   }, []);
@@ -235,7 +236,7 @@ const Scheduler: React.FC = () => {
           interviewer.targetTeams?.map((teamId, index) => ({
             teamId: teamId as Challenge,
             priority: index + 1,
-          })) || [],
+          })) ?? [],
         interviews: [],
         openCalendar: false,
       }));
@@ -307,12 +308,12 @@ const Scheduler: React.FC = () => {
             openCalendar: interviewer.openCalendar,
             interviews: interviewerInterviews.map((interview) => ({
               id: interview.id,
-              applicantName: interview.applicant?.fullName || "Unknown",
+              applicantName: interview.applicant?.fullName ?? "Unknown",
               applicantId: interview.applicantId,
               startTime: new Date(interview.startTime),
               endTime: new Date(interview.endTime),
-              teamId: interview.teamId || "TEAM1",
-              location: interview.location || "TBD",
+              teamId: interview.teamId,
+              location: interview.location ?? "TBD",
               interviewerId: interview.interviewerId,
             })),
           };
@@ -320,11 +321,7 @@ const Scheduler: React.FC = () => {
       });
     } catch (error) {
       console.error("Error fetching interviews:", error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch interviews. Please try again.",
-        variant: "destructive",
-      });
+      // Don't show toast on every error to prevent spam
     }
   };
 
@@ -542,8 +539,7 @@ const Scheduler: React.FC = () => {
     if (
       !selectedInterviewer ||
       !selectedTimeSlot ||
-      !newInterview.applicantId ||
-      !newInterview.teamId
+      !newInterview.applicantId
     ) {
       toast({
         title: "Missing Information",
@@ -579,7 +575,7 @@ const Scheduler: React.FC = () => {
       applicantId: selectedApplicant.id,
       startTime,
       endTime,
-      teamId: newInterview.teamId,
+      teamId: newInterview.teamId || undefined,
       location: newInterview.location || "TBD",
       interviewerId: selectedInterviewer,
     };
@@ -614,18 +610,17 @@ const Scheduler: React.FC = () => {
     }
   };
 
-  // Add multiple interviews for a time range
+  // Add multiple interviews for selected time slots
   const addMultipleInterviews = async () => {
     if (
       !selectedInterviewer ||
-      !selectedTimeRange ||
-      !newInterview.applicantId ||
-      !newInterview.teamId
+      selectedTimeSlots.length === 0 ||
+      !newInterview.applicantId
     ) {
       toast({
         title: "Missing Information",
         description:
-          "Please fill in all required fields and select a time range.",
+          "Please select an interviewer, applicant, and at least one time slot.",
         variant: "destructive",
       });
       return;
@@ -644,18 +639,16 @@ const Scheduler: React.FC = () => {
       return;
     }
 
-    // If we only have a start time, schedule a single interview
-    if (!selectedTimeRange.endTimeSlot) {
-      const startTime = new Date(selectedTimeRange.startDate);
-      startTime.setHours(
-        selectedTimeRange.startTimeSlot.hour,
-        selectedTimeRange.startTimeSlot.minute,
-        0,
-        0,
-      );
+    let successCount = 0;
+    let failCount = 0;
+
+    // Create and save an interview for each selected time slot
+    for (const slot of selectedTimeSlots) {
+      const startTime = new Date(slot.date);
+      startTime.setHours(slot.timeSlot.hour, slot.timeSlot.minute, 0, 0);
 
       const endTime = new Date(startTime);
-      endTime.setMinutes(endTime.getMinutes() + 15); // 15 minute interview
+      endTime.setMinutes(endTime.getMinutes() + 15);
 
       const interview: Interview = {
         id: Math.random().toString(36).substring(2, 9),
@@ -663,7 +656,7 @@ const Scheduler: React.FC = () => {
         applicantId: selectedApplicant.id,
         startTime,
         endTime,
-        teamId: newInterview.teamId,
+        teamId: newInterview.teamId || undefined,
         location: newInterview.location || "TBD",
         interviewerId: selectedInterviewer,
       };
@@ -672,6 +665,7 @@ const Scheduler: React.FC = () => {
       const success = await saveInterview(interview, selectedInterviewer);
 
       if (success) {
+        successCount++;
         // Update local state
         setInterviewers((prev) =>
           prev.map((interviewer) =>
@@ -683,162 +677,22 @@ const Scheduler: React.FC = () => {
               : interviewer,
           ),
         );
+      } else {
+        failCount++;
       }
-    } else {
-      // We have a range, schedule multiple interviews
-      // First, determine the start and end times
-      const startDate = selectedTimeRange.startDate;
-      const startHour = selectedTimeRange.startTimeSlot.hour;
-      const startMinute = selectedTimeRange.startTimeSlot.minute;
+    }
 
-      const endDate = selectedTimeRange.endDate ?? selectedTimeRange.startDate;
-      const endHour = selectedTimeRange.endTimeSlot.hour ?? startHour;
-      const endMinute = selectedTimeRange.endTimeSlot.minute ?? startMinute;
-
-      // Create a list of all 15-minute slots in the range
-      const timeSlots: { date: Date; hour: number; minute: number }[] = [];
-
-      // If same day, just iterate through the time slots
-      if (isSameDay(startDate, endDate)) {
-        let currentHour = startHour;
-        let currentMinute = startMinute;
-
-        while (
-          currentHour < endHour ||
-          (currentHour === endHour && currentMinute <= endMinute)
-        ) {
-          timeSlots.push({
-            date: new Date(startDate),
-            hour: currentHour,
-            minute: currentMinute,
-          });
-
-          // Move to next 15-minute slot
-          currentMinute += 15;
-          if (currentMinute >= 60) {
-            currentHour += 1;
-            currentMinute = 0;
-          }
-        }
-      } else if (endDate) {
-        // Multiple days, iterate through each day
-        const days = eachDayOfInterval({ start: startDate, end: endDate });
-
-        days.forEach((day, index) => {
-          // For first day, start from the selected start time
-          if (index === 0) {
-            let currentHour = startHour;
-            let currentMinute = startMinute;
-
-            while (currentHour <= 22) {
-              // End at 10 PM
-              timeSlots.push({
-                date: new Date(day),
-                hour: currentHour,
-                minute: currentMinute,
-              });
-
-              // Move to next 15-minute slot
-              currentMinute += 15;
-              if (currentMinute >= 60) {
-                currentHour += 1;
-                currentMinute = 0;
-              }
-            }
-          }
-          // For last day, end at the selected end time
-          else if (index === days.length - 1) {
-            let currentHour = 8; // Start at 8 AM
-            let currentMinute = 0;
-
-            while (
-              currentHour < endHour ||
-              (currentHour === endHour && currentMinute <= endMinute)
-            ) {
-              timeSlots.push({
-                date: new Date(day),
-                hour: currentHour,
-                minute: currentMinute,
-              });
-
-              // Move to next 15-minute slot
-              currentMinute += 15;
-              if (currentMinute >= 60) {
-                currentHour += 1;
-                currentMinute = 0;
-              }
-            }
-          }
-          // For middle days, include all slots from 8 AM to 10 PM
-          else {
-            for (let hour = 8; hour <= 22; hour++) {
-              for (let minute = 0; minute < 60; minute += 15) {
-                timeSlots.push({
-                  date: new Date(day),
-                  hour,
-                  minute,
-                });
-              }
-            }
-          }
-        });
-      }
-
-      // Now create and save interviews for each time slot
-      let successCount = 0;
-      let failCount = 0;
-
-      for (const slot of timeSlots) {
-        const startTime = new Date(slot.date);
-        startTime.setHours(slot.hour, slot.minute, 0, 0);
-
-        const endTime = new Date(startTime);
-        endTime.setMinutes(endTime.getMinutes() + 15);
-
-        const interview: Interview = {
-          id: Math.random().toString(36).substring(2, 9),
-          applicantName: selectedApplicant.name,
-          applicantId: selectedApplicant.id,
-          startTime,
-          endTime,
-          teamId: newInterview.teamId,
-          location: newInterview.location || "TBD",
-          interviewerId: selectedInterviewer,
-        };
-
-        // Save to database
-        const success = await saveInterview(interview, selectedInterviewer);
-
-        if (success) {
-          successCount++;
-          // Update local state
-          setInterviewers((prev) =>
-            prev.map((interviewer) =>
-              interviewer.id === selectedInterviewer
-                ? {
-                    ...interviewer,
-                    interviews: [...interviewer.interviews, interview],
-                  }
-                : interviewer,
-            ),
-          );
-        } else {
-          failCount++;
-        }
-      }
-
-      // Show summary toast
-      if (successCount > 0) {
-        toast({
-          title: "Success",
-          description: `Scheduled ${successCount} interviews successfully${failCount > 0 ? ` (${failCount} failed)` : ""}.`,
-        });
-      } else if (failCount > 0) {
-        toast({
-          title: "Error",
-          description: `Failed to schedule ${failCount} interviews.`,
-        });
-      }
+    // Show summary toast
+    if (successCount > 0) {
+      toast({
+        title: "Success",
+        description: `Scheduled ${successCount} interviews successfully${failCount > 0 ? ` (${failCount} failed)` : ""}.`,
+      });
+    } else if (failCount > 0) {
+      toast({
+        title: "Error",
+        description: `Failed to schedule ${failCount} interviews.`,
+      });
     }
 
     // Reset form and close modal
@@ -849,7 +703,7 @@ const Scheduler: React.FC = () => {
       teamId: "",
     });
     setApplicantSearch("");
-    setSelectedTimeRange(null);
+    setSelectedTimeSlots([]);
     setSelectedInterviewer(null);
     setIsMultiSelectMode(false);
     setIsScheduleModalOpen(false);
@@ -890,14 +744,16 @@ const Scheduler: React.FC = () => {
             return { ...interviewer, priorityTeams: updatedPriorities };
           } else {
             // Add new priority - ensure teamId is a valid Challenge
-            const validTeamId = teamId as Challenge;
-            return {
-              ...interviewer,
-              priorityTeams: [
-                ...interviewer.priorityTeams,
-                { teamId: validTeamId, priority },
-              ],
-            };
+            if (Object.values(Challenge).includes(teamId as Challenge)) {
+              return {
+                ...interviewer,
+                priorityTeams: [
+                  ...interviewer.priorityTeams,
+                  { teamId: teamId as Challenge, priority },
+                ],
+              };
+            }
+            return interviewer;
           }
         }
         return interviewer;
@@ -986,29 +842,56 @@ const Scheduler: React.FC = () => {
     timeSlot: TimeSlot,
   ) => {
     if (isMultiSelectMode) {
-      // If we're in multi-select mode, handle range selection
-      if (!selectedTimeRange) {
-        // First selection - set the start of the range
-        setSelectedTimeRange({
-          startDate: date,
-          startTimeSlot: timeSlot,
-        });
-      } else if (!selectedTimeRange.endTimeSlot) {
-        // Second selection - set the end of the range
-        setSelectedTimeRange({
-          ...selectedTimeRange,
-          endDate: date,
-          endTimeSlot: timeSlot,
-        });
+      // If we're in multi-select mode, add this slot to our selected slots
+      const newSlot = { date, timeSlot };
 
-        // Open the schedule modal with the selected range
+      // Check if this slot is already selected
+      const isAlreadySelected = selectedTimeSlots.some(
+        (slot) =>
+          isSameDay(slot.date, date) &&
+          slot.timeSlot.hour === timeSlot.hour &&
+          slot.timeSlot.minute === timeSlot.minute,
+      );
+
+      if (isAlreadySelected) {
+        // If already selected, remove it
+        setSelectedTimeSlots((prev) =>
+          prev.filter(
+            (slot) =>
+              !(
+                isSameDay(slot.date, date) &&
+                slot.timeSlot.hour === timeSlot.hour &&
+                slot.timeSlot.minute === timeSlot.minute
+              ),
+          ),
+        );
+      } else {
+        // If not selected, add it
+        setSelectedTimeSlots((prev) => [...prev, newSlot]);
+      }
+
+      // Set the interviewer if not already set
+      if (!selectedInterviewer) {
         setSelectedInterviewer(interviewerId);
-        setIsScheduleModalOpen(true);
       }
     } else {
       // Regular single slot selection
       openScheduleModal(interviewerId, date, timeSlot);
     }
+  };
+
+  // Open the schedule modal with multiple selected time slots
+  const openMultiSelectModal = () => {
+    if (selectedTimeSlots.length === 0 || !selectedInterviewer) {
+      toast({
+        title: "No Time Slots Selected",
+        description: "Please select at least one time slot before scheduling.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsScheduleModalOpen(true);
   };
 
   // Open schedule modal
@@ -1035,7 +918,7 @@ const Scheduler: React.FC = () => {
       setSelectedInterview(existingInterview);
       setEditedInterview({
         location: existingInterview.location,
-        teamId: existingInterview.teamId,
+        teamId: existingInterview.teamId ?? "",
       });
       setIsEditingInterview(false);
       setIsViewModalOpen(true);
@@ -1123,6 +1006,16 @@ const Scheduler: React.FC = () => {
         setIsViewModalOpen(false);
       }
     }
+  };
+
+  // Check if a time slot is selected in multi-select mode
+  const isTimeSlotSelected = (date: Date, timeSlot: TimeSlot) => {
+    return selectedTimeSlots.some(
+      (slot) =>
+        isSameDay(slot.date, date) &&
+        slot.timeSlot.hour === timeSlot.hour &&
+        slot.timeSlot.minute === timeSlot.minute,
+    );
   };
 
   return (
@@ -1229,13 +1122,21 @@ const Scheduler: React.FC = () => {
                     checked={isMultiSelectMode}
                     onCheckedChange={(checked) => {
                       setIsMultiSelectMode(!!checked);
-                      setSelectedTimeRange(null);
+                      setSelectedTimeSlots([]);
                     }}
                   />
                   <Label htmlFor="multi-select" className="cursor-pointer">
                     Multi-select mode
                   </Label>
                 </div>
+                {isMultiSelectMode && selectedTimeSlots.length > 0 && (
+                  <Button
+                    onClick={openMultiSelectModal}
+                    className="ml-2 bg-blue-600 hover:bg-blue-700"
+                  >
+                    Schedule {selectedTimeSlots.length} Slots
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -1422,20 +1323,9 @@ const Scheduler: React.FC = () => {
 
                                       const hasInterview =
                                         slotInterviews.length > 0;
-
-                                      // Check if this slot is part of the selected range
-                                      const isInSelectedRange =
-                                        selectedTimeRange &&
-                                        isSameDay(
-                                          date,
-                                          selectedTimeRange.startDate,
-                                        ) &&
-                                        timeSlot.hour ===
-                                          selectedTimeRange.startTimeSlot
-                                            .hour &&
-                                        timeSlot.minute ===
-                                          selectedTimeRange.startTimeSlot
-                                            .minute;
+                                      const isSelected =
+                                        isMultiSelectMode &&
+                                        isTimeSlotSelected(date, timeSlot);
 
                                       return (
                                         <div
@@ -1445,8 +1335,8 @@ const Scheduler: React.FC = () => {
                                             isWeekend(date) &&
                                               "bg-neutral-800/50",
                                             hasInterview && "bg-stone-700/50",
-                                            isInSelectedRange &&
-                                              "ring-2 ring-blue-500",
+                                            isSelected &&
+                                              "bg-blue-900/30 ring-2 ring-blue-500",
                                             isMultiSelectMode &&
                                               !hasInterview &&
                                               "hover:bg-blue-900/30",
@@ -1511,8 +1401,8 @@ const Scheduler: React.FC = () => {
         <DialogContent className="border-neutral-700 bg-neutral-900 text-white">
           <DialogHeader>
             <DialogTitle className="text-xl">
-              {isMultiSelectMode && selectedTimeRange?.endTimeSlot
-                ? "Schedule Multiple Interviews"
+              {isMultiSelectMode && selectedTimeSlots.length > 0
+                ? `Schedule ${selectedTimeSlots.length} Interviews`
                 : "Schedule Interview"}
             </DialogTitle>
           </DialogHeader>
@@ -1523,23 +1413,18 @@ const Scheduler: React.FC = () => {
                 Date & Time
               </Label>
               <div className="col-span-3">
-                {isMultiSelectMode && selectedTimeRange ? (
+                {isMultiSelectMode && selectedTimeSlots.length > 0 ? (
                   <div className="text-neutral-200">
-                    {format(selectedTimeRange.startDate, "MMMM d, yyyy")} at{" "}
-                    {selectedTimeRange.startTimeSlot.formatted}
-                    {selectedTimeRange.endTimeSlot && (
-                      <>
-                        {" to "}
-                        {selectedTimeRange.endDate &&
-                        !isSameDay(
-                          selectedTimeRange.startDate,
-                          selectedTimeRange.endDate,
-                        )
-                          ? format(selectedTimeRange.endDate, "MMMM d, yyyy") +
-                            " at "
-                          : ""}
-                        {selectedTimeRange.endTimeSlot.formatted}
-                      </>
+                    {selectedTimeSlots.length} time slots selected
+                    {selectedTimeSlots.length <= 3 && (
+                      <div className="mt-1 text-sm">
+                        {selectedTimeSlots.map((slot, i) => (
+                          <div key={i}>
+                            {format(slot.date, "MMMM d, yyyy")} at{" "}
+                            {slot.timeSlot.formatted}
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
                 ) : selectedTimeSlot ? (
@@ -1646,7 +1531,11 @@ const Scheduler: React.FC = () => {
               variant="outline"
               onClick={() => {
                 setIsScheduleModalOpen(false);
-                setSelectedTimeRange(null);
+                if (isMultiSelectMode) {
+                  setSelectedTimeSlots([]);
+                } else {
+                  setSelectedTimeSlot(null);
+                }
               }}
               className="border-neutral-600 bg-transparent hover:bg-neutral-800 hover:text-white"
             >
@@ -1654,13 +1543,13 @@ const Scheduler: React.FC = () => {
             </Button>
             <Button
               onClick={
-                isMultiSelectMode && selectedTimeRange?.endTimeSlot
+                isMultiSelectMode && selectedTimeSlots.length > 0
                   ? addMultipleInterviews
                   : addInterview
               }
               className="bg-stone-600 hover:bg-stone-500"
             >
-              {isMultiSelectMode && selectedTimeRange?.endTimeSlot
+              {isMultiSelectMode && selectedTimeSlots.length > 0
                 ? "Schedule Multiple"
                 : "Schedule"}
             </Button>
@@ -1738,7 +1627,7 @@ const Scheduler: React.FC = () => {
                 ) : (
                   <div className="col-span-3 text-neutral-200">
                     {teams.find((t) => t.id === selectedInterview.teamId)
-                      ?.name ?? "Unknown Team"}
+                      ?.name ?? "No team assigned"}
                   </div>
                 )}
               </div>
