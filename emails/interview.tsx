@@ -17,23 +17,18 @@ import {
 
 interface InterviewEmailProps {
   userFirstname: string;
-  time: string;
-  location: string;
-  eventLink?: string;
-  interviewerName: string;
+  time?: string;
+  location?: string;
+  interviewerName?: string;
   team?: string;
   applicationType?: string;
 }
 
 export const InterviewEmail = ({
-  userFirstname = "Zeno",
-  time = Intl.DateTimeFormat("en-US", {
-    dateStyle: "short",
-    timeStyle: "short",
-  }).format(Date.now()),
-  location = "TBD",
-  interviewerName = "John Doe",
-  eventLink,
+  userFirstname = "Applicant",
+  time = "To be determined",
+  location = "To be determined",
+  interviewerName = "ThinkTank Team",
   team,
   applicationType = "General",
 }: InterviewEmailProps) => {
@@ -121,14 +116,6 @@ export const InterviewEmail = ({
             )}
             <strong>Application Type:</strong> {applicationType}
           </Text>
-          {eventLink && (
-            <Text style={paragraph}>
-              <strong>Google Calendar Event:</strong>{" "}
-              <a href={eventLink} style={{ color: "#4285F4" }}>
-                Add to Calendar
-              </a>
-            </Text>
-          )}
           <Text style={paragraph}>
             These details are optimized to match your availability with ours,
             but let us know if these do not work for you and we will try and

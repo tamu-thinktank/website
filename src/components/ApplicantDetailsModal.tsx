@@ -1,5 +1,7 @@
 "use client";
 
+import React from "react";
+
 import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
@@ -29,12 +31,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Lock, Unlock } from "lucide-react";
+import { Lock, Unlock, Calendar } from "lucide-react";
 import { ApplicationStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { api } from "@/lib/trpc/react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 
 // Update the ApplicantDetails interface to include the new fields for MATEROV applications
 interface ApplicantDetails {
@@ -95,6 +104,8 @@ interface ApplicantDetails {
     interestLevel: string;
   }[];
   previousParticipation?: boolean;
+  referral?: string[];
+  officerCommitment?: "YES" | "NO" | "PARTIAL";
 }
 
 interface InterviewNote {
@@ -134,7 +145,8 @@ export const ApplicantDetailsModal = ({
     { id: string; name: string }[]
   >([]);
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
-  const [interviewTime, setInterviewTime] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedTime, setSelectedTime] = useState("");
   const [interviewRoom, setInterviewRoom] = useState("");
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [assignedTeam, setAssignedTeam] = useState("");
@@ -191,7 +203,8 @@ export const ApplicantDetailsModal = ({
       setNewNote("");
       setIsLocked(false);
       setSelectedInterviewer("");
-      setInterviewTime("");
+      setSelectedDate(undefined);
+      setSelectedTime("");
       setInterviewRoom("");
       setAssignedTeam("");
     }
@@ -369,12 +382,123 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-  // Update the scheduleInterview function to use the tRPC endpoint
+  // Combine date and time into a single ISO string
+  const getInterviewDateTime = (): string => {
+    if (!selectedDate || !selectedTime) return "";
+
+    const [hoursStr, minutesStr] = selectedTime.split(":");
+    const hours = Number.parseInt(hoursStr, 10) || 0; // Default to 0 if parsing fails
+    const minutes = Number.parseInt(minutesStr, 10) || 0; // Default to 0 if parsing fails
+
+    const dateTime = new Date(selectedDate);
+    dateTime.setHours(hours, minutes, 0, 0);
+
+    return dateTime.toISOString();
+  };
+
+  // Update the toggleLock function to schedule interview without sending email
+  const toggleLock = async () => {
+    if (!isLocked && selectedInterviewer && selectedDate && selectedTime) {
+      // If we're locking, schedule the interview without sending email
+      try {
+        const interviewDateTime = getInterviewDateTime();
+        console.log("Scheduling interview at:", interviewDateTime);
+
+        // Check for scheduling conflicts
+        const hasConflict = await checkInterviewerScheduleConflict(
+          selectedInterviewer,
+          interviewDateTime,
+        );
+        if (hasConflict) {
+          toast({
+            title: "Scheduling Conflict",
+            description:
+              "This interviewer already has an interview scheduled at this time.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Create the interview record with default room if none provided
+        const response = await fetch("/api/schedule-interview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            applicantId,
+            interviewerId: selectedInterviewer,
+            time: interviewDateTime,
+            location: interviewRoom.trim() || "To be determined",
+            teamId: assignedTeam !== "NONE" ? assignedTeam : null,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to schedule interview: ${response.status}`);
+        }
+
+        // Update local state
+        if (applicant) {
+          setApplicant({
+            ...applicant,
+            status: ApplicationStatus.INTERVIEWING,
+          });
+        }
+
+        toast({
+          title: "Success",
+          description: "Interview scheduled successfully (no email sent)",
+        });
+
+        // Refresh applicant details to get updated status
+        if (applicantId) {
+          await fetchApplicantDetails(applicantId);
+        }
+      } catch (err) {
+        console.error("Error scheduling interview:", err);
+        toast({
+          title: "Error",
+          description: `Failed to schedule interview: ${err instanceof Error ? err.message : "Unknown error"}`,
+          variant: "destructive",
+        });
+        return; // Don't toggle lock if scheduling failed
+      }
+    }
+
+    // Toggle the lock state
+    setIsLocked(!isLocked);
+  };
+
+  // Add function to check for interviewer schedule conflicts
+  const checkInterviewerScheduleConflict = async (
+    interviewerId: string,
+    dateTime: string,
+  ): Promise<boolean> => {
+    try {
+      const response = await fetch(
+        `/api/interviewer-schedule/${interviewerId}?time=${encodeURIComponent(dateTime)}`,
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Failed to check interviewer schedule: ${response.status}`,
+        );
+      }
+      const data = await response.json();
+      return data.hasConflict;
+    } catch (error) {
+      console.error("Error checking interviewer schedule:", error);
+      return false; // If we can't check, assume no conflict
+    }
+  };
+
+  // Update scheduleInterview function to check for conflicts
   const scheduleInterview = async () => {
     if (
       !applicantId ||
       !selectedInterviewer ||
-      !interviewTime ||
+      !selectedDate ||
+      !selectedTime ||
       !interviewRoom ||
       !applicant
     ) {
@@ -389,24 +513,6 @@ export const ApplicantDetailsModal = ({
     try {
       setIsSendingEmail(true);
 
-      // First create the interview record
-      const response = await fetch("/api/schedule-interview", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          applicantId,
-          interviewerId: selectedInterviewer,
-          time: interviewTime,
-          location: interviewRoom,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to schedule interview: ${response.status}`);
-      }
-
       // Get the interviewer details
       const interviewer = interviewers.find(
         (i) => i.id === selectedInterviewer,
@@ -415,24 +521,92 @@ export const ApplicantDetailsModal = ({
         throw new Error("Selected interviewer not found");
       }
 
-      // Send interview email using the tRPC mutation
+      const interviewDateTime = getInterviewDateTime();
+      console.log("Scheduling interview at:", interviewDateTime);
+
+      // Check for scheduling conflicts
+      const hasConflict = await checkInterviewerScheduleConflict(
+        selectedInterviewer,
+        interviewDateTime,
+      );
+      if (hasConflict) {
+        toast({
+          title: "Scheduling Conflict",
+          description:
+            "This interviewer already has an interview scheduled at this time.",
+          variant: "destructive",
+        });
+        setIsSendingEmail(false);
+        return;
+      }
+
+      // First update the application status in the database
+      const statusResponse = await fetch(
+        `/api/applicant/${applicantId}/status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status: ApplicationStatus.INTERVIEWING,
+          }),
+        },
+      );
+
+      if (!statusResponse.ok) {
+        throw new Error(
+          `Failed to update application status: ${statusResponse.status}`,
+        );
+      }
+
+      // Create the interview record
+      const response = await fetch("/api/schedule-interview", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          applicantId,
+          interviewerId: selectedInterviewer,
+          time: interviewDateTime,
+          location: interviewRoom,
+          teamId: assignedTeam !== "NONE" ? assignedTeam : null,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to schedule interview: ${response.status}`);
+      }
+
+      // Format the time for display
+      const formattedTime = format(
+        new Date(interviewDateTime),
+        "MMMM d, yyyy 'at' h:mm a",
+      );
+
+      // Update local state
+      setApplicant({
+        ...applicant,
+        status: ApplicationStatus.INTERVIEWING,
+      });
+
+      // Send interview email using the tRPC mutation - similar to how rejection email is sent
       sendInterviewEmail({
         officerId: interviewer.id,
         officerName: interviewer.name,
-        officerEmail: `${interviewer.name.toLowerCase()}@example.com`, // This is a placeholder
+        officerEmail: `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`,
         applicantName: applicant.fullName,
         applicantEmail: applicant.email,
-        startTime: interviewTime,
+        startTime: interviewDateTime,
         location: interviewRoom,
-        team: assignedTeam === "NONE" ? undefined : assignedTeam,
-        applicationType: applicant.applicationType || "General",
+        team: assignedTeam === "NONE" ? "" : assignedTeam,
+        applicationType: applicant.applicationType ?? "General",
       });
-
-      console.log("Interview email sent to:", applicant.email);
 
       toast({
         title: "Success",
-        description: "Interview scheduled successfully",
+        description: `Interview scheduled successfully for ${formattedTime} and email sent`,
       });
 
       // Refresh applicant details to get updated status
@@ -448,6 +622,8 @@ export const ApplicantDetailsModal = ({
       setIsSendingEmail(false);
     }
   };
+
+  // Toggle lock and schedule interview if locking
 
   // Add function to update assigned team
   const updateAssignedTeam = async () => {
@@ -469,12 +645,13 @@ export const ApplicantDetailsModal = ({
       }
 
       // Update the local state
-      if (applicant) {
-        setApplicant({
-          ...applicant,
+      setApplicant((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
           assignedTeam: assignedTeam === "NONE" ? undefined : assignedTeam,
-        });
-      }
+        };
+      });
 
       toast({
         title: "Success",
@@ -503,47 +680,6 @@ export const ApplicantDetailsModal = ({
       // For other statuses, use the dialog
       setNewStatus(status);
       setIsStatusDialogOpen(true);
-    }
-  };
-
-  // Function to update applicant status
-  const updateApplicantStatus = async () => {
-    if (!applicantId || !newStatus || !applicant) return false;
-
-    try {
-      const response = await fetch(`/api/applicant/${applicantId}/status`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          status: newStatus,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `Failed to update application status: ${response.status}`,
-        );
-      }
-
-      // Update local state if applicant exists
-      if (applicant) {
-        setApplicant({
-          ...applicant,
-          status: newStatus,
-        });
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error updating applicant status:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update application status. Please try again.",
-        variant: "destructive",
-      });
-      return false;
     }
   };
 
@@ -598,8 +734,6 @@ export const ApplicantDetailsModal = ({
       });
   }, [applicantId, applicant, sendRejectEmail, toast]);
 
-  const updateApplicant = api.admin.updateApplicant.useMutation();
-
   if (!isOpen) return null;
 
   return (
@@ -610,7 +744,7 @@ export const ApplicantDetailsModal = ({
             <DialogTitle className="text-2xl">
               {loading
                 ? "Loading Applicant Details..."
-                : applicant?.fullName || "Applicant Details"}
+                : (applicant?.fullName ?? "Applicant Details")}
             </DialogTitle>
           </DialogHeader>
 
@@ -633,6 +767,12 @@ export const ApplicantDetailsModal = ({
                   <div className="text-sm text-neutral-400">
                     UIN: {applicant.uin}
                   </div>
+                  {applicant.status === ApplicationStatus.ACCEPTED &&
+                    applicant.assignedTeam && (
+                      <div className="mt-1 text-sm text-green-400">
+                        Team: {applicant.assignedTeam}
+                      </div>
+                    )}
                 </div>
 
                 <div className="space-y-1">
@@ -713,8 +853,7 @@ export const ApplicantDetailsModal = ({
                 <div className="mt-4">
                   <Label className="text-neutral-400">Current Classes</Label>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    {applicant.currentClasses &&
-                    applicant.currentClasses.length > 0 ? (
+                    {applicant.currentClasses.length > 0 ? (
                       applicant.currentClasses.map((cls, idx) => (
                         <span
                           key={idx}
@@ -734,8 +873,7 @@ export const ApplicantDetailsModal = ({
                     Next Semester Classes
                   </Label>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    {applicant.nextClasses &&
-                    applicant.nextClasses.length > 0 ? (
+                    {applicant.nextClasses.length > 0 ? (
                       applicant.nextClasses.map((cls, idx) => (
                         <span
                           key={idx}
@@ -781,106 +919,130 @@ export const ApplicantDetailsModal = ({
                   )}
               </div>
 
-              {/* Interests and Motivation Section */}
-              <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
-                <h3 className="text-lg font-semibold">
-                  Interests and Motivation
-                </h3>
-
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-neutral-400">
-                      Why are you interested in joining ThinkTank?
-                    </Label>
-                    <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                      {applicant.firstQuestion}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-neutral-400">
-                      Which Design Challenges are you interested in?
-                    </Label>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                      {applicant.preferredTeams &&
-                      applicant.preferredTeams.length > 0 ? (
-                        applicant.preferredTeams.map((teamPref, idx) => (
-                          <span
-                            key={idx}
-                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
-                          >
-                            {teamPref.team?.name || teamPref.teamId} (
-                            {teamPref.interest})
-                          </span>
-                        ))
-                      ) : (
-                        <div className="text-neutral-500">
-                          No team preferences listed
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-neutral-400">
-                      Describe an instance where you demonstrated your passion
-                    </Label>
-                    <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                      {applicant.secondQuestion}
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label className="text-neutral-400">
-                      Are you interested in a Team Lead position?
-                    </Label>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                      {applicant.preferredPositions &&
-                      applicant.preferredPositions.length > 0 ? (
-                        applicant.preferredPositions.map((position, idx) => (
-                          <span
-                            key={idx}
-                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
-                          >
-                            {position.position} ({position.interest})
-                          </span>
-                        ))
-                      ) : (
-                        <div className="text-neutral-500">
-                          No leadership preferences listed
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {applicant.applicationType === "MATEROV" && (
+              {/* Application Type Specific Information */}
+              {applicant.applicationType === "OFFICER" ? (
                 <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
                   <h3 className="text-lg font-semibold">
-                    MATE ROV Information
+                    Officer Application Information
                   </h3>
 
                   <div className="space-y-4">
                     <div>
                       <Label className="text-neutral-400">
-                        Previous Participation
+                        Are you able to commit to and attend weekly team
+                        meetings in person on campus for the next 2 semesters?
                       </Label>
-                      <div className="mt-1">
-                        {applicant.previousParticipation ? "Yes" : "No"}
+                      <div className="mt-1 text-white">
+                        {applicant.officerCommitment === "YES"
+                          ? "Yes"
+                          : applicant.officerCommitment === "PARTIAL"
+                            ? "Partially"
+                            : "No"}
                       </div>
                     </div>
 
-                    {applicant.thirdQuestion && (
+                    <div>
+                      <Label className="text-neutral-400">
+                        Interest in each position
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.preferredPositions &&
+                        applicant.preferredPositions.length > 0 ? (
+                          applicant.preferredPositions.map((position, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {position.position} ({position.interest})
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No position preferences listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {applicant.summerPlans && (
                       <div>
-                        <Label className="text-neutral-400">
-                          Previous Experience
-                        </Label>
+                        <Label className="text-neutral-400">Summer Plans</Label>
                         <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                          {applicant.thirdQuestion}
+                          {applicant.summerPlans}
                         </div>
                       </div>
                     )}
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Which previous team were you a member of and what did
+                        you specifically contribute?
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.secondQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Why do you want to become a ThinkTank Officer?
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.firstQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Where did you hear about us?
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.referral && applicant.referral.length > 0 ? (
+                          applicant.referral.map((ref, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {ref}
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No referral sources listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : applicant.applicationType === "MATEROV" ? (
+                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                  <h3 className="text-lg font-semibold">
+                    MATE ROV Application Information
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-neutral-400">
+                        Are you able to commit to and attend weekly team
+                        meetings in person, which will take place on Saturdays
+                        for the next 2 semesters?
+                      </Label>
+                      <div className="mt-1 text-white">
+                        {applicant.meetings ? "Yes" : "No"}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Are you able to commit 8-10 hours per week (equivalent
+                        to 1 in-major engineering course) to your team for the
+                        entire duration of the project?
+                      </Label>
+                      <div className="mt-1 text-white">
+                        {applicant.weeklyCommitment ? "Yes" : "No"}
+                      </div>
+                    </div>
 
                     <div>
                       <Label className="text-neutral-400">
@@ -907,7 +1069,7 @@ export const ApplicantDetailsModal = ({
 
                     <div>
                       <Label className="text-neutral-400">
-                        Technical Experience
+                        Experience & Skills
                       </Label>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {applicant.skills && applicant.skills.length > 0 ? (
@@ -929,7 +1091,7 @@ export const ApplicantDetailsModal = ({
 
                     <div>
                       <Label className="text-neutral-400">
-                        Learning Interests
+                        What do you most want to learn?
                       </Label>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {applicant.learningInterests &&
@@ -947,6 +1109,100 @@ export const ApplicantDetailsModal = ({
                             No learning interests listed
                           </div>
                         )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Have you participated in a ThinkTank Design Challenge
+                        before?
+                      </Label>
+                      <div className="mt-1 text-white">
+                        {applicant.previousParticipation ? "Yes" : "No"}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Where did you hear about us?
+                      </Label>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {applicant.referral && applicant.referral.length > 0 ? (
+                          applicant.referral.map((ref, idx) => (
+                            <span
+                              key={idx}
+                              className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                            >
+                              {ref}
+                            </span>
+                          ))
+                        ) : (
+                          <div className="text-neutral-500">
+                            No referral sources listed
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Describe an instance where you worked with a team to
+                        accomplish a goal you were passionate about.
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.firstQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Describe an instance where you demonstrated your passion
+                        for a project, task, or subject matter
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.secondQuestion}
+                      </div>
+                    </div>
+
+                    {applicant.thirdQuestion && (
+                      <div>
+                        <Label className="text-neutral-400">
+                          If you were previously in a ThinkTank design team,
+                          which previous team were you a member of and what did
+                          you specifically contribute? If you were not
+                          previously in ThinkTank, but have participated in an
+                          engineering design competition before, what was it and
+                          how did you contribute to the team?
+                        </Label>
+                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                          {applicant.thirdQuestion}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                  <h3 className="text-lg font-semibold">
+                    Application Information
+                  </h3>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-neutral-400">
+                        Why are you interested in joining ThinkTank?
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.firstQuestion}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-neutral-400">
+                        Describe an instance where you demonstrated your passion
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.secondQuestion}
                       </div>
                     </div>
                   </div>
@@ -982,35 +1238,91 @@ export const ApplicantDetailsModal = ({
                   </div>
 
                   <div className="space-y-2">
+                    <Label>Interview Date</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={`w-full justify-start border-neutral-700 bg-neutral-900 text-left font-normal ${
+                            !selectedDate && "text-muted-foreground"
+                          }`}
+                          disabled={isLocked}
+                        >
+                          <Calendar className="mr-2 h-4 w-4" />
+                          {selectedDate ? (
+                            format(selectedDate, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto border-neutral-700 bg-neutral-900 p-0">
+                        <CalendarComponent
+                          mode="single"
+                          selected={selectedDate}
+                          onSelect={setSelectedDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label>Interview Time</Label>
-                    <input
-                      type="datetime-local"
-                      value={interviewTime}
-                      onChange={(e) => setInterviewTime(e.target.value)}
-                      className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2"
+                    <Select
+                      value={selectedTime}
+                      onValueChange={setSelectedTime}
                       disabled={isLocked}
-                    />
+                    >
+                      <SelectTrigger className="w-full border-neutral-700 bg-neutral-900">
+                        <SelectValue placeholder="Select time" />
+                      </SelectTrigger>
+                      <SelectContent className="border-neutral-700 bg-neutral-900">
+                        {Array.from({ length: 24 }).map((_, hour) => (
+                          <React.Fragment key={hour}>
+                            <SelectItem value={`${hour}:00`}>
+                              {hour === 0
+                                ? "12:00 AM"
+                                : hour < 12
+                                  ? `${hour}:00 AM`
+                                  : hour === 12
+                                    ? "12:00 PM"
+                                    : `${hour - 12}:00 PM`}
+                            </SelectItem>
+                            <SelectItem value={`${hour}:30`}>
+                              {hour === 0
+                                ? "12:30 AM"
+                                : hour < 12
+                                  ? `${hour}:30 AM`
+                                  : hour === 12
+                                    ? "12:30 PM"
+                                    : `${hour - 12}:30 PM`}
+                            </SelectItem>
+                          </React.Fragment>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="relative space-y-2">
                     <Label>Room</Label>
                     <div className="flex items-center gap-2">
-                      <input
+                      <Input
                         type="text"
                         placeholder="Room"
                         value={interviewRoom}
                         onChange={(e) => setInterviewRoom(e.target.value)}
-                        className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2"
+                        className="flex-1 border-neutral-700 bg-neutral-900"
                       />
                       <Button
                         variant="outline"
                         size="sm"
                         className="border-neutral-700 bg-neutral-800 hover:bg-neutral-700"
-                        onClick={() => setIsLocked(!isLocked)}
+                        onClick={() => void toggleLock()}
                         title={
                           isLocked
-                            ? "Unlock time and interviewer fields"
-                            : "Lock time and interviewer fields"
+                            ? "Unlock interviewer, date, and time fields"
+                            : "Lock interviewer, date, and time fields"
                         }
                       >
                         {isLocked ? (
@@ -1021,7 +1333,41 @@ export const ApplicantDetailsModal = ({
                       </Button>
                     </div>
                   </div>
+                </div>
 
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button
+                    onClick={() => void scheduleInterview()}
+                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={
+                      !selectedInterviewer ||
+                      !selectedDate ||
+                      !selectedTime ||
+                      !interviewRoom ||
+                      isSendingEmail
+                    }
+                  >
+                    {isSendingEmail
+                      ? "Scheduling..."
+                      : "Schedule Interview & Send Email"}
+                  </Button>
+
+                  <Button
+                    onClick={() =>
+                      handleStatusChange(ApplicationStatus.REJECTED)
+                    }
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Reject
+                  </Button>
+                </div>
+              </div>
+
+              {/* Team Assignment Section - Separated from Interview Controls */}
+              <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                <h3 className="text-lg font-semibold">Team Assignment</h3>
+
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Assign Team</Label>
                     <Select
@@ -1088,30 +1434,6 @@ export const ApplicantDetailsModal = ({
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <Button
-                    onClick={() => void scheduleInterview()}
-                    className="bg-blue-600 hover:bg-blue-700"
-                    disabled={
-                      !selectedInterviewer ||
-                      !interviewTime ||
-                      !interviewRoom ||
-                      isSendingEmail
-                    }
-                  >
-                    {isSendingEmail ? "Scheduling..." : "Schedule Interview"}
-                  </Button>
-
-                  <Button
-                    onClick={() =>
-                      handleStatusChange(ApplicationStatus.REJECTED)
-                    }
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Reject
-                  </Button>
 
                   <Button
                     onClick={() => void updateAssignedTeam()}
@@ -1124,6 +1446,21 @@ export const ApplicantDetailsModal = ({
                   </Button>
                 </div>
               </div>
+
+              {/* Resume Section */}
+              {applicant.resumeId && (
+                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                  <h3 className="text-lg font-semibold">Resume</h3>
+                  <div className="aspect-[8.5/11] w-full overflow-hidden rounded border border-neutral-700">
+                    <iframe
+                      src={`https://drive.google.com/file/d/${applicant.resumeId}/preview`}
+                      className="h-full w-full"
+                      title={`${applicant.fullName}'s Resume`}
+                      allow="autoplay"
+                    ></iframe>
+                  </div>
+                </div>
+              )}
 
               {/* Interview Notes */}
               <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">

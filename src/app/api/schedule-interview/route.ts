@@ -5,11 +5,12 @@ import { db } from "@/lib/db"
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { applicantId, interviewerId, time, location } = body as {
+    const { applicantId, interviewerId, time, location, teamId } = body as {
       applicantId: string
       interviewerId: string
       time: string
       location: string
+      teamId?: string
     }
 
     if (!applicantId || !interviewerId || !time || !location) {
@@ -45,14 +46,21 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Interviewer not found" }, { status: 404 })
     }
 
+    // Parse the time string directly without timezone adjustments
+    // This ensures the time is saved exactly as entered
+    const startTime = new Date(time)
+    console.log(`Original time input: ${time}`)
+    console.log(`Parsed time: ${startTime.toISOString()}`)
+
     // Create the interview
     const interview = await db.interview.create({
       data: {
         applicantId,
         interviewerId,
-        startTime: new Date(time),
-        endTime: new Date(new Date(time).getTime() + 15 * 60000), // 15 minutes later
+        startTime: startTime,
+        endTime: new Date(startTime.getTime() + 15 * 60000), // 15 minutes later
         location,
+        teamId,
       },
     })
 
@@ -62,6 +70,7 @@ export async function POST(request: Request) {
         where: { id: applicantId },
         data: {
           status: ApplicationStatus.INTERVIEWING,
+          assignedTeam: teamId, // Also update the assignedTeam field
         },
       })
 
@@ -70,7 +79,7 @@ export async function POST(request: Request) {
 
     // Log interview scheduling
     console.log(
-      `Interview scheduled for ${applicant.fullName} with ${interviewer.name} at ${new Date(time).toLocaleString()} in ${location}`,
+      `Interview scheduled for ${applicant.fullName} with ${interviewer.name} at ${startTime.toLocaleString()} in ${location}`,
     )
 
     return NextResponse.json(interview)

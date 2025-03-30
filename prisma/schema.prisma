@@ -345,16 +345,19 @@ model Application {
 
 // New model for interviews
 model Interview {
-  id            String      @id @default(cuid())
-  applicantId   String
-  applicant     Application @relation(fields: [applicantId], references: [id], onDelete: Cascade)
-  interviewerId String
-  interviewer   User        @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
-  startTime     DateTime
-  endTime       DateTime
-  location      String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id              String       @id @default(cuid())
+  applicantId     String?
+  applicant       Application? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  interviewerId   String
+  interviewer     User         @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
+  startTime       DateTime
+  endTime         DateTime
+  location        String
+  teamId          String?
+  isPlaceholder   Boolean      @default(false)
+  placeholderName String? // Name to display when isPlaceholder is true
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   @@index([applicantId])
   @@index([interviewerId])
