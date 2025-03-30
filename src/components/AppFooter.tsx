@@ -90,6 +90,24 @@ const Footer: React.FC = () => {
                   <ArrowUpRight className="ml-1 h-4 w-4" />
                 </button>
               </li>
+              <li className="flex items-center justify-end">
+                <button
+                  onClick={() => router.push("/materov")}
+                  className="flex items-center text-[#949494] transition duration-300 hover:text-white"
+                >
+                  Mate ROV
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </li>
+              <li className="flex items-center justify-end">
+                <button
+                  onClick={() => router.push("/faq")}
+                  className="flex items-center text-[#949494] transition duration-300 hover:text-white"
+                >
+                  FAQ
+                  <ArrowUpRight className="ml-1 h-4 w-4" />
+                </button>
+              </li>
             </ul>
           </div>
         </div>

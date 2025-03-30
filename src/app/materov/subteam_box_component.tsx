@@ -107,10 +107,9 @@ const BoxComponent: React.FC<BoxProps> = ({
       id={`box-${teamName}`}
       className={`
         mx-auto w-full overflow-hidden rounded-[10px] border-2 border-[rgba(83,81,81,0.5)] bg-[#1a1a1a] transition-[height] duration-500 ease-in-out
-        ${
-          isExpanded
-            ? "my-[20px] flex h-auto flex-col md:my-[30px]"
-            : "my-[20px] flex h-[500px] flex-col md:my-[30px] md:h-[300px] md:flex-row"
+        ${isExpanded
+          ? "my-[20px] flex h-auto flex-col md:my-[30px]"
+          : "my-[20px] flex h-[500px] flex-col md:my-[30px] md:h-[300px] md:flex-row"
         }
       `}
       initial="collapsed"
@@ -175,9 +174,10 @@ const BoxComponent: React.FC<BoxProps> = ({
           </span>
           <span
             className="font-[Poppins,sans-serif] text-[14px] font-bold"
-            style={{ color: isOpen ? "#4CAF50" : "#FF5722" }}
+            style={{ color: "#FF5722" }}
           >
-            {isOpen ? "Open" : "Closed"}
+            {/*{isOpen ? "Open" : "Closed"}*/}
+            Closed
           </span>
         </div>
 
@@ -193,11 +193,12 @@ const BoxComponent: React.FC<BoxProps> = ({
                 className={`
                   w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
                   text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                  ${isOpen ? "bg-white text-black transition-transform duration-300 ease-in-out hover:scale-105" : "pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
+                  ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
                   ${isExpanded ? "max-w-[200px]" : "max-w-[420px]"}
                 `}
               >
-                {isOpen ? "Apply" : "Closed"}
+                {/*{isOpen ? "Open" : "Closed"}*/}
+                Closed
               </a>
               <button
                 onClick={handleToggle}
@@ -309,11 +310,12 @@ const BoxComponent: React.FC<BoxProps> = ({
                   className={`
                     w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
                     text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                    ${isOpen ? "bg-white text-black transition-transform duration-300 ease-in-out hover:scale-105" : "pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
+                    ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
                     ${isExpanded ? "max-w-[200px]" : "max-w-[420px]"}
                   `}
                 >
-                  {isOpen ? "Apply" : "Closed"}
+                  {/*{isOpen ? "Open" : "Closed"}*/}
+                  Closed
                 </a>
               </div>
               <div className="mt-[15px] flex w-full justify-center">
