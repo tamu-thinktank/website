@@ -396,7 +396,103 @@ export const ApplicantDetailsModal = ({
     return dateTime.toISOString();
   };
 
-  // Update scheduleInterview function to include team and applicationType
+  // Update the toggleLock function to schedule interview without sending email
+  const toggleLock = async () => {
+    if (!isLocked && selectedInterviewer && selectedDate && selectedTime) {
+      // If we're locking, schedule the interview without sending email
+      try {
+        const interviewDateTime = getInterviewDateTime();
+        console.log("Scheduling interview at:", interviewDateTime);
+
+        // Check for scheduling conflicts
+        const hasConflict = await checkInterviewerScheduleConflict(
+          selectedInterviewer,
+          interviewDateTime,
+        );
+        if (hasConflict) {
+          toast({
+            title: "Scheduling Conflict",
+            description:
+              "This interviewer already has an interview scheduled at this time.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Create the interview record with default room if none provided
+        const response = await fetch("/api/schedule-interview", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            applicantId,
+            interviewerId: selectedInterviewer,
+            time: interviewDateTime,
+            location: interviewRoom.trim() || "To be determined",
+            teamId: assignedTeam !== "NONE" ? assignedTeam : null,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to schedule interview: ${response.status}`);
+        }
+
+        // Update local state
+        if (applicant) {
+          setApplicant({
+            ...applicant,
+            status: ApplicationStatus.INTERVIEWING,
+          });
+        }
+
+        toast({
+          title: "Success",
+          description: "Interview scheduled successfully (no email sent)",
+        });
+
+        // Refresh applicant details to get updated status
+        if (applicantId) {
+          await fetchApplicantDetails(applicantId);
+        }
+      } catch (err) {
+        console.error("Error scheduling interview:", err);
+        toast({
+          title: "Error",
+          description: `Failed to schedule interview: ${err instanceof Error ? err.message : "Unknown error"}`,
+          variant: "destructive",
+        });
+        return; // Don't toggle lock if scheduling failed
+      }
+    }
+
+    // Toggle the lock state
+    setIsLocked(!isLocked);
+  };
+
+  // Add function to check for interviewer schedule conflicts
+  const checkInterviewerScheduleConflict = async (
+    interviewerId: string,
+    dateTime: string,
+  ): Promise<boolean> => {
+    try {
+      const response = await fetch(
+        `/api/interviewer-schedule/${interviewerId}?time=${encodeURIComponent(dateTime)}`,
+      );
+      if (!response.ok) {
+        throw new Error(
+          `Failed to check interviewer schedule: ${response.status}`,
+        );
+      }
+      const data = await response.json();
+      return data.hasConflict;
+    } catch (error) {
+      console.error("Error checking interviewer schedule:", error);
+      return false; // If we can't check, assume no conflict
+    }
+  };
+
+  // Update scheduleInterview function to check for conflicts
   const scheduleInterview = async () => {
     if (
       !applicantId ||
@@ -427,6 +523,22 @@ export const ApplicantDetailsModal = ({
 
       const interviewDateTime = getInterviewDateTime();
       console.log("Scheduling interview at:", interviewDateTime);
+
+      // Check for scheduling conflicts
+      const hasConflict = await checkInterviewerScheduleConflict(
+        selectedInterviewer,
+        interviewDateTime,
+      );
+      if (hasConflict) {
+        toast({
+          title: "Scheduling Conflict",
+          description:
+            "This interviewer already has an interview scheduled at this time.",
+          variant: "destructive",
+        });
+        setIsSendingEmail(false);
+        return;
+      }
 
       // First update the application status in the database
       const statusResponse = await fetch(
@@ -512,22 +624,6 @@ export const ApplicantDetailsModal = ({
   };
 
   // Toggle lock and schedule interview if locking
-  const toggleLock = () => {
-    if (
-      !isLocked &&
-      selectedInterviewer &&
-      selectedDate &&
-      selectedTime &&
-      interviewRoom &&
-      applicant
-    ) {
-      // If we're locking, schedule the interview
-      void scheduleInterview();
-    }
-
-    // Toggle the lock state
-    setIsLocked(!isLocked);
-  };
 
   // Add function to update assigned team
   const updateAssignedTeam = async () => {
@@ -671,6 +767,12 @@ export const ApplicantDetailsModal = ({
                   <div className="text-sm text-neutral-400">
                     UIN: {applicant.uin}
                   </div>
+                  {applicant.status === ApplicationStatus.ACCEPTED &&
+                    applicant.assignedTeam && (
+                      <div className="mt-1 text-sm text-green-400">
+                        Team: {applicant.assignedTeam}
+                      </div>
+                    )}
                 </div>
 
                 <div className="space-y-1">
@@ -1211,17 +1313,16 @@ export const ApplicantDetailsModal = ({
                         value={interviewRoom}
                         onChange={(e) => setInterviewRoom(e.target.value)}
                         className="flex-1 border-neutral-700 bg-neutral-900"
-                        disabled={isLocked}
                       />
                       <Button
                         variant="outline"
                         size="sm"
                         className="border-neutral-700 bg-neutral-800 hover:bg-neutral-700"
-                        onClick={toggleLock}
+                        onClick={() => void toggleLock()}
                         title={
                           isLocked
-                            ? "Unlock time and interviewer fields"
-                            : "Lock time and interviewer fields"
+                            ? "Unlock interviewer, date, and time fields"
+                            : "Lock interviewer, date, and time fields"
                         }
                       >
                         {isLocked ? (
@@ -1232,7 +1333,41 @@ export const ApplicantDetailsModal = ({
                       </Button>
                     </div>
                   </div>
+                </div>
 
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button
+                    onClick={() => void scheduleInterview()}
+                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={
+                      !selectedInterviewer ||
+                      !selectedDate ||
+                      !selectedTime ||
+                      !interviewRoom ||
+                      isSendingEmail
+                    }
+                  >
+                    {isSendingEmail
+                      ? "Scheduling..."
+                      : "Schedule Interview & Send Email"}
+                  </Button>
+
+                  <Button
+                    onClick={() =>
+                      handleStatusChange(ApplicationStatus.REJECTED)
+                    }
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Reject
+                  </Button>
+                </div>
+              </div>
+
+              {/* Team Assignment Section - Separated from Interview Controls */}
+              <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                <h3 className="text-lg font-semibold">Team Assignment</h3>
+
+                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Assign Team</Label>
                     <Select
@@ -1299,31 +1434,6 @@ export const ApplicantDetailsModal = ({
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <Button
-                    onClick={() => void scheduleInterview()}
-                    className="bg-blue-600 hover:bg-blue-700"
-                    disabled={
-                      !selectedInterviewer ||
-                      !selectedDate ||
-                      !selectedTime ||
-                      !interviewRoom ||
-                      isSendingEmail
-                    }
-                  >
-                    {isSendingEmail ? "Scheduling..." : "Schedule Interview"}
-                  </Button>
-
-                  <Button
-                    onClick={() =>
-                      handleStatusChange(ApplicationStatus.REJECTED)
-                    }
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Reject
-                  </Button>
 
                   <Button
                     onClick={() => void updateAssignedTeam()}
@@ -1336,6 +1446,21 @@ export const ApplicantDetailsModal = ({
                   </Button>
                 </div>
               </div>
+
+              {/* Resume Section */}
+              {applicant.resumeId && (
+                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                  <h3 className="text-lg font-semibold">Resume</h3>
+                  <div className="aspect-[8.5/11] w-full overflow-hidden rounded border border-neutral-700">
+                    <iframe
+                      src={`https://drive.google.com/file/d/${applicant.resumeId}/preview`}
+                      className="h-full w-full"
+                      title={`${applicant.fullName}'s Resume`}
+                      allow="autoplay"
+                    ></iframe>
+                  </div>
+                </div>
+              )}
 
               {/* Interview Notes */}
               <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
