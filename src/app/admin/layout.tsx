@@ -15,7 +15,7 @@ export default function AdminLayout({
 }) {
   return (
     <SessionProvider refetchOnWindowFocus>
-      <Content>{children}</Content>
+      <section>{children}</section>
     </SessionProvider>
   );
 }
