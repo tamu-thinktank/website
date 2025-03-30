@@ -1,11 +1,9 @@
-import { eventTimezone } from "@/consts/availability-grid"
 import { RESUME_ACCEPTED_ID, RESUME_PENDING_ID, RESUME_REJECTED_ID } from "@/consts/google-things"
 import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap"
 import { ApplicantSchema, ApplicantsSchema, AvailabilityMapSchema } from "@/lib/validations/apply"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { getAllApplications, getAvailabities, getTargetTeams } from "@/server/db/queries"
 import sendEmail from "@/server/service/email"
-import CalendarService from "@/server/service/google-calendar"
 import DriveService from "@/server/service/google-drive"
 import { Temporal } from "@js-temporal/polyfill"
 import { Challenge } from "@prisma/client"
@@ -245,62 +243,28 @@ export const adminRouter = createTRPCRouter({
         },
         ctx,
       }) => {
-        const startTimeObj = Temporal.ZonedDateTime.from(startTime)
-
-        // add meeting time to google calendar
-        let eventLink: Awaited<ReturnType<(typeof CalendarService)["addCalenderEvent"]>>
         try {
-          eventLink = await CalendarService.addCalenderEvent({
-            startTime: startTimeObj,
-            location,
-            emails: [officerEmail, applicantEmail],
-            intervieweeName: applicantName,
-            interviewerName: officerName,
-          })
-        } catch (e) {
-          throw new Error("Failed to add event to calendar: " + (e as Error).message)
-        }
-
-        // remove meeting time from soonestOfficer's availabilities
-        const thirty = Array(2)
-          .fill(0)
-          .map((_, i) => i * 15)
-          .map((minutes) => {
-            return startTimeObj.add({ minutes }).toString()
-          })
-        await ctx.db.officerTime.deleteMany({
-          where: {
-            officerId,
-            gridTime: {
-              in: thirty,
-            },
-          },
-        })
-
-        // send email to interview attendees
-        try {
+          // Simplify the email sending process - similar to rejectAppEmail
           await sendEmail({
             to: [applicantEmail],
-            cc: [officerEmail],
             subject: "ThinkTank Interview",
             template: InterviewEmail({
               userFirstname: applicantName.split(" ")[0] ?? "",
-              time: startTimeObj.withTimeZone(eventTimezone).toLocaleString("en-US", {
+              time: new Date(startTime).toLocaleString("en-US", {
                 dateStyle: "short",
                 timeStyle: "short",
               }),
               location,
-              eventLink: eventLink,
               interviewerName: officerName,
               team,
               applicationType,
             }),
           })
+
+          return true
         } catch (e) {
           throw new Error("Failed to send email: " + (e as Error).message)
         }
-
-        return true
       },
     ),
   rejectAppEmail: protectedProcedure
