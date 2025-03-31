@@ -37,6 +37,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         nextClasses: true,
         summerPlans: true,
         assignedTeam: true,
+        resumeId: true
       },
     })
 
