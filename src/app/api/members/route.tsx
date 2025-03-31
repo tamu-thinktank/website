@@ -23,6 +23,7 @@ export async function GET() {
         },
         applicationType: true,
         status: true,
+        assignedTeam: true,
       },
     });
 
@@ -35,6 +36,7 @@ export async function GET() {
       year: applicant.year,
       rating: applicant.status,
       category: applicant.applicationType,
+      assignedTeam: applicant.assignedTeam,
     }));
 
     return NextResponse.json(formattedMembers);

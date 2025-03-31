@@ -14,6 +14,7 @@ export const MembersPage: React.FC = () => {
     rating: "",
     interests: "",
     major: "",
+    assignedTeam: "",
   });
 
   const [applicantData, setApplicantData] = React.useState<ApplicantData[]>([]);
@@ -49,8 +50,7 @@ export const MembersPage: React.FC = () => {
 
   const tableHeaders = [
     "Name",
-    "Research Interests",
-    "Team Rankings",
+    "Assigned Team",
     "Major",
     "Year",
   ];
@@ -77,10 +77,8 @@ export const MembersPage: React.FC = () => {
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
       const matchesMajor = !filters.major || applicant.major === filters.major;
-      const matchesInterests =
-        !filters.interests || applicant.interests.includes(filters.interests);
-      const matchesTeam =
-        !filters.team || applicant.teamRankings.includes(filters.team);
+      const matchesAssignedTeam =
+        !filters.assignedTeam || applicant.assignedTeam.includes(filters.assignedTeam);
       const matchesRating =
         !filters.rating || applicant.rating === filters.rating;
 
@@ -88,8 +86,7 @@ export const MembersPage: React.FC = () => {
         matchesCategory &&
         matchesSearch &&
         matchesMajor &&
-        matchesInterests &&
-        matchesTeam &&
+        matchesAssignedTeam &&
         matchesRating
       );
     });
@@ -194,10 +191,7 @@ export const MembersPage: React.FC = () => {
                         {applicant.name}
                       </div>
                       <div className="flex-1 text-center">
-                        {applicant.interests.join(", ")}
-                      </div>
-                      <div className="flex-1 text-center">
-                        {applicant.teamRankings.join(", ")}
+                        {applicant.assignedTeam}
                       </div>
                       <div className="flex-1 text-center">
                         {applicant.major}

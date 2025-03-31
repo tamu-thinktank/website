@@ -19,6 +19,7 @@ export interface ApplicantData {
   year: string;
   rating: string;
   category: string;
+  assignedTeam: string;
 }
 
 export interface FilterState {
@@ -26,6 +27,7 @@ export interface FilterState {
   rating: string;
   interests: string;
   major: string;
+  assignedTeam: string;
 }
 
 export interface DropdownProps {
