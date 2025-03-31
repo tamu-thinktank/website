@@ -33,6 +33,7 @@ export async function GET() {
       year: applicant.year,
       rating: applicant.status,
       category: applicant.applicationType,
+      status: applicant.status,
     }))
 
     return NextResponse.json(formattedApplicants)

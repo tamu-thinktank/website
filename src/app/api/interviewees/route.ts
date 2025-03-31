@@ -10,7 +10,7 @@ export async function GET() {
     // Only get applicants with INTERVIEWING status
     const interviewees = await prisma.application.findMany({
       where: {
-        status: "INTERVIEWING",
+        interviewStage: true,
       },
       select: {
         id: true,

@@ -41,6 +41,7 @@ export const ApplicantsPage: React.FC = () => {
 
       const data = (await response.json()) as ApplicantData[];
       console.log("Fetched applicant data:", data.length, "records");
+      data.forEach(app => console.log(`Applicant ${app.name} status:`, app));
       setApplicantData(data);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -193,6 +194,12 @@ export const ApplicantsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicantId(null);
+    void fetchApplicantData();
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "PENDING":
@@ -333,7 +340,7 @@ export const ApplicantsPage: React.FC = () => {
                       <div
                         className={`flex-1 text-center ${getStatusColor(applicant.status)}`}
                       >
-                        {applicant.status || "PENDING"}
+                        {applicant.status}
                       </div>
                     </div>
                     {index < filteredApplicants.length - 1 && (
@@ -349,7 +356,7 @@ export const ApplicantsPage: React.FC = () => {
 
       <ApplicantDetailsModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         applicantId={selectedApplicantId ?? undefined}
       />
     </div>

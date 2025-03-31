@@ -39,7 +39,10 @@ export async function PUT(req: Request) {
         id: { in: transfer.applicantIds },
         status: "PENDING",
       },
-      data: { status: "INTERVIEWING" },
+      data: { 
+        status: "INTERVIEWING",
+        interviewStage: true
+      },
     });
 
     console.log(`Updated ${result.count} records to INTERVIEWING status`);
