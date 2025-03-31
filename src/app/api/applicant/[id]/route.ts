@@ -12,6 +12,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       select: {
         id: true,
         fullName: true,
+        applicationType: true,
         preferredName: true,
         uin: true,
         email: true,
