@@ -13,17 +13,17 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   const handleChange = (value: string) => {
     if (value === 'Reset') {
       onOptionSelect?.('');
-    } 
+    }
     else {
       onOptionSelect?.(value);
     }
-    setIsOpen(false); 
+    setIsOpen(false);
   };
 
   return (
     <Dropdown
       options={options}
-      value={selected} 
+      value={selected || label}
       onChange={handleChange}
       isOpen={isOpen}
       onToggle={() => setIsOpen(!isOpen)}

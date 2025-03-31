@@ -5,14 +5,32 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
-    
+
     const applicants = await prisma.application.findMany({
-    
+
       select: {
         id: true,
         fullName: true,
         major: true,
         year: true,
+        subteamPreferences: {
+          select: {
+            name: true,
+            interest: true
+          }
+        },
+        learningInterests: {
+          select: {
+            area: true,
+            interestLevel: true
+          }
+        },
+        preferredPositions: {
+          select: {
+            position: true,
+            interest: true
+          }
+        },
         preferredTeams: {
           select: { team: { select: { name: true } } },
         },
@@ -27,8 +45,19 @@ export async function GET() {
     const formattedApplicants = applicants.map((applicant) => ({
       id: applicant.id,
       name: applicant.fullName,
-      interests: applicant.researchAreas.map((pref) => pref.researchArea.name),
+      interests: applicant.learningInterests.map((pref) => ({
+        area: pref.area,
+        interest: pref.interestLevel
+      })),
+      officerpos: applicant.preferredPositions.map((pref) => ({
+        position: pref.position,
+        interest: pref.interest
+      })),
       teamRankings: applicant.preferredTeams.map((pref) => pref.team.name),
+      subTeam: applicant.subteamPreferences.map((pref) => ({
+        name: pref.name,
+        interest: pref.interest
+      })),
       major: applicant.major,
       year: applicant.year,
       rating: applicant.status,
