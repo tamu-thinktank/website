@@ -15,6 +15,7 @@ export const IntervieweesPage: React.FC = () => {
     rating: "",
     interests: "",
     major: "",
+    status: "",
   });
 
   const [applicantData, setApplicantData] = React.useState<ApplicantData[]>([]);
@@ -81,6 +82,35 @@ export const IntervieweesPage: React.FC = () => {
     "Year",
     "Lock",
   ];
+
+  const statusOptions = [
+    "PENDING",
+    "INTERVIEWING",
+    "ACCEPTED",
+    "REJECTED",
+    "Reset",
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "PENDING":
+        return "text-orange-400";
+      case "INTERVIEWING":
+        return "text-blue-400";
+      case "ACCEPTED":
+        return "text-green-400";
+      case "REJECTED":
+        return "text-red-400";
+      default:
+        return "text-gray-400";
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicantId(null);
+    void fetchIntervieweeData();
+  };
 
   const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
   const ratingOptions = ["1/5", "2/5", "3/5", "4/5", "5/5", "Reset"];
@@ -189,7 +219,8 @@ export const IntervieweesPage: React.FC = () => {
         matchesMajor &&
         matchesInterests &&
         matchesTeam &&
-        matchesRating
+        matchesRating &&
+        matchesStatus
       );
     });
   }, [searchQuery, filters, applicantData, selectedCategory]);
@@ -287,6 +318,12 @@ export const IntervieweesPage: React.FC = () => {
               onOptionSelect={handleFilterChange("major")}
               selected={filters.major || "Major"}
             />
+            <FilterButton
+              label="Status"
+              options={statusOptions}
+              onOptionSelect={handleFilterChange("status")}
+              selected={filters.status || "Status"}
+            />
             <button
               className="rounded-[48px] border border-solid bg-stone-600 px-6 py-3 text-white transition-colors hover:bg-stone-500 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={handleTransfer}
@@ -331,6 +368,11 @@ export const IntervieweesPage: React.FC = () => {
                         {applicant.major}
                       </div>
                       <div className="flex-1 text-center">{applicant.year}</div>
+                      <div
+                        className={`flex-1 text-center ${getStatusColor(applicant.rating)}`}
+                      >
+                        {applicant.rating}
+                      </div>
                       <div className="flex-1 text-center">
                         <button
                           onClick={() => toggleLock(applicant.id)}
@@ -360,7 +402,7 @@ export const IntervieweesPage: React.FC = () => {
 
       <ApplicantDetailsModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         applicantId={selectedApplicantId ?? undefined}
       />
     </div>
