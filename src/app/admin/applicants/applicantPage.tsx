@@ -233,7 +233,6 @@ export const ApplicantsPage: React.FC = () => {
         matchesMajor &&
         matchesInterests &&
         matchesTeam &&
-        matchesRating &&
         matchesStatus
       );
     });
