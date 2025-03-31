@@ -10,16 +10,38 @@ export interface TableHeaderProps {
   headers: string[];
 }
 
+export interface SubTeamPreference {
+  name: string;
+  interest: string;
+}
+
+export interface PositionPreference {
+  position: string;
+  interest: string;
+}
+
+export interface ResearchInterest {
+  area: string;
+  interest: string;
+}
+
+export interface ApplicationStatus {
+  stat: string;
+}
+
 export interface ApplicantData {
   id: string;
   name: string;
-  interests: string[];
+  interests: ResearchInterest[];
   teamRankings: string[];
   major: string;
   year: string;
   rating: string;
   category: string;
-  status: string
+  status: string;
+  officerpos: PositionPreference[];
+  subTeam: SubTeamPreference[];
+  
 }
 
 export interface FilterState {
@@ -27,6 +49,7 @@ export interface FilterState {
   rating: string;
   interests: string;
   major: string;
+  position: string;
   status: string
 }
 

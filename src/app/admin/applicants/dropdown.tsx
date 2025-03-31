@@ -1,5 +1,5 @@
-import * as React from 'react';
-import { DropdownProps } from './types';
+import * as React from "react";
+import type { DropdownProps } from "./types";
 
 export const Dropdown: React.FC<DropdownProps> = ({
   options,
@@ -9,16 +9,16 @@ export const Dropdown: React.FC<DropdownProps> = ({
   onToggle,
 }) => {
   return (
-    <div className="relative">
+    <div className="relative w-[300px]">
       <div
         onClick={onToggle}
-        className="flex flex-1 justify-center items-center px-6 py-3 m-0 my-auto text-center border border-solid cursor-pointer rounded-[48px] border-neutral-200"
+        className="m-0 my-auto flex flex-1 cursor-pointer items-center justify-center rounded-[48px] border border-solid border-neutral-200 px-6 py-3 text-center"
       >
-        <span className="text-sm">{value || 'Select'}</span>
-        <span className="text-xs ml-1.5">▼</span>
+        <span className="text-sm">{value || "Select"}</span>
+        <span className="ml-1.5 text-xs">▼</span>
       </div>
       {isOpen && (
-        <div className="absolute text-sm z-50 w-full mt-1 bg-neutral-800 border border-neutral-200 rounded-lg">
+        <div className="absolute z-50 mt-1 max-h-[200px] w-full w-full overflow-y-auto rounded-lg border border-neutral-200 bg-neutral-800 text-sm">
           {options.map((option) => (
             <div
               key={option}
@@ -26,7 +26,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
                 onChange(option);
                 onToggle();
               }}
-              className="px-4 py-2 hover:bg-neutral-700 cursor-pointer"
+              className="cursor-pointer px-4 py-2 hover:bg-neutral-700"
             >
               {option}
             </div>

@@ -8,14 +8,14 @@ const linksData = [
     name: "Officer Application",
     url: "/officer-apply",
     description: "Officer application is now open.",
-    status: "open",
+    status: "closed",
   },
   {
     type: "MateROV",
     name: "MateROV Application",
     url: "/materov-apply",
     description: "MateROV application is now open.",
-    status: "open",
+    status: "closed",
   },
   {
     type: "Design Challenge Application",

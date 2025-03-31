@@ -11,6 +11,7 @@ export const ApplicantsPage: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = React.useState("OFFICER");
   const [filters, setFilters] = React.useState<FilterState>({
     team: "",
+    position: "",
     rating: "",
     interests: "",
     major: "",
@@ -41,6 +42,7 @@ export const ApplicantsPage: React.FC = () => {
 
       const data = (await response.json()) as ApplicantData[];
       console.log("Fetched applicant data:", data.length, "records");
+      data.forEach((app) => console.log(`Applicant ${app.name} status:`, app));
       setApplicantData(data);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -65,15 +67,71 @@ export const ApplicantsPage: React.FC = () => {
     "Status",
   ];
 
+  const officerheaders = [
+    "Name",
+    "Position Preference",
+    "Major",
+    "Year",
+    "Status",
+  ];
+
+  const officerpositions = [
+    "VICE_PRESIDENT",
+    "PROJECT_MANAGER",
+    "MARKETING_SPECIALIST",
+    "GRAPHIC_DESIGNER",
+    "WEB_DEV_LEAD",
+    "TREASURER",
+    "DC_PROGRAM_MANAGER",
+    "Reset",
+  ];
+
   const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
   const ratingOptions = ["High", "Medium", "Low", "Reset"];
   const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
-  const majorOptions = [
-    "Computer Science",
-    "Electrical Engineering",
-    "Mechanical Engineering",
+  const materovsubteams = [
+    "COMPUTATION_COMMUNICATIONS",
+    "ELECTRICAL_POWER",
+    "FLUIDS_PROPULSION",
+    "GUIDANCE_NAVIGATION_CONTROL",
+    "THERMAL_MECHANISMS_STRUCTURES",
+    "MATE_ROV_LEADERSHIP",
     "Reset",
   ];
+  const mateinterests = [
+    "SOFTWARE",
+    "CAD",
+    "POWER",
+    "FLUIDS",
+    "GNC",
+    "OTHER",
+    "Reset",
+  ];
+  const majorOptions = [
+    "ENGR",
+    "OPEN",
+    "AERO",
+    "BAEN",
+    "BMEN",
+    "CHEN",
+    "CPEN",
+    "CSCE",
+    "CVEN",
+    "ELEN",
+    "EVEN",
+    "ETID",
+    "ISEN",
+    "MSEN",
+    "MEEN",
+    "MMET",
+    "MXET",
+    "NUEN",
+    "OCEN",
+    "PETE",
+    "OTHER",
+    "Reset",
+  ];
+
   const statusOptions = [
     "PENDING",
     "INTERVIEWING",
@@ -156,13 +214,18 @@ export const ApplicantsPage: React.FC = () => {
         .includes(searchQuery.toLowerCase());
       const matchesMajor = !filters.major || applicant.major === filters.major;
       const matchesInterests =
-        !filters.interests || applicant.interests.includes(filters.interests);
+        !filters.interests ||
+        applicant.interests.some(
+          (interest) => interest.area === filters.interests,
+        );
       const matchesTeam =
-        !filters.team || applicant.teamRankings.includes(filters.team);
-      const matchesRating =
-        !filters.rating || applicant.rating === filters.rating;
+        selectedCategory === "OFFICER"
+          ? !filters.team ||
+            applicant.officerpos.some((pos) => pos.position === filters.team)
+          : !filters.team ||
+            applicant.subTeam.some((team) => team.name === filters.team);
       const matchesStatus =
-        !filters.status || applicant.status === filters.status;
+        !filters.status || applicant.rating === filters.status;
 
       return (
         matchesCategory &&
@@ -170,7 +233,6 @@ export const ApplicantsPage: React.FC = () => {
         matchesMajor &&
         matchesInterests &&
         matchesTeam &&
-        matchesRating &&
         matchesStatus
       );
     });
@@ -191,6 +253,12 @@ export const ApplicantsPage: React.FC = () => {
   const openApplicantDetails = (id: string) => {
     setSelectedApplicantId(id);
     setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicantId(null);
+    void fetchApplicantData();
   };
 
   const getStatusColor = (status: string) => {
@@ -256,33 +324,33 @@ export const ApplicantsPage: React.FC = () => {
 
           <div className="mt-9 h-px w-full shrink-0 border border-solid border-neutral-200" />
 
-          <div className="ml-7 mt-8 flex w-auto max-w-full items-center justify-start gap-10 self-stretch px-0 py-0 text-sm tracking-wide text-neutral-200 max-md:flex-col">
+          <div className="ml-7 mt-8 flex w-auto max-w-full items-center justify-start gap-5 self-stretch px-0 py-0 text-sm tracking-wide text-neutral-200 max-md:flex-col">
             <input
               type="text"
               placeholder="Search by Name or UIN"
               value={searchQuery}
               onChange={handleSearchChange}
-              className="w-[500px] rounded-[48px] border border-solid border-neutral-200 bg-transparent px-6 py-4 max-md:w-full max-md:max-w-[500px] max-md:px-5"
+              className="w-[400px] rounded-[48px] border border-solid border-neutral-200 bg-transparent px-6 py-4 max-md:w-full max-md:max-w-[500px] max-md:px-5"
             />
             <div className="h-12 w-[1px] bg-neutral-400"></div>
             <FilterButton
-              label="Team"
-              options={teamOptions}
+              label={selectedCategory === "OFFICER" ? "Position" : "Sub-Team"}
+              options={
+                selectedCategory === "OFFICER"
+                  ? officerpositions
+                  : materovsubteams
+              }
               onOptionSelect={handleFilterChange("team")}
               selected={filters.team ?? "Team"}
             />
-            <FilterButton
-              label="Rating"
-              options={ratingOptions}
-              onOptionSelect={handleFilterChange("rating")}
-              selected={filters.rating ?? "Rating"}
-            />
-            <FilterButton
-              label="Interests"
-              options={interestOptions}
-              onOptionSelect={handleFilterChange("interests")}
-              selected={filters.interests ?? "Interests"}
-            />
+            {selectedCategory === "MATEROV" && (
+              <FilterButton
+                label="Interests"
+                options={mateinterests}
+                onOptionSelect={handleFilterChange("interests")}
+                selected={filters.interests ?? "Interests"}
+              />
+            )}
             <FilterButton
               label="Major"
               options={majorOptions}
@@ -298,7 +366,11 @@ export const ApplicantsPage: React.FC = () => {
           </div>
 
           <div className="mt-7 flex w-full flex-col rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full max-md:pb-24">
-            <TableHeader headers={tableHeaders} />
+            <TableHeader
+              headers={
+                selectedCategory === "OFFICER" ? officerheaders : tableHeaders
+              }
+            />
             {loading ? (
               <div className="py-10 text-center text-neutral-200">
                 Loading applicant data...
@@ -320,20 +392,50 @@ export const ApplicantsPage: React.FC = () => {
                       >
                         {applicant.name}
                       </div>
-                      <div className="flex-1 text-center">
-                        {applicant.interests.join(", ")}
+                      <div>
+                        {applicant.interests && applicant.interests.length > 0
+                          ? applicant.interests.map((pref) => (
+                              <div
+                                className="flex-1 text-center"
+                                key={pref.area}
+                              >
+                                {pref.area} ({pref.interest.toLowerCase()})
+                              </div>
+                            ))
+                          : null}
                       </div>
-                      <div className="flex-1 text-center">
-                        {applicant.teamRankings.join(", ")}
+                      <div>
+                        {applicant.subTeam && applicant.subTeam.length > 0
+                          ? applicant.subTeam.map((pref) => (
+                              <div
+                                className="flex-1 text-center"
+                                key={pref.name}
+                              >
+                                {pref.name} ({pref.interest.toLowerCase()})
+                              </div>
+                            ))
+                          : null}
+                      </div>
+                      <div>
+                        {applicant.officerpos && applicant.officerpos.length > 0
+                          ? applicant.officerpos.map((pref) => (
+                              <div
+                                className="flex-1 text-center"
+                                key={pref.position}
+                              >
+                                {pref.position} ({pref.interest.toLowerCase()})
+                              </div>
+                            ))
+                          : null}
                       </div>
                       <div className="flex-1 text-center">
                         {applicant.major}
                       </div>
                       <div className="flex-1 text-center">{applicant.year}</div>
                       <div
-                        className={`flex-1 text-center ${getStatusColor(applicant.status)}`}
+                        className={`flex-1 text-center ${getStatusColor(applicant.rating)}`}
                       >
-                        {applicant.status || "PENDING"}
+                        {applicant.rating}
                       </div>
                     </div>
                     {index < filteredApplicants.length - 1 && (
@@ -349,7 +451,7 @@ export const ApplicantsPage: React.FC = () => {
 
       <ApplicantDetailsModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         applicantId={selectedApplicantId ?? undefined}
       />
     </div>
