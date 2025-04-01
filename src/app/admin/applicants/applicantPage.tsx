@@ -93,7 +93,7 @@ export const ApplicantsPage: React.FC = () => {
     "COMPUTATION_COMMUNICATIONS",
     "ELECTRICAL_POWER",
     "FLUIDS_PROPULSION",
-    "GUIDANCE_NAVIGATION_CONTROL",
+    "GNC",
     "THERMAL_MECHANISMS_STRUCTURES",
     "MATE_ROV_LEADERSHIP",
     "Reset",
