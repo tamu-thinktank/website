@@ -37,7 +37,7 @@ export async function PUT(req: Request) {
     const result = await prisma.application.updateMany({
       where: {
         id: { in: transfer.applicantIds },
-        status: "PENDING",
+        // status: "PENDING",
       },
       data: {
         status: "INTERVIEWING",

@@ -10,24 +10,59 @@ export interface TableHeaderProps {
   headers: string[];
 }
 
-export interface ApplicantData {
+export interface SubTeamPreference {
   name: string;
-  interests: string[];
+  interest: string;
+}
+
+export interface PositionPreference {
+  position: string;
+  interest: string;
+}
+
+export interface ResearchInterest {
+  area: string;
+  interest: string;
+}
+
+export interface ApplicationStatus {
+  stat: string;
+}
+
+export interface ApplicantData {
+  id: string;
+  name: string;
+  interests: ResearchInterest[];
   teamRankings: string[];
+  subTeam: SubTeamPreference[];
   major: string;
   year: string;
   rating: string;
   category: string;
+  status: string;
+  officerpos: PositionPreference[];
+  subTeam: SubTeamPreference[];
   locked: boolean;
-  id: string;
 }
+
+// export interface ApplicantData {
+//   name: string;
+//   interests: string[];
+//   teamRankings: string[];
+//   major: string;
+//   year: string;
+//   rating: string;
+//   category: string;
+//   locked: boolean;
+//   id: string;
+// }
 
 export interface FilterState {
   team: string;
   rating: string;
   interests: string;
   major: string;
-  status:string;
+  status: string;
 }
 
 export interface DropdownProps {
