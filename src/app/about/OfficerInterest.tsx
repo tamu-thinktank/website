@@ -15,9 +15,9 @@ const OfficerInterest = () => {
       </p>
       <a
         href="/officer-apply"
-        className="rounded-full border border-white px-4 py-2 text-white transition duration-300 ease-in-out hover:scale-105 hover:bg-white hover:text-black"
+        className="pointer-events-none cursor-not-allowed rounded-full border border-white bg-transparent px-4 py-2 text-white text-white opacity-50 transition duration-300 ease-in-out hover:scale-105 hover:bg-white hover:text-black"
       >
-        Apply Now
+        Closed
       </a>
       <div style={{ padding: "10px" }}></div>
     </div>

@@ -37,7 +37,7 @@ export default function FormIntroTab() {
       </Card>
       <TabsList className="float-right bg-transparent">
         <TabsTrigger className="bg-white text-black" value="personal">
-          Next
+          Closed
         </TabsTrigger>
       </TabsList>
     </TabsContent>

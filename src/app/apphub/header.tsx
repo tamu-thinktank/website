@@ -9,7 +9,7 @@ const linksData = [
     url: "/officer-apply",
     description:
       "• Officer team dedicated to helping members learn, grow, and become passionate about engineering for the real world.\n• Alumni preferred.",
-    status: "open",
+    status: "closed",
     seemore: "about",
   },
   {
@@ -18,7 +18,7 @@ const linksData = [
     url: "/materov-apply",
     description:
       "• Underwater robotics team where members design and build an autonomous rover for the MATE ROV competition.\n• Sophomores/Juniors preferred.",
-    status: "open",
+    status: "closed",
     seemore: "/materov",
   },
   {
