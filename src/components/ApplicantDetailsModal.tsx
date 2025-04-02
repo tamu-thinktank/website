@@ -1395,55 +1395,40 @@ export const ApplicantDetailsModal = ({
                         <SelectItem value="INTERVIEWING">
                           Interviewing
                         </SelectItem>
-
-                        {applicant.applicationType === "OFFICER" ? (
-                          <>
-                            <SelectItem value="PROJECT_MANAGER">
-                              PROJECT MANAGER
-                            </SelectItem>
-                            <SelectItem value="MARKETING_SPECIALIST">
-                              MARKETING SPECIALIST
-                            </SelectItem>
-                            <SelectItem value="GRAPHIC_DESIGNER">
-                              GRAPHIC DESIGNER
-                            </SelectItem>
-                            <SelectItem value="WEB_DEV_LEAD">
-                              WEB DEV LEAD
-                            </SelectItem>
-                            <SelectItem value="TREASURER">TREASURER</SelectItem>
-                            <SelectItem value="DC_PROGRAM_MANAGER">
-                              DC PROGRAM MANAGER
-                            </SelectItem>
-                          </>
-                        ) : applicant.applicationType === "MATEROV" ? (
-                          <>
-                            <SelectItem value="COMPUTATION_COMMUNICATIONS">
-                              Computation and Communications
-                            </SelectItem>
-                            <SelectItem value="ELECTRICAL_POWER">
-                              Electrical and Power Systems
-                            </SelectItem>
-                            <SelectItem value="FLUIDS_PROPULSION">
-                              Fluids and Propulsion
-                            </SelectItem>
-                            <SelectItem value="GNC">
-                              Guidance, Navigation, and Control
-                            </SelectItem>
-                            <SelectItem value="THERMAL_MECHANISMS">
-                              Thermal, Mechanisms, and Structures
-                            </SelectItem>
-                            <SelectItem value="MATEROV_LEADERSHIP">
-                              MATE ROV Leadership
-                            </SelectItem>
-                          </>
-                        ) : (
-                          <>
-                            <SelectItem value="TEAM1">Team 1</SelectItem>
-                            <SelectItem value="TEAM2">Team 2</SelectItem>
-                            <SelectItem value="TEAM3">Team 3</SelectItem>
-                            <SelectItem value="TEAM4">Team 4</SelectItem>
-                          </>
-                        )}
+                        <SelectItem value="PROJECT_MANAGER">
+                          PROJECT MANAGER
+                        </SelectItem>
+                        <SelectItem value="MARKETING_SPECIALIST">
+                          MARKETING SPECIALIST
+                        </SelectItem>
+                        <SelectItem value="GRAPHIC_DESIGNER">
+                          GRAPHIC DESIGNER
+                        </SelectItem>
+                        <SelectItem value="WEB_DEV_LEAD">
+                          WEB DEV LEAD
+                        </SelectItem>
+                        <SelectItem value="TREASURER">TREASURER</SelectItem>
+                        <SelectItem value="DC_PROGRAM_MANAGER">
+                          DC PROGRAM MANAGER
+                        </SelectItem>
+                        <SelectItem value="COMPUTATION_COMMUNICATIONS">
+                          Computation and Communications
+                        </SelectItem>
+                        <SelectItem value="ELECTRICAL_POWER">
+                          Electrical and Power Systems
+                        </SelectItem>
+                        <SelectItem value="FLUIDS_PROPULSION">
+                          Fluids and Propulsion
+                        </SelectItem>
+                        <SelectItem value="GNC">
+                          Guidance, Navigation, and Control
+                        </SelectItem>
+                        <SelectItem value="THERMAL_MECHANISMS">
+                          Thermal, Mechanisms, and Structures
+                        </SelectItem>
+                        <SelectItem value="MATEROV_LEADERSHIP">
+                          MATE ROV Leadership
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
