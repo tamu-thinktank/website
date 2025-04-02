@@ -8,29 +8,9 @@ export async function GET() {
     
     const applicants = await prisma.application.findMany({
       where: {
-        AND: [
-          {
-            interviewStage: false,
-          },
-          {
-            OR: [
-              { status: "PENDING" },
-              { status: "REJECTED" }
-            ]
-          }
-        ]
-      },
-      where: {
-        AND: [
-          {
-            interviewStage: false,
-          },
-          {
-            OR: [
-              { status: "PENDING" },
-              { status: "REJECTED" }
-            ]
-          }
+        OR: [
+          { status: "PENDING" },
+          { status: "REJECTED_APP" }
         ]
       },
       select: {

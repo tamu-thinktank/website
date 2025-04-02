@@ -41,7 +41,6 @@ export async function PUT(req: Request) {
       },
       data: { 
         status: "INTERVIEWING",
-        interviewStage: true
       },
     });
 
