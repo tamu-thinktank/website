@@ -1,20 +1,19 @@
-import * as React from 'react';
-import { Dropdown } from './dropdown';
-import { FilterButtonProps } from './intervieweetypes';
+import * as React from "react";
+import { Dropdown } from "./dropdown";
+import type { FilterButtonProps } from "./intervieweetypes";
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
   label,
   options = [],
   onOptionSelect,
-  selected = '',
+  selected = "",
 }) => {
   const [isOpen, setIsOpen] = React.useState(false);
 
   const handleChange = (value: string) => {
-    if (value === 'Reset') {
-      onOptionSelect?.('');
-    }
-    else {
+    if (value === "Reset") {
+      onOptionSelect?.("");
+    } else {
       onOptionSelect?.(value);
     }
     setIsOpen(false);
@@ -23,7 +22,7 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   return (
     <Dropdown
       options={options}
-      value={selected}
+      value={selected || label}
       onChange={handleChange}
       isOpen={isOpen}
       onToggle={() => setIsOpen(!isOpen)}
