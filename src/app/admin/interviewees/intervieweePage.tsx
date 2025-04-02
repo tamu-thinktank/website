@@ -87,7 +87,7 @@ export const IntervieweesPage: React.FC = () => {
     "PENDING",
     "INTERVIEWING",
     "ACCEPTED",
-    "REJECTED",
+    "REJECTED_INT",
     "REJECTED_APP",
     "Reset",
   ];
@@ -100,7 +100,7 @@ export const IntervieweesPage: React.FC = () => {
         return "text-blue-400";
       case "ACCEPTED":
         return "text-green-400";
-      case "REJECTED":
+      case "REJECTED_INT":
         return "text-red-400";
       case "REJECTED_APP":
         return "text-red-400";
@@ -222,8 +222,7 @@ export const IntervieweesPage: React.FC = () => {
         matchesMajor &&
         matchesInterests &&
         matchesTeam &&
-        matchesRating &&
-        matchesStatus
+        matchesRating
       );
     });
   }, [searchQuery, filters, applicantData, selectedCategory]);
