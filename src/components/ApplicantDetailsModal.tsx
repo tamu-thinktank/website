@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
@@ -31,19 +29,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Lock, Unlock, Calendar } from "lucide-react";
+import { Lock, Unlock } from "lucide-react";
 import { ApplicationStatus } from "@prisma/client";
-import { format } from "date-fns";
+import { format, addMinutes } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { api } from "@/lib/trpc/react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { Input } from "@/components/ui/input";
 
 // Update the ApplicantDetails interface to include the new fields for MATEROV applications
 interface ApplicantDetails {
@@ -125,8 +116,6 @@ const statusColors = {
   INTERVIEWING: "text-blue-400",
   ACCEPTED: "text-green-400",
   REJECTED: "text-red-400",
-  REJECTED_APP: "text-red-400",
-  REJECTED_INT: "text-red-400",
 };
 
 export const ApplicantDetailsModal = ({
@@ -147,8 +136,7 @@ export const ApplicantDetailsModal = ({
     { id: string; name: string }[]
   >([]);
   const [selectedInterviewer, setSelectedInterviewer] = useState("");
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [selectedTime, setSelectedTime] = useState("");
+  const [interviewTime, setInterviewTime] = useState("");
   const [interviewRoom, setInterviewRoom] = useState("");
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [assignedTeam, setAssignedTeam] = useState("");
@@ -205,8 +193,7 @@ export const ApplicantDetailsModal = ({
       setNewNote("");
       setIsLocked(false);
       setSelectedInterviewer("");
-      setSelectedDate(undefined);
-      setSelectedTime("");
+      setInterviewTime("");
       setInterviewRoom("");
       setAssignedTeam("");
     }
@@ -358,11 +345,7 @@ export const ApplicantDetailsModal = ({
       });
 
       // Send rejection email if status is REJECTED
-      if (
-        newStatus === ApplicationStatus.REJECTED ||
-        newStatus === ApplicationStatus.REJECTED_APP ||
-        newStatus === ApplicationStatus.REJECTED_INT
-      ) {
+      if (newStatus === ApplicationStatus.REJECTED) {
         // Send rejection email using the mutation
         sendRejectEmail({
           applicantName: applicant.fullName,
@@ -388,123 +371,12 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-  // Combine date and time into a single ISO string
-  const getInterviewDateTime = (): string => {
-    if (!selectedDate || !selectedTime) return "";
-
-    const [hoursStr, minutesStr] = selectedTime.split(":");
-    const hours = Number.parseInt(hoursStr, 10) || 0; // Default to 0 if parsing fails
-    const minutes = Number.parseInt(minutesStr, 10) || 0; // Default to 0 if parsing fails
-
-    const dateTime = new Date(selectedDate);
-    dateTime.setHours(hours, minutes, 0, 0);
-
-    return dateTime.toISOString();
-  };
-
-  // Update the toggleLock function to schedule interview without sending email
-  const toggleLock = async () => {
-    if (!isLocked && selectedInterviewer && selectedDate && selectedTime) {
-      // If we're locking, schedule the interview without sending email
-      try {
-        const interviewDateTime = getInterviewDateTime();
-        console.log("Scheduling interview at:", interviewDateTime);
-
-        // Check for scheduling conflicts
-        const hasConflict = await checkInterviewerScheduleConflict(
-          selectedInterviewer,
-          interviewDateTime,
-        );
-        if (hasConflict) {
-          toast({
-            title: "Scheduling Conflict",
-            description:
-              "This interviewer already has an interview scheduled at this time.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // Create the interview record with default room if none provided
-        const response = await fetch("/api/schedule-interview", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            applicantId,
-            interviewerId: selectedInterviewer,
-            time: interviewDateTime,
-            location: interviewRoom.trim() || "To be determined",
-            teamId: assignedTeam !== "NONE" ? assignedTeam : null,
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to schedule interview: ${response.status}`);
-        }
-
-        // Update local state
-        if (applicant) {
-          setApplicant({
-            ...applicant,
-            status: ApplicationStatus.INTERVIEWING,
-          });
-        }
-
-        toast({
-          title: "Success",
-          description: "Interview scheduled successfully (no email sent)",
-        });
-
-        // Refresh applicant details to get updated status
-        if (applicantId) {
-          await fetchApplicantDetails(applicantId);
-        }
-      } catch (err) {
-        console.error("Error scheduling interview:", err);
-        toast({
-          title: "Error",
-          description: `Failed to schedule interview: ${err instanceof Error ? err.message : "Unknown error"}`,
-          variant: "destructive",
-        });
-        return; // Don't toggle lock if scheduling failed
-      }
-    }
-
-    // Toggle the lock state
-    setIsLocked(!isLocked);
-  };
-
-  // Add function to check for interviewer schedule conflicts
-  const checkInterviewerScheduleConflict = async (
-    interviewerId: string,
-    dateTime: string,
-  ): Promise<boolean> => {
-    try {
-      const response = await fetch(
-        `/api/interviewer-schedule/${interviewerId}?time=${encodeURIComponent(dateTime)}`,
-      );
-      if (!response.ok) {
-        throw new Error(
-          `Failed to check interviewer schedule: ${response.status}`,
-        );
-      }
-      const data = await response.json();
-      return data.hasConflict;
-    } catch (error) {
-      console.error("Error checking interviewer schedule:", error);
-      return false; // If we can't check, assume no conflict
-    }
-  };
-
-  // Update scheduleInterview function to check for conflicts
+  // Update the scheduleInterview function to handle 45-minute interviews and adjust email timing
   const scheduleInterview = async () => {
     if (
       !applicantId ||
       !selectedInterviewer ||
-      !selectedDate ||
-      !selectedTime ||
+      !interviewTime ||
       !interviewRoom ||
       !applicant
     ) {
@@ -527,46 +399,13 @@ export const ApplicantDetailsModal = ({
         throw new Error("Selected interviewer not found");
       }
 
-      const interviewDateTime = getInterviewDateTime();
-      console.log("Scheduling interview at:", interviewDateTime);
+      // Parse the interview time
+      const interviewDateTime = new Date(interviewTime);
 
-      // Check for scheduling conflicts
-      const hasConflict = await checkInterviewerScheduleConflict(
-        selectedInterviewer,
-        interviewDateTime,
-      );
-      if (hasConflict) {
-        toast({
-          title: "Scheduling Conflict",
-          description:
-            "This interviewer already has an interview scheduled at this time.",
-          variant: "destructive",
-        });
-        setIsSendingEmail(false);
-        return;
-      }
+      // Create a date 15 minutes after the start time for the email
+      const emailDateTime = addMinutes(interviewDateTime, 15);
 
-      // First update the application status in the database
-      const statusResponse = await fetch(
-        `/api/applicant/${applicantId}/status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            status: ApplicationStatus.INTERVIEWING,
-          }),
-        },
-      );
-
-      if (!statusResponse.ok) {
-        throw new Error(
-          `Failed to update application status: ${statusResponse.status}`,
-        );
-      }
-
-      // Create the interview record
+      // Create the interview record with a 45-minute duration
       const response = await fetch("/api/schedule-interview", {
         method: "POST",
         headers: {
@@ -575,9 +414,10 @@ export const ApplicantDetailsModal = ({
         body: JSON.stringify({
           applicantId,
           interviewerId: selectedInterviewer,
-          time: interviewDateTime,
+          time: interviewDateTime.toISOString(),
+          duration: 45, // 45 minute duration
           location: interviewRoom,
-          teamId: assignedTeam !== "NONE" ? assignedTeam : null,
+          teamId: assignedTeam === "NONE" ? undefined : assignedTeam,
         }),
       });
 
@@ -585,34 +425,25 @@ export const ApplicantDetailsModal = ({
         throw new Error(`Failed to schedule interview: ${response.status}`);
       }
 
-      // Format the time for display
-      const formattedTime = format(
-        new Date(interviewDateTime),
-        "MMMM d, yyyy 'at' h:mm a",
-      );
-
-      // Update local state
-      setApplicant({
-        ...applicant,
-        status: ApplicationStatus.INTERVIEWING,
-      });
-
-      // Send interview email using the tRPC mutation - similar to how rejection email is sent
+      // Send interview email using the tRPC mutation with the adjusted time (15 minutes later)
       sendInterviewEmail({
         officerId: interviewer.id,
         officerName: interviewer.name,
         officerEmail: `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`,
         applicantName: applicant.fullName,
         applicantEmail: applicant.email,
-        startTime: interviewDateTime,
+        startTime: emailDateTime.toISOString(), // Use the time 15 minutes after the scheduled start
         location: interviewRoom,
-        team: assignedTeam === "NONE" ? "" : assignedTeam,
-        applicationType: applicant.applicationType ?? "General",
+        team: assignedTeam === "NONE" ? undefined : assignedTeam,
+        applicationType: applicant.applicationType || "General",
       });
+
+      // Refresh the scheduler data to show the new interview
+      await fetch("/api/interviews", { method: "GET" });
 
       toast({
         title: "Success",
-        description: `Interview scheduled successfully for ${formattedTime} and email sent`,
+        description: "Interview scheduled successfully and email sent",
       });
 
       // Refresh applicant details to get updated status
@@ -630,6 +461,21 @@ export const ApplicantDetailsModal = ({
   };
 
   // Toggle lock and schedule interview if locking
+  const toggleLock = () => {
+    if (
+      !isLocked &&
+      selectedInterviewer &&
+      interviewTime &&
+      interviewRoom &&
+      applicant
+    ) {
+      // If we're locking, schedule the interview
+      void scheduleInterview();
+    }
+
+    // Toggle the lock state
+    setIsLocked(!isLocked);
+  };
 
   // Add function to update assigned team
   const updateAssignedTeam = async () => {
@@ -651,13 +497,12 @@ export const ApplicantDetailsModal = ({
       }
 
       // Update the local state
-      setApplicant((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
+      if (applicant) {
+        setApplicant({
+          ...applicant,
           assignedTeam: assignedTeam === "NONE" ? undefined : assignedTeam,
-        };
-      });
+        });
+      }
 
       toast({
         title: "Success",
@@ -689,16 +534,50 @@ export const ApplicantDetailsModal = ({
     }
   };
 
+  // Function to update applicant status
+  const updateApplicantStatus = async () => {
+    if (!applicantId || !newStatus || !applicant) return false;
+
+    try {
+      const response = await fetch(`/api/applicant/${applicantId}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: newStatus,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to update application status: ${response.status}`,
+        );
+      }
+
+      // Update local state if applicant exists
+      if (applicant) {
+        setApplicant({
+          ...applicant,
+          status: newStatus,
+        });
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error updating applicant status:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update application status. Please try again.",
+        variant: "destructive",
+      });
+      return false;
+    }
+  };
+
   // Update the rejectApplicant function to properly handle the rejection flow
   const rejectApplicant = useCallback(() => {
     if (!applicantId || !applicant) return;
-
-    const rejectionStatus =
-      applicant.status === ApplicationStatus.PENDING
-        ? "REJECTED_APP"
-        : applicant.status === ApplicationStatus.INTERVIEWING
-          ? "REJECTED_INT"
-          : ApplicationStatus.REJECTED;
 
     // First update the status in the database
     fetch(`/api/applicant/${applicantId}/status`, {
@@ -722,7 +601,7 @@ export const ApplicantDetailsModal = ({
           if (!prev) return null;
           return {
             ...prev,
-            status: rejectionStatus,
+            status: ApplicationStatus.REJECTED,
           };
         });
 
@@ -747,7 +626,34 @@ export const ApplicantDetailsModal = ({
       });
   }, [applicantId, applicant, sendRejectEmail, toast]);
 
+  const updateApplicant = api.admin.updateApplicant.useMutation();
+
   if (!isOpen) return null;
+
+  // Update the time options to be from 8AM to 10PM
+  const generateTimeOptions = () => {
+    const options = [];
+    const today = new Date();
+
+    // Set date to today to ensure we're working with a valid date
+    today.setHours(0, 0, 0, 0);
+
+    for (let hour = 8; hour <= 22; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const date = new Date(today);
+        date.setHours(hour, minute);
+
+        options.push({
+          value: date.toISOString(),
+          label: format(date, "h:mm a"),
+        });
+      }
+    }
+
+    return options;
+  };
+
+  const timeOptions = generateTimeOptions();
 
   return (
     <>
@@ -757,7 +663,7 @@ export const ApplicantDetailsModal = ({
             <DialogTitle className="text-2xl">
               {loading
                 ? "Loading Applicant Details..."
-                : (applicant?.fullName ?? "Applicant Details")}
+                : applicant?.fullName || "Applicant Details"}
             </DialogTitle>
           </DialogHeader>
 
@@ -780,12 +686,6 @@ export const ApplicantDetailsModal = ({
                   <div className="text-sm text-neutral-400">
                     UIN: {applicant.uin}
                   </div>
-                  {applicant.status === ApplicationStatus.ACCEPTED &&
-                    applicant.assignedTeam && (
-                      <div className="mt-1 text-sm text-green-400">
-                        Team: {applicant.assignedTeam}
-                      </div>
-                    )}
                 </div>
 
                 <div className="space-y-1">
@@ -866,7 +766,8 @@ export const ApplicantDetailsModal = ({
                 <div className="mt-4">
                   <Label className="text-neutral-400">Current Classes</Label>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    {applicant.currentClasses.length > 0 ? (
+                    {applicant.currentClasses &&
+                    applicant.currentClasses.length > 0 ? (
                       applicant.currentClasses.map((cls, idx) => (
                         <span
                           key={idx}
@@ -886,7 +787,8 @@ export const ApplicantDetailsModal = ({
                     Next Semester Classes
                   </Label>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    {applicant.nextClasses.length > 0 ? (
+                    {applicant.nextClasses &&
+                    applicant.nextClasses.length > 0 ? (
                       applicant.nextClasses.map((cls, idx) => (
                         <span
                           key={idx}
@@ -900,6 +802,15 @@ export const ApplicantDetailsModal = ({
                     )}
                   </div>
                 </div>
+
+                {applicant.summerPlans && (
+                  <div className="mt-4">
+                    <Label className="text-neutral-400">Summer Plans</Label>
+                    <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      {applicant.summerPlans}
+                    </div>
+                  </div>
+                )}
 
                 {applicant.timeCommitment &&
                   applicant.timeCommitment.length > 0 && (
@@ -921,6 +832,80 @@ export const ApplicantDetailsModal = ({
                       </div>
                     </div>
                   )}
+              </div>
+
+              {/* Interests and Motivation Section */}
+              <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                <h3 className="text-lg font-semibold">
+                  Interests and Motivation
+                </h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-neutral-400">
+                      Why are you interested in joining ThinkTank?
+                    </Label>
+                    <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      {applicant.firstQuestion}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-neutral-400">
+                      Which Design Challenges are you interested in?
+                    </Label>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {applicant.preferredTeams &&
+                      applicant.preferredTeams.length > 0 ? (
+                        applicant.preferredTeams.map((teamPref, idx) => (
+                          <span
+                            key={idx}
+                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                          >
+                            {teamPref.team?.name || teamPref.teamId} (
+                            {teamPref.interest})
+                          </span>
+                        ))
+                      ) : (
+                        <div className="text-neutral-500">
+                          No team preferences listed
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-neutral-400">
+                      Describe an instance where you demonstrated your passion
+                    </Label>
+                    <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      {applicant.secondQuestion}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-neutral-400">
+                      Are you interested in a Team Lead position?
+                    </Label>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                      {applicant.preferredPositions &&
+                      applicant.preferredPositions.length > 0 ? (
+                        applicant.preferredPositions.map((position, idx) => (
+                          <span
+                            key={idx}
+                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                          >
+                            {position.position} ({position.interest})
+                          </span>
+                        ))
+                      ) : (
+                        <div className="text-neutral-500">
+                          No leadership preferences listed
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Application Type Specific Information */}
@@ -968,21 +953,12 @@ export const ApplicantDetailsModal = ({
                       </div>
                     </div>
 
-                    {applicant.summerPlans && (
-                      <div>
-                        <Label className="text-neutral-400">Summer Plans</Label>
-                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                          {applicant.summerPlans}
-                        </div>
-                      </div>
-                    )}
-
                     <div>
                       <Label className="text-neutral-400">
                         Why do you want to become a ThinkTank Officer?
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                        {applicant.secondQuestion}
+                        {applicant.firstQuestion}
                       </div>
                     </div>
 
@@ -992,7 +968,7 @@ export const ApplicantDetailsModal = ({
                         you specifically contribute?
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                        {applicant.firstQuestion}
+                        {applicant.secondQuestion}
                       </div>
                     </div>
 
@@ -1039,9 +1015,8 @@ export const ApplicantDetailsModal = ({
 
                     <div>
                       <Label className="text-neutral-400">
-                        Are you able to commit 8-10 hours per week (equivalent
-                        to 1 in-major engineering course) to your team for the
-                        entire duration of the project?
+                        Are you able to commit 8-10 hours per week to your team
+                        for the entire duration of the project?
                       </Label>
                       <div className="mt-1 text-white">
                         {applicant.weeklyCommitment ? "Yes" : "No"}
@@ -1151,7 +1126,7 @@ export const ApplicantDetailsModal = ({
                     <div>
                       <Label className="text-neutral-400">
                         Describe an instance where you worked with a team to
-                        accomplish a goal you were passionate about.
+                        accomplish a goal
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
                         {applicant.firstQuestion}
@@ -1161,7 +1136,7 @@ export const ApplicantDetailsModal = ({
                     <div>
                       <Label className="text-neutral-400">
                         Describe an instance where you demonstrated your passion
-                        for a project, task, or subject matter
+                        for a project
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
                         {applicant.secondQuestion}
@@ -1171,12 +1146,7 @@ export const ApplicantDetailsModal = ({
                     {applicant.thirdQuestion && (
                       <div>
                         <Label className="text-neutral-400">
-                          If you were previously in a ThinkTank design team,
-                          which previous team were you a member of and what did
-                          you specifically contribute? If you were not
-                          previously in ThinkTank, but have participated in an
-                          engineering design competition before, what was it and
-                          how did you contribute to the team?
+                          Previous team experience
                         </Label>
                         <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
                           {applicant.thirdQuestion}
@@ -1241,68 +1211,22 @@ export const ApplicantDetailsModal = ({
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label>Interview Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={`w-full justify-start border-neutral-700 bg-neutral-900 text-left font-normal ${
-                            !selectedDate && "text-muted-foreground"
-                          }`}
-                          disabled={isLocked}
-                        >
-                          <Calendar className="mr-2 h-4 w-4" />
-                          {selectedDate ? (
-                            format(selectedDate, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto border-neutral-700 bg-neutral-900 p-0">
-                        <CalendarComponent
-                          mode="single"
-                          selected={selectedDate}
-                          onSelect={setSelectedDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
+                  {/* Replace the time input with a Select component using the generated options */}
                   <div className="space-y-2">
                     <Label>Interview Time</Label>
                     <Select
-                      value={selectedTime}
-                      onValueChange={setSelectedTime}
+                      value={interviewTime}
+                      onValueChange={setInterviewTime}
                       disabled={isLocked}
                     >
                       <SelectTrigger className="w-full border-neutral-700 bg-neutral-900">
                         <SelectValue placeholder="Select time" />
                       </SelectTrigger>
-                      <SelectContent className="border-neutral-700 bg-neutral-900">
-                        {Array.from({ length: 24 }).map((_, hour) => (
-                          <React.Fragment key={hour}>
-                            <SelectItem value={`${hour}:00`}>
-                              {hour === 0
-                                ? "12:00 AM"
-                                : hour < 12
-                                  ? `${hour}:00 AM`
-                                  : hour === 12
-                                    ? "12:00 PM"
-                                    : `${hour - 12}:00 PM`}
-                            </SelectItem>
-                            <SelectItem value={`${hour}:30`}>
-                              {hour === 0
-                                ? "12:30 AM"
-                                : hour < 12
-                                  ? `${hour}:30 AM`
-                                  : hour === 12
-                                    ? "12:30 PM"
-                                    : `${hour - 12}:30 PM`}
-                            </SelectItem>
-                          </React.Fragment>
+                      <SelectContent className="max-h-[300px] border-neutral-700 bg-neutral-900">
+                        {generateTimeOptions().map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -1311,22 +1235,22 @@ export const ApplicantDetailsModal = ({
                   <div className="relative space-y-2">
                     <Label>Room</Label>
                     <div className="flex items-center gap-2">
-                      <Input
+                      <input
                         type="text"
                         placeholder="Room"
                         value={interviewRoom}
                         onChange={(e) => setInterviewRoom(e.target.value)}
-                        className="flex-1 border-neutral-700 bg-neutral-900"
+                        className="flex-1 rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2"
                       />
                       <Button
                         variant="outline"
                         size="sm"
                         className="border-neutral-700 bg-neutral-800 hover:bg-neutral-700"
-                        onClick={() => void toggleLock()}
+                        onClick={toggleLock}
                         title={
                           isLocked
-                            ? "Unlock interviewer, date, and time fields"
-                            : "Lock interviewer, date, and time fields"
+                            ? "Unlock time and interviewer fields"
+                            : "Lock time and interviewer fields"
                         }
                       >
                         {isLocked ? (
@@ -1337,41 +1261,7 @@ export const ApplicantDetailsModal = ({
                       </Button>
                     </div>
                   </div>
-                </div>
 
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <Button
-                    onClick={() => void scheduleInterview()}
-                    className="bg-blue-600 hover:bg-blue-700"
-                    disabled={
-                      !selectedInterviewer ||
-                      !selectedDate ||
-                      !selectedTime ||
-                      !interviewRoom ||
-                      isSendingEmail
-                    }
-                  >
-                    {isSendingEmail
-                      ? "Scheduling..."
-                      : "Schedule Interview & Send Email"}
-                  </Button>
-
-                  <Button
-                    onClick={() =>
-                      handleStatusChange(ApplicationStatus.REJECTED)
-                    }
-                    className="bg-red-600 hover:bg-red-700"
-                  >
-                    Reject
-                  </Button>
-                </div>
-              </div>
-
-              {/* Team Assignment Section - Separated from Interview Controls */}
-              <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
-                <h3 className="text-lg font-semibold">Team Assignment</h3>
-
-                <div className="space-y-4">
                   <div className="space-y-2">
                     <Label>Assign Team</Label>
                     <Select
@@ -1386,43 +1276,82 @@ export const ApplicantDetailsModal = ({
                         <SelectItem value="INTERVIEWING">
                           Interviewing
                         </SelectItem>
-                        <SelectItem value="PROJECT_MANAGER">
-                          PROJECT MANAGER
-                        </SelectItem>
-                        <SelectItem value="MARKETING_SPECIALIST">
-                          MARKETING SPECIALIST
-                        </SelectItem>
-                        <SelectItem value="GRAPHIC_DESIGNER">
-                          GRAPHIC DESIGNER
-                        </SelectItem>
-                        <SelectItem value="WEB_DEV_LEAD">
-                          WEB DEV LEAD
-                        </SelectItem>
-                        <SelectItem value="TREASURER">TREASURER</SelectItem>
-                        <SelectItem value="DC_PROGRAM_MANAGER">
-                          DC PROGRAM MANAGER
-                        </SelectItem>
-                        <SelectItem value="COMPUTATION_COMMUNICATIONS">
-                          Computation and Communications
-                        </SelectItem>
-                        <SelectItem value="ELECTRICAL_POWER">
-                          Electrical and Power Systems
-                        </SelectItem>
-                        <SelectItem value="FLUIDS_PROPULSION">
-                          Fluids and Propulsion
-                        </SelectItem>
-                        <SelectItem value="GNC">
-                          Guidance, Navigation, and Control
-                        </SelectItem>
-                        <SelectItem value="THERMAL_MECHANISMS">
-                          Thermal, Mechanisms, and Structures
-                        </SelectItem>
-                        <SelectItem value="MATEROV_LEADERSHIP">
-                          MATE ROV Leadership
-                        </SelectItem>
+
+                        {applicant.applicationType === "OFFICER" ? (
+                          <>
+                            <SelectItem value="PROJECT_MANAGER">
+                              PROJECT MANAGER
+                            </SelectItem>
+                            <SelectItem value="MARKETING_SPECIALIST">
+                              MARKETING SPECIALIST
+                            </SelectItem>
+                            <SelectItem value="GRAPHIC_DESIGNER">
+                              GRAPHIC DESIGNER
+                            </SelectItem>
+                            <SelectItem value="WEB_DEV_LEAD">
+                              WEB DEV LEAD
+                            </SelectItem>
+                            <SelectItem value="TREASURER">TREASURER</SelectItem>
+                            <SelectItem value="DC_PROGRAM_MANAGER">
+                              DC PROGRAM MANAGER
+                            </SelectItem>
+                          </>
+                        ) : applicant.applicationType === "MATEROV" ? (
+                          <>
+                            <SelectItem value="COMPUTATION_COMMUNICATIONS">
+                              Computation and Communications
+                            </SelectItem>
+                            <SelectItem value="ELECTRICAL_POWER">
+                              Electrical and Power Systems
+                            </SelectItem>
+                            <SelectItem value="FLUIDS_PROPULSION">
+                              Fluids and Propulsion
+                            </SelectItem>
+                            <SelectItem value="GNC">
+                              Guidance, Navigation, and Control
+                            </SelectItem>
+                            <SelectItem value="THERMAL_MECHANISMS">
+                              Thermal, Mechanisms, and Structures
+                            </SelectItem>
+                            <SelectItem value="MATEROV_LEADERSHIP">
+                              MATE ROV Leadership
+                            </SelectItem>
+                          </>
+                        ) : (
+                          <>
+                            <SelectItem value="TEAM1">Team 1</SelectItem>
+                            <SelectItem value="TEAM2">Team 2</SelectItem>
+                            <SelectItem value="TEAM3">Team 3</SelectItem>
+                            <SelectItem value="TEAM4">Team 4</SelectItem>
+                          </>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button
+                    onClick={() => void scheduleInterview()}
+                    className="bg-blue-600 hover:bg-blue-700"
+                    disabled={
+                      !selectedInterviewer ||
+                      !interviewTime ||
+                      !interviewRoom ||
+                      isSendingEmail
+                    }
+                  >
+                    {isSendingEmail ? "Scheduling..." : "Schedule Interview"}
+                  </Button>
+
+                  <Button
+                    onClick={() =>
+                      handleStatusChange(ApplicationStatus.REJECTED)
+                    }
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Reject
+                  </Button>
 
                   <Button
                     onClick={() => void updateAssignedTeam()}
@@ -1435,21 +1364,6 @@ export const ApplicantDetailsModal = ({
                   </Button>
                 </div>
               </div>
-
-              {/* Resume Section */}
-              {applicant.resumeId && (
-                <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
-                  <h3 className="text-lg font-semibold">Resume</h3>
-                  <div className="aspect-[8.5/11] w-full overflow-hidden rounded border border-neutral-700">
-                    <iframe
-                      src={`https://drive.google.com/file/d/${applicant.resumeId}/preview`}
-                      className="h-full w-full"
-                      title={`${applicant.fullName}'s Resume`}
-                      allow="autoplay"
-                    ></iframe>
-                  </div>
-                </div>
-              )}
 
               {/* Interview Notes */}
               <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
