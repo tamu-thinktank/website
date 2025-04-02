@@ -19,3 +19,37 @@ export default function AdminLayout({
     </SessionProvider>
   );
 }
+
+function Content({ children }: { children: React.ReactNode }) {
+  const { status: authStatus } = useSession();
+
+  return authStatus === "authenticated" ? (
+    <>
+      <Nav />
+      <section>{children}</section>
+    </>
+  ) : (
+    <Button
+      disabled={authStatus === "loading"}
+      onClick={() =>
+        void signIn(
+          "auth0",
+          {
+            callbackUrl: getBaseUrl() + "/admin",
+          },
+          {
+            connection: "google-oauth2",
+            response_type: "code",
+          },
+        )
+      }
+      className="rounded-full bg-white/10 px-10 py-3 font-semibold text-primary no-underline transition hover:bg-white/20"
+    >
+      {authStatus === "loading" ? (
+        <Loader2 className="animate-spin" />
+      ) : (
+        "Sign in"
+      )}
+    </Button>
+  );
+}

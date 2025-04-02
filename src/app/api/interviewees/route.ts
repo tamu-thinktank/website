@@ -10,7 +10,10 @@ export async function GET() {
     // Only get applicants with INTERVIEWING status
     const interviewees = await prisma.application.findMany({
       where: {
-        status: "INTERVIEWING",
+        OR: [
+          { status: "INTERVIEWING" },
+          { status: "REJECTED_INT" }
+        ]
       },
       select: {
         id: true,

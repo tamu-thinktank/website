@@ -7,7 +7,12 @@ export async function GET() {
   try {
 
     const applicants = await prisma.application.findMany({
-
+      where: {
+        OR: [
+          { status: "PENDING" },
+          { status: "REJECTED_APP" }
+        ]
+      },
       select: {
         id: true,
         fullName: true,
@@ -62,6 +67,11 @@ export async function GET() {
       year: applicant.year,
       rating: applicant.status,
       category: applicant.applicationType,
+      status: applicant.status,
+      subTeam: applicant.subteamPreferences.map((pref) => ({
+        name: pref.name,
+        interest: pref.interest
+      })),
     }))
 
     return NextResponse.json(formattedApplicants)

@@ -42,6 +42,7 @@ export const ApplicantsPage: React.FC = () => {
 
       const data = (await response.json()) as ApplicantData[];
       console.log("Fetched applicant data:", data.length, "records");
+      data.forEach((app) => console.log(`Applicant ${app.name} status:`, app));
       setApplicantData(data);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -57,6 +58,12 @@ export const ApplicantsPage: React.FC = () => {
     void fetchApplicantData();
   }, []);
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicantId(null);
+    void fetchApplicantData();
+  };
+
   const tableHeaders = [
     "Name",
     "Research Interests",
@@ -66,22 +73,77 @@ export const ApplicantsPage: React.FC = () => {
     "Status",
   ];
 
-  const officerheaders = ["Name",
+  const officerheaders = [
+    "Name",
     "Position Preference",
     "Major",
     "Year",
-    "Status"];
+    "Status",
+  ];
 
-  const officerpositions = ["VICE_PRESIDENT", "PROJECT_MANAGER", "MARKETING_SPECIALIST", "GRAPHIC_DESIGNER", "WEB_DEV_LEAD", "TREASURER", "DC_PROGRAM_MANAGER", "Reset"];
+  const officerpositions = [
+    "VICE_PRESIDENT",
+    "PROJECT_MANAGER",
+    "MARKETING_SPECIALIST",
+    "GRAPHIC_DESIGNER",
+    "WEB_DEV_LEAD",
+    "TREASURER",
+    "DC_PROGRAM_MANAGER",
+    "Reset",
+  ];
+
+  const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
+  const ratingOptions = ["High", "Medium", "Low", "Reset"];
   const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
-  const materovsubteams = ["COMPUTATION_COMMUNICATIONS", "ELECTRICAL_POWER", "FLUIDS_PROPULSION", "GUIDANCE_NAVIGATION_CONTROL", "THERMAL_MECHANISMS_STRUCTURES", "MATE_ROV_LEADERSHIP", "Reset"];
-  const mateinterests = ["SOFTWARE", "CAD", "POWER", "FLUIDS", "GNC", "OTHER", "Reset"];
-  const majorOptions = ["ENGR", "OPEN", "AERO", "BAEN", "BMEN", "CHEN", "CPEN", "CSCE", "CVEN", "ELEN", "EVEN", "ETID", "ISEN", "MSEN", "MEEN", "MMET", "MXET", "NUEN", "OCEN", "PETE", "OTHER", "Reset"];
+  const materovsubteams = [
+    "COMPUTATION_COMMUNICATIONS",
+    "ELECTRICAL_POWER",
+    "FLUIDS_PROPULSION",
+    "GNC",
+    "THERMAL_MECHANISMS_STRUCTURES",
+    "MATE_ROV_LEADERSHIP",
+    "Reset",
+  ];
+  const mateinterests = [
+    "SOFTWARE",
+    "CAD",
+    "POWER",
+    "FLUIDS",
+    "GNC",
+    "OTHER",
+    "Reset",
+  ];
+  const majorOptions = [
+    "ENGR",
+    "OPEN",
+    "AERO",
+    "BAEN",
+    "BMEN",
+    "CHEN",
+    "CPEN",
+    "CSCE",
+    "CVEN",
+    "ELEN",
+    "EVEN",
+    "ETID",
+    "ISEN",
+    "MSEN",
+    "MEEN",
+    "MMET",
+    "MXET",
+    "NUEN",
+    "OCEN",
+    "PETE",
+    "OTHER",
+    "Reset",
+  ];
+
   const statusOptions = [
     "PENDING",
     "INTERVIEWING",
     "ACCEPTED",
     "REJECTED",
+    "REJECTED_APP",
     "Reset",
   ];
 
@@ -159,12 +221,16 @@ export const ApplicantsPage: React.FC = () => {
         .includes(searchQuery.toLowerCase());
       const matchesMajor = !filters.major || applicant.major === filters.major;
       const matchesInterests =
-        !filters.interests || applicant.interests.some(interest => interest.area === filters.interests);
-      const matchesTeam = selectedCategory === "OFFICER"
-        ? !filters.team ||
-        applicant.officerpos.some(pos => pos.position === filters.team)
-        : !filters.team ||
-        applicant.subTeam.some(team => team.name === filters.team);
+        !filters.interests ||
+        applicant.interests.some(
+          (interest) => interest.area === filters.interests,
+        );
+      const matchesTeam =
+        selectedCategory === "OFFICER"
+          ? !filters.team ||
+          applicant.officerpos.some((pos) => pos.position === filters.team)
+          : !filters.team ||
+          applicant.subTeam.some((team) => team.name === filters.team);
       const matchesStatus =
         !filters.status || applicant.rating === filters.status;
 
@@ -205,6 +271,8 @@ export const ApplicantsPage: React.FC = () => {
       case "ACCEPTED":
         return "text-green-400";
       case "REJECTED":
+        return "text-red-400";
+      case "REJECTED_APP":
         return "text-red-400";
       default:
         return "text-gray-400";
@@ -267,7 +335,11 @@ export const ApplicantsPage: React.FC = () => {
             <div className="h-12 w-[1px] bg-neutral-400"></div>
             <FilterButton
               label={selectedCategory === "OFFICER" ? "Position" : "Sub-Team"}
-              options={selectedCategory === "OFFICER" ? officerpositions : materovsubteams}
+              options={
+                selectedCategory === "OFFICER"
+                  ? officerpositions
+                  : materovsubteams
+              }
               onOptionSelect={handleFilterChange("team")}
               selected={filters.team ?? "Team"}
             />
@@ -294,7 +366,11 @@ export const ApplicantsPage: React.FC = () => {
           </div>
 
           <div className="mt-7 flex w-full flex-col rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full max-md:pb-24">
-            <TableHeader headers={selectedCategory === "OFFICER" ? officerheaders : tableHeaders} />
+            <TableHeader
+              headers={
+                selectedCategory === "OFFICER" ? officerheaders : tableHeaders
+              }
+            />
             {loading ? (
               <div className="py-10 text-center text-neutral-200">
                 Loading applicant data...
@@ -311,50 +387,56 @@ export const ApplicantsPage: React.FC = () => {
                   <React.Fragment key={applicant.id}>
                     <div className="flex w-full items-center justify-center gap-10 px-5 py-4 text-sm transition-colors hover:bg-neutral-800">
                       <div
-                        className="flex-1 cursor-pointer text-center hover:text-blue-400 hover:underline"
+                        className={`${selectedCategory === "OFFICER" ? "w-1/5" : "w-1/6"} cursor-pointer text-center hover:text-blue-400 hover:underline`}
                         onClick={() => openApplicantDetails(applicant.id)}
                       >
                         {applicant.name}
                       </div>
-                      <div >
-                        {applicant.interests && applicant.interests.length > 0 ? (
-                          applicant.interests.map((pref) => (
-                            <div className="flex-1 text-center" key={pref.area}>
-                              {pref.area} ({pref.interest.toLowerCase()})
-                            </div>
-                          ))
-                        ) : (
-                          null
-                        )}
-                      </div>
-                      <div >
-                        {applicant.subTeam && applicant.subTeam.length > 0 ? (
-                          applicant.subTeam.map((pref) => (
-                            <div className="flex-1 text-center" key={pref.name}>
-                              {pref.name} ({pref.interest.toLowerCase()})
-                            </div>
-                          ))
-                        ) : (
-                          null
-                        )}
-                      </div>
-                      <div>
-                        {applicant.officerpos && applicant.officerpos.length > 0 ? (
-                          applicant.officerpos.map((pref) => (
-                            <div className="flex-1 text-center" key={pref.position}>
-                              {pref.position} ({pref.interest.toLowerCase()})
-                            </div>
-                          ))
-                        ) : (
-                          null
-                        )}
-                      </div>
-                      <div className="flex-1 text-center">
+                      {selectedCategory === "MATEROV" && (
+                        <div className="w-1/6 text-center">
+                          {applicant.interests && applicant.interests.length > 0
+                            ? applicant.interests.map((pref) => (
+                              <div
+                                key={pref.area}
+                              >
+                                {pref.area} ({pref.interest.toLowerCase()})
+                              </div>
+                            ))
+                            : null}
+                        </div>
+                      )}
+                      {selectedCategory === "MATEROV" && (
+                        <div className="w-1/6 text-center">
+                          {applicant.subTeam && applicant.subTeam.length > 0
+                            ? applicant.subTeam.map((pref) => (
+                              <div
+                                key={pref.name}
+                              >
+                                {pref.name} ({pref.interest.toLowerCase()})
+                              </div>
+                            ))
+                            : null}
+                        </div>
+                      )}
+                      {selectedCategory === "OFFICER" && (
+                        <div className="w-1/5 text-center">
+                          {applicant.officerpos && applicant.officerpos.length > 0
+                            ? applicant.officerpos.map((pref) => (
+                              <div
+                                key={pref.position}
+                              >
+                                {pref.position} ({pref.interest.toLowerCase()})
+                              </div>
+                            ))
+                            : null}
+                        </div>
+                      )}
+                      <div className={`${selectedCategory === "OFFICER" ? "w-1/5" : "w-1/6"} text-center`}>
                         {applicant.major}
                       </div>
-                      <div className="flex-1 text-center">{applicant.year}</div>
+                      <div className={`${selectedCategory === "OFFICER" ? "w-1/5" : "w-1/6"} text-center`}>{applicant.year}</div>
                       <div
-                        className={`flex-1 text-center ${getStatusColor(applicant.rating)}`}
+                        className={`${selectedCategory === "OFFICER" ? "w-1/5" : "w-1/6"} text-center ${getStatusColor(applicant.rating)}`}
                       >
                         {applicant.rating}
                       </div>
@@ -372,7 +454,7 @@ export const ApplicantsPage: React.FC = () => {
 
       <ApplicantDetailsModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={closeModal}
         applicantId={selectedApplicantId ?? undefined}
       />
     </div>

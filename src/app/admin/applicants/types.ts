@@ -32,7 +32,6 @@ export interface ApplicationStatus {
 export interface ApplicantData {
   id: string;
   name: string;
-  officerpos: PositionPreference[];
   interests: ResearchInterest[];
   teamRankings: string[];
   subTeam: SubTeamPreference[];
@@ -41,6 +40,9 @@ export interface ApplicantData {
   rating: string;
   category: string;
   status: string;
+  officerpos: PositionPreference[];
+  subTeam: SubTeamPreference[];
+  
 }
 
 export interface FilterState {
@@ -49,6 +51,7 @@ export interface FilterState {
   rating: string;
   interests: string;
   major: string;
+  position: string;
   status: string
 }
 

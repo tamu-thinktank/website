@@ -24,6 +24,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         year: true,
         firstQuestion: true,
         secondQuestion: true,
+        thirdQuestion: true,
         meetings: true,
         weeklyCommitment: true,
         preferredTeams: {
@@ -37,7 +38,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
         nextClasses: true,
         summerPlans: true,
         assignedTeam: true,
-        resumeId: true
+        resumeId: true,
+        subteamPreferences: true,
+        referral: true,
+        officerCommitment: true,
+        skills: true,
+        learningInterests: true,
+        previousParticipation: true,
       },
     })
 

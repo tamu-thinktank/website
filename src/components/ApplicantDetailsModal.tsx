@@ -125,6 +125,8 @@ const statusColors = {
   INTERVIEWING: "text-blue-400",
   ACCEPTED: "text-green-400",
   REJECTED: "text-red-400",
+  REJECTED_APP: "text-red-400",
+  REJECTED_INT: "text-red-400",
 };
 
 export const ApplicantDetailsModal = ({
@@ -356,7 +358,11 @@ export const ApplicantDetailsModal = ({
       });
 
       // Send rejection email if status is REJECTED
-      if (newStatus === ApplicationStatus.REJECTED) {
+      if (
+        newStatus === ApplicationStatus.REJECTED ||
+        newStatus === ApplicationStatus.REJECTED_APP ||
+        newStatus === ApplicationStatus.REJECTED_INT
+      ) {
         // Send rejection email using the mutation
         sendRejectEmail({
           applicantName: applicant.fullName,
@@ -687,6 +693,13 @@ export const ApplicantDetailsModal = ({
   const rejectApplicant = useCallback(() => {
     if (!applicantId || !applicant) return;
 
+    const rejectionStatus =
+      applicant.status === ApplicationStatus.PENDING
+        ? "REJECTED_APP"
+        : applicant.status === ApplicationStatus.INTERVIEWING
+          ? "REJECTED_INT"
+          : ApplicationStatus.REJECTED;
+
     // First update the status in the database
     fetch(`/api/applicant/${applicantId}/status`, {
       method: "PATCH",
@@ -709,7 +722,7 @@ export const ApplicantDetailsModal = ({
           if (!prev) return null;
           return {
             ...prev,
-            status: ApplicationStatus.REJECTED,
+            status: rejectionStatus,
           };
         });
 
@@ -947,7 +960,7 @@ export const ApplicantDetailsModal = ({
                       </Label>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {applicant.preferredPositions &&
-                        applicant.preferredPositions.length > 0 ? (
+                          applicant.preferredPositions.length > 0 ? (
                           applicant.preferredPositions.map((position, idx) => (
                             <span
                               key={idx}
@@ -979,7 +992,7 @@ export const ApplicantDetailsModal = ({
                         you specifically contribute?
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                        {applicant.secondQuestion}
+                        {applicant.firstQuestion}
                       </div>
                     </div>
 
@@ -988,7 +1001,7 @@ export const ApplicantDetailsModal = ({
                         Why do you want to become a ThinkTank Officer?
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                        {applicant.firstQuestion}
+                        {applicant.secondQuestion}
                       </div>
                     </div>
 
@@ -1050,7 +1063,7 @@ export const ApplicantDetailsModal = ({
                       </Label>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {applicant.subteamPreferences &&
-                        applicant.subteamPreferences.length > 0 ? (
+                          applicant.subteamPreferences.length > 0 ? (
                           applicant.subteamPreferences.map((subteam, idx) => (
                             <span
                               key={idx}
@@ -1095,7 +1108,7 @@ export const ApplicantDetailsModal = ({
                       </Label>
                       <div className="mt-1 flex flex-wrap gap-2">
                         {applicant.learningInterests &&
-                        applicant.learningInterests.length > 0 ? (
+                          applicant.learningInterests.length > 0 ? (
                           applicant.learningInterests.map((interest, idx) => (
                             <span
                               key={idx}
@@ -1164,21 +1177,19 @@ export const ApplicantDetailsModal = ({
                       </div>
                     </div>
 
-                    {applicant.thirdQuestion && (
-                      <div>
-                        <Label className="text-neutral-400">
-                          If you were previously in a ThinkTank design team,
-                          which previous team were you a member of and what did
-                          you specifically contribute? If you were not
-                          previously in ThinkTank, but have participated in an
-                          engineering design competition before, what was it and
-                          how did you contribute to the team?
-                        </Label>
-                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                          {applicant.thirdQuestion}
-                        </div>
+                    <div>
+                      <Label className="text-neutral-400">
+                        If you were previously in a ThinkTank design team,
+                        which previous team were you a member of and what did
+                        you specifically contribute? If you were not
+                        previously in ThinkTank, but have participated in an
+                        engineering design competition before, what was it and
+                        how did you contribute to the team?
+                      </Label>
+                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        {applicant.thirdQuestion}
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -1243,9 +1254,8 @@ export const ApplicantDetailsModal = ({
                       <PopoverTrigger asChild>
                         <Button
                           variant="outline"
-                          className={`w-full justify-start border-neutral-700 bg-neutral-900 text-left font-normal ${
-                            !selectedDate && "text-muted-foreground"
-                          }`}
+                          className={`w-full justify-start border-neutral-700 bg-neutral-900 text-left font-normal ${!selectedDate && "text-muted-foreground"
+                            }`}
                           disabled={isLocked}
                         >
                           <Calendar className="mr-2 h-4 w-4" />
@@ -1550,15 +1560,14 @@ export const ApplicantDetailsModal = ({
                 }
                 setIsStatusDialogOpen(false);
               }}
-              className={`text-white ${
-                newStatus === ApplicationStatus.ACCEPTED
-                  ? "bg-green-600 hover:bg-green-700"
-                  : newStatus === ApplicationStatus.REJECTED
-                    ? "bg-red-600 hover:bg-red-700"
-                    : newStatus === ApplicationStatus.INTERVIEWING
-                      ? "bg-blue-600 hover:bg-blue-700"
-                      : "bg-orange-600 hover:bg-orange-700"
-              }`}
+              className={`text-white ${newStatus === ApplicationStatus.ACCEPTED
+                ? "bg-green-600 hover:bg-green-700"
+                : newStatus === ApplicationStatus.REJECTED
+                  ? "bg-red-600 hover:bg-red-700"
+                  : newStatus === ApplicationStatus.INTERVIEWING
+                    ? "bg-blue-600 hover:bg-blue-700"
+                    : "bg-orange-600 hover:bg-orange-700"
+                }`}
             >
               Confirm
             </AlertDialogAction>

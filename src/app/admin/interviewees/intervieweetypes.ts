@@ -27,6 +27,7 @@ export interface FilterState {
   rating: string;
   interests: string;
   major: string;
+  status:string;
 }
 
 export interface DropdownProps {

@@ -244,16 +244,33 @@ export const adminRouter = createTRPCRouter({
         ctx,
       }) => {
         try {
-          // Simplify the email sending process - similar to rejectAppEmail
+          // Parse the startTime string
+          const date = new Date(startTime)
+
+          // If you're seeing a 5-hour difference (5pm intended but showing as 10pm),
+          // the time is likely being interpreted as UTC when it should be in Central Time
+
+          // Format the time explicitly for Central Time (UTC-5/UTC-6)
+          const options = {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+            timeZone: "America/Chicago",
+          }
+
+          const formatter = new Intl.DateTimeFormat("en-US", options)
+          const formattedTime = formatter.format(date) + " CT"
+
+          // Send the email with the properly formatted time
           await sendEmail({
             to: [applicantEmail],
             subject: "ThinkTank Interview",
             template: InterviewEmail({
               userFirstname: applicantName.split(" ")[0] ?? "",
-              time: new Date(startTime).toLocaleString("en-US", {
-                dateStyle: "short",
-                timeStyle: "short",
-              }),
+              time: formattedTime,
               location,
               interviewerName: officerName,
               team,

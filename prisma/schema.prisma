@@ -104,6 +104,8 @@ enum ApplicationStatus {
   PENDING
   ACCEPTED
   REJECTED
+  REJECTED_APP
+  REJECTED_INT
   INTERVIEWING
 }
 
@@ -280,6 +282,7 @@ model Application {
   id              String            @id @default(cuid())
   submittedAt     DateTime          @default(now())
   status          ApplicationStatus @default(PENDING)
+  interviewStage  Boolean           @default(false)
   location        String? // interview location if accepted
   applicationType ApplicationType?
 
