@@ -901,15 +901,6 @@ export const ApplicantDetailsModal = ({
                   </div>
                 </div>
 
-                {applicant.summerPlans && (
-                  <div className="mt-4">
-                    <Label className="text-neutral-400">Summer Plans</Label>
-                    <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
-                      {applicant.summerPlans}
-                    </div>
-                  </div>
-                )}
-
                 {applicant.timeCommitment &&
                   applicant.timeCommitment.length > 0 && (
                     <div className="mt-4">
@@ -988,8 +979,7 @@ export const ApplicantDetailsModal = ({
 
                     <div>
                       <Label className="text-neutral-400">
-                        Which previous team were you a member of and what did
-                        you specifically contribute?
+                        Why do you want to become a ThinkTank Officer?
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
                         {applicant.secondQuestion}
@@ -998,7 +988,8 @@ export const ApplicantDetailsModal = ({
 
                     <div>
                       <Label className="text-neutral-400">
-                        Why do you want to become a ThinkTank Officer?
+                        Which previous team were you a member of and what did
+                        you specifically contribute?
                       </Label>
                       <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
                         {applicant.firstQuestion}
