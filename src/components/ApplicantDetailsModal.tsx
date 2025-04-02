@@ -125,6 +125,8 @@ const statusColors = {
   INTERVIEWING: "text-blue-400",
   ACCEPTED: "text-green-400",
   REJECTED: "text-red-400",
+  REJECTED_APP: "text-red-400",
+  REJECTED_INT: "text-red-400",
 };
 
 export const ApplicantDetailsModal = ({
@@ -356,7 +358,11 @@ export const ApplicantDetailsModal = ({
       });
 
       // Send rejection email if status is REJECTED
-      if (newStatus === ApplicationStatus.REJECTED) {
+      if (
+        newStatus === ApplicationStatus.REJECTED ||
+        newStatus === ApplicationStatus.REJECTED_APP ||
+        newStatus === ApplicationStatus.REJECTED_INT
+      ) {
         // Send rejection email using the mutation
         sendRejectEmail({
           applicantName: applicant.fullName,
@@ -687,6 +693,13 @@ export const ApplicantDetailsModal = ({
   const rejectApplicant = useCallback(() => {
     if (!applicantId || !applicant) return;
 
+    const rejectionStatus =
+      applicant.status === ApplicationStatus.PENDING
+        ? "REJECTED_APP"
+        : applicant.status === ApplicationStatus.INTERVIEWING
+          ? "REJECTED_INT"
+          : ApplicationStatus.REJECTED;
+
     // First update the status in the database
     fetch(`/api/applicant/${applicantId}/status`, {
       method: "PATCH",
@@ -709,7 +722,7 @@ export const ApplicantDetailsModal = ({
           if (!prev) return null;
           return {
             ...prev,
-            status: ApplicationStatus.REJECTED,
+            status: rejectionStatus,
           };
         });
 

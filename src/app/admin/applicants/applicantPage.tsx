@@ -58,6 +58,12 @@ export const ApplicantsPage: React.FC = () => {
     void fetchApplicantData();
   }, []);
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicantId(null);
+    void fetchApplicantData();
+  };
+
   const tableHeaders = [
     "Name",
     "Research Interests",
@@ -137,6 +143,7 @@ export const ApplicantsPage: React.FC = () => {
     "INTERVIEWING",
     "ACCEPTED",
     "REJECTED",
+    "REJECTED_APP",
     "Reset",
   ];
 
@@ -255,12 +262,6 @@ export const ApplicantsPage: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedApplicantId(null);
-    void fetchApplicantData();
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case "PENDING":
@@ -270,6 +271,8 @@ export const ApplicantsPage: React.FC = () => {
       case "ACCEPTED":
         return "text-green-400";
       case "REJECTED":
+        return "text-red-400";
+      case "REJECTED_APP":
         return "text-red-400";
       default:
         return "text-gray-400";

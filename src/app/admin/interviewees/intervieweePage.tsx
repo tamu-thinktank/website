@@ -88,6 +88,7 @@ export const IntervieweesPage: React.FC = () => {
     "INTERVIEWING",
     "ACCEPTED",
     "REJECTED",
+    "REJECTED_APP",
     "Reset",
   ];
 
@@ -100,6 +101,8 @@ export const IntervieweesPage: React.FC = () => {
       case "ACCEPTED":
         return "text-green-400";
       case "REJECTED":
+        return "text-red-400";
+      case "REJECTED_APP":
         return "text-red-400";
       default:
         return "text-gray-400";
