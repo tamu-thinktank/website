@@ -18,6 +18,9 @@ export async function POST(request: Request) {
 
     const { applicantId, content } = body
 
+    // Format the current date and time
+    const timestamp = new Date().toLocaleString()
+
     // Check if an interview note exists for this applicant
     const existingNote = await prisma.interviewNote.findFirst({
       where: { applicantId },
@@ -26,17 +29,21 @@ export async function POST(request: Request) {
     let updatedNote
 
     if (existingNote) {
-      // Update the existing note - just the content field
+      // Append to the existing note instead of replacing it
+      const newContent = `${existingNote.content}\n\n${timestamp}: ${content}`
+
       updatedNote = await prisma.interviewNote.update({
         where: { id: existingNote.id },
-        data: { content },
+        data: { content: newContent },
       })
     } else {
-      // Create a new note if none exists - just with applicantId and content
+      // Create a new note if none exists - with timestamp
+      const timestampedContent = `${timestamp}: ${content}`
+
       updatedNote = await prisma.interviewNote.create({
         data: {
           applicantId,
-          content,
+          content: timestampedContent,
         },
       })
     }
@@ -49,7 +56,7 @@ export async function POST(request: Request) {
 }
 
 // Also support PATCH for consistency
-export async function PATCH(request: Request) {
-  return POST(request)
+export async function PATCH(_request: Request) {
+  return POST(_request)
 }
 

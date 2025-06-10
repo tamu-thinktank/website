@@ -59,6 +59,12 @@ export const ApplicantsPage: React.FC = () => {
     void fetchApplicantData();
   }, []);
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedApplicantId(null);
+    void fetchApplicantData();
+  };
+
   const tableHeaders = [
     "Name",
     "Research Interests",
@@ -94,7 +100,7 @@ export const ApplicantsPage: React.FC = () => {
     "COMPUTATION_COMMUNICATIONS",
     "ELECTRICAL_POWER",
     "FLUIDS_PROPULSION",
-    "GUIDANCE_NAVIGATION_CONTROL",
+    "GNC",
     "THERMAL_MECHANISMS_STRUCTURES",
     "MATE_ROV_LEADERSHIP",
     "Reset",
@@ -255,12 +261,6 @@ export const ApplicantsPage: React.FC = () => {
   const openApplicantDetails = (id: string) => {
     setSelectedApplicantId(id);
     setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedApplicantId(null);
-    void fetchApplicantData();
   };
 
   const getStatusColor = (status: string) => {

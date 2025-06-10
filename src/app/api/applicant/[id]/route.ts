@@ -12,6 +12,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       select: {
         id: true,
         fullName: true,
+        applicationType: true,
         preferredName: true,
         uin: true,
         email: true,
@@ -23,6 +24,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         year: true,
         firstQuestion: true,
         secondQuestion: true,
+        thirdQuestion: true,
         meetings: true,
         weeklyCommitment: true,
         preferredTeams: {
@@ -36,7 +38,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
         nextClasses: true,
         summerPlans: true,
         assignedTeam: true,
-        resumeId: true
+        resumeId: true,
+        subteamPreferences: true,
+        referral: true,
+        officerCommitment: true,
+        skills: true,
+        learningInterests: true,
+        previousParticipation: true,
       },
     })
 
@@ -50,4 +58,3 @@ export async function GET(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: "Failed to fetch applicant details" }, { status: 500 })
   }
 }
-

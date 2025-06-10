@@ -10,7 +10,8 @@ export async function GET() {
       where: {
         OR: [
           { status: "PENDING" },
-          { status: "REJECTED_APP" }
+          { status: "REJECTED_APP" },
+          { status: "REJECTED" }
         ]
       },
       select: {

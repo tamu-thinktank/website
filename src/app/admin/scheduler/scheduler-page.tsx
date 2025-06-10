@@ -27,7 +27,7 @@ import {
   isSameDay,
 } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Challenge } from "@prisma/client";
+import { Challenge, OfficerPosition } from "@prisma/client";
 import type { ApplicationStatus } from "@prisma/client";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -188,12 +188,23 @@ const Scheduler: React.FC = () => {
 
   // Team options
   const teams = [
-    { id: Challenge.TSGC, name: "Team 1" },
-    { id: Challenge.AIAA, name: "Team 2" },
-    { id: "TEAM3", name: "Team 3" },
-    { id: "TEAM4", name: "Team 4" },
-    { id: "TEAM5", name: "Team 5" },
-    { id: "TEAM6", name: "Team 6" },
+    { id: OfficerPosition.VICE_PRESIDENT, name: "VICE_PRESIDENT" },
+    { id: OfficerPosition.PROJECT_MANAGER, name: "PROJECT_MANAGER" },
+    { id: OfficerPosition.MARKETING_SPECIALIST, name: "MARKETING_SPECIALIST" },
+    { id: OfficerPosition.GRAPHIC_DESIGNER, name: "GRAPHIC_DESIGNER" },
+    { id: OfficerPosition.WEB_DEV_LEAD, name: "WEB_DEV_LEAD" },
+    { id: OfficerPosition.TREASURER, name: "TREASURER" },
+    { id: OfficerPosition.DC_PROGRAM_MANAGER, name: "DC_PROGRAM_MANAGER" },
+    { id: "COMPUTATION_COMMUNICATIONS", name: "COMPUTATION_COMMUNICATIONS" },
+    { id: "ELECTRICAL_POWER", name: "ELECTRICAL_POWER" },
+    { id: "FLUIDS_PROPULSION", name: "FLUIDS_PROPULSION" },
+    { id: "GNC", name: "GNC" },
+    {
+      id: "THERMAL_MECHANISMS_STRUCTURES",
+      name: "THERMAL_MECHANISMS_STRUCTURES",
+    },
+    { id: "MATE_ROV_LEADERSHIP", name: "MATE_ROV_LEADERSHIP" },
+    { id: "Reset", name: "Reset" },
   ];
 
   // Fetch data from the database
@@ -342,35 +353,35 @@ const Scheduler: React.FC = () => {
     }
   };
 
-  // Refresh interviews when the lock button is clicked in the ApplicantDetailsModal
-  React.useEffect(() => {
-    // Create an event listener for interview updates
-    const handleInterviewUpdate = () => {
-      void fetchInterviews();
-    };
+  // bad infinite loop
+  // React.useEffect(() => {
+  //   // Create an event listener for interview updates
+  //   const handleInterviewUpdate = () => {
+  //     void fetchInterviews();
+  //   };
 
-    // Listen for fetch requests to the interviews endpoint
-    const originalFetch = window.fetch;
-    window.fetch = async (input, init) => {
-      const response = await originalFetch(input, init);
+  //   // Listen for fetch requests to the interviews endpoint
+  //   const originalFetch = window.fetch;
+  //   window.fetch = async (input, init) => {
+  //     const response = await originalFetch(input, init);
 
-      // If this was a request to the interviews endpoint, refresh our data
-      if (
-        typeof input === "string" &&
-        (input.includes("/api/interviews") ||
-          input.includes("/api/schedule-interview"))
-      ) {
-        handleInterviewUpdate();
-      }
+  //     // If this was a request to the interviews endpoint, refresh our data
+  //     if (
+  //       typeof input === "string" &&
+  //       (input.includes("/api/interviews") ||
+  //         input.includes("/api/schedule-interview"))
+  //     ) {
+  //       handleInterviewUpdate();
+  //     }
 
-      return response;
-    };
+  //     return response;
+  //   };
 
-    // Cleanup function to restore original fetch
-    return () => {
-      window.fetch = originalFetch;
-    };
-  }, []);
+  //   // Cleanup function to restore original fetch
+  //   return () => {
+  //     window.fetch = originalFetch;
+  //   };
+  // }, []);
 
   // Fetch applicants from the database
   const fetchApplicants = async () => {
