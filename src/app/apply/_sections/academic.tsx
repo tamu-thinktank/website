@@ -22,11 +22,30 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFieldArray } from "react-hook-form";
 import { X } from "lucide-react";
+import { it } from "date-fns/locale";
 
 export default function AcademicInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+
+  const {
+    fields: currentClassesFields,
+    append: appendCurrentClass,
+    remove: removeCurrentClass,
+  } = useFieldArray({
+    control: form.control,
+    name: "academic.currentClasses",
+  });
+
+  const {
+    fields: nextClassesFields,
+    append: appendNextClass,
+    remove: removeNextClass,
+  } = useFieldArray({
+    control: form.control,
+    name: "academic.nextClasses",
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -113,138 +132,112 @@ export default function AcademicInfo() {
       />
 
       {/* Current Semester Classes */}
-      <FormField
-        control={form.control}
-        name="academic.currentClasses"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {q.academic.currentClasses} 
-                  <span className="text-red-500">*</span>
-                </CardTitle>
-                <CardDescription>
-                  Enter at least two classes in one of the following formats:
-                  <br />
-                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-                  <br />
-                  - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-                  <br />
-                  If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {field.value.map((_, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name={`academic.currentClasses.${index}`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <Input
-                            {...field}
-                            placeholder="XXXX 123"
-                            pattern="[A-Z]{4} \d{3}"
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {q.academic.currentClasses} 
+            <span className="text-red-500">*</span>
+          </CardTitle>
+          <CardDescription>
+            Enter at least two classes in one of the following formats:
+            <br />
+            - TAMU format: 'XXXX 123' (e.g., ENGR 102)
+            <br />
+            - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
+            <br />
+            If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {currentClassesFields.map((item, index) => (
+            <div key={item.id} className="flex items-center gap-2">
+              <FormField
+                control={form.control}
+                name={`academic.currentClasses.${index}.value`}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <Input
+                      {...field}
+                      placeholder="XXXX 123"
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const updated = [...field.value];
-                        updated.splice(index, 1);
-                        field.onChange(updated);
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => field.onChange([...field.value, ""])}
-                >
-                  Add Class
-                </Button>
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => removeCurrentClass(index)}
+              >            
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => appendCurrentClass({ value: "" })}
+          >
+            Add Class
+          </Button>
+          <FormMessage />
+        </CardContent>
+      </Card>
 
       {/* Next Semester Classes */}
-      <FormField
-        control={form.control}
-        name="academic.nextClasses"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {q.academic.nextClasses} 
-                  <span className="text-red-500">*</span>
-                </CardTitle>
-                <CardDescription>
-                  Enter at least two classes in one of the following formats:
-                  <br />
-                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-                  <br />
-                  - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-                  <br />
-                  If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {field.value.map((_, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name={`academic.nextClasses.${index}`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <Input
-                            {...field}
-                            placeholder="XXXX 123"
-                            pattern="[A-Z]{4} \d{3}"
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {q.academic.nextClasses} 
+            <span className="text-red-500">*</span>
+          </CardTitle>
+          <CardDescription>
+            Enter at least two classes in one of the following formats:
+            <br />
+            - TAMU format: 'XXXX 123' (e.g., ENGR 102)
+            <br />
+            - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
+            <br />
+            If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-2">
+          {nextClassesFields.map((item, index) => (
+            <div key={item.id} className="flex items-center gap-2">
+              <FormField
+                control={form.control}
+                name={`academic.nextClasses.${index}.value`}
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <Input
+                      {...field}
+                      placeholder="XXXX 123"
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const updated = [...field.value];
-                        updated.splice(index, 1);
-                        field.onChange(updated);
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => field.onChange([...field.value, ""])}
-                >
-                  Add Class
-                </Button>
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                onClick={() => removeNextClass(index)}
+              >            
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => appendNextClass({ value: "" })}
+          >
+            Add Class
+          </Button>
+          <FormMessage />
+        </CardContent>
+      </Card>
 
       {/* Time Commitments */}
       {["CURRENT", "PLANNED"].map((type) => (

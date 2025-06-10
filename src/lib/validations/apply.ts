@@ -15,6 +15,12 @@ const validateSignature = (signature: string, fullName: string): boolean => {
   return signature.toLowerCase().includes(firstName) || 
          signature.toLowerCase().includes(lastName);
 };
+const classSchema = z.object({
+  value: z.string().refine(
+    cls => /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+    "Invalid class format. Use 'XXXX 123' or 'XXXXb1234' (for Blinn) or 'NULL 101' if courses are withheld.",
+  )
+})
 
 export const ApplyFormSchema = z
   .object({
@@ -74,27 +80,11 @@ export const ApplyFormSchema = z
       year: yearSchema,
       major: majorSchema,
       currentClasses: z
-        .array(z.string())
-        .min(2, "Enter at least two classes")
-        .refine(
-          classes =>
-            classes.every(
-              cls =>
-                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls)
-            ),
-          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
-        ),
+        .array(classSchema)
+        .min(2, "Enter at least two classes"),
       nextClasses: z
-        .array(z.string())
-        .min(2, "Enter at least two classes")
-        .refine(
-          classes =>
-            classes.every(
-              cls =>
-                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls)
-            ),
-          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
-        ),
+        .array(classSchema)
+        .min(2, "Enter at least two classes"),
         timeCommitment: z
         .array(
           z.object({

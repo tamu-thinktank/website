@@ -50,8 +50,8 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: [""],
-          nextClasses: [""],
+          currentClasses: [{ value: "" }, { value: "" }],
+          nextClasses: [{ value: "" }, { value: "" }],
           timeCommitment: [],
         },
         thinkTankInfo: {
