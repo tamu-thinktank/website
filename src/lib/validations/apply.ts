@@ -97,6 +97,22 @@ export const ApplyFormSchema = z
         )
         .optional()
         .default([]) 
+        .refine(
+          (commitments) => {
+            const seen = new Set<string>();
+            for (const commitment of commitments) {
+              const key = `${commitment.name.trim().toLowerCase()}-${commitment.type}`;
+              if (seen.has(key)) {
+                return false;
+              }
+              seen.add(key);
+            }
+            return true;
+          },
+          {
+            message: "Commitment names must be unique",
+          }
+        )
     }),
 
     // ThinkTank Information Section
