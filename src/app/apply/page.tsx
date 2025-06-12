@@ -235,7 +235,7 @@ export default function Apply() {
                 />
               </ApplyTab>
               <TabsContent className="space-y-2" value="resume">
-                <ResumeUpload setResumeFile={setResumeFile} />
+                <ResumeUpload resumeFile={resumeFile} setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
                     className="bg-white text-black"
