@@ -1,5 +1,6 @@
 import { adminRouter } from "./routers/admin";
 import { publicRouter } from "./routers/public";
+import { dcmemberRouter } from "./routers/dcmember";
 import { createTRPCRouter } from "./trpc";
 
 /**
@@ -10,6 +11,7 @@ import { createTRPCRouter } from "./trpc";
 export const appRouter = createTRPCRouter({
   public: publicRouter,
   admin: adminRouter,
+  dcmember: dcmemberRouter,
 });
 
 // export type definition of API

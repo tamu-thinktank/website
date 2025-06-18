@@ -17,7 +17,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { q, TEAMS, RESEARCH_AREAS, INTEREST_LEVELS } from "@/consts/apply-form";
+import { TEAMS, RESEARCH_AREAS, INTEREST_LEVELS } from "@/consts/apply-form";
+import { qDCMember as q } from "@/consts/dcmember-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import type { InterestLevel } from "@prisma/client";
 import { ReferralSource } from "@prisma/client";
@@ -32,7 +33,7 @@ import {
 } from "@/components/ui/select";
 
 export default function ThinkTankInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["dcmember"]["DCMemberApplyForm"]>();
   const selectedTeams = form.watch("thinkTankInfo.preferredTeams");
 
   // Get available research areas based on selected teams

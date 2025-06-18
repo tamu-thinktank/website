@@ -19,15 +19,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { q } from "@/consts/apply-form";
+import { qDCMember as q } from "@/consts/dcmember-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { Year, Major, CommitmentType } from "@prisma/client";
+import { Year, Major } from "@prisma/client";
+import type { CommitmentType } from "@prisma/client";
 import { useFormContext, useFieldArray } from "react-hook-form";
 import { X } from "lucide-react";
-import { it } from "date-fns/locale";
 
 export default function AcademicInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["dcmember"]["DCMemberApplyForm"]>();
 
   const { formState: { errors } } = form;
 

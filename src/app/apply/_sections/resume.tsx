@@ -26,7 +26,7 @@ export default function ResumeUpload({
   resumeFile?: File;
   setResumeFile: (file?: File) => void;
 }) {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["dcmember"]["DCMemberApplyForm"]>();
   const fullName = useWatch({ control: form.control, name: "personal.fullName" });
 
   const signatureTexts = [

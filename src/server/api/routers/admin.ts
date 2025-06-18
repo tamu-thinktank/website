@@ -1,6 +1,7 @@
 import { RESUME_ACCEPTED_ID, RESUME_PENDING_ID, RESUME_REJECTED_ID } from "@/consts/google-things"
 import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap"
-import { ApplicantSchema, ApplicantsSchema, AvailabilityMapSchema } from "@/lib/validations/apply"
+import { AvailabilityMapSchema } from "@/lib/validations/apply"
+import { ApplicantSchema, ApplicantsSchema} from "@/lib/validations/applicants"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { getAllApplications, getAvailabities, getTargetTeams } from "@/server/db/queries"
 import sendEmail from "@/server/service/email"

@@ -27,7 +27,7 @@ export default function Availability({
   setUserTimezone,
   table,
 }: AvailabilityProps) {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["dcmember"]["DCMemberApplyForm"]>();
   const color = "#137522";
 
   // Ref and state required to rerender but also access static version in callbacks
