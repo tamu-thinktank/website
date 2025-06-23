@@ -16,14 +16,14 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { qOfficer } from "@/consts/apply-form";
+import { qOfficer } from "@/consts/officer-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { OfficerCommitment, OfficerPosition, InterestLevel } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ThinkTankInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+  const form = useFormContext<RouterInputs["officer"]["OfficerApplyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">

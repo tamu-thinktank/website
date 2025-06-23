@@ -29,7 +29,7 @@ export default function FormIntroTab() {
           <strong>
             WE HIGHLY RECOMMEND READING THE FAQ AND COMPLETING THE APPLICATION
             ON A LAPTOP/DESKTOP
-          </strong> */}
+          </strong> *
           <br /> <br />
           <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong>
         </CardContent>

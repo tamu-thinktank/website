@@ -17,12 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { qOfficer, PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
+import { PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
+import { qOfficer } from "@/consts/officer-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
 export default function PersonalInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+  const form = useFormContext<RouterInputs["officer"]["OfficerApplyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">

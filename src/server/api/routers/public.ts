@@ -1,4 +1,4 @@
-import { OfficerApplyFormSchema, MATEROVApplyFormSchema, MiniDCApplyFormSchema } from "@/lib/validations/apply";
+import { MATEROVApplyFormSchema, MiniDCApplyFormSchema } from "@/lib/validations/apply";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import DriveService from "@/server/service/google-drive";
 import { z } from "zod";
@@ -80,67 +80,67 @@ export const publicRouter = createTRPCRouter({
   //   }),
 
   // Officer application procedure
-  applyOfficer: publicProcedure
-    .input(OfficerApplyFormSchema)
-    .mutation(async ({ input, ctx }) => {
-      await ctx.db.application.create({
-        data: {
-          // Personal Info (shared structure)
-          ...input.personal,
+  // applyOfficer: publicProcedure
+  //   .input(OfficerApplyFormSchema)
+  //   .mutation(async ({ input, ctx }) => {
+  //     await ctx.db.application.create({
+  //       data: {
+  //         // Personal Info (shared structure)
+  //         ...input.personal,
           
-          // Academic Info (includes officer-specific fields)
-          ...input.academic,
-          timeCommitment: {
-            create: input.academic.timeCommitment
-              .filter((tc): tc is Required<typeof tc> => {
-                return (
-                  typeof tc.name === "string" &&
-                  typeof tc.hours === "number" &&
-                  tc.name.trim().length > 0 &&
-                  tc.hours > 0
-                );
-              })
-              .map(tc => ({
-                name: tc.name,
-                hours: tc.hours,
-                type: tc.type,
-              })),
-          },
+  //         // Academic Info (includes officer-specific fields)
+  //         ...input.academic,
+  //         timeCommitment: {
+  //           create: input.academic.timeCommitment
+  //             .filter((tc): tc is Required<typeof tc> => {
+  //               return (
+  //                 typeof tc.name === "string" &&
+  //                 typeof tc.hours === "number" &&
+  //                 tc.name.trim().length > 0 &&
+  //                 tc.hours > 0
+  //               );
+  //             })
+  //             .map(tc => ({
+  //               name: tc.name,
+  //               hours: tc.hours,
+  //               type: tc.type,
+  //             })),
+  //         },
           
-          // ThinkTank Info
-          // Note: Officers use officerCommitment instead of meetings/weeklyCommitment
-          meetings: true,
-          weeklyCommitment: true,
-          officerCommitment: input.thinkTankInfo.officerCommitment,
-          preferredPositions: {
-            create: input.thinkTankInfo.preferredPositions.map(pp => ({
-              interest: pp.interestLevel,
-              position: pp.position,
-            })),
-          },
+  //         // ThinkTank Info
+  //         // Note: Officers use officerCommitment instead of meetings/weeklyCommitment
+  //         meetings: true,
+  //         weeklyCommitment: true,
+  //         officerCommitment: input.thinkTankInfo.officerCommitment,
+  //         preferredPositions: {
+  //           create: input.thinkTankInfo.preferredPositions.map(pp => ({
+  //             interest: pp.interestLevel,
+  //             position: pp.position,
+  //           })),
+  //         },
           
-          // Open-Ended Questions
-          firstQuestion: input.openEndedQuestions.firstQuestion,
-          secondQuestion: input.openEndedQuestions.secondQuestion,
+  //         // Open-Ended Questions
+  //         firstQuestion: input.openEndedQuestions.firstQuestion,
+  //         secondQuestion: input.openEndedQuestions.secondQuestion,
           
-          // Meeting Times
-          meetingTimes: {
-            createMany: {
-              data: input.meetingTimes.map(gridTime => ({ gridTime })),
-            },
-          },
+  //         // Meeting Times
+  //         meetingTimes: {
+  //           createMany: {
+  //             data: input.meetingTimes.map(gridTime => ({ gridTime })),
+  //           },
+  //         },
           
-          // Resume fields
-          resumeId: input.resume.resumeId,
-          signatureCommitment: input.resume.signatureCommitment,
-          signatureAccountability: input.resume.signatureAccountability,
-          signatureQuality: input.resume.signatureQuality,
+  //         // Resume fields
+  //         resumeId: input.resume.resumeId,
+  //         signatureCommitment: input.resume.signatureCommitment,
+  //         signatureAccountability: input.resume.signatureAccountability,
+  //         signatureQuality: input.resume.signatureQuality,
           
-          // Set application type to officer
-          applicationType: "OFFICER",
-        },
-      });
-    }),
+  //         // Set application type to officer
+  //         applicationType: "OFFICER",
+  //       },
+  //     });
+  //   }),
 
   // MATE ROV application procedure
   applyMateROV: publicProcedure

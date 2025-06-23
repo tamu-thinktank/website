@@ -1,10 +1,10 @@
 import { z } from "zod";
 import { Temporal } from "@js-temporal/polyfill";
-import { ReferralSource, InterestLevel } from "@prisma/client";
-import { TEAMS } from "@/consts/apply-form";
+import { InterestLevel } from "@prisma/client";
 import { yearSchema, majorSchema, classSchema, PRESET_PRONOUNS, PRESET_GENDERS, wordCount, validateSignature } from "./apply";
+import { OfficerCommitment, OfficerPosition } from "@prisma/client";
 
-export const DCMemberApplyFormSchema = z.object({
+export const OfficerApplyFormSchema = z.object({
   // Personal info section
   personal: z.object({
     fullName: z.string().min(1, "Full Name is required").max(100, "Name too long"),
@@ -60,6 +60,8 @@ export const DCMemberApplyFormSchema = z.object({
   academic: z.object({
     year: yearSchema,
     major: majorSchema,
+    summerPlans: z.string()
+      .refine(text => wordCount(text) <= 100, { message: "Summer Plans must be 100 words or less" }),
     currentClasses: z
       .array(classSchema)
       .min(2, "Enter at least two classes"),
@@ -96,27 +98,15 @@ export const DCMemberApplyFormSchema = z.object({
       )
   }),
 
-  // ThinkTank Information Section
+  // ThinkTank Information
   thinkTankInfo: z.object({
-    meetings: z.boolean(),
-    weeklyCommitment: z.boolean(),
-    
-    preferredTeams: z.array(
-      z.object({
-        teamId: z.string(),
-        interestLevel: z.nativeEnum(InterestLevel),
-      })
-    ).min(1, "Select at least one team"),
-
-    researchAreas: z.array(
-      z.object({
-        researchAreaId: z.string(),
-        interestLevel: z.nativeEnum(InterestLevel),
-      })
-    ).max(3, "You can select up to three research areas"),
-
-    referralSources: z.array(z.nativeEnum(ReferralSource))
-      .min(1, "Please select at least one option"),
+    officerCommitment: z.nativeEnum(OfficerCommitment, { 
+      errorMap: () => ({ message: "Officer commitment is required" }) 
+    }),
+    preferredPositions: z.array(z.object({
+      position: z.nativeEnum(OfficerPosition),
+      interestLevel: z.nativeEnum(InterestLevel)
+    })).min(1, "Select at least one preferred position"),
   }),
 
   // Open-Ended Questions Section
@@ -129,76 +119,57 @@ export const DCMemberApplyFormSchema = z.object({
       .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
   }),
 
+  // Interview Times (reuse existing scheduling logic)
   meetingTimes: z
-    .array(z.string())
-    .min(2, "Select at least a 30 minute window")
-    .refine(
-      (input) => {
-        // make sure a 30 minute window exists in the selected times, where each selected time represents a 15 minute window
+      .array(z.string())
+      .min(2, "Select at least a 30 minute window")
+      .refine(
+        (input) => {
+          // make sure a 30 minute window exists in the selected times, where each selected time represents a 15 minute window
 
-        const sortedTimes = input
-          .map((time) => Temporal.ZonedDateTime.from(time))
-          .sort((a, b) => Temporal.ZonedDateTime.compare(a, b));
+          const sortedTimes = input
+            .map((time) => Temporal.ZonedDateTime.from(time))
+            .sort((a, b) => Temporal.ZonedDateTime.compare(a, b));
 
-        let gridsCount = 1;
-        for (let i = 0; i < sortedTimes.length - 1; i++) {
-          const curr = sortedTimes[i];
-          const next = sortedTimes[i + 1];
+          let gridsCount = 1;
+          for (let i = 0; i < sortedTimes.length - 1; i++) {
+            const curr = sortedTimes[i];
+            const next = sortedTimes[i + 1];
 
-          if (next && curr?.add({ minutes: 15 }).equals(next)) {
-            gridsCount++;
+            if (next && curr?.add({ minutes: 15 }).equals(next)) {
+              gridsCount++;
 
-            if (gridsCount === 2) {
-              return true;
+              if (gridsCount === 2) {
+                return true;
+              }
+            } else {
+              gridsCount = 1;
             }
-          } else {
-            gridsCount = 1;
           }
-        }
 
-        return false;
-      },
-      {
-        message: "Select at least a 30 minute window",
-      },
-    ),
-  /**
-   * File ID of resume in google drive, nullable to allow submitting form to upload file, then updating with actual ID
-   */
+          return false;
+        },
+        {
+          message: "Select at least a 30 minute window",
+        },
+      ),
+
+  // Resume & Signatures
   resume: z.object({
     resumeId: z.string(),
     signatureCommitment: z.string().min(1, "Commitment signature required"),
     signatureAccountability: z.string().min(1, "Accountability signature required"),
     signatureQuality: z.string().min(1, "Quality pledge required"),
-  })
+  }),
 })
 .superRefine((data, ctx) => {
-  // Validate that research areas belong to selected teams
-  const selectedTeamIds = data.thinkTankInfo.preferredTeams.map((team) => team.teamId);
-  const validResearchAreaIds = TEAMS.filter((team) =>
-    selectedTeamIds.includes(team.id)
-  )
-    .flatMap((team) => team.researchAreas)
-    .map((ra) => ra.id);
-
-  data.thinkTankInfo.researchAreas.forEach((ra, index) => {
-    if (!validResearchAreaIds.includes(ra.researchAreaId)) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["thinkTankInfo", "researchAreas", index, "researchAreaId"],
-        message:
-          "Selected research area must belong to chosen teams",
-      });
-    }
-  });
-
+  // Validate that signature strings include a part of the applicant's first or last name.
   const fullName = data.personal.fullName.toLowerCase();
   const signatures = [
     { value: data.resume.signatureCommitment, path: ["resume", "signatureCommitment"] },
     { value: data.resume.signatureAccountability, path: ["resume", "signatureAccountability"] },
     { value: data.resume.signatureQuality, path: ["resume", "signatureQuality"] },
   ];
-
   signatures.forEach(({ value, path }) => {
     if (!validateSignature(value, fullName)) {
       ctx.addIssue({
@@ -210,5 +181,4 @@ export const DCMemberApplyFormSchema = z.object({
   });
 });
 
-
-export type DCMemberApplyForm = z.infer<typeof DCMemberApplyFormSchema>;
+export type OfficerApplyForm = z.infer<typeof OfficerApplyFormSchema>;
