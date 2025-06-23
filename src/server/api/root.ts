@@ -3,6 +3,7 @@ import { publicRouter } from "./routers/public";
 import { dcmemberRouter } from "./routers/dcmember";
 import { officerRouter } from "./routers/officer";
 import { mateROVRouter } from "./routers/materov";
+import { minidcRouter } from "./routers/minidc";
 import { createTRPCRouter } from "./trpc";
 
 /**
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   dcmember: dcmemberRouter,
   officer: officerRouter,
   mateROV: mateROVRouter,
+  minidc: minidcRouter,
 });
 
 // export type definition of API

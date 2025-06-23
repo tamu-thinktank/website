@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { MiniDCApplyFormSchema } from "@/lib/validations/apply";
+import { MiniDCApplyFormSchema } from "@/lib/validations/minidc-apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ export default function ApplyMiniDC() {
   const [resumeFile, setResumeFile] = useState<File>();
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const form = usePersistForm<RouterInputs["public"]["applyMiniDC"]>(
+  const form = usePersistForm<RouterInputs["minidc"]["MiniDCApplyForm"]>(
     "apply-minidc-form-S2025-v1",
     {
       resolver: zodResolver(MiniDCApplyFormSchema),
@@ -43,7 +43,7 @@ export default function ApplyMiniDC() {
           gender: "",
         },
         academic: {
-          currentClasses: [""],
+          currentClasses: [{ value: "" }, { value: "" }],
           timeCommitment: [],
           weeklyCommitment: false,
         },
@@ -61,7 +61,7 @@ export default function ApplyMiniDC() {
     },
   );
 
-  const { mutateAsync: submitForm } = api.public.applyMiniDC.useMutation({
+  const { mutateAsync: submitForm } = api.minidc.MiniDCApplyForm.useMutation({
     onSuccess: () => {
       // Reset form and local storage first
       form.reset();
@@ -102,7 +102,7 @@ export default function ApplyMiniDC() {
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
-    async (data: RouterInputs["public"]["applyMiniDC"]) => {
+    async (data: RouterInputs["minidc"]["MiniDCApplyForm"]) => {
       if (!resumeFile) {
         toast({
           variant: "destructive",
@@ -198,7 +198,7 @@ export default function ApplyMiniDC() {
               </ApplyTab>
 
               <TabsContent className="space-y-2" value="resume">
-                <ResumeUpload setResumeFile={setResumeFile} />
+                <ResumeUpload resumeFile={resumeFile} setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
                     className="bg-white text-black"
@@ -259,7 +259,7 @@ function ApplyTab({
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
-  const form = useFormContext<RouterInputs["public"]["applyMiniDC"]>();
+  const form = useFormContext<RouterInputs["minidc"]["MiniDCApplyForm"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
