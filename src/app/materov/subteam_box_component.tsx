@@ -36,15 +36,15 @@ const BoxComponent: React.FC<BoxProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const openTeams = [
-    "Computation and Communications",
-    "Electrical and Power Systems",
-    "Fluids and Propulsion",
-    "Guidance, Navigation, and Control",
-    "Thermal, Mechanisms, and Structures",
-    "MATE ROV Leadership",
-  ];
-  const isOpen = openTeams.includes(teamName);
+  // const openTeams = [
+  //   "Computation and Communications",
+  //   "Electrical and Power Systems",
+  //   "Fluids and Propulsion",
+  //   "Guidance, Navigation, and Control",
+  //   "Thermal, Mechanisms, and Structures",
+  //   "MATE ROV Leadership",
+  // ];
+  // const isOpen = openTeams.includes(teamName);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -194,8 +194,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                 className={`
                   w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
                   text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                  ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
-                  ${isExpanded ? "max-w-[200px]" : "max-w-[420px]"}
+                  pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50
                 `}
               >
                 {/*{isOpen ? "Open" : "Closed"}*/}
@@ -203,7 +202,7 @@ const BoxComponent: React.FC<BoxProps> = ({
               </a>
               <button
                 onClick={handleToggle}
-                className="w-full max-w-[420px] rounded-[50px] border border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
+                className="w-full max-w-[420px] rounded-[50px] border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
               >
                 See More
               </button>
@@ -300,7 +299,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                   href={competitionLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full max-w-[420px] rounded-[50px] border border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-center text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
+                  className="w-full max-w-[420px] rounded-[50px] border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-center text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
                 >
                   Competition Link
                 </a>
@@ -309,10 +308,9 @@ const BoxComponent: React.FC<BoxProps> = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`
-                    w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
+                    w-full max-w-[200px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
                     text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
                     ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
-                    ${isExpanded ? "max-w-[200px]" : "max-w-[420px]"}
                   `}
                 >
                   {/*{isOpen ? "Open" : "Closed"}*/}
@@ -322,7 +320,7 @@ const BoxComponent: React.FC<BoxProps> = ({
               <div className="mt-[15px] flex w-full justify-center">
                 <button
                   onClick={handleToggle}
-                  className="w-full max-w-[420px] rounded-[50px] border border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
+                  className="w-full max-w-[420px] rounded-[50px] border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
                 >
                   See Less
                 </button>
