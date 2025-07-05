@@ -12,7 +12,7 @@ export default function FormIntroTab() {
           <Separator />
         </CardHeader>
         <CardContent className="text-center">
-          Our club’s mission is to provide experience and opportunities to all 
+          Our club's mission is to provide experience and opportunities to all 
           engineering students, regardless of their prior experiences. 
           Please keep this in mind as you complete your application.
           <br /> <br />
@@ -28,7 +28,7 @@ export default function FormIntroTab() {
           <strong>
             WE HIGHLY RECOMMEND READING THE FAQ AND COMPLETING THE APPLICATION
             ON A LAPTOP/DESKTOP
-          </strong> */}
+          </strong>
           <br /> <br />
           <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong>
         </CardContent>
