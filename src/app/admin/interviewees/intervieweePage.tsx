@@ -102,9 +102,9 @@ export const IntervieweesPage: React.FC = () => {
     "Reset",
   ];
 
-  const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  const ratingOptions = ["High", "Medium", "Low", "Reset"];
-  const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
+  // const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
+  // const ratingOptions = ["High", "Medium", "Low", "Reset"];
+  // const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
   const materovsubteams = [
     "COMPUTATION_COMMUNICATIONS",
     "ELECTRICAL_POWER",
@@ -148,31 +148,31 @@ export const IntervieweesPage: React.FC = () => {
     "Reset",
   ];
 
-  const statusOptions = [
-    "PENDING",
-    "INTERVIEWING",
-    "ACCEPTED",
-    "REJECTED",
-    "REJECTED_APP",
-    "Reset",
-  ];
+  // const statusOptions = [
+  //   "PENDING",
+  //   "INTERVIEWING",
+  //   "ACCEPTED",
+  //   "REJECTED",
+  //   "REJECTED_APP",
+  //   "Reset",
+  // ];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return "text-orange-400";
-      case "INTERVIEWING":
-        return "text-blue-400";
-      case "ACCEPTED":
-        return "text-green-400";
-      case "REJECTED_INT":
-        return "text-red-400";
-      case "REJECTED_APP":
-        return "text-red-400";
-      default:
-        return "text-gray-400";
-    }
-  };
+  // const getStatusColor = (status: string) => {
+  //   switch (status) {
+  //     case "PENDING":
+  //       return "text-orange-400";
+  //     case "INTERVIEWING":
+  //       return "text-blue-400";
+  //     case "ACCEPTED":
+  //       return "text-green-400";
+  //     case "REJECTED_INT":
+  //       return "text-red-400";
+  //     case "REJECTED_APP":
+  //       return "text-red-400";
+  //     default:
+  //       return "text-gray-400";
+  //   }
+  // };
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -222,7 +222,7 @@ export const IntervieweesPage: React.FC = () => {
         const result = (await response.json()) as { error?: string };
 
         if (!response.ok) {
-          throw new Error(result.error || "Transfer failed");
+          throw new Error(result.error ?? "Transfer failed");
         }
 
         console.log("Transfer response:", result);
@@ -363,21 +363,21 @@ export const IntervieweesPage: React.FC = () => {
                   : materovsubteams
               }
               onOptionSelect={handleFilterChange("team")}
-              selected={filters.team ?? "Team"}
+              selected={filters.team || "Team"}
             />
             {selectedCategory === "MATEROV" && (
               <FilterButton
                 label="Interests"
                 options={mateinterests}
                 onOptionSelect={handleFilterChange("interests")}
-                selected={filters.interests ?? "Interests"}
+                selected={filters.interests || "Interests"}
               />
             )}
             <FilterButton
               label="Major"
               options={majorOptions}
               onOptionSelect={handleFilterChange("major")}
-              selected={filters.major ?? "Major"}
+              selected={filters.major || "Major"}
             />
             <button
               className="rounded-[48px] border border-solid bg-stone-600 px-6 py-3 text-white transition-colors hover:bg-stone-500 disabled:cursor-not-allowed disabled:opacity-50"
@@ -419,37 +419,29 @@ export const IntervieweesPage: React.FC = () => {
                       </div>
                       {selectedCategory === "MATEROV" && (
                         <div className="w-1/6 text-center">
-                          {applicant.interests && applicant.interests.length > 0
-                            ? applicant.interests.map((pref) => (
-                                <div key={pref.area}>
-                                  {pref.area} ({pref.interest.toLowerCase()})
-                                </div>
-                              ))
-                            : null}
+                          {applicant.interests.map((pref) => (
+                            <div key={pref.area}>
+                              {pref.area} ({pref.interest.toLowerCase()})
+                            </div>
+                          ))}
                         </div>
                       )}
                       {selectedCategory === "MATEROV" && (
                         <div className="w-1/6 text-center">
-                          {applicant.subTeam && applicant.subTeam.length > 0
-                            ? applicant.subTeam.map((pref) => (
-                                <div key={pref.name}>
-                                  {pref.name} ({pref.interest.toLowerCase()})
-                                </div>
-                              ))
-                            : null}
+                          {applicant.subTeam.map((pref) => (
+                            <div key={pref.name}>
+                              {pref.name} ({pref.interest.toLowerCase()})
+                            </div>
+                          ))}
                         </div>
                       )}
                       {selectedCategory === "OFFICER" && (
                         <div className="w-1/5 text-center">
-                          {applicant.officerpos &&
-                          applicant.officerpos.length > 0
-                            ? applicant.officerpos.map((pref) => (
-                                <div key={pref.position}>
-                                  {pref.position} ({pref.interest.toLowerCase()}
-                                  )
-                                </div>
-                              ))
-                            : null}
+                          {applicant.officerpos.map((pref) => (
+                            <div key={pref.position}>
+                              {pref.position} ({pref.interest.toLowerCase()})
+                            </div>
+                          ))}
                         </div>
                       )}
                       <div
