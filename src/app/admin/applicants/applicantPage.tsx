@@ -20,10 +20,10 @@ export const ApplicantsPage: React.FC = () => {
   const [applicantData, setApplicantData] = React.useState<ApplicantData[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
-  const [transferStatus, setTransferStatus] = React.useState<
+  const [transferStatus, _setTransferStatus] = React.useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
-  const [transferMessage, setTransferMessage] = React.useState("");
+  const [transferMessage, _setTransferMessage] = React.useState("");
   const [selectedApplicantId, setSelectedApplicantId] = React.useState<
     string | null
   >(null);
