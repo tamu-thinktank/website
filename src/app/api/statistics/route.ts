@@ -66,10 +66,8 @@ export async function GET(request: Request) {
       detailedData.years.push({ name: app.fullName, value: app.year })
 
       // Count majors
-      if (app.major) {
-        majors[app.major] = (majors[app.major] ?? 0) + 1
-        detailedData.majors.push({ name: app.fullName, value: app.major })
-      }
+      majors[app.major] = (majors[app.major] ?? 0) + 1
+      detailedData.majors.push({ name: app.fullName, value: app.major })
 
       // Count referral sources
       if (app.referral && Array.isArray(app.referral)) {
