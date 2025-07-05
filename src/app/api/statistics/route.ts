@@ -7,19 +7,19 @@ export async function GET(request: Request) {
   try {
     // Get the applicationType from the URL query parameters
     const url = new URL(request.url)
-    const applicationType = url.searchParams.get("applicationType") || "OFFICER"
+    const applicationType = url.searchParams.get("applicationType") ?? "OFFICER"
 
     console.log(`Fetching statistics for application type: ${applicationType}`)
 
     // Validate the applicationType
-    if (!Object.values(ApplicationType).includes(applicationType as ApplicationType)) {
+    if (!Object.values(ApplicationType as Record<string, string>).includes(applicationType)) {
       return NextResponse.json({ error: `Invalid application type: ${applicationType}` }, { status: 400 })
     }
 
     // Get all applications of the specified type
     const applications = await prisma.application.findMany({
       where: {
-        applicationType: applicationType as ApplicationType,
+        applicationType: applicationType as keyof typeof ApplicationType,
       },
       select: {
         id: true,
@@ -57,34 +57,30 @@ export async function GET(request: Request) {
     applications.forEach((app) => {
       // Count genders
       if (app.gender) {
-        genders[app.gender] = (genders[app.gender] || 0) + 1
-        detailedData.genders.push({ name: app.fullName, value: app.gender })
+        genders[app.gender as string] = (genders[app.gender as string] ?? 0) + 1
+        detailedData.genders.push({ name: app.fullName, value: app.gender as string })
       }
 
       // Count years
-      if (app.year) {
-        years[app.year] = (years[app.year] || 0) + 1
-        detailedData.years.push({ name: app.fullName, value: app.year })
-      }
+      years[app.year as string] = (years[app.year as string] ?? 0) + 1
+      detailedData.years.push({ name: app.fullName, value: app.year })
 
       // Count majors
       if (app.major) {
-        majors[app.major] = (majors[app.major] || 0) + 1
+        majors[app.major] = (majors[app.major] ?? 0) + 1
         detailedData.majors.push({ name: app.fullName, value: app.major })
       }
 
       // Count referral sources
       if (app.referral && Array.isArray(app.referral)) {
-        app.referral.forEach((ref) => {
-          referrals[ref] = (referrals[ref] || 0) + 1
+        (app.referral as string[]).forEach((ref) => {
+          referrals[ref] = (referrals[ref] ?? 0) + 1
           detailedData.referrals.push({ name: app.fullName, value: ref })
         })
       }
 
       // Count statuses
-      if (app.status) {
-        statusCounts[app.status] = (statusCounts[app.status] || 0) + 1
-      }
+      statusCounts[app.status] = (statusCounts[app.status] ?? 0) + 1
     })
 
     return NextResponse.json({
