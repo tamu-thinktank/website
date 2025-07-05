@@ -92,9 +92,6 @@ export const ApplicantsPage: React.FC = () => {
     "Reset",
   ];
 
-  const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  const ratingOptions = ["High", "Medium", "Low", "Reset"];
-  const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
   const materovsubteams = [
     "COMPUTATION_COMMUNICATIONS",
     "ELECTRICAL_POWER",
