@@ -23,7 +23,7 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   return (
     <Dropdown
       options={options}
-      value={selected}
+      value={selected || label}
       onChange={handleChange}
       isOpen={isOpen}
       onToggle={() => setIsOpen(!isOpen)}
