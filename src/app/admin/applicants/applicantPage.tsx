@@ -144,71 +144,71 @@ export const ApplicantsPage: React.FC = () => {
     "Reset",
   ];
 
-  const handleTransfer = async () => {
-    // Get applicants with PENDING status to transfer
-    const applicantsToTransfer = applicantData.filter(
-      (applicant) => applicant.status === "PENDING",
-    );
+  // const handleTransfer = async () => {
+  //   // Get applicants with PENDING status to transfer
+  //   const applicantsToTransfer = applicantData.filter(
+  //     (applicant) => applicant.status === "PENDING",
+  //   );
 
-    if (applicantsToTransfer.length === 0) {
-      alert("No pending applicants to transfer");
-      return;
-    }
+  //   if (applicantsToTransfer.length === 0) {
+  //     alert("No pending applicants to transfer");
+  //     return;
+  //   }
 
-    const isConfirmed = window.confirm(
-      `Are you sure you want to transfer ${applicantsToTransfer.length} pending applicant(s) to the interview stage?`,
-    );
+  //   const isConfirmed = window.confirm(
+  //     `Are you sure you want to transfer ${applicantsToTransfer.length} pending applicant(s) to the interview stage?`,
+  //   );
 
-    if (isConfirmed) {
-      try {
-        setTransferStatus("loading");
-        setTransferMessage("Transferring applicants...");
+  //   if (isConfirmed) {
+  //     try {
+  //       setTransferStatus("loading");
+  //       setTransferMessage("Transferring applicants...");
 
-        console.log(
-          "Transferring applicants:",
-          applicantsToTransfer.map((app) => app.id),
-        );
+  //       console.log(
+  //         "Transferring applicants:",
+  //         applicantsToTransfer.map((app) => app.id),
+  //       );
 
-        const response = await fetch("/api/transfer-to-interviewee", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            applicantIds: applicantsToTransfer.map((app) => app.id),
-          }),
-        });
+  //       const response = await fetch("/api/transfer-to-interviewee", {
+  //         method: "PUT",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({
+  //           applicantIds: applicantsToTransfer.map((app) => app.id),
+  //         }),
+  //       });
 
-        const result = (await response.json()) as { error?: string };
+  //       const result = (await response.json()) as { error?: string };
 
-        if (!response.ok) {
-          throw new Error(result.error ?? "Transfer failed");
-        }
+  //       if (!response.ok) {
+  //         throw new Error(result.error ?? "Transfer failed");
+  //       }
 
-        console.log("Transfer response:", result);
-        setTransferStatus("success");
-        setTransferMessage(
-          `Transfer complete. ${applicantsToTransfer.length} applicant(s) transferred to interview stage.`,
-        );
-        alert(
-          `Transfer complete. ${applicantsToTransfer.length} applicant(s) transferred to interview stage.`,
-        );
-        void fetchApplicantData(); // Refresh the list
-      } catch (error) {
-        console.error("Error transferring applicants:", error);
-        setTransferStatus("error");
-        setTransferMessage(
-          `Error transferring applicants: ${error instanceof Error ? error.message : "Unknown error"}`,
-        );
-        alert(
-          `Error transferring applicants: ${error instanceof Error ? error.message : "Please try again."}`,
-        );
-      } finally {
-        setTimeout(() => {
-          setTransferStatus("idle");
-          setTransferMessage("");
-        }, 5000);
-      }
-    }
-  };
+  //       console.log("Transfer response:", result);
+  //       setTransferStatus("success");
+  //       setTransferMessage(
+  //         `Transfer complete. ${applicantsToTransfer.length} applicant(s) transferred to interview stage.`,
+  //       );
+  //       alert(
+  //         `Transfer complete. ${applicantsToTransfer.length} applicant(s) transferred to interview stage.`,
+  //       );
+  //       void fetchApplicantData(); // Refresh the list
+  //     } catch (error) {
+  //       console.error("Error transferring applicants:", error);
+  //       setTransferStatus("error");
+  //       setTransferMessage(
+  //         `Error transferring applicants: ${error instanceof Error ? error.message : "Unknown error"}`,
+  //       );
+  //       alert(
+  //         `Error transferring applicants: ${error instanceof Error ? error.message : "Please try again."}`,
+  //       );
+  //     } finally {
+  //       setTimeout(() => {
+  //         setTransferStatus("idle");
+  //         setTransferMessage("");
+  //       }, 5000);
+  //     }
+  //   }
+  // };
 
   const filteredApplicants = React.useMemo(() => {
     return applicantData.filter((applicant) => {
@@ -341,27 +341,27 @@ export const ApplicantsPage: React.FC = () => {
                   : materovsubteams
               }
               onOptionSelect={handleFilterChange("team")}
-              selected={filters.team ?? "Team"}
+              selected={filters.team || "Team"}
             />
             {selectedCategory === "MATEROV" && (
               <FilterButton
                 label="Interests"
                 options={mateinterests}
                 onOptionSelect={handleFilterChange("interests")}
-                selected={filters.interests ?? "Interests"}
+                selected={filters.interests || "Interests"}
               />
             )}
             <FilterButton
               label="Major"
               options={majorOptions}
               onOptionSelect={handleFilterChange("major")}
-              selected={filters.major ?? "Major"}
+              selected={filters.major || "Major"}
             />
             <FilterButton
               label="Status"
               options={statusOptions}
               onOptionSelect={handleFilterChange("status")}
-              selected={filters.status ?? "Status"}
+              selected={filters.status || "Status"}
             />
           </div>
 
@@ -393,40 +393,28 @@ export const ApplicantsPage: React.FC = () => {
                         {applicant.name}
                       </div>
                       <div>
-                        {applicant.interests && applicant.interests.length > 0
-                          ? applicant.interests.map((pref) => (
-                              <div
-                                className="flex-1 text-center"
-                                key={pref.area}
-                              >
-                                {pref.area} ({pref.interest.toLowerCase()})
-                              </div>
-                            ))
-                          : null}
+                        {applicant.interests.length > 0 &&
+                          applicant.interests.map((pref) => (
+                            <div className="flex-1 text-center" key={pref.area}>
+                              {pref.area} ({pref.interest.toLowerCase()})
+                            </div>
+                          ))}
                       </div>
                       <div>
-                        {applicant.subTeam && applicant.subTeam.length > 0
-                          ? applicant.subTeam.map((pref) => (
-                              <div
-                                className="flex-1 text-center"
-                                key={pref.name}
-                              >
-                                {pref.name} ({pref.interest.toLowerCase()})
-                              </div>
-                            ))
-                          : null}
+                        {applicant.subTeam.length > 0 &&
+                          applicant.interests.map((pref) => (
+                            <div className="flex-1 text-center" key={pref.area}>
+                              {pref.area} ({pref.interest.toLowerCase()})
+                            </div>
+                          ))}
                       </div>
                       <div>
-                        {applicant.officerpos && applicant.officerpos.length > 0
-                          ? applicant.officerpos.map((pref) => (
-                              <div
-                                className="flex-1 text-center"
-                                key={pref.position}
-                              >
-                                {pref.position} ({pref.interest.toLowerCase()})
-                              </div>
-                            ))
-                          : null}
+                        {applicant.officerpos.length > 0 &&
+                          applicant.interests.map((pref) => (
+                            <div className="flex-1 text-center" key={pref.area}>
+                              {pref.area} ({pref.interest.toLowerCase()})
+                            </div>
+                          ))}
                       </div>
                       <div className="flex-1 text-center">
                         {applicant.major}
