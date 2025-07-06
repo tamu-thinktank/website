@@ -7,7 +7,6 @@
 ## Install [pnpm](https://pnpm.io/installation)
 
 - Installation:
-
   - Windows Powershell:
 
     ```pwsh
@@ -112,7 +111,6 @@
   ```
 
 - If weird type/syntax errors (VSCode):
-
   - ctrl+shift+p → restart ts server
   - ctrl+shift+p → restart eslint server
 
