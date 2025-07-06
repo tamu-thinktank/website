@@ -18,7 +18,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         <span className="ml-1.5 text-xs">▼</span>
       </div>
       {isOpen && (
-        <div className="absolute z-50 mt-1 max-h-[200px] w-full w-full overflow-y-auto rounded-lg border border-neutral-200 bg-neutral-800 text-sm">
+        <div className="absolute z-50 mt-1 max-h-[200px] w-full overflow-y-auto rounded-lg border border-neutral-200 bg-neutral-800 text-sm">
           {options.map((option) => (
             <div
               key={option}

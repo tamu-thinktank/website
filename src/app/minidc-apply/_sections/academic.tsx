@@ -18,7 +18,13 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { qMiniDC } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
@@ -32,7 +38,9 @@ export default function AcademicInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{qMiniDC.academic.title}</CardTitle>
+          <CardTitle className="text-center">
+            {qMiniDC.academic.title}
+          </CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -46,7 +54,8 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qMiniDC.academic.year} <span className="text-red-500">*</span>
+                  {qMiniDC.academic.year}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -81,18 +90,18 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qMiniDC.academic.major} <span className="text-red-500">*</span>
+                  {qMiniDC.academic.major}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Use the 4 letter uppercase abbreviation of your major. If in general engineering, respond with your intended major. If undecided, respond with 'OPEN'
+                  Use the 4 letter uppercase abbreviation of your major. If in
+                  general engineering, respond with your intended major. If
+                  undecided, respond with 'OPEN'
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select your major" />
                     </SelectTrigger>
@@ -121,7 +130,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {qMiniDC.academic.currentClasses} 
+                  {qMiniDC.academic.currentClasses}
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -131,7 +140,8 @@ export default function AcademicInfo() {
                   <br />
                   - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
                   <br />
-                  If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
+                  If you have fewer than two courses, use 'NULL 101' as a
+                  placeholder and contact us.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -190,10 +200,12 @@ export default function AcademicInfo() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {type === "CURRENT" ? qMiniDC.academic.timeCommitment : qMiniDC.academic.plannedCommitment}
+                    {type === "CURRENT"
+                      ? qMiniDC.academic.timeCommitment
+                      : qMiniDC.academic.plannedCommitment}
                   </CardTitle>
                   <CardDescription>
-                    {type === "CURRENT" 
+                    {type === "CURRENT"
                       ? "List any and all current time commitments which includes anything academic, social, technical, work-related, religious, etc. Assign an estimated number of hours spent per week for each time commitment."
                       : "List any and all planned time commitments. See previous question for specific details."}
                   </CardDescription>
@@ -202,11 +214,18 @@ export default function AcademicInfo() {
                   {(field.value ?? [])
                     .filter((c) => c.type === type)
                     .map((commitment, idx) => {
-                      const globalIndex = (field.value ?? []).findIndex(c => 
-                        c.type === type && (field.value ?? []).filter(fc => fc.type === type).indexOf(c) === idx
+                      const globalIndex = (field.value ?? []).findIndex(
+                        (c) =>
+                          c.type === type &&
+                          (field.value ?? [])
+                            .filter((fc) => fc.type === type)
+                            .indexOf(c) === idx,
                       );
                       return (
-                        <div key={globalIndex} className="grid grid-cols-[1fr_100px_40px] gap-4 items-start">
+                        <div
+                          key={globalIndex}
+                          className="grid grid-cols-[1fr_100px_40px] items-start gap-4"
+                        >
                           <FormField
                             control={form.control}
                             name={`academic.timeCommitment.${globalIndex}.name`}
@@ -218,7 +237,9 @@ export default function AcademicInfo() {
                                   onBlur={async () => {
                                     field.onBlur();
                                     if (field.value) {
-                                      await form.trigger(`academic.timeCommitment.${globalIndex}.name`);
+                                      await form.trigger(
+                                        `academic.timeCommitment.${globalIndex}.name`,
+                                      );
                                     }
                                   }}
                                 />
@@ -236,7 +257,9 @@ export default function AcademicInfo() {
                                   {...field}
                                   min={0}
                                   max={15}
-                                  onChange={e => field.onChange(Number(e.target.value))}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
                                 />
                                 <FormMessage />
                               </FormItem>
@@ -265,7 +288,11 @@ export default function AcademicInfo() {
                       const currentValue = field.value ?? [];
                       form.setValue("academic.timeCommitment", [
                         ...currentValue,
-                        { name: "Commitment Name", hours: 0, type: type as "CURRENT" | "PLANNED" }
+                        {
+                          name: "Commitment Name",
+                          hours: 0,
+                          type: type as "CURRENT" | "PLANNED",
+                        },
                       ]);
                     }}
                   >
@@ -287,7 +314,8 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qMiniDC.academic.weeklyCommitment} <span className="text-red-500">*</span>
+                  {qMiniDC.academic.weeklyCommitment}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -297,13 +325,13 @@ export default function AcademicInfo() {
                     value={field.value ? "true" : "false"}
                     className="flex flex-col space-y-1"
                   >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormItem className="flex items-center space-y-0 space-x-3">
                       <FormControl>
                         <RadioGroupItem value="true" />
                       </FormControl>
                       <FormLabel className="font-normal">Yes</FormLabel>
                     </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormItem className="flex items-center space-y-0 space-x-3">
                       <FormControl>
                         <RadioGroupItem value="false" />
                       </FormControl>

@@ -122,7 +122,7 @@ const faqData = [
           <li>1 hour building prototypes / modeling subsystems</li>
         </ul>
 
-        <p className="mb-4 mt-4">
+        <p className="mt-4 mb-4">
           Team leads usually spend <strong>12 to 15 hours per week</strong>{" "}
           directing their teams and managing the project. This workload is
           equivalent to <strong>1.5 in-major engineering classes</strong>. The
@@ -243,7 +243,7 @@ function FAQ() {
   return (
     <Container>
       <div className="space-y-4 px-6 md:px-0">
-        <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
+        <h2 className="text-left text-3xl font-semibold text-gray-800 italic md:text-4xl dark:text-white">
           Frequently Asked Questions
         </h2>
         <hr className="border-t-2 border-gray-300 dark:border-gray-600" />

@@ -206,7 +206,7 @@ export default function MateROVThinkTankInfo() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="absolute right-4 top-1/2 -translate-y-1/2"
+                            className="absolute top-1/2 right-4 -translate-y-1/2"
                             onClick={() => {
                               const updated = field.value.filter(
                                 (t) => t.name !== subteam.value,
@@ -318,7 +318,7 @@ export default function MateROVThinkTankInfo() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="absolute right-4 top-1/2 -translate-y-1/2"
+                            className="absolute top-1/2 right-4 -translate-y-1/2"
                             onClick={() => {
                               const updated = field.value.filter(
                                 (s) => s.name !== skill.value,
@@ -430,7 +430,7 @@ export default function MateROVThinkTankInfo() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="absolute right-4 top-1/2 -translate-y-1/2"
+                            className="absolute top-1/2 right-4 -translate-y-1/2"
                             onClick={() => {
                               const updated = field.value.filter(
                                 (a) => a.area !== area.value,

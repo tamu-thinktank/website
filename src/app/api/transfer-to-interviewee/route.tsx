@@ -21,7 +21,6 @@ export async function PUT(req: Request) {
     }
 
     if (
-      !transfer.applicantIds ||
       !Array.isArray(transfer.applicantIds) ||
       transfer.applicantIds.length === 0
     ) {

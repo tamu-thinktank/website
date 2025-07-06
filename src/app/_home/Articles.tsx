@@ -120,7 +120,7 @@ export default function ArticleCarousel() {
   return (
     <div className="relative mx-auto w-full max-w-7xl overflow-hidden py-4 sm:py-8">
       <div className="relative z-[1]">
-        <h2 className="font-poppins mb-1 text-center text-lg font-bold italic text-gray-800 dark:text-white sm:mb-2 sm:text-2xl md:text-4xl">
+        <h2 className="font-poppins mb-1 text-center text-lg font-bold text-gray-800 italic sm:mb-2 sm:text-2xl md:text-4xl dark:text-white">
           Latest Articles
         </h2>
         <p className="font-dm-sans mb-3 text-center text-xs text-[#B8B8B8] sm:mb-6 sm:text-base md:text-lg">
@@ -145,7 +145,7 @@ export default function ArticleCarousel() {
                 href={article.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative block w-full cursor-pointer overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="group focus:ring-primary relative block w-full cursor-pointer overflow-hidden rounded-lg shadow-lg transition-all duration-300 hover:scale-105 focus:ring-2 focus:ring-offset-2 focus:outline-none"
                 aria-label={`View article: ${article.title}`}
               >
                 <div className="relative h-0 pb-[75%] sm:pb-[56.25%]">
@@ -158,7 +158,7 @@ export default function ArticleCarousel() {
                   />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent p-2 text-white sm:p-3">
-                  <div className="absolute bottom-2 left-2 right-2 sm:bottom-3 sm:left-3 sm:right-3">
+                  <div className="absolute right-2 bottom-2 left-2 sm:right-3 sm:bottom-3 sm:left-3">
                     <h3 className="text-xs font-semibold group-hover:mb-0.5 sm:text-sm lg:text-lg">
                       {article.shortTitle}
                     </h3>

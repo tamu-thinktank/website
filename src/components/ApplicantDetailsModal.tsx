@@ -393,9 +393,8 @@ export const ApplicantDetailsModal = ({
     if (!selectedDate || !selectedTime) return "";
 
     const [hoursStr, minutesStr] = selectedTime.split(":");
-    const hours = Number.parseInt(hoursStr, 10) || 0; // Default to 0 if parsing fails
-    const minutes = Number.parseInt(minutesStr, 10) || 0; // Default to 0 if parsing fails
-
+    const hours = Number.parseInt(hoursStr ?? "0", 10) || 0; // Default to 0 if parsing fails
+    const minutes = Number.parseInt(minutesStr ?? "0", 10) || 0; // Default to 0 if parsing fails
     const dateTime = new Date(selectedDate);
     dateTime.setHours(hours, minutes, 0, 0);
 
@@ -448,7 +447,7 @@ export const ApplicantDetailsModal = ({
         if (applicant) {
           setApplicant({
             ...applicant,
-            status: ApplicationStatus.INTERVIEWING,
+            status: ApplicationStatus.INTERVIEWING as ApplicationStatus,
           });
         }
 
@@ -490,7 +489,7 @@ export const ApplicantDetailsModal = ({
           `Failed to check interviewer schedule: ${response.status}`,
         );
       }
-      const data = await response.json();
+      const data = (await response.json()) as { hasConflict: boolean };
       return data.hasConflict;
     } catch (error) {
       console.error("Error checking interviewer schedule:", error);
@@ -555,7 +554,7 @@ export const ApplicantDetailsModal = ({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            status: ApplicationStatus.INTERVIEWING,
+            status: ApplicationStatus.INTERVIEWING as ApplicationStatus,
           }),
         },
       );
@@ -594,7 +593,7 @@ export const ApplicantDetailsModal = ({
       // Update local state
       setApplicant({
         ...applicant,
-        status: ApplicationStatus.INTERVIEWING,
+        status: ApplicationStatus.INTERVIEWING as ApplicationStatus,
       });
 
       // Send interview email using the tRPC mutation - similar to how rejection email is sent
@@ -971,7 +970,7 @@ export const ApplicantDetailsModal = ({
                     {applicant.summerPlans && (
                       <div>
                         <Label className="text-neutral-400">Summer Plans</Label>
-                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                           {applicant.summerPlans}
                         </div>
                       </div>
@@ -981,7 +980,7 @@ export const ApplicantDetailsModal = ({
                       <Label className="text-neutral-400">
                         Why do you want to become a ThinkTank Officer?
                       </Label>
-                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                         {applicant.secondQuestion}
                       </div>
                     </div>
@@ -991,7 +990,7 @@ export const ApplicantDetailsModal = ({
                         Which previous team were you a member of and what did
                         you specifically contribute?
                       </Label>
-                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                         {applicant.firstQuestion}
                       </div>
                     </div>
@@ -1153,7 +1152,7 @@ export const ApplicantDetailsModal = ({
                         Describe an instance where you worked with a team to
                         accomplish a goal you were passionate about.
                       </Label>
-                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                         {applicant.firstQuestion}
                       </div>
                     </div>
@@ -1163,7 +1162,7 @@ export const ApplicantDetailsModal = ({
                         Describe an instance where you demonstrated your passion
                         for a project, task, or subject matter
                       </Label>
-                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                         {applicant.secondQuestion}
                       </div>
                     </div>
@@ -1178,7 +1177,7 @@ export const ApplicantDetailsModal = ({
                           engineering design competition before, what was it and
                           how did you contribute to the team?
                         </Label>
-                        <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                        <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                           {applicant.thirdQuestion}
                         </div>
                       </div>
@@ -1196,7 +1195,7 @@ export const ApplicantDetailsModal = ({
                       <Label className="text-neutral-400">
                         Why are you interested in joining ThinkTank?
                       </Label>
-                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                         {applicant.firstQuestion}
                       </div>
                     </div>
@@ -1205,7 +1204,7 @@ export const ApplicantDetailsModal = ({
                       <Label className="text-neutral-400">
                         Describe an instance where you demonstrated your passion
                       </Label>
-                      <div className="mt-1 whitespace-pre-wrap rounded bg-neutral-900 p-3">
+                      <div className="mt-1 rounded bg-neutral-900 p-3 whitespace-pre-wrap">
                         {applicant.secondQuestion}
                       </div>
                     </div>

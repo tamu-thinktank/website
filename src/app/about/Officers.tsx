@@ -90,7 +90,7 @@ export default function Officers() {
     <div className="text-gray-600 dark:text-gray-300" id="officers">
       <Container>
         <div className="mb-8 space-y-4 px-6 md:px-0">
-          <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
+          <h2 className="text-left text-3xl font-semibold text-gray-800 italic md:text-4xl dark:text-white">
             Officers
           </h2>
           <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
@@ -113,7 +113,7 @@ export default function Officers() {
               />
 
               {/* Hover Overlay */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 opacity-0 transition-all duration-300 ease-in-out group-hover:bg-opacity-60 group-hover:opacity-100">
+              <div className="bg-opacity-0 group-hover:bg-opacity-60 absolute inset-0 flex flex-col items-center justify-center bg-black opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100">
                 <h3 className="text-2xl font-bold text-white">
                   {officer.name}
                 </h3>

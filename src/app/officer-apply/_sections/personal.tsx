@@ -28,7 +28,9 @@ export default function PersonalInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{qOfficer.personal.title}</CardTitle>
+          <CardTitle className="text-center">
+            {qOfficer.personal.title}
+          </CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -41,7 +43,8 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.fullName} <span className="text-red-500">*</span>
+                  {qOfficer.personal.fullName}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -94,7 +97,11 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value ?? ""}
+                  value={
+                    field.value?.startsWith("OTHER:")
+                      ? "OTHER"
+                      : (field.value ?? "")
+                  }
                   onValueChange={(value) => {
                     if (value === "") {
                       field.onChange(undefined);
@@ -107,13 +114,18 @@ export default function PersonalInfo() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="" id="pronoun-none" />
-                    <FormLabel htmlFor="pronoun-none">Prefer not to say</FormLabel>
+                    <FormLabel htmlFor="pronoun-none">
+                      Prefer not to say
+                    </FormLabel>
                   </div>
                   {PRONOUN_OPTIONS.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem 
-                        value={option.value} 
-                        id={`pronoun-${option.value}`} 
+                    <div
+                      key={option.value}
+                      className="flex items-center space-x-2"
+                    >
+                      <RadioGroupItem
+                        value={option.value}
+                        id={`pronoun-${option.value}`}
                       />
                       <FormLabel htmlFor={`pronoun-${option.value}`}>
                         {option.label}
@@ -121,10 +133,15 @@ export default function PersonalInfo() {
                     </div>
                   ))}
                 </RadioGroup>
-                
-                {(field.value?.startsWith("OTHER:") ?? form.watch("personal.pronouns") === "OTHER") && (
+
+                {(field.value?.startsWith("OTHER:") ??
+                  form.watch("personal.pronouns") === "OTHER") && (
                   <Input
-                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] ?? "" : ""}
+                    value={
+                      field.value?.startsWith("OTHER:")
+                        ? (field.value.split(":")[1] ?? "")
+                        : ""
+                    }
                     onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
                     placeholder="Specify your pronouns"
                     className="mt-2 ml-6"
@@ -148,7 +165,11 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  value={field.value?.startsWith("OTHER:") ? "OTHER" : field.value ?? ""}
+                  value={
+                    field.value?.startsWith("OTHER:")
+                      ? "OTHER"
+                      : (field.value ?? "")
+                  }
                   onValueChange={(value) => {
                     if (value === "") {
                       field.onChange(undefined);
@@ -161,13 +182,18 @@ export default function PersonalInfo() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="" id="gender-none" />
-                    <FormLabel htmlFor="gender-none">Prefer not to say</FormLabel>
+                    <FormLabel htmlFor="gender-none">
+                      Prefer not to say
+                    </FormLabel>
                   </div>
                   {GENDER_OPTIONS.map((option) => (
-                    <div key={option.value} className="flex items-center space-x-2">
-                      <RadioGroupItem 
-                        value={option.value} 
-                        id={`gender-${option.value}`} 
+                    <div
+                      key={option.value}
+                      className="flex items-center space-x-2"
+                    >
+                      <RadioGroupItem
+                        value={option.value}
+                        id={`gender-${option.value}`}
                       />
                       <FormLabel htmlFor={`gender-${option.value}`}>
                         {option.label}
@@ -175,10 +201,15 @@ export default function PersonalInfo() {
                     </div>
                   ))}
                 </RadioGroup>
-                
-                {(field.value?.startsWith("OTHER:") ?? form.watch("personal.gender") === "OTHER") && (
+
+                {(field.value?.startsWith("OTHER:") ??
+                  form.watch("personal.gender") === "OTHER") && (
                   <Input
-                    value={field.value?.startsWith("OTHER:") ? field.value.split(":")[1] ?? "" : ""}
+                    value={
+                      field.value?.startsWith("OTHER:")
+                        ? (field.value.split(":")[1] ?? "")
+                        : ""
+                    }
                     onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
                     placeholder="Specify your gender"
                     className="mt-2 ml-6"
@@ -199,7 +230,8 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.uin} <span className="text-red-500">*</span>
+                  {qOfficer.personal.uin}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   If you have a special UIN that doesn't match the format
@@ -225,7 +257,8 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.email} <span className="text-red-500">*</span>
+                  {qOfficer.personal.email}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -275,7 +308,8 @@ export default function PersonalInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.personal.phone} <span className="text-red-500">*</span>
+                  {qOfficer.personal.phone}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   Enter phone number as 123-456-7890

@@ -27,7 +27,7 @@ import {
   isSameDay,
 } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Challenge, OfficerPosition } from "@prisma/client";
+import { Challenge } from "@prisma/client";
 import type { ApplicationStatus } from "@prisma/client";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -102,19 +102,19 @@ interface TimeSlot {
   formatted: string;
 }
 
-interface SelectedTimeRange {
-  startDate: Date;
-  startTimeSlot: TimeSlot;
-  endDate?: Date;
-  endTimeSlot?: TimeSlot;
-}
+// interface SelectedTimeRange {
+//   startDate: Date;
+//   startTimeSlot: TimeSlot;
+//   endDate?: Date;
+//   endTimeSlot?: TimeSlot;
+// }
 
 interface InterviewerResponse {
   id: string;
   name: string;
   email?: string;
   targetTeams?: string[];
-  interviews?: any[];
+  interviews?: InterviewResponse[];
 }
 
 interface InterviewResponse {
@@ -183,18 +183,18 @@ const Scheduler: React.FC = () => {
     isPlaceholder: false,
   });
 
-  // For real-time updates
-  const [lastUpdate, setLastUpdate] = React.useState<Date>(new Date());
+  // For real-time updates (Dummy data for now)
+  const [_lastUpdate, setLastUpdate] = React.useState<Date>(new Date());
 
   // Team options
-  const teams = [
-    { id: OfficerPosition.VICE_PRESIDENT, name: "VICE_PRESIDENT" },
-    { id: OfficerPosition.PROJECT_MANAGER, name: "PROJECT_MANAGER" },
-    { id: OfficerPosition.MARKETING_SPECIALIST, name: "MARKETING_SPECIALIST" },
-    { id: OfficerPosition.GRAPHIC_DESIGNER, name: "GRAPHIC_DESIGNER" },
-    { id: OfficerPosition.WEB_DEV_LEAD, name: "WEB_DEV_LEAD" },
-    { id: OfficerPosition.TREASURER, name: "TREASURER" },
-    { id: OfficerPosition.DC_PROGRAM_MANAGER, name: "DC_PROGRAM_MANAGER" },
+  const teams: { id: string; name: string }[] = [
+    { id: "VICE_PRESIDENT", name: "VICE_PRESIDENT" },
+    { id: "PROJECT_MANAGER", name: "PROJECT_MANAGER" },
+    { id: "MARKETING_SPECIALIST", name: "MARKETING_SPECIALIST" },
+    { id: "GRAPHIC_DESIGNER", name: "GRAPHIC_DESIGNER" },
+    { id: "WEB_DEV_LEAD", name: "WEB_DEV_LEAD" },
+    { id: "TREASURER", name: "TREASURER" },
+    { id: "DC_PROGRAM_MANAGER", name: "DC_PROGRAM_MANAGER" },
     { id: "COMPUTATION_COMMUNICATIONS", name: "COMPUTATION_COMMUNICATIONS" },
     { id: "ELECTRICAL_POWER", name: "ELECTRICAL_POWER" },
     { id: "FLUIDS_PROPULSION", name: "FLUIDS_PROPULSION" },
@@ -235,20 +235,23 @@ const Scheduler: React.FC = () => {
       // Transform the data to match our Interviewer interface
       const formattedInterviewers: Interviewer[] = data.map((interviewer) => {
         // Process interviews if they exist
-        const interviewsData = interviewer.interviews || [];
-        const interviews = interviewsData.map((interview: any) => ({
-          id: interview.id,
-          applicantName: interview.isPlaceholder
-            ? interview.placeholderName || "Reserved Slot"
-            : interview.applicant?.fullName || "Unknown",
-          applicantId: interview.applicantId,
-          startTime: new Date(interview.startTime),
-          endTime: new Date(interview.endTime),
-          teamId: interview.teamId,
-          location: interview.location,
-          interviewerId: interview.interviewerId,
-          isPlaceholder: interview.isPlaceholder || false,
-        }));
+        const interviewsData: InterviewResponse[] =
+          interviewer.interviews ?? [];
+        const interviews = interviewsData.map(
+          (interview: InterviewResponse) => ({
+            id: interview.id,
+            applicantName: interview.isPlaceholder
+              ? (interview.placeholderName ?? "Reserved Slot")
+              : (interview.applicant?.fullName ?? "Unknown"),
+            applicantId: interview.applicantId,
+            startTime: new Date(interview.startTime),
+            endTime: new Date(interview.endTime),
+            teamId: interview.teamId,
+            location: interview.location,
+            interviewerId: interview.interviewerId,
+            isPlaceholder: interview.isPlaceholder ?? false,
+          }),
+        );
 
         return {
           id: interviewer.id,
@@ -258,7 +261,7 @@ const Scheduler: React.FC = () => {
             interviewer.targetTeams?.map((teamId: string, index: number) => ({
               teamId: teamId as Challenge,
               priority: index + 1,
-            })) || [],
+            })) ?? [],
           interviews: interviews,
           openCalendar: false,
         };
@@ -437,7 +440,7 @@ const Scheduler: React.FC = () => {
           time: interview.startTime.toISOString(),
           location: interview.location,
           teamId: interview.teamId,
-          isPlaceholder: interview.isPlaceholder || false,
+          isPlaceholder: interview.isPlaceholder ?? false,
           applicantName: interview.applicantName,
         }),
       });
@@ -565,9 +568,8 @@ const Scheduler: React.FC = () => {
     const maxInterviews = isWeekendDay ? 6 : 4;
 
     // Count interviews for this date
-    const interviewsOnDate = interviewer.interviews.filter(
-      (interview) =>
-        interview.startTime && isSameDay(interview.startTime, date),
+    const interviewsOnDate = interviewer.interviews.filter((interview) =>
+      isSameDay(interview.startTime, date),
     ).length;
 
     if (interviewsOnDate >= maxInterviews) {
@@ -870,7 +872,9 @@ const Scheduler: React.FC = () => {
           if (existingIndex >= 0) {
             // Update existing priority
             updatedPriorities[existingIndex] = {
-              ...updatedPriorities[existingIndex],
+              teamId:
+                updatedPriorities[existingIndex]?.teamId ??
+                (teamId as Challenge),
               priority,
             };
           } else {
@@ -1135,10 +1139,10 @@ const Scheduler: React.FC = () => {
     setSelectedTimeSlot({ date, timeSlot });
 
     // Set default team based on interviewer's first priority team
-    if (interviewer.priorityTeams.length > 0) {
+    if (interviewer.priorityTeams.length > 0 && interviewer.priorityTeams[0]) {
       setNewInterview((prev) => ({
         ...prev,
-        teamId: interviewer.priorityTeams[0].teamId,
+        teamId: interviewer.priorityTeams[0]?.teamId ?? "",
       }));
     }
 
@@ -1176,7 +1180,7 @@ const Scheduler: React.FC = () => {
                       ...interview,
                       ...updates,
                       applicantName:
-                        editedInterview.applicantName ||
+                        editedInterview.applicantName ??
                         interview.applicantName,
                     }
                   : interview,
@@ -1237,11 +1241,11 @@ const Scheduler: React.FC = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex flex-col overflow-hidden bg-neutral-950 text-xl font-medium shadow-[0px_4px_4px_rgba(0,0,0,0.25)]">
-        <div className="flex w-full flex-col items-center justify-center whitespace-nowrap bg-neutral-950 px-16 py-5 tracking-wide text-neutral-200 text-opacity-80 max-md:mr-2 max-md:max-w-full max-md:px-5">
+        <div className="text-opacity-80 flex w-full flex-col items-center justify-center bg-neutral-950 px-16 py-5 tracking-wide whitespace-nowrap text-neutral-200 max-md:mr-2 max-md:max-w-full max-md:px-5">
           {/* Header content would go here */}
         </div>
 
-        <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pb-96 pt-11 max-md:max-w-full max-md:px-5 max-md:pb-24">
+        <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pt-11 pb-96 max-md:max-w-full max-md:px-5 max-md:pb-24">
           <div className="mb-0 flex w-full max-w-[1537px] flex-col max-md:mb-2.5 max-md:max-w-full">
             <div className="self-start pb-10 text-center text-5xl font-semibold max-md:text-4xl">
               Scheduler
@@ -1250,7 +1254,7 @@ const Scheduler: React.FC = () => {
             <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
               <div
                 onClick={() => setSelectedCategory("OFFICER")}
-                className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+                className={`flex-1 cursor-pointer flex-wrap rounded-[37px_0px_0px_37px] py-2.5 pr-5 pl-20 text-center whitespace-nowrap transition-colors max-md:max-w-full max-md:pl-5 ${
                   selectedCategory === "OFFICER"
                     ? "bg-stone-600 text-white"
                     : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -1261,7 +1265,7 @@ const Scheduler: React.FC = () => {
               <div className="w-[1.5px] bg-neutral-200"></div>
               <div
                 onClick={() => setSelectedCategory("MATE ROV")}
-                className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+                className={`flex-1 cursor-pointer flex-wrap rounded-[0px_37px_37px_0px] py-2.5 pr-5 pl-20 text-center whitespace-nowrap transition-colors max-md:max-w-full max-md:pl-5 ${
                   selectedCategory === "MATE ROV"
                     ? "bg-stone-600 text-white"
                     : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -1273,7 +1277,7 @@ const Scheduler: React.FC = () => {
 
             <div className="mt-9 h-px w-full shrink-0 border border-solid border-neutral-200" />
 
-            <div className="ml-7 mt-8 flex w-auto max-w-full items-center justify-start gap-10 self-stretch px-0 py-0 text-sm tracking-wide text-neutral-200 max-md:flex-col">
+            <div className="mt-8 ml-7 flex w-auto max-w-full items-center justify-start gap-10 self-stretch px-0 py-0 text-sm tracking-wide text-neutral-200 max-md:flex-col">
               <input
                 type="text"
                 placeholder="Search by Name or UIN"
@@ -1305,7 +1309,12 @@ const Scheduler: React.FC = () => {
                 <span className="text-lg font-medium">
                   {viewMode === "day"
                     ? format(currentDate, "MMMM d, yyyy")
-                    : `${format(viewDates[0], "MMM d")} - ${format(viewDates[viewDates.length - 1], "MMM d, yyyy")}`}
+                    : (() => {
+                        const lastDate = viewDates[viewDates.length - 1];
+                        return viewDates.length > 0 && viewDates[0] && lastDate
+                          ? `${format(viewDates[0], "MMM d")} - ${format(lastDate, "MMM d, yyyy")}`
+                          : "Invalid date range";
+                      })()}
                 </span>
               </div>
 
@@ -1701,7 +1710,7 @@ const Scheduler: React.FC = () => {
                 </Label>
                 <div className="col-span-3 space-y-2">
                   <div className="relative">
-                    <Search className="absolute left-2 top-2.5 h-4 w-4 text-neutral-500" />
+                    <Search className="absolute top-2.5 left-2 h-4 w-4 text-neutral-500" />
                     <Input
                       placeholder="Search applicants..."
                       value={applicantSearch}
@@ -1846,16 +1855,11 @@ const Scheduler: React.FC = () => {
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label className="text-right font-medium">Date & Time</Label>
                 <div className="col-span-3 text-neutral-200">
-                  {selectedInterview && selectedInterview.startTime && (
-                    <>
-                      {format(selectedInterview.startTime, "MMMM d, yyyy")} at{" "}
-                      {selectedInterview.startTime &&
-                        format(selectedInterview.startTime, "h:mm a")}{" "}
-                      -
-                      {selectedInterview.endTime &&
-                        format(selectedInterview.endTime, "h:mm a")}
-                    </>
-                  )}
+                  <>
+                    {format(selectedInterview.startTime, "MMMM d, yyyy")} at{" "}
+                    {format(selectedInterview.startTime, "h:mm a")} -
+                    {format(selectedInterview.endTime, "h:mm a")}
+                  </>
                 </div>
               </div>
 

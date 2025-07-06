@@ -160,7 +160,7 @@ const ContactForm: React.FC = () => {
               onChange={handleChange}
               placeholder="Name"
               required
-              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:ring-0 focus:outline-none"
             />
           </div>
           <div>
@@ -176,7 +176,7 @@ const ContactForm: React.FC = () => {
               onBlur={handleBlur}
               placeholder="Email"
               required
-              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:ring-0 focus:outline-none"
             />
             {errors.email && (
               <p className="mt-1 text-xs text-red-500">{errors.email}</p>
@@ -197,7 +197,7 @@ const ContactForm: React.FC = () => {
               onBlur={handleBlur}
               placeholder="UIN"
               required
-              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+              className="w-full border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:ring-0 focus:outline-none"
             />
             {errors.uin && (
               <p className="mt-1 text-xs text-red-500">{errors.uin}</p>
@@ -213,7 +213,7 @@ const ContactForm: React.FC = () => {
               value={formData.subject}
               onChange={handleChange}
               required
-              className="w-full appearance-none border-b border-gray-600 bg-transparent px-1 py-2 text-gray-400 transition duration-300 focus:border-white focus:text-white focus:outline-none focus:ring-0"
+              className="w-full appearance-none border-b border-gray-600 bg-transparent px-1 py-2 text-gray-400 transition duration-300 focus:border-white focus:text-white focus:ring-0 focus:outline-none"
             >
               <option value="" disabled className="bg-[#1A1A1A] text-gray-400">
                 Select Subject
@@ -227,16 +227,16 @@ const ContactForm: React.FC = () => {
               <option value="Com" className="bg-[#1A1A1A] text-gray-400">
                 Design Challenges
               </option>
-              <option value="Des" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Des" className="bg-[#1A1A1A] text-gray-400">
                 Design Teams
               </option>
-              <option value="Wor" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Wor" className="bg-[#1A1A1A] text-gray-400">
                 Workshops
               </option>
-              <option value="Opp" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Opp" className="bg-[#1A1A1A] text-gray-400">
                 Opportunities
               </option>
-              <option value="Oth" className="bg-[#1A1A1A] text-gray-400 ">
+              <option value="Oth" className="bg-[#1A1A1A] text-gray-400">
                 Other
               </option>
             </select>
@@ -255,7 +255,7 @@ const ContactForm: React.FC = () => {
             onBlur={handleBlur}
             placeholder="Message"
             required
-            className="w-full resize-none border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:outline-none focus:ring-0"
+            className="w-full resize-none border-b border-gray-600 bg-transparent px-1 py-1.5 placeholder-gray-400 transition duration-300 focus:border-white focus:ring-0 focus:outline-none"
           ></textarea>
           {errors.message && (
             <p className="mt-1 text-xs text-red-500">{errors.message}</p>
@@ -265,7 +265,7 @@ const ContactForm: React.FC = () => {
           <button
             type="submit"
             disabled={!isFormValid || isSubmitting}
-            className="w-full rounded-md bg-white px-3 py-1.5 text-sm text-[#1A1A1A] transition duration-300 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1A1A1A]"
+            className="w-full rounded-md bg-white px-3 py-1.5 text-sm text-[#1A1A1A] transition duration-300 hover:bg-gray-200 focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1A1A1A] focus:outline-none"
           >
             {isSubmitting ? "Sending..." : "Send Message"}
           </button>

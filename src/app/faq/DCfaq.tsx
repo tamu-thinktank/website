@@ -122,7 +122,7 @@ const faqData = [
           <li>1 hour building prototypes / modeling subsystems</li>
         </ul>
 
-        <p className="mb-4 mt-4">
+        <p className="mt-4 mb-4">
           Team leads usually spend <strong>12 to 15 hours per week</strong>{" "}
           directing their teams and managing the project. This workload is
           equivalent to <strong>1.5 in-major engineering classes</strong>. The
@@ -243,13 +243,17 @@ function DCfaq() {
   return (
     <Container>
       <div className="px-6 md:px-6">
-        <h2 className="text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl pb-4">
+        <h2 className="pb-4 text-left text-3xl font-semibold text-gray-800 italic md:text-4xl dark:text-white">
           Design Challenges
         </h2>
         <hr className="border-t-2 border-gray-300 dark:border-gray-600" />
         <Accordion type="single" collapsible>
           {faqData.map((item, index) => (
-            <AccordionItem key={index} value={`question-${index + 1}`} className="border-b border-gray-300 dark:border-gray-600">
+            <AccordionItem
+              key={index}
+              value={`question-${index + 1}`}
+              className="border-b border-gray-300 dark:border-gray-600"
+            >
               <AccordionTrigger className="w-full text-left">
                 {item.question}
               </AccordionTrigger>

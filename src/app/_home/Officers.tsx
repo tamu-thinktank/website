@@ -6,7 +6,7 @@ export default function Officers() {
     <div className="text-gray-600 dark:text-gray-300" id="officers">
       <Container>
         <div className="mb-20 space-y-4 px-6 md:px-0">
-          <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-white md:text-4xl">
+          <h2 className="text-center text-2xl font-bold text-gray-800 md:text-4xl dark:text-white">
             Officers
           </h2>
         </div>

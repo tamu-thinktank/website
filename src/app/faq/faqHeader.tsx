@@ -12,7 +12,7 @@ const FAQHeader: React.FC = () => {
         </h1>
       </div>
       <svg
-        className="absolute bottom-4 right-16 h-8 w-8 rotate-180 md:bottom-12 md:right-24 md:h-10 md:w-10 lg:bottom-16 lg:right-32 lg:h-12 lg:w-12"
+        className="absolute right-16 bottom-4 h-8 w-8 rotate-180 md:right-24 md:bottom-12 md:h-10 md:w-10 lg:right-32 lg:bottom-16 lg:h-12 lg:w-12"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

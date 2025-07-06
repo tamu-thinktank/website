@@ -34,7 +34,7 @@ export default function Header() {
 
   return (
     <header className={`${poppins.variable} ${dmSans.variable} font-sans`}>
-      <nav className="navbar fixed left-0 right-0 top-0 z-50 bg-white shadow-md">
+      <nav className="navbar fixed top-0 right-0 left-0 z-50 bg-white shadow-md">
         <Container>
           <div className="navbar-content">
             <div className="relative z-20 flex w-full justify-between md:px-0 lg:w-max">
@@ -104,7 +104,7 @@ export default function Header() {
             </div>
 
             <div className="navbar-menu">
-              <div className="w-full text-gray-600 dark:text-gray-300 lg:w-auto lg:pr-4 lg:pt-0">
+              <div className="w-full text-gray-600 lg:w-auto lg:pt-0 lg:pr-4 dark:text-gray-300">
                 <ul className="flex flex-col gap-6 font-medium tracking-wide lg:flex-row lg:gap-0 lg:text-sm">
                   <li>
                     <a

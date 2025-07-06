@@ -95,7 +95,7 @@ export default function AdminHub() {
               </CardContent>
 
               {/* Subtle arrow indicator */}
-              <div className="absolute bottom-4 right-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+              <div className="absolute right-4 bottom-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <svg
                   width="20"
                   height="20"

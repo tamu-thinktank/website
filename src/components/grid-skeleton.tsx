@@ -20,7 +20,7 @@ export default function GridSkeleton() {
           />
         ))}
       </div>
-      <div className="relative mb-2.5 mt-0.5 h-96 w-80 rounded-[3px] border-2 border-current" />
+      <div className="relative mt-0.5 mb-2.5 h-96 w-80 rounded-[3px] border-2 border-current" />
     </div>
   );
 }

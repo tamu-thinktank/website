@@ -30,9 +30,9 @@ export function Table({
           <H3>{caption}</H3>
         </caption>
         <thead>
-          <tr className="m-0 border-t p-0 even:bg-muted">
+          <tr className="even:bg-muted m-0 border-t p-0">
             {headRow.map((heading) => (
-              <th className="border px-4 py-2 text-left  [&[align=center]]:text-center [&[align=right]]:text-right">
+              <th className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
                 <H4>{heading}</H4>
               </th>
             ))}
@@ -40,7 +40,7 @@ export function Table({
         </thead>
         <tbody>
           {rows.map((row) => (
-            <tr className="m-0 border-t p-0 even:bg-muted">
+            <tr className="even:bg-muted m-0 border-t p-0">
               {row.map((cell) => (
                 <td className="border px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right">
                   {cell}

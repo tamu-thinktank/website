@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,11 +23,14 @@ export default function SubmissionConfirmation() {
         </CardHeader>
         <CardContent className="space-y-6 text-center">
           <p>
-            Thank you for applying to our Mini Design Challenge Competition! You will receive an email with your responses momentarily.
+            Thank you for applying to our Mini Design Challenge Competition! You
+            will receive an email with your responses momentarily.
           </p>
 
           <p>
-            We will be reviewing your application shortly and start sending acceptances in 1-2 weeks. If you do not receive a response after 3 days past the posted application deadline, please contact us.
+            We will be reviewing your application shortly and start sending
+            acceptances in 1-2 weeks. If you do not receive a response after 3
+            days past the posted application deadline, please contact us.
           </p>
 
           <Button

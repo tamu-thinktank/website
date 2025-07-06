@@ -148,12 +148,12 @@ export default function OfficersGrid({
 
               <div
                 className={cn(
-                  "flex flex-col border-b-2 border-l-[1px] border-r-[1px] border-primary",
+                  "border-primary flex flex-col border-r-[1px] border-b-2 border-l-[1px]",
                   (colIdx === 0 || table.columns.at(colIdx - 1) === null) &&
-                    "rounded-bl-sm rounded-tl-sm border-l-2",
+                    "rounded-tl-sm rounded-bl-sm border-l-2",
                   (colIdx === table.columns.length - 1 ||
                     table.columns.at(colIdx + 1) === null) &&
-                    "rounded-br-sm rounded-tr-sm border-r-2",
+                    "rounded-tr-sm rounded-br-sm border-r-2",
                 )}
               >
                 {column.cells.map((cell, cellIdx) => {
@@ -404,14 +404,11 @@ export default function OfficersGrid({
         <div className="overflow-x-auto">
           {/* The table */}
           <div className="inline-flex min-w-full items-end justify-center">
-            <div className="sticky left-1.5 z-10 flex flex-col overflow-hidden pr-2.5 pt-[1em]">
+            <div className="sticky left-1.5 z-10 flex flex-col overflow-hidden pt-[1em] pr-2.5">
               {table?.rows.map((row, i) => (
                 <div className="relative h-2.5 text-right" key={i}>
                   {row && (
-                    <label
-                      className="inline-block whitespace-nowrap rounded-[0.3em] bg-background px-[0.2em] py-[0.1em] text-xs
-                          [transform:translateY(-85%)]"
-                    >
+                    <label className="bg-background inline-block [transform:translateY(-85%)] rounded-[0.3em] px-[0.2em] py-[0.1em] text-xs whitespace-nowrap">
                       {row.label}
                     </label>
                   )}
@@ -424,7 +421,7 @@ export default function OfficersGrid({
           {/* Floating tooltip */}
           {tooltip && (
             <div
-              className="absolute z-10 w-fit rounded-sm border-[1px] border-primary bg-background px-2 py-1"
+              className="border-primary bg-background absolute z-10 w-fit rounded-sm border-[1px] px-2 py-1"
               ref={refs.setFloating}
               style={floatingStyles}
             >

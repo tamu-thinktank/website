@@ -76,14 +76,14 @@ export default function ImageCarousel() {
 
           <CarouselPrevious
             aria-label="Previous slide"
-            className="absolute left-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2 text-white transition-all duration-300 hover:bg-opacity-75"
+            className="bg-opacity-50 hover:bg-opacity-75 absolute top-1/2 left-4 z-10 -translate-y-1/2 transform rounded-full bg-black p-2 text-white transition-all duration-300"
           >
             <ChevronLeft size={24} />
           </CarouselPrevious>
 
           <CarouselNext
             aria-label="Next slide"
-            className="absolute right-4 top-1/2 z-10 -translate-y-1/2 transform rounded-full bg-black bg-opacity-50 p-2 text-white transition-all duration-300 hover:bg-opacity-75"
+            className="bg-opacity-50 hover:bg-opacity-75 absolute top-1/2 right-4 z-10 -translate-y-1/2 transform rounded-full bg-black p-2 text-white transition-all duration-300"
           >
             <ChevronRight size={24} />
           </CarouselNext>
