@@ -9,12 +9,12 @@ import {
 } from "@/components/ui/card";
 import { FormField, FormMessage } from "@/components/ui/form";
 import type { Mode } from "@/consts/availability-grid";
-import { palette, times } from "@/consts/availability-grid";
+import { times } from "@/consts/availability-grid";
 import type useCalculateTable from "@/hooks/useCalculateTable";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { cn } from "@/lib/utils";
 import type { CSSProperties } from "react";
-import { Fragment, useCallback, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface AvailabilityProps {

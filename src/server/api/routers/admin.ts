@@ -1,11 +1,10 @@
 import { RESUME_ACCEPTED_ID, RESUME_PENDING_ID, RESUME_REJECTED_ID } from "@/consts/google-things"
 import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap"
-import { ApplicantSchema, ApplicantsSchema, AvailabilityMapSchema } from "@/lib/validations/apply"
+import { ApplicantsSchema, AvailabilityMapSchema } from "@/lib/validations/apply"
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { getAllApplications, getAvailabities, getTargetTeams } from "@/server/db/queries"
 import sendEmail from "@/server/service/email"
 import DriveService from "@/server/service/google-drive"
-import { Temporal } from "@js-temporal/polyfill"
 import { Challenge } from "@prisma/client"
 import InterviewEmail from "emails/interview"
 import RejectAppEmail from "emails/reject-app"
@@ -147,41 +146,6 @@ export const adminRouter = createTRPCRouter({
 
     return applications
   }),
-  getApplicant: protectedProcedure
-    .input(z.string().cuid2())
-    .output(ApplicantSchema)
-    .query(async ({ input, ctx }) => {
-      const application = await ctx.db.application.findUnique({
-        where: {
-          id: input,
-        },
-        include: {
-          meetingTimes: true,
-        },
-      })
-
-      if (!application) {
-        throw new Error("Application not found")
-      }
-
-      return {
-        ...application,
-        personal: {
-          ...application,
-        },
-        interests: {
-          ...application,
-        },
-        leadership: {
-          ...application,
-        },
-        meetingTimes: application.meetingTimes
-          .map((meetingTime) => Temporal.ZonedDateTime.from(meetingTime.gridTime))
-          .sort((a, b) => Temporal.ZonedDateTime.compare(a, b))
-          .map((meetingTime) => meetingTime.toString()),
-        resumeId: application.resumeId,
-      }
-    }),
   updateApplicant: protectedProcedure
     .input(
       z.object({
@@ -231,17 +195,17 @@ export const adminRouter = createTRPCRouter({
     .mutation(
       async ({
         input: {
-          officerId,
+          officerId: _officerId,
           officerName,
-          officerEmail,
+          officerEmail: _officerEmail,
           applicantName,
           applicantEmail,
           startTime,
           location,
           team,
-          applicationType,
+          applicationType, 
         },
-        ctx,
+        ctx: _ctx,
       }) => {
         try {
           // Parse the startTime string
@@ -251,7 +215,7 @@ export const adminRouter = createTRPCRouter({
           // the time is likely being interpreted as UTC when it should be in Central Time
 
           // Format the time explicitly for Central Time (UTC-5/UTC-6)
-          const options = {
+          const options: Intl.DateTimeFormatOptions = {
             year: "numeric",
             month: "short",
             day: "numeric",
