@@ -109,16 +109,16 @@ export const MembersPage: React.FC = () => {
 
   return (
     <div className="flex flex-col overflow-hidden bg-neutral-950 text-xl font-medium shadow-[0px_4px_4px_rgba(0,0,0,0.25)]">
-      <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pb-96 pt-11 max-md:max-w-full max-md:px-5 max-md:pb-24">
+      <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pt-11 pb-96 max-md:max-w-full max-md:px-5 max-md:pb-24">
         <div className="mb-0 flex w-full max-w-[1537px] flex-col max-md:mb-2.5 max-md:max-w-full">
-          <div className="self-start pb-10 pt-20 text-center text-5xl font-semibold max-md:text-4xl">
+          <div className="self-start pt-20 pb-10 text-center text-5xl font-semibold max-md:text-4xl">
             Members
           </div>
 
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
               onClick={() => setSelectedCategory("OFFICER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+              className={`flex-1 cursor-pointer flex-wrap rounded-[37px_0px_0px_37px] py-2.5 pr-5 pl-20 text-center whitespace-nowrap transition-colors max-md:max-w-full max-md:pl-5 ${
                 selectedCategory === "OFFICER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -129,7 +129,7 @@ export const MembersPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MATE ROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+              className={`flex-1 cursor-pointer flex-wrap rounded-[0px_37px_37px_0px] py-2.5 pr-5 pl-20 text-center whitespace-nowrap transition-colors max-md:max-w-full max-md:pl-5 ${
                 selectedCategory === "MATE ROV"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -141,7 +141,7 @@ export const MembersPage: React.FC = () => {
 
           <div className="mt-9 h-px w-full shrink-0 border border-solid border-neutral-200" />
 
-          <div className="ml-7 mt-8 flex w-auto max-w-full items-center justify-start gap-10 self-stretch px-0 py-0 text-sm tracking-wide text-neutral-200 max-md:flex-col">
+          <div className="mt-8 ml-7 flex w-auto max-w-full items-center justify-start gap-10 self-stretch px-0 py-0 text-sm tracking-wide text-neutral-200 max-md:flex-col">
             <input
               type="text"
               placeholder="Search by Name or UIN"

@@ -325,13 +325,13 @@ export default function AcademicInfo() {
                     value={field.value ? "true" : "false"}
                     className="flex flex-col space-y-1"
                   >
-                    <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormItem className="flex items-center space-y-0 space-x-3">
                       <FormControl>
                         <RadioGroupItem value="true" />
                       </FormControl>
                       <FormLabel className="font-normal">Yes</FormLabel>
                     </FormItem>
-                    <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormItem className="flex items-center space-y-0 space-x-3">
                       <FormControl>
                         <RadioGroupItem value="false" />
                       </FormControl>

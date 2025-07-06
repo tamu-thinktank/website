@@ -105,14 +105,11 @@ const BoxComponent: React.FC<BoxProps> = ({
   return (
     <motion.div
       id={`box-${teamName}`}
-      className={`
-        mx-auto w-full overflow-hidden rounded-[10px] border-2 border-[rgba(83,81,81,0.5)] bg-[#1a1a1a] transition-[height] duration-500 ease-in-out
-        ${
-          isExpanded
-            ? "my-[20px] flex h-auto flex-col md:my-[30px]"
-            : "my-[20px] flex h-[500px] flex-col md:my-[30px] md:h-[300px] md:flex-row"
-        }
-      `}
+      className={`mx-auto w-full overflow-hidden rounded-[10px] border-2 border-[rgba(83,81,81,0.5)] bg-[#1a1a1a] transition-[height] duration-500 ease-in-out ${
+        isExpanded
+          ? "my-[20px] flex h-auto flex-col md:my-[30px]"
+          : "my-[20px] flex h-[500px] flex-col md:my-[30px] md:h-[300px] md:flex-row"
+      } `}
       initial="collapsed"
       animate={isExpanded ? "expanded" : "collapsed"}
       variants={variants}
@@ -120,11 +117,7 @@ const BoxComponent: React.FC<BoxProps> = ({
     >
       {/* Image Section */}
       <div
-        className={`
-          relative cursor-pointer overflow-hidden transition-[height] duration-500 ease-in-out
-          ${isExpanded ? "md:h-[450px] md:w-full" : "md:h-[300px] md:w-1/2"}
-          h-[200px] w-full
-        `}
+        className={`relative cursor-pointer overflow-hidden transition-[height] duration-500 ease-in-out ${isExpanded ? "md:h-[450px] md:w-full" : "md:h-[300px] md:w-1/2"} h-[200px] w-full`}
         onClick={() =>
           window.open(competitionLink, "_blank", "noopener,noreferrer")
         }
@@ -144,11 +137,7 @@ const BoxComponent: React.FC<BoxProps> = ({
       {/* Text Section */}
       <div
         data-text-section
-        className={`
-          relative flex flex-1 flex-col overflow-y-auto bg-black text-[#bababa]
-          ${isExpanded ? "max-h-full" : "max-h-[300px] md:max-h-full"}
-          px-[15px] py-[10px] md:px-[20px] md:py-[15px]
-        `}
+        className={`relative flex flex-1 flex-col overflow-y-auto bg-black text-[#bababa] ${isExpanded ? "max-h-full" : "max-h-[300px] md:max-h-full"} px-[15px] py-[10px] md:px-[20px] md:py-[15px]`}
         style={{
           transition: "max-height 0.5s ease-in-out",
           scrollbarWidth: "none",
@@ -157,20 +146,14 @@ const BoxComponent: React.FC<BoxProps> = ({
       >
         {/* Header */}
         <div
-          className={`
-            font-poppins flex items-center justify-center text-[1.2rem] font-bold
-            uppercase ${isExpanded ? "mb-[10px]" : "mb-[5px]"}
-          `}
+          className={`font-poppins flex items-center justify-center text-[1.2rem] font-bold uppercase ${isExpanded ? "mb-[10px]" : "mb-[5px]"} `}
         >
           <span
-            className={`
-              mr-[10px] text-center font-[Poppins,sans-serif] text-white 
-              ${isExpanded ? "pt-0 text-[1.5rem]" : "pt-[10px] text-[2rem]"}
-            `}
+            className={`mr-[10px] text-center font-[Poppins,sans-serif] text-white ${isExpanded ? "pt-0 text-[1.5rem]" : "pt-[10px] text-[2rem]"} `}
           >
             {teamName.toUpperCase()}
           </span>
-          <span className="mx-[10px] font-[Poppins,sans-serif] text-[1.2rem] font-bold uppercase text-white">
+          <span className="mx-[10px] font-[Poppins,sans-serif] text-[1.2rem] font-bold text-white uppercase">
             |
           </span>
           <span
@@ -186,16 +169,12 @@ const BoxComponent: React.FC<BoxProps> = ({
         {!isExpanded && (
           <>
             <p className="mb-2 text-center font-semibold">{shortOverview}</p>
-            <div className="mb-[15px] mt-[10px] flex flex-col items-center justify-center gap-[10px] md:mb-[20px] md:mt-[15px]">
+            <div className="mt-[10px] mb-[15px] flex flex-col items-center justify-center gap-[10px] md:mt-[15px] md:mb-[20px]">
               <a
                 href="/materov-apply"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`
-                  pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px] border-white
-                  bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold text-white 
-                  no-underline opacity-50 md:px-[20px] md:py-[10px] md:text-[16px]
-                `}
+                className={`pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px] border-white bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold text-white no-underline opacity-50 md:px-[20px] md:py-[10px] md:text-[16px]`}
               >
                 {/*{isOpen ? "Open" : "Closed"}*/}
                 Closed
@@ -307,11 +286,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                   href="/materov-apply"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`
-                    w-full max-w-[200px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
-                    text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                    ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
-                  `}
+                  className={`w-full max-w-[200px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px] text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"} `}
                 >
                   {/*{isOpen ? "Open" : "Closed"}*/}
                   Closed

@@ -91,7 +91,7 @@ export default function ResumeUpload({
         {/* Signature Sections */}
         {signatureTexts.map((text, index) => (
           <div key={index} className="space-y-4">
-            <Label className="block text-sm font-medium text-muted-foreground">
+            <Label className="text-muted-foreground block text-sm font-medium">
               {text}
             </Label>
             <FormField

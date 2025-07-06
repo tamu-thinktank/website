@@ -144,7 +144,7 @@ export default function MateROVPersonalInfo() {
                     }
                     onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
                     placeholder="Specify your pronouns"
-                    className="ml-6 mt-2"
+                    className="mt-2 ml-6"
                   />
                 )}
                 <FormMessage />
@@ -212,7 +212,7 @@ export default function MateROVPersonalInfo() {
                     }
                     onChange={(e) => field.onChange(`OTHER:${e.target.value}`)}
                     placeholder="Specify your gender"
-                    className="ml-6 mt-2"
+                    className="mt-2 ml-6"
                   />
                 )}
                 <FormMessage />

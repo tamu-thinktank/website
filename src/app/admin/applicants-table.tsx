@@ -137,7 +137,7 @@ export default function ApplicantsTable() {
   return (
     <Card className="max-h-[95%] overflow-auto">
       <CardContent>
-        <div className="sticky top-0 z-10 flex gap-4 bg-background py-4">
+        <div className="bg-background sticky top-0 z-10 flex gap-4 py-4">
           <Input
             placeholder="Filter name or email"
             onChange={(event) => {

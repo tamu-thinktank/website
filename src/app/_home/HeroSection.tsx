@@ -133,17 +133,17 @@ export default function MyComponent() {
       id="home"
       ref={containerRef}
     >
-      <div className="pointer-events-none absolute right-[-125px] top-[-375px] h-[1000px] w-[1000px] -translate-y-1/2 translate-x-1/2 transform bg-blue-400 opacity-10 blur-3xl md:h-[1250px] md:w-[1250px] lg:h-[1500px] lg:w-[1500px]"></div>
+      <div className="pointer-events-none absolute top-[-375px] right-[-125px] h-[1000px] w-[1000px] translate-x-1/2 -translate-y-1/2 transform bg-blue-400 opacity-10 blur-3xl md:h-[1250px] md:w-[1250px] lg:h-[1500px] lg:w-[1500px]"></div>
 
       <div className="flex min-h-screen items-center justify-center py-5 md:py-12">
         <Container>
           <div className="landing-page-container relative mx-auto flex flex-col justify-center overflow-visible pt-0 sm:pt-16">
             <div className="mx-auto w-full text-center lg:w-4/5 xl:w-3/4 2xl:w-2/3">
               <div className="relative pt-5 sm:pt-20">
-                <h1 className="font-poppins relative z-[3] mb-2 w-full bg-gradient-to-r from-white to-[#617B7F] bg-clip-text pb-2 text-5xl font-semibold leading-[1.2] text-transparent sm:text-6xl md:text-7xl lg:text-[5em]">
+                <h1 className="font-poppins relative z-[3] mb-2 w-full bg-gradient-to-r from-white to-[#617B7F] bg-clip-text pb-2 text-5xl leading-[1.2] font-semibold text-transparent sm:text-6xl md:text-7xl lg:text-[5em]">
                   Empowering
                 </h1>
-                <h2 className="font-poppins relative z-[3] mb-1 mt-1 w-full whitespace-nowrap bg-gradient-to-r from-white to-gray-500 bg-clip-text pb-2 text-5xl font-semibold leading-[1.2] text-transparent sm:text-6xl md:text-7xl lg:text-[5em]">
+                <h2 className="font-poppins relative z-[3] mt-1 mb-1 w-full bg-gradient-to-r from-white to-gray-500 bg-clip-text pb-2 text-5xl leading-[1.2] font-semibold whitespace-nowrap text-transparent sm:text-6xl md:text-7xl lg:text-[5em]">
                   Future Engineers
                 </h2>
               </div>
@@ -160,7 +160,7 @@ export default function MyComponent() {
               <div className="mb-8 flex flex-col items-center gap-y-4 pt-8 sm:mb-16 sm:flex-row sm:justify-center sm:gap-x-6">
                 <Link
                   href="/apphub"
-                  className="group relative flex h-14 w-full max-w-[20rem] items-center justify-center rounded-full bg-primary px-7 text-lg font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
+                  className="group bg-primary relative flex h-14 w-full max-w-[20rem] items-center justify-center rounded-full px-7 text-lg font-semibold text-black transition-all duration-300 hover:scale-105 active:scale-95 sm:h-14 sm:w-48 sm:text-base lg:h-16 lg:w-64 lg:text-xl xl:h-[4.5rem] xl:w-72 xl:text-2xl"
                 >
                   Apply
                 </Link>
@@ -195,8 +195,8 @@ export default function MyComponent() {
 
               <div className="my-4 border-t border-white opacity-20"></div>
               <div className="relative overflow-hidden border-y border-[#0C0D0E] py-4 sm:py-6 lg:py-8">
-                <div className="pointer-events-none absolute bottom-0 left-0 top-0 z-10 w-20 bg-gradient-to-r from-[#0C0D0E] to-transparent sm:w-40"></div>
-                <div className="pointer-events-none absolute bottom-0 right-0 top-0 z-10 w-20 bg-gradient-to-l from-[#0C0D0E] to-transparent sm:w-40"></div>
+                <div className="pointer-events-none absolute top-0 bottom-0 left-0 z-10 w-20 bg-gradient-to-r from-[#0C0D0E] to-transparent sm:w-40"></div>
+                <div className="pointer-events-none absolute top-0 right-0 bottom-0 z-10 w-20 bg-gradient-to-l from-[#0C0D0E] to-transparent sm:w-40"></div>
 
                 <div
                   ref={scrollRef}

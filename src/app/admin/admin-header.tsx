@@ -87,7 +87,7 @@ function ExportCSV() {
       size={"sm"}
       variant={"secondary"}
       className={
-        "whitespace-nowrap bg-violet-400 hover:bg-violet-500 dark:bg-violet-600 dark:hover:bg-violet-500"
+        "bg-violet-400 whitespace-nowrap hover:bg-violet-500 dark:bg-violet-600 dark:hover:bg-violet-500"
       }
     >
       Download CSV

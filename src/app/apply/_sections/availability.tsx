@@ -83,10 +83,7 @@ export default function Availability({
                         {table?.rows.map((row, i) => (
                           <div className="h-2.5 text-right" key={i}>
                             {row && (
-                              <label
-                                className="inline-block whitespace-nowrap rounded-[0.3em] bg-background px-[0.2em] py-[0.1em] text-xs
-                          [transform:translateY(-85%)]"
-                              >
+                              <label className="bg-background inline-block [transform:translateY(-85%)] rounded-[0.3em] px-[0.2em] py-[0.1em] text-xs whitespace-nowrap">
                                 {row.label}
                               </label>
                             )}
@@ -106,13 +103,13 @@ export default function Availability({
 
                               <div
                                 className={cn(
-                                  "flex flex-col border-b-2 border-l-[1px] border-r-[1px] border-primary",
+                                  "border-primary flex flex-col border-r-[1px] border-b-2 border-l-[1px]",
                                   (colIdx === 0 ||
                                     table.columns.at(colIdx - 1) === null) &&
-                                    "rounded-bl-sm rounded-tl-sm border-l-2",
+                                    "rounded-tl-sm rounded-bl-sm border-l-2",
                                   (colIdx === table.columns.length - 1 ||
                                     table.columns.at(colIdx + 1) === null) &&
-                                    "rounded-br-sm rounded-tr-sm border-r-2",
+                                    "rounded-tr-sm rounded-br-sm border-r-2",
                                 )}
                               >
                                 {column.cells.map((cell, cellIdx) => {

@@ -41,7 +41,7 @@ function Content({ children }: { children: React.ReactNode }) {
           },
         )
       }
-      className="rounded-full bg-white/10 px-10 py-3 font-semibold text-primary no-underline transition hover:bg-white/20"
+      className="text-primary rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
     >
       {authStatus === "loading" ? (
         <Loader2 className="animate-spin" />

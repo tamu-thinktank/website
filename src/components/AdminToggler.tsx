@@ -24,9 +24,9 @@ export function TeamToggler() {
 
   return (
     <div className="mx-auto mt-20 flex w-full max-w-7xl items-center justify-center">
-      <div className="relative h-[54px] w-[1760px] rounded-full border border-white border-opacity-50 bg-transparent">
+      <div className="border-opacity-50 relative h-[54px] w-[1760px] rounded-full border border-white bg-transparent">
         <motion.div
-          className="absolute h-[calc(100%-2px)] w-[calc(50%-1px)] rounded-full bg-white bg-opacity-20"
+          className="bg-opacity-20 absolute h-[calc(100%-2px)] w-[calc(50%-1px)] rounded-full bg-white"
           layout
           transition={{
             type: "tween",
@@ -39,7 +39,7 @@ export function TeamToggler() {
           }}
         />
         <button
-          className={`font-regular z-1 relative h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
+          className={`font-regular relative z-1 h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
             activeTeam === "DC" ? "text-white" : "text-gray-300"
           }`}
           onClick={() => handleToggle("DC")}
@@ -47,7 +47,7 @@ export function TeamToggler() {
           DC
         </button>
         <button
-          className={`font-regular z-1 relative h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
+          className={`font-regular relative z-1 h-full w-1/2 rounded-full text-center text-[1.1rem] transition-colors ${
             activeTeam === "MATE ROV" ? "text-white" : "text-gray-300"
           }`}
           onClick={() => handleToggle("MATE ROV")}

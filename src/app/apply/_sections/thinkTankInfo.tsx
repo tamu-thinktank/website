@@ -221,7 +221,7 @@ export default function ThinkTankInfo() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="absolute right-4 top-1/2 -translate-y-1/2"
+                            className="absolute top-1/2 right-4 -translate-y-1/2"
                             onClick={() => {
                               const updated = field.value.filter(
                                 (t) => t.teamId !== team.id,
@@ -338,7 +338,7 @@ export default function ThinkTankInfo() {
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="absolute right-4 top-1/2 -translate-y-1/2"
+                            className="absolute top-1/2 right-4 -translate-y-1/2"
                             onClick={() => {
                               const updated = field.value.filter(
                                 (ra) => ra.researchAreaId !== area.id,

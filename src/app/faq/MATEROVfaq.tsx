@@ -70,7 +70,7 @@ function MateRovFaq() {
   return (
     <Container>
       <div className="px-6 md:px-6">
-        <h2 className="pb-4 text-left text-3xl font-semibold italic text-gray-800 dark:text-white md:text-4xl">
+        <h2 className="pb-4 text-left text-3xl font-semibold text-gray-800 italic md:text-4xl dark:text-white">
           MATE ROV
         </h2>
         <hr className="border-t-2 border-gray-300 dark:border-gray-600" />

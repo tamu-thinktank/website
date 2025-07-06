@@ -114,9 +114,9 @@ const Footer: React.FC = () => {
         <div className="mt-auto flex w-full flex-col items-start justify-between lg:flex-row lg:items-end">
           <div className="flex w-full flex-col items-start lg:items-start">
             <div className="mb-4 flex w-full items-center justify-start lg:mb-0">
-              <div className="lg:-ml-25 relative flex items-center">
+              <div className="relative flex items-center lg:-ml-25">
                 <div className="relative">
-                  <div className="absolute -left-6 -top-10 hidden origin-bottom-right -rotate-90 transform text-lg font-bold text-[#949494] sm:-left-8 sm:-top-12 sm:block sm:text-xl md:-left-10 md:-top-16 md:text-2xl lg:-left-20 lg:-top-20 lg:ml-5 lg:text-3xl xl:ml-5">
+                  <div className="absolute -top-10 -left-6 hidden origin-bottom-right -rotate-90 transform text-lg font-bold text-[#949494] sm:-top-12 sm:-left-8 sm:block sm:text-xl md:-top-16 md:-left-10 md:text-2xl lg:-top-20 lg:-left-20 lg:ml-5 lg:text-3xl xl:ml-5">
                     TAMU
                   </div>
                 </div>

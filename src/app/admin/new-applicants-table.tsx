@@ -29,7 +29,7 @@ const RatingDropdown = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex w-40 items-center justify-between rounded-full border-[0.75px] border-white bg-background px-4 py-2 text-white"
+          className="bg-background flex w-40 items-center justify-between rounded-full border-[0.75px] border-white px-4 py-2 text-white"
           aria-label="Select Rating"
         >
           {ratingFilter || "All Ratings"}
@@ -37,30 +37,30 @@ const RatingDropdown = ({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+        className="bg-popover text-popover-foreground min-w-[8rem] rounded-md border p-1 shadow-md"
         sideOffset={4}
       >
         <DropdownMenuItem
           onClick={() => setRatingFilter("")}
-          className="cursor-pointer px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground cursor-pointer px-2 py-1.5 text-sm"
         >
           All Ratings
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setRatingFilter("High")}
-          className="cursor-pointer px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground cursor-pointer px-2 py-1.5 text-sm"
         >
           High
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setRatingFilter("Medium")}
-          className="cursor-pointer px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground cursor-pointer px-2 py-1.5 text-sm"
         >
           Medium
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setRatingFilter("Low")}
-          className="cursor-pointer px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground cursor-pointer px-2 py-1.5 text-sm"
         >
           Low
         </DropdownMenuItem>
@@ -80,7 +80,7 @@ const TeamDropdown = ({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex w-40 items-center justify-between rounded-full border-[0.75px] border-white bg-background px-4 py-2 text-white"
+          className="bg-background flex w-40 items-center justify-between rounded-full border-[0.75px] border-white px-4 py-2 text-white"
           aria-label="Select Teams"
         >
           {teamFilter || "All Teams"}
@@ -88,24 +88,24 @@ const TeamDropdown = ({
         </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
+        className="bg-popover text-popover-foreground min-w-[8rem] rounded-md border p-1 shadow-md"
         sideOffset={4}
       >
         <DropdownMenuItem
           onClick={() => setTeamFilter("")}
-          className="cursor-pointer px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground cursor-pointer px-2 py-1.5 text-sm"
         >
           All Teams
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTeamFilter("Team A")}
-          className="cursor-pointer px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground cursor-pointer px-2 py-1.5 text-sm"
         >
           Team A
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => setTeamFilter("Team B")}
-          className="cursor-pointer px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground"
+          className="hover:bg-accent hover:text-accent-foreground cursor-pointer px-2 py-1.5 text-sm"
         >
           Team B
         </DropdownMenuItem>
@@ -151,7 +151,7 @@ export default function ApplicantsTable() {
 
   return (
     <div className="flex max-h-[95%] flex-col items-center overflow-auto">
-      <div className="sticky top-0 z-10 flex gap-4 bg-background py-4">
+      <div className="bg-background sticky top-0 z-10 flex gap-4 py-4">
         <Input
           placeholder="Search by Name"
           className="w-60 rounded-full border-[0.75px] border-white text-white"
@@ -169,14 +169,14 @@ export default function ApplicantsTable() {
           setRatingFilter={setRatingFilter}
         />
         <TeamDropdown teamFilter={teamFilter} setTeamFilter={setTeamFilter} />
-        <Button className="rounded-full border-[0.75px] border-white bg-background text-white">
+        <Button className="bg-background rounded-full border-[0.75px] border-white text-white">
           More
         </Button>
       </div>
       <div className="w-[70%] rounded-lg border border-[0.75px] border-white">
         <Table>
           <TableHeader>
-            <TableRow className="border-b border-white border-opacity-25 bg-zinc-700">
+            <TableRow className="border-opacity-25 border-b border-white bg-zinc-700">
               <TableHead className="text-center text-white">Name</TableHead>
               <TableHead className="text-center text-white">UIN</TableHead>
               <TableHead className="text-center text-white">
@@ -190,7 +190,7 @@ export default function ApplicantsTable() {
               filteredApplicants.map((applicant, index) => (
                 <TableRow
                   key={index}
-                  className="border-b border-white border-opacity-25"
+                  className="border-opacity-25 border-b border-white"
                 >
                   <TableCell className="text-center">
                     {applicant.name}

@@ -64,12 +64,12 @@ export default function ChallengeSection() {
   return (
     <div id="travel" className="bg-[#0C0D0E] py-8 md:py-12">
       <Container>
-        <div className="flex flex-col-reverse items-start justify-between space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+        <div className="flex flex-col-reverse items-start justify-between space-y-8 lg:flex-row lg:space-y-0 lg:space-x-12">
           <div className="w-full space-y-8 lg:w-1/2 lg:pt-0">
-            <h2 className="text-2xl font-bold italic text-gray-900 dark:text-white sm:text-3xl md:text-4xl lg:text-5xl">
+            <h2 className="text-2xl font-bold text-gray-900 italic sm:text-3xl md:text-4xl lg:text-5xl dark:text-white">
               <span style={{ color: "#B8B8B8" }}>Design Challenges</span>
             </h2>
-            <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300 sm:text-base md:text-lg">
+            <div className="space-y-4 text-sm text-gray-600 sm:text-base md:text-lg dark:text-gray-300">
               <p>
                 ThinkTank teams compete in capstone-level engineering
                 competitions by designing solutions for significant present and

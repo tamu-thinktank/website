@@ -2,7 +2,7 @@ import React from "react";
 
 const AboutHeader: React.FC = () => {
   return (
-    <div className="relative w-full p-8 pt-32 md:p-12 md:pl-24 md:pt-72 lg:p-16 lg:pl-32 lg:pt-40">
+    <div className="relative w-full p-8 pt-32 md:p-12 md:pt-72 md:pl-24 lg:p-16 lg:pt-40 lg:pl-32">
       <div className="flex flex-col items-start gap-0">
         <span className="font-dm-sans text-[0.93em] font-semibold text-[#B8B8B8] md:text-[0.93em]">
           2024-2025
@@ -12,7 +12,7 @@ const AboutHeader: React.FC = () => {
         </h1>
       </div>
       <svg
-        className="absolute bottom-4 right-16 h-8 w-8 rotate-180 md:bottom-12 md:right-24 md:h-10 md:w-10 lg:bottom-16 lg:right-32 lg:h-12 lg:w-12"
+        className="absolute right-16 bottom-4 h-8 w-8 rotate-180 md:right-24 md:bottom-12 md:h-10 md:w-10 lg:right-32 lg:bottom-16 lg:h-12 lg:w-12"
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
