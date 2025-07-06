@@ -333,11 +333,9 @@ export const OfficerApplyFormSchema = z
     academic: z.object({
       year: yearSchema,
       major: majorSchema,
-      summerPlans: z
-        .string()
-        .refine((text) => wordCount(text) <= 100, {
-          message: "Summer Plans must be 100 words or less",
-        }),
+      summerPlans: z.string().refine((text) => wordCount(text) <= 100, {
+        message: "Summer Plans must be 100 words or less",
+      }),
       currentClasses: z
         .array(z.string())
         .min(2, "Enter at least two classes")
