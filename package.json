@@ -143,8 +143,5 @@
   "ct3aMetadata": {
     "initVersion": "7.24.2"
   },
-  "packageManager": "pnpm@9.0.4",
-  "prettier": {
-    "endOfLine": "lf"
-  }
+  "packageManager": "pnpm@9.0.4"
 }
