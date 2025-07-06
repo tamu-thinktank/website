@@ -23,12 +23,15 @@ export default function ResumeUpload({
   setResumeFile: (file?: File) => void;
 }) {
   const form = useFormContext<RouterInputs["public"]["applyMiniDC"]>();
-  const fullName = useWatch({ control: form.control, name: "personal.fullName" });
+  const fullName = useWatch({
+    control: form.control,
+    name: "personal.fullName",
+  });
 
   const signatureTexts = [
     `I, ${fullName}, understand that joining ThinkTank is a major commitment; I benefit only as much as I contribute to my potential team's success.`,
     `I, ${fullName}, believe I am able to commit to this position for the duration of the project. If this is to change for unforeseeable circumstances, I understand I must disclose this information to ThinkTank.`,
-    `If selected for this position, I, ${fullName}, understand that my team is counting on me and I am counting on my team to deliver a quality project that I can be proud of.`
+    `If selected for this position, I, ${fullName}, understand that my team is counting on me and I am counting on my team to deliver a quality project that I can be proud of.`,
   ];
 
   return (
@@ -38,9 +41,10 @@ export default function ResumeUpload({
           Resume Submission <span className="text-red-500">*</span>
         </CardTitle>
         <CardDescription>
-          Please upload your resume as a PDF file (max 20MB). We do not expect applicants
-          to have any prior official engineering experience. All we ask is for
-          your experience in general as well as anything that makes you stand out.
+          Please upload your resume as a PDF file (max 20MB). We do not expect
+          applicants to have any prior official engineering experience. All we
+          ask is for your experience in general as well as anything that makes
+          you stand out.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -59,7 +63,8 @@ export default function ResumeUpload({
                   onChange={(e) => {
                     const resume = e.target.files?.[0];
                     if (resume) {
-                      if (resume.size > 20 * 1024 * 1024) { // 20MB
+                      if (resume.size > 20 * 1024 * 1024) {
+                        // 20MB
                         form.setError("resume.resumeId", {
                           message: "File size must be less than 20MB",
                         });
@@ -92,9 +97,11 @@ export default function ResumeUpload({
             <FormField
               control={form.control}
               name={
-                index === 0 ? "resume.signatureCommitment" :
-                index === 1 ? "resume.signatureAccountability" : 
-                "resume.signatureQuality"
+                index === 0
+                  ? "resume.signatureCommitment"
+                  : index === 1
+                    ? "resume.signatureAccountability"
+                    : "resume.signatureQuality"
               }
               render={({ field }) => (
                 <FormItem>

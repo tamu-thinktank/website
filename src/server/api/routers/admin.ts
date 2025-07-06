@@ -1,17 +1,28 @@
-import { RESUME_ACCEPTED_ID, RESUME_PENDING_ID, RESUME_REJECTED_ID } from "@/consts/google-things"
-import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap"
-import { ApplicantsSchema, AvailabilityMapSchema } from "@/lib/validations/apply"
-import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
-import { getAllApplications, getAvailabities, getTargetTeams } from "@/server/db/queries"
-import sendEmail from "@/server/service/email"
-import DriveService from "@/server/service/google-drive"
-import { Challenge } from "@prisma/client"
-import InterviewEmail from "emails/interview"
-import RejectAppEmail from "emails/reject-app"
-import { z } from "zod"
+import {
+  RESUME_ACCEPTED_ID,
+  RESUME_PENDING_ID,
+  RESUME_REJECTED_ID,
+} from "@/consts/google-things";
+import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap";
+import {
+  ApplicantsSchema,
+  AvailabilityMapSchema,
+} from "@/lib/validations/apply";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
+import {
+  getAllApplications,
+  getAvailabities,
+  getTargetTeams,
+} from "@/server/db/queries";
+import sendEmail from "@/server/service/email";
+import DriveService from "@/server/service/google-drive";
+import { Challenge } from "@prisma/client";
+import InterviewEmail from "emails/interview";
+import RejectAppEmail from "emails/reject-app";
+import { z } from "zod";
 
-const teamsEnumSchema = z.nativeEnum(Challenge)
-const teamsSchema = z.array(teamsEnumSchema)
+const teamsEnumSchema = z.nativeEnum(Challenge);
+const teamsSchema = z.array(teamsEnumSchema);
 
 export const adminRouter = createTRPCRouter({
   getTargetTeams: protectedProcedure
@@ -24,7 +35,7 @@ export const adminRouter = createTRPCRouter({
     )
     .output(teamsSchema)
     .query(async ({ ctx }) => {
-      return await getTargetTeams(ctx.session.user.id)
+      return await getTargetTeams(ctx.session.user.id);
     }),
   updateTargetTeams: protectedProcedure
     .input(
@@ -35,14 +46,14 @@ export const adminRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
       await ctx.db.$transaction(async (tx) => {
-        const teams = await getTargetTeams(ctx.session.user.id, tx)
+        const teams = await getTargetTeams(ctx.session.user.id, tx);
 
         if (input.op === "add") {
           if (teams.includes(input.team)) {
-            throw new Error("Team already selected")
+            throw new Error("Team already selected");
           }
         } else if (!teams.includes(input.team)) {
-          throw new Error("Team not selected")
+          throw new Error("Team not selected");
         }
 
         await tx.user.update({
@@ -50,10 +61,13 @@ export const adminRouter = createTRPCRouter({
             id: ctx.session.user.id,
           },
           data: {
-            targetTeams: input.op === "add" ? { push: input.team } : { set: teams.filter((t) => t !== input.team) },
+            targetTeams:
+              input.op === "add"
+                ? { push: input.team }
+                : { set: teams.filter((t) => t !== input.team) },
           },
-        })
-      })
+        });
+      });
     }),
 
   getAvailabilities: protectedProcedure
@@ -91,15 +105,15 @@ export const adminRouter = createTRPCRouter({
           id: true,
           name: true,
         },
-      })
+      });
 
-      const dbAvailabilities = await getAvailabities(officers.map((o) => o.id))
-      const availabilities = getAvailabilityMap(dbAvailabilities)
+      const dbAvailabilities = await getAvailabities(officers.map((o) => o.id));
+      const availabilities = getAvailabilityMap(dbAvailabilities);
 
       return {
         officers,
         availabilities,
-      }
+      };
     }),
   setAvailabilities: protectedProcedure
     .input(
@@ -113,7 +127,7 @@ export const adminRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { gridTimes } = input
+      const { gridTimes } = input;
 
       await ctx.db.user.update({
         where: {
@@ -125,27 +139,29 @@ export const adminRouter = createTRPCRouter({
             create: gridTimes, // create new times
           },
         },
-      })
+      });
 
-      return true
+      return true;
     }),
   clearAvailabilities: protectedProcedure.mutation(async ({ ctx }) => {
-    await ctx.db.officerTime.deleteMany()
-    return true
+    await ctx.db.officerTime.deleteMany();
+    return true;
   }),
-  getApplicants: protectedProcedure.output(ApplicantsSchema).query(async ({ ctx }) => {
-    const applications = await ctx.db.application.findMany({
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        submittedAt: true,
-        status: true,
-      },
-    })
+  getApplicants: protectedProcedure
+    .output(ApplicantsSchema)
+    .query(async ({ ctx }) => {
+      const applications = await ctx.db.application.findMany({
+        select: {
+          id: true,
+          fullName: true,
+          email: true,
+          submittedAt: true,
+          status: true,
+        },
+      });
 
-    return applications
-  }),
+      return applications;
+    }),
   updateApplicant: protectedProcedure
     .input(
       z.object({
@@ -155,29 +171,32 @@ export const adminRouter = createTRPCRouter({
         location: z.string().optional(),
       }),
     )
-    .mutation(async ({ input: { applicantId, resumeId, status, location }, ctx }) => {
-      await ctx.db.application.update({
-        where: {
-          id: applicantId,
-        },
-        data: {
-          status,
-          location,
-        },
-      })
+    .mutation(
+      async ({ input: { applicantId, resumeId, status, location }, ctx }) => {
+        await ctx.db.application.update({
+          where: {
+            id: applicantId,
+          },
+          data: {
+            status,
+            location,
+          },
+        });
 
-      try {
-        await DriveService.moveFile({
-          fromFolderId: RESUME_PENDING_ID,
-          toFolderId: status === "ACCEPTED" ? RESUME_ACCEPTED_ID : RESUME_REJECTED_ID,
-          fileId: resumeId,
-        })
-      } catch (e) {
-        throw new Error("Failed to move resume: " + (e as Error).message)
-      }
+        try {
+          await DriveService.moveFile({
+            fromFolderId: RESUME_PENDING_ID,
+            toFolderId:
+              status === "ACCEPTED" ? RESUME_ACCEPTED_ID : RESUME_REJECTED_ID,
+            fileId: resumeId,
+          });
+        } catch (e) {
+          throw new Error("Failed to move resume: " + (e as Error).message);
+        }
 
-      return true
-    }),
+        return true;
+      },
+    ),
   scheduleInterview: protectedProcedure
     .input(
       z.object({
@@ -203,13 +222,13 @@ export const adminRouter = createTRPCRouter({
           startTime,
           location,
           team,
-          applicationType, 
+          applicationType,
         },
         ctx: _ctx,
       }) => {
         try {
           // Parse the startTime string
-          const date = new Date(startTime)
+          const date = new Date(startTime);
 
           // If you're seeing a 5-hour difference (5pm intended but showing as 10pm),
           // the time is likely being interpreted as UTC when it should be in Central Time
@@ -223,10 +242,10 @@ export const adminRouter = createTRPCRouter({
             minute: "2-digit",
             hour12: true,
             timeZone: "America/Chicago",
-          }
+          };
 
-          const formatter = new Intl.DateTimeFormat("en-US", options)
-          const formattedTime = formatter.format(date) + " CT"
+          const formatter = new Intl.DateTimeFormat("en-US", options);
+          const formattedTime = formatter.format(date) + " CT";
 
           // Send the email with the properly formatted time
           await sendEmail({
@@ -240,11 +259,11 @@ export const adminRouter = createTRPCRouter({
               team,
               applicationType,
             }),
-          })
+          });
 
-          return true
+          return true;
         } catch (e) {
-          throw new Error("Failed to send email: " + (e as Error).message)
+          throw new Error("Failed to send email: " + (e as Error).message);
         }
       },
     ),
@@ -263,13 +282,12 @@ export const adminRouter = createTRPCRouter({
           template: RejectAppEmail({
             userFirstname: applicantName.split(" ")[0] ?? "",
           }),
-        })
+        });
       } catch (e) {
-        throw new Error("Failed to send email: " + (e as Error).message)
+        throw new Error("Failed to send email: " + (e as Error).message);
       }
     }),
   getAllApplications: protectedProcedure.query(async () => {
-    return await getAllApplications()
+    return await getAllApplications();
   }),
-})
-
+});

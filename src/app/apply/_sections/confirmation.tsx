@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,24 +23,24 @@ export default function SubmissionConfirmation() {
         </CardHeader>
         <CardContent className="space-y-6 text-center">
           <p>
-            Thank you for applying to our Design Challenge Teams! You will receive
-            an email with your responses momentarily.
+            Thank you for applying to our Design Challenge Teams! You will
+            receive an email with your responses momentarily.
           </p>
 
           <p>
-            We will be reviewing your application shortly and scheduling interviews
-            which are optimized to match your availability with ours. If you do
-            not receive a response after 3 days past the posted application
-            deadline, please contact us.
+            We will be reviewing your application shortly and scheduling
+            interviews which are optimized to match your availability with ours.
+            If you do not receive a response after 3 days past the posted
+            application deadline, please contact us.
           </p>
 
           <p>
             If you want to prepare further for your potential interview, we
-            recommend reading the competition&apos;s Request For Proposal (RFP) for
-            the teams you applied for and brainstorming potential solutions.
+            recommend reading the competition&apos;s Request For Proposal (RFP)
+            for the teams you applied for and brainstorming potential solutions.
           </p>
 
-          <Button 
+          <Button
             onClick={handleReturn}
             className="w-auto bg-white text-black hover:bg-white hover:text-black"
           >

@@ -1,6 +1,16 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { z } from "zod";
-import { ApplicationStatus, Year, ReferralSource, InterestLevel, Major, OfficerCommitment, OfficerPosition, ExperienceLevel, LearningInterestLevel } from "@prisma/client";
+import {
+  ApplicationStatus,
+  Year,
+  ReferralSource,
+  InterestLevel,
+  Major,
+  OfficerCommitment,
+  OfficerPosition,
+  ExperienceLevel,
+  LearningInterestLevel,
+} from "@prisma/client";
 import { TEAMS } from "@/consts/apply-form";
 
 const statusSchema = z.nativeEnum(ApplicationStatus);
@@ -8,37 +18,46 @@ const yearSchema = z.nativeEnum(Year);
 const majorSchema = z.nativeEnum(Major);
 const PRESET_PRONOUNS = ["HE_HIM", "SHE_HER", "THEY_THEM"] as const;
 const PRESET_GENDERS = ["MALE", "FEMALE", "NON_BINARY"] as const;
-const wordCount = (text: string) => 
+const wordCount = (text: string) =>
   text.trim().split(/\s+/).filter(Boolean).length;
 const validateSignature = (signature: string, fullName: string): boolean => {
-  const [firstName = "", lastName = ""] = fullName.toLowerCase().split(' ');
-  return signature.toLowerCase().includes(firstName) || 
-         signature.toLowerCase().includes(lastName);
+  const [firstName = "", lastName = ""] = fullName.toLowerCase().split(" ");
+  return (
+    signature.toLowerCase().includes(firstName) ||
+    signature.toLowerCase().includes(lastName)
+  );
 };
 
 export const ApplyFormSchema = z
   .object({
     // Personal info section
     personal: z.object({
-      fullName: z.string().min(1, "Full Name is required").max(100, "Name too long"),
+      fullName: z
+        .string()
+        .min(1, "Full Name is required")
+        .max(100, "Name too long"),
       preferredName: z.string().nullable(),
-      pronouns: z.string()
-        .refine(val => 
-          PRESET_PRONOUNS.includes(val) || 
-          (val.startsWith("OTHER:") && val.length > 7) || 
-          !val, // allows empty value
-          "Invalid or incomplete pronouns"
+      pronouns: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_PRONOUNS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete pronouns",
         )
         .optional(), // makes field optional
 
-      gender: z.string()
-        .refine(val => 
-          PRESET_GENDERS.includes(val) || 
-          (val.startsWith("OTHER:") && val.length > 7) || 
-          !val, // allows empty value
-          "Invalid or incomplete gender"
+      gender: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_GENDERS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete gender",
         )
-    .optional(), // makes field optional
+        .optional(), // makes field optional
       uin: z.coerce
         .number({
           invalid_type_error: "Expected a number",
@@ -77,69 +96,81 @@ export const ApplyFormSchema = z
         .array(z.string())
         .min(2, "Enter at least two classes")
         .refine(
-          classes =>
-            classes.every(
-              cls =>
-                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls)
+          (classes) =>
+            classes.every((cls) =>
+              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
-          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
         ),
       nextClasses: z
         .array(z.string())
         .min(2, "Enter at least two classes")
         .refine(
-          classes =>
-            classes.every(
-              cls =>
-                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls)
+          (classes) =>
+            classes.every((cls) =>
+              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls),
             ),
-          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
         ),
-        timeCommitment: z
+      timeCommitment: z
         .array(
           z.object({
             name: z.string().min(1, "Name is required"),
-            hours: z.number()
+            hours: z
+              .number()
               .min(1, "Minimum 1 hour required")
               .max(15, "Cannot exceed 15 hours"),
-            type: z.enum(["CURRENT", "PLANNED"])
-          })
+            type: z.enum(["CURRENT", "PLANNED"]),
+          }),
         )
         .optional()
-        .default([]) 
+        .default([]),
     }),
 
     // ThinkTank Information Section
     thinkTankInfo: z.object({
       meetings: z.boolean(),
       weeklyCommitment: z.boolean(),
-      
-      preferredTeams: z.array(
-        z.object({
-          teamId: z.string(),
-          interestLevel: z.nativeEnum(InterestLevel),
-        })
-      ).min(1, "Select at least one team"),
 
-      researchAreas: z.array(
-        z.object({
-          researchAreaId: z.string(),
-          interestLevel: z.nativeEnum(InterestLevel),
-        })
-      ).max(3, "You can select up to three research areas"),
+      preferredTeams: z
+        .array(
+          z.object({
+            teamId: z.string(),
+            interestLevel: z.nativeEnum(InterestLevel),
+          }),
+        )
+        .min(1, "Select at least one team"),
 
-      referralSources: z.array(z.nativeEnum(ReferralSource))
+      researchAreas: z
+        .array(
+          z.object({
+            researchAreaId: z.string(),
+            interestLevel: z.nativeEnum(InterestLevel),
+          }),
+        )
+        .max(3, "You can select up to three research areas"),
+
+      referralSources: z
+        .array(z.nativeEnum(ReferralSource))
         .min(1, "Please select at least one option"),
     }),
 
     // Open-Ended Questions Section
     openEndedQuestions: z.object({
-      firstQuestion: z.string()
+      firstQuestion: z
+        .string()
         .min(1, "Answer is required")
-        .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-      secondQuestion: z.string()
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+      secondQuestion: z
+        .string()
         .min(1, "Answer is required")
-        .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
     }),
 
     meetingTimes: z
@@ -181,16 +212,20 @@ export const ApplyFormSchema = z
     resume: z.object({
       resumeId: z.string(),
       signatureCommitment: z.string().min(1, "Commitment signature required"),
-      signatureAccountability: z.string().min(1, "Accountability signature required"),
+      signatureAccountability: z
+        .string()
+        .min(1, "Accountability signature required"),
       signatureQuality: z.string().min(1, "Quality pledge required"),
-    })
+    }),
   })
 
   .superRefine((data, ctx) => {
     // Validate that research areas belong to selected teams
-    const selectedTeamIds = data.thinkTankInfo.preferredTeams.map((team) => team.teamId);
+    const selectedTeamIds = data.thinkTankInfo.preferredTeams.map(
+      (team) => team.teamId,
+    );
     const validResearchAreaIds = TEAMS.filter((team) =>
-      selectedTeamIds.includes(team.id)
+      selectedTeamIds.includes(team.id),
     )
       .flatMap((team) => team.researchAreas)
       .map((ra) => ra.id);
@@ -200,17 +235,25 @@ export const ApplyFormSchema = z
         ctx.addIssue({
           code: "custom",
           path: ["thinkTankInfo", "researchAreas", index, "researchAreaId"],
-          message:
-            "Selected research area must belong to chosen teams",
+          message: "Selected research area must belong to chosen teams",
         });
       }
     });
 
     const fullName = data.personal.fullName.toLowerCase();
     const signatures = [
-      { value: data.resume.signatureCommitment, path: ["resume", "signatureCommitment"] },
-      { value: data.resume.signatureAccountability, path: ["resume", "signatureAccountability"] },
-      { value: data.resume.signatureQuality, path: ["resume", "signatureQuality"] },
+      {
+        value: data.resume.signatureCommitment,
+        path: ["resume", "signatureCommitment"],
+      },
+      {
+        value: data.resume.signatureAccountability,
+        path: ["resume", "signatureAccountability"],
+      },
+      {
+        value: data.resume.signatureQuality,
+        path: ["resume", "signatureQuality"],
+      },
     ];
 
     signatures.forEach(({ value, path }) => {
@@ -224,129 +267,150 @@ export const ApplyFormSchema = z
     });
   });
 
-
 export type ApplyForm = z.infer<typeof ApplyFormSchema>;
 
-export const OfficerApplyFormSchema = z.object({
-  // Personal info section
-  personal: z.object({
-    fullName: z.string().min(1, "Full Name is required").max(100, "Name too long"),
-    preferredName: z.string().nullable(),
-    pronouns: z.string()
-      .refine(val => 
-        PRESET_PRONOUNS.includes(val) || 
-        (val.startsWith("OTHER:") && val.length > 7) || 
-        !val, // allows empty value
-        "Invalid or incomplete pronouns"
-      )
-      .optional(), // makes field optional
+export const OfficerApplyFormSchema = z
+  .object({
+    // Personal info section
+    personal: z.object({
+      fullName: z
+        .string()
+        .min(1, "Full Name is required")
+        .max(100, "Name too long"),
+      preferredName: z.string().nullable(),
+      pronouns: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_PRONOUNS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete pronouns",
+        )
+        .optional(), // makes field optional
 
-    gender: z.string()
-      .refine(val => 
-        PRESET_GENDERS.includes(val) || 
-        (val.startsWith("OTHER:") && val.length > 7) || 
-        !val, // allows empty value
-        "Invalid or incomplete gender"
-      )
-  .optional(), // makes field optional
-    uin: z.coerce
-      .number({
-        invalid_type_error: "Expected a number",
-      })
-      .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
-        message: "Invalid UIN",
-      }),
-    email: z
-      .string()
-      .email("Invalid email")
-      .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
-    altEmail: z
-      .string()
-      .nullable()
-      .refine(
-        (input) => {
-          // email check here to allow empty string
-          if (input?.length) {
-            return z.string().email().safeParse(input).success;
-          }
-
-          return true;
-        },
-        {
-          message: "Invalid email",
-        },
-      ),
-    phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
-  }),
-
-  // Academic Information Section
-  academic: z.object({
-    year: yearSchema,
-    major: majorSchema,
-    summerPlans: z.string()
-      .refine(text => wordCount(text) <= 100, { message: "Summer Plans must be 100 words or less" }),
-    currentClasses: z
-      .array(z.string())
-      .min(2, "Enter at least two classes")
-      .refine(
-        classes =>
-          classes.every(
-            cls =>
-              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls)
-          ),
-        "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
-      ),
-    nextClasses: z
-      .array(z.string())
-      .min(2, "Enter at least two classes")
-      .refine(
-        classes =>
-          classes.every(
-            cls =>
-              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls)
-          ),
-        "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
-      ),
-      timeCommitment: z
-      .array(
-        z.object({
-          name: z.string().min(1, "Name is required"),
-          hours: z.number()
-            .min(1, "Minimum 1 hour required")
-            .max(15, "Cannot exceed 15 hours"),
-          type: z.enum(["CURRENT", "PLANNED"])
+      gender: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_GENDERS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete gender",
+        )
+        .optional(), // makes field optional
+      uin: z.coerce
+        .number({
+          invalid_type_error: "Expected a number",
         })
-      )
-      .optional()
-      .default([]) 
-  }),
+        .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
+          message: "Invalid UIN",
+        }),
+      email: z
+        .string()
+        .email("Invalid email")
+        .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
+      altEmail: z
+        .string()
+        .nullable()
+        .refine(
+          (input) => {
+            // email check here to allow empty string
+            if (input?.length) {
+              return z.string().email().safeParse(input).success;
+            }
 
-  // ThinkTank Information
-  thinkTankInfo: z.object({
-    // Officer-specific commitment (MCQ with options YES, PARTIAL, NO)
-    officerCommitment: z.nativeEnum(OfficerCommitment, { 
-      errorMap: () => ({ message: "Officer commitment is required" }) 
+            return true;
+          },
+          {
+            message: "Invalid email",
+          },
+        ),
+      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
     }),
-    // Preferred Positions: Require at least one selection along with an interest level
-    preferredPositions: z.array(z.object({
-      position: z.nativeEnum(OfficerPosition),
-      interestLevel: z.nativeEnum(InterestLevel)
-    })).min(1, "Select at least one preferred position"),
-    // Referral sources remain the same
-  }),
 
-  // Open-Ended Questions Section
-  openEndedQuestions: z.object({
-    firstQuestion: z.string()
-      .min(1, "Answer is required")
-      .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-    secondQuestion: z.string()
-      .min(1, "Answer is required")
-      .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-  }),
+    // Academic Information Section
+    academic: z.object({
+      year: yearSchema,
+      major: majorSchema,
+      summerPlans: z
+        .string()
+        .refine((text) => wordCount(text) <= 100, {
+          message: "Summer Plans must be 100 words or less",
+        }),
+      currentClasses: z
+        .array(z.string())
+        .min(2, "Enter at least two classes")
+        .refine(
+          (classes) =>
+            classes.every((cls) =>
+              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+            ),
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
+        ),
+      nextClasses: z
+        .array(z.string())
+        .min(2, "Enter at least two classes")
+        .refine(
+          (classes) =>
+            classes.every((cls) =>
+              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls),
+            ),
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
+        ),
+      timeCommitment: z
+        .array(
+          z.object({
+            name: z.string().min(1, "Name is required"),
+            hours: z
+              .number()
+              .min(1, "Minimum 1 hour required")
+              .max(15, "Cannot exceed 15 hours"),
+            type: z.enum(["CURRENT", "PLANNED"]),
+          }),
+        )
+        .optional()
+        .default([]),
+    }),
 
-  // Interview Times (reuse existing scheduling logic)
-  meetingTimes: z
+    // ThinkTank Information
+    thinkTankInfo: z.object({
+      // Officer-specific commitment (MCQ with options YES, PARTIAL, NO)
+      officerCommitment: z.nativeEnum(OfficerCommitment, {
+        errorMap: () => ({ message: "Officer commitment is required" }),
+      }),
+      // Preferred Positions: Require at least one selection along with an interest level
+      preferredPositions: z
+        .array(
+          z.object({
+            position: z.nativeEnum(OfficerPosition),
+            interestLevel: z.nativeEnum(InterestLevel),
+          }),
+        )
+        .min(1, "Select at least one preferred position"),
+      // Referral sources remain the same
+    }),
+
+    // Open-Ended Questions Section
+    openEndedQuestions: z.object({
+      firstQuestion: z
+        .string()
+        .min(1, "Answer is required")
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+      secondQuestion: z
+        .string()
+        .min(1, "Answer is required")
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+    }),
+
+    // Interview Times (reuse existing scheduling logic)
+    meetingTimes: z
       .array(z.string())
       .min(2, "Select at least a 30 minute window")
       .refine(
@@ -380,169 +444,206 @@ export const OfficerApplyFormSchema = z.object({
         },
       ),
 
-  // Resume & Signatures
-  resume: z.object({
-    resumeId: z.string(),
-    signatureCommitment: z.string().min(1, "Commitment signature required"),
-    signatureAccountability: z.string().min(1, "Accountability signature required"),
-    signatureQuality: z.string().min(1, "Quality pledge required"),
-  }),
-})
-.superRefine((data, ctx) => {
-  // Validate that signature strings include a part of the applicant's first or last name.
-  const fullName = data.personal.fullName.toLowerCase();
-  const signatures = [
-    { value: data.resume.signatureCommitment, path: ["resume", "signatureCommitment"] },
-    { value: data.resume.signatureAccountability, path: ["resume", "signatureAccountability"] },
-    { value: data.resume.signatureQuality, path: ["resume", "signatureQuality"] },
-  ];
-  signatures.forEach(({ value, path }) => {
-    if (!validateSignature(value, fullName)) {
-      ctx.addIssue({
-        code: "custom",
-        path: path,
-        message: "Signature must contain part of your first or last name",
-      });
-    }
+    // Resume & Signatures
+    resume: z.object({
+      resumeId: z.string(),
+      signatureCommitment: z.string().min(1, "Commitment signature required"),
+      signatureAccountability: z
+        .string()
+        .min(1, "Accountability signature required"),
+      signatureQuality: z.string().min(1, "Quality pledge required"),
+    }),
+  })
+  .superRefine((data, ctx) => {
+    // Validate that signature strings include a part of the applicant's first or last name.
+    const fullName = data.personal.fullName.toLowerCase();
+    const signatures = [
+      {
+        value: data.resume.signatureCommitment,
+        path: ["resume", "signatureCommitment"],
+      },
+      {
+        value: data.resume.signatureAccountability,
+        path: ["resume", "signatureAccountability"],
+      },
+      {
+        value: data.resume.signatureQuality,
+        path: ["resume", "signatureQuality"],
+      },
+    ];
+    signatures.forEach(({ value, path }) => {
+      if (!validateSignature(value, fullName)) {
+        ctx.addIssue({
+          code: "custom",
+          path: path,
+          message: "Signature must contain part of your first or last name",
+        });
+      }
+    });
   });
-});
 
 export type OfficerApplyForm = z.infer<typeof OfficerApplyFormSchema>;
 
-export const MATEROVApplyFormSchema = z.object({
-  // Personal info section
-  personal: z.object({
-    fullName: z.string().min(1, "Full Name is required").max(100, "Name too long"),
-    preferredName: z.string().nullable(),
-    pronouns: z.string()
-      .refine(val => 
-        PRESET_PRONOUNS.includes(val) || 
-        (val.startsWith("OTHER:") && val.length > 7) || 
-        !val, // allows empty value
-        "Invalid or incomplete pronouns"
-      )
-      .optional(), // makes field optional
+export const MATEROVApplyFormSchema = z
+  .object({
+    // Personal info section
+    personal: z.object({
+      fullName: z
+        .string()
+        .min(1, "Full Name is required")
+        .max(100, "Name too long"),
+      preferredName: z.string().nullable(),
+      pronouns: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_PRONOUNS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete pronouns",
+        )
+        .optional(), // makes field optional
 
-    gender: z.string()
-      .refine(val => 
-        PRESET_GENDERS.includes(val) || 
-        (val.startsWith("OTHER:") && val.length > 7) || 
-        !val, // allows empty value
-        "Invalid or incomplete gender"
-      )
-  .optional(), // makes field optional
-    uin: z.coerce
-      .number({
-        invalid_type_error: "Expected a number",
-      })
-      .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
-        message: "Invalid UIN",
-      }),
-    email: z
-      .string()
-      .email("Invalid email")
-      .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
-    altEmail: z
-      .string()
-      .nullable()
-      .refine(
-        (input) => {
-          // email check here to allow empty string
-          if (input?.length) {
-            return z.string().email().safeParse(input).success;
-          }
-
-          return true;
-        },
-        {
-          message: "Invalid email",
-        },
-      ),
-    phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
-  }),
-
-  // Academic Information Section
-  academic: z.object({
-    year: yearSchema,
-    major: majorSchema,
-    currentClasses: z
-      .array(z.string())
-      .min(2, "Enter at least two classes")
-      .refine(
-        classes =>
-          classes.every(
-            cls =>
-              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls)
-          ),
-        "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
-      ),
-    nextClasses: z
-      .array(z.string())
-      .min(2, "Enter at least two classes")
-      .refine(
-        classes =>
-          classes.every(
-            cls =>
-              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls)
-          ),
-        "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
-      ),
-    timeCommitment: z
-      .array(
-        z.object({
-          name: z.string().min(1, "Name is required"),
-          hours: z.number()
-            .min(1, "Minimum 1 hour required")
-            .max(15, "Cannot exceed 15 hours"),
-          type: z.enum(["CURRENT", "PLANNED"])
+      gender: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_GENDERS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete gender",
+        )
+        .optional(), // makes field optional
+      uin: z.coerce
+        .number({
+          invalid_type_error: "Expected a number",
         })
-      )
-      .optional()
-      .default([]) 
-  }),
+        .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
+          message: "Invalid UIN",
+        }),
+      email: z
+        .string()
+        .email("Invalid email")
+        .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
+      altEmail: z
+        .string()
+        .nullable()
+        .refine(
+          (input) => {
+            // email check here to allow empty string
+            if (input?.length) {
+              return z.string().email().safeParse(input).success;
+            }
 
-  // ThinkTank Information
-  thinkTankInfo: z.object({
-    meetings: z.boolean(),
-    weeklyCommitment: z.boolean(),
-    subteamPreferences: z.array(
-      z.object({
-        name: z.string().min(1, "Subteam name is required"),
-        interest: z.nativeEnum(InterestLevel)
-      })
-    ).min(1, "Select at least one subteam"),
-    skills: z.array(
-      z.object({
-        name: z.string().min(1, "Skill name is required"),
-        experienceLevel: z.nativeEnum(ExperienceLevel)
-      })
-    ).min(1, "Select at least one skill"),
-    learningInterests: z.array(
-      z.object({
-        area: z.string().min(1, "Learning area is required"),
-        interestLevel: z.nativeEnum(LearningInterestLevel)
-      })
-    ).min(1, "Select at least one learning interest"),
-    previousParticipation: z.boolean(),
-    referralSources: z.array(z.nativeEnum(ReferralSource))
+            return true;
+          },
+          {
+            message: "Invalid email",
+          },
+        ),
+      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+    }),
+
+    // Academic Information Section
+    academic: z.object({
+      year: yearSchema,
+      major: majorSchema,
+      currentClasses: z
+        .array(z.string())
+        .min(2, "Enter at least two classes")
+        .refine(
+          (classes) =>
+            classes.every((cls) =>
+              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+            ),
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
+        ),
+      nextClasses: z
+        .array(z.string())
+        .min(2, "Enter at least two classes")
+        .refine(
+          (classes) =>
+            classes.every((cls) =>
+              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls),
+            ),
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
+        ),
+      timeCommitment: z
+        .array(
+          z.object({
+            name: z.string().min(1, "Name is required"),
+            hours: z
+              .number()
+              .min(1, "Minimum 1 hour required")
+              .max(15, "Cannot exceed 15 hours"),
+            type: z.enum(["CURRENT", "PLANNED"]),
+          }),
+        )
+        .optional()
+        .default([]),
+    }),
+
+    // ThinkTank Information
+    thinkTankInfo: z.object({
+      meetings: z.boolean(),
+      weeklyCommitment: z.boolean(),
+      subteamPreferences: z
+        .array(
+          z.object({
+            name: z.string().min(1, "Subteam name is required"),
+            interest: z.nativeEnum(InterestLevel),
+          }),
+        )
+        .min(1, "Select at least one subteam"),
+      skills: z
+        .array(
+          z.object({
+            name: z.string().min(1, "Skill name is required"),
+            experienceLevel: z.nativeEnum(ExperienceLevel),
+          }),
+        )
+        .min(1, "Select at least one skill"),
+      learningInterests: z
+        .array(
+          z.object({
+            area: z.string().min(1, "Learning area is required"),
+            interestLevel: z.nativeEnum(LearningInterestLevel),
+          }),
+        )
+        .min(1, "Select at least one learning interest"),
+      previousParticipation: z.boolean(),
+      referralSources: z
+        .array(z.nativeEnum(ReferralSource))
         .min(1, "Please select at least one option"),
-  }),
+    }),
 
-  // Open-Ended Questions Section
-  openEndedQuestions: z.object({
-    firstQuestion: z.string()
-      .min(1, "Answer is required")
-      .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-    secondQuestion: z.string()
-      .min(1, "Answer is required")
-      .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-    thirdQuestion: z.string()
-      .min(1, "Answer is required")
-      .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-  }),
+    // Open-Ended Questions Section
+    openEndedQuestions: z.object({
+      firstQuestion: z
+        .string()
+        .min(1, "Answer is required")
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+      secondQuestion: z
+        .string()
+        .min(1, "Answer is required")
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+      thirdQuestion: z
+        .string()
+        .min(1, "Answer is required")
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+    }),
 
-  // Interview Times
-  meetingTimes: z
+    // Interview Times
+    meetingTimes: z
       .array(z.string())
       .min(2, "Select at least a 30 minute window")
       .refine(
@@ -576,155 +677,192 @@ export const MATEROVApplyFormSchema = z.object({
         },
       ),
 
-  // Resume & Signatures
-  resume: z.object({
-    resumeId: z.string(),
-    signatureCommitment: z.string().min(1, "Commitment signature required"),
-    signatureAccountability: z.string().min(1, "Accountability signature required"),
-    signatureQuality: z.string().min(1, "Quality pledge required"),
-  }),
-})
-.superRefine((data, ctx) => {
-  // Validate that signature strings include a part of the applicant's first or last name.
-  const fullName = data.personal.fullName.toLowerCase();
-  const signatures = [
-    { value: data.resume.signatureCommitment, path: ["resume", "signatureCommitment"] },
-    { value: data.resume.signatureAccountability, path: ["resume", "signatureAccountability"] },
-    { value: data.resume.signatureQuality, path: ["resume", "signatureQuality"] },
-  ];
-  signatures.forEach(({ value, path }) => {
-    if (!validateSignature(value, fullName)) {
-      ctx.addIssue({
-        code: "custom",
-        path: path,
-        message: "Signature must contain part of your first or last name",
-      });
-    }
+    // Resume & Signatures
+    resume: z.object({
+      resumeId: z.string(),
+      signatureCommitment: z.string().min(1, "Commitment signature required"),
+      signatureAccountability: z
+        .string()
+        .min(1, "Accountability signature required"),
+      signatureQuality: z.string().min(1, "Quality pledge required"),
+    }),
+  })
+  .superRefine((data, ctx) => {
+    // Validate that signature strings include a part of the applicant's first or last name.
+    const fullName = data.personal.fullName.toLowerCase();
+    const signatures = [
+      {
+        value: data.resume.signatureCommitment,
+        path: ["resume", "signatureCommitment"],
+      },
+      {
+        value: data.resume.signatureAccountability,
+        path: ["resume", "signatureAccountability"],
+      },
+      {
+        value: data.resume.signatureQuality,
+        path: ["resume", "signatureQuality"],
+      },
+    ];
+    signatures.forEach(({ value, path }) => {
+      if (!validateSignature(value, fullName)) {
+        ctx.addIssue({
+          code: "custom",
+          path: path,
+          message: "Signature must contain part of your first or last name",
+        });
+      }
+    });
   });
-});
 
 export type MATEROVApplyForm = z.infer<typeof MATEROVApplyFormSchema>;
 
-export const MiniDCApplyFormSchema = z.object({
-  // Personal info section
-  personal: z.object({
-    fullName: z.string().min(1, "Full Name is required").max(100, "Name too long"),
-    preferredName: z.string().nullable(),
-    pronouns: z.string()
-      .refine(val => 
-        PRESET_PRONOUNS.includes(val) || 
-        (val.startsWith("OTHER:") && val.length > 7) || 
-        !val, // allows empty value
-        "Invalid or incomplete pronouns"
-      )
-      .optional(), // makes field optional
+export const MiniDCApplyFormSchema = z
+  .object({
+    // Personal info section
+    personal: z.object({
+      fullName: z
+        .string()
+        .min(1, "Full Name is required")
+        .max(100, "Name too long"),
+      preferredName: z.string().nullable(),
+      pronouns: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_PRONOUNS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete pronouns",
+        )
+        .optional(), // makes field optional
 
-    gender: z.string()
-      .refine(val => 
-        PRESET_GENDERS.includes(val) || 
-        (val.startsWith("OTHER:") && val.length > 7) || 
-        !val, // allows empty value
-        "Invalid or incomplete gender"
-      )
-      .optional(), // makes field optional
-    uin: z.coerce
-      .number({
-        invalid_type_error: "Expected a number",
-      })
-      .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
-        message: "Invalid UIN",
-      }),
-    email: z
-      .string()
-      .email("Invalid email")
-      .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
-    altEmail: z
-      .string()
-      .nullable()
-      .refine(
-        (input) => {
-          // email check here to allow empty string
-          if (input?.length) {
-            return z.string().email().safeParse(input).success;
-          }
-
-          return true;
-        },
-        {
-          message: "Invalid email",
-        },
-      ),
-    phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
-  }),
-
-  // Academic Information Section
-  academic: z.object({
-    year: yearSchema,
-    major: majorSchema,
-    currentClasses: z
-      .array(z.string())
-      .min(2, "Enter at least two classes")
-      .refine(
-        classes =>
-          classes.every(
-            cls =>
-              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls)
-          ),
-        "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld."
-      ),
-    timeCommitment: z
-      .array(
-        z.object({
-          name: z.string().min(1, "Name is required"),
-          hours: z.number()
-            .min(0, "Hours cannot be negative")
-            .max(15, "Cannot exceed 15 hours"),
-          type: z.enum(["CURRENT", "PLANNED"])
+      gender: z
+        .string()
+        .refine(
+          (val) =>
+            PRESET_GENDERS.includes(val) ||
+            (val.startsWith("OTHER:") && val.length > 7) ||
+            !val, // allows empty value
+          "Invalid or incomplete gender",
+        )
+        .optional(), // makes field optional
+      uin: z.coerce
+        .number({
+          invalid_type_error: "Expected a number",
         })
-      )
-      .optional()
-      .default([]),
-    weeklyCommitment: z.boolean()
-      .refine(val => val === true, {
-        message: "You must be able to commit 5-7 hours per week to your team"
-      })
-  }),
+        .refine((n) => /^\d{3}00\d{4}$/.test(n.toString()), {
+          message: "Invalid UIN",
+        }),
+      email: z
+        .string()
+        .email("Invalid email")
+        .regex(/@tamu.edu$/, "Must end with @tamu.edu"),
+      altEmail: z
+        .string()
+        .nullable()
+        .refine(
+          (input) => {
+            // email check here to allow empty string
+            if (input?.length) {
+              return z.string().email().safeParse(input).success;
+            }
 
-  // Open-Ended Questions Section
-  openEndedQuestions: z.object({
-    previousApplication: z.string()
-      .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-    goals: z.string()
-      .min(1, "Answer is required")
-      .refine(text => wordCount(text) <= 250, "Answer must be 250 words or less"),
-  }),
+            return true;
+          },
+          {
+            message: "Invalid email",
+          },
+        ),
+      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+    }),
 
-  // Resume & Signatures
-  resume: z.object({
-    resumeId: z.string(),
-    signatureCommitment: z.string().min(1, "Commitment signature required"),
-    signatureAccountability: z.string().min(1, "Accountability signature required"),
-    signatureQuality: z.string().min(1, "Quality pledge required"),
-  }),
-})
-.superRefine((data, ctx) => {
-  // Validate that signature strings include a part of the applicant's first or last name.
-  const fullName = data.personal.fullName.toLowerCase();
-  const signatures = [
-    { value: data.resume.signatureCommitment, path: ["resume", "signatureCommitment"] },
-    { value: data.resume.signatureAccountability, path: ["resume", "signatureAccountability"] },
-    { value: data.resume.signatureQuality, path: ["resume", "signatureQuality"] },
-  ];
-  signatures.forEach(({ value, path }) => {
-    if (!validateSignature(value, fullName)) {
-      ctx.addIssue({
-        code: "custom",
-        path: path,
-        message: "Signature must contain part of your first or last name",
-      });
-    }
+    // Academic Information Section
+    academic: z.object({
+      year: yearSchema,
+      major: majorSchema,
+      currentClasses: z
+        .array(z.string())
+        .min(2, "Enter at least two classes")
+        .refine(
+          (classes) =>
+            classes.every((cls) =>
+              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+            ),
+          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
+        ),
+      timeCommitment: z
+        .array(
+          z.object({
+            name: z.string().min(1, "Name is required"),
+            hours: z
+              .number()
+              .min(0, "Hours cannot be negative")
+              .max(15, "Cannot exceed 15 hours"),
+            type: z.enum(["CURRENT", "PLANNED"]),
+          }),
+        )
+        .optional()
+        .default([]),
+      weeklyCommitment: z.boolean().refine((val) => val === true, {
+        message: "You must be able to commit 5-7 hours per week to your team",
+      }),
+    }),
+
+    // Open-Ended Questions Section
+    openEndedQuestions: z.object({
+      previousApplication: z
+        .string()
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+      goals: z
+        .string()
+        .min(1, "Answer is required")
+        .refine(
+          (text) => wordCount(text) <= 250,
+          "Answer must be 250 words or less",
+        ),
+    }),
+
+    // Resume & Signatures
+    resume: z.object({
+      resumeId: z.string(),
+      signatureCommitment: z.string().min(1, "Commitment signature required"),
+      signatureAccountability: z
+        .string()
+        .min(1, "Accountability signature required"),
+      signatureQuality: z.string().min(1, "Quality pledge required"),
+    }),
+  })
+  .superRefine((data, ctx) => {
+    // Validate that signature strings include a part of the applicant's first or last name.
+    const fullName = data.personal.fullName.toLowerCase();
+    const signatures = [
+      {
+        value: data.resume.signatureCommitment,
+        path: ["resume", "signatureCommitment"],
+      },
+      {
+        value: data.resume.signatureAccountability,
+        path: ["resume", "signatureAccountability"],
+      },
+      {
+        value: data.resume.signatureQuality,
+        path: ["resume", "signatureQuality"],
+      },
+    ];
+    signatures.forEach(({ value, path }) => {
+      if (!validateSignature(value, fullName)) {
+        ctx.addIssue({
+          code: "custom",
+          path: path,
+          message: "Signature must contain part of your first or last name",
+        });
+      }
+    });
   });
-});
 
 export type MiniDCApplyForm = z.infer<typeof MiniDCApplyFormSchema>;
 

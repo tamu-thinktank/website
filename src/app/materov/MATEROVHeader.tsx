@@ -29,11 +29,14 @@ const AboutHeader: React.FC = () => {
         </svg>
       </div>
       <Container>
-        <div className= "px-8 pb-20 space-y-6">
+        <div className="space-y-6 px-8 pb-20">
           <p className="text-lg text-gray-300">
-          The MATE ROV (Marine Advanced Technology Education Remotely Operated Vehicle) Competition challenges students to engineer and operate an 
-          underwater robot to complete a variety of mission tasks in a high-stakes environment against other universities. Members get direct, 
-          hands-on experience in their interests while working with a passionate, interdisciplinary team of peers.
+            The MATE ROV (Marine Advanced Technology Education Remotely Operated
+            Vehicle) Competition challenges students to engineer and operate an
+            underwater robot to complete a variety of mission tasks in a
+            high-stakes environment against other universities. Members get
+            direct, hands-on experience in their interests while working with a
+            passionate, interdisciplinary team of peers.
           </p>
         </div>
       </Container>

@@ -192,9 +192,9 @@ const BoxComponent: React.FC<BoxProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`
-                  w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
-                  text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                  pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50
+                  pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px] border-white
+                  bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold text-white 
+                  no-underline opacity-50 md:px-[20px] md:py-[10px] md:text-[16px]
                 `}
               >
                 {/*{isOpen ? "Open" : "Closed"}*/}

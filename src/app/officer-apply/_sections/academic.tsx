@@ -19,7 +19,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { qOfficer } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
@@ -28,8 +34,11 @@ import { X } from "lucide-react";
 
 const wordCount = (text: string) => {
   if (!text.trim()) return 0;
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-  };
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
+};
 
 export default function AcademicInfo() {
   const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
@@ -38,7 +47,9 @@ export default function AcademicInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{qOfficer.academic.title}</CardTitle>
+          <CardTitle className="text-center">
+            {qOfficer.academic.title}
+          </CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -52,7 +63,8 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.academic.year} <span className="text-red-500">*</span>
+                  {qOfficer.academic.year}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -87,18 +99,17 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.academic.major} <span className="text-red-500">*</span>
+                  {qOfficer.academic.major}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Select your major from the dropdown. If your major is not listed or you are undecided, choose "Other".
+                  Select your major from the dropdown. If your major is not
+                  listed or you are undecided, choose "Other".
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select your major" />
                     </SelectTrigger>
@@ -129,7 +140,8 @@ export default function AcademicInfo() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {qOfficer.academic.summerPlans} <span className="text-red-500">*</span>
+                    {qOfficer.academic.summerPlans}{" "}
+                    <span className="text-red-500">*</span>
                   </CardTitle>
                   <CardDescription>100 word maximum</CardDescription>
                 </CardHeader>
@@ -141,7 +153,9 @@ export default function AcademicInfo() {
                       className="min-h-[100px]"
                     />
                   </FormControl>
-                  <div className={`text-sm ${count > 100 ? "text-destructive" : "text-muted-foreground"}`}>
+                  <div
+                    className={`text-sm ${count > 100 ? "text-destructive" : "text-muted-foreground"}`}
+                  >
                     {count}/100 words
                   </div>
                   <FormMessage />
@@ -161,7 +175,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {qOfficer.academic.currentClasses} 
+                  {qOfficer.academic.currentClasses}
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -171,7 +185,8 @@ export default function AcademicInfo() {
                   <br />
                   - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
                   <br />
-                  If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
+                  If you have fewer than two courses, use 'NULL 101' as a
+                  placeholder and contact us.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -228,7 +243,7 @@ export default function AcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {qOfficer.academic.nextClasses} 
+                  {qOfficer.academic.nextClasses}
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
@@ -238,7 +253,8 @@ export default function AcademicInfo() {
                   <br />
                   - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
                   <br />
-                  If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
+                  If you have fewer than two courses, use 'NULL 101' as a
+                  placeholder and contact us.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
@@ -297,7 +313,9 @@ export default function AcademicInfo() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {type === "CURRENT" ? "Current Time Commitments" : "Planned Time Commitments"}
+                    {type === "CURRENT"
+                      ? "Current Time Commitments"
+                      : "Planned Time Commitments"}
                   </CardTitle>
                   <CardDescription>
                     Enter commitments between 1-15 hours per week
@@ -307,11 +325,18 @@ export default function AcademicInfo() {
                   {(field.value ?? [])
                     .filter((c) => c.type === type)
                     .map((commitment, idx) => {
-                      const globalIndex = (field.value ?? []).findIndex(c => 
-                        c.type === type && (field.value ?? []).filter(fc => fc.type === type).indexOf(c) === idx
+                      const globalIndex = (field.value ?? []).findIndex(
+                        (c) =>
+                          c.type === type &&
+                          (field.value ?? [])
+                            .filter((fc) => fc.type === type)
+                            .indexOf(c) === idx,
                       );
                       return (
-                        <div key={globalIndex} className="grid grid-cols-[1fr_100px_40px] gap-4 items-start">
+                        <div
+                          key={globalIndex}
+                          className="grid grid-cols-[1fr_100px_40px] items-start gap-4"
+                        >
                           <FormField
                             control={form.control}
                             name={`academic.timeCommitment.${globalIndex}.name`}
@@ -323,7 +348,9 @@ export default function AcademicInfo() {
                                   onBlur={async () => {
                                     field.onBlur();
                                     if (field.value) {
-                                      await form.trigger(`academic.timeCommitment.${globalIndex}.name`);
+                                      await form.trigger(
+                                        `academic.timeCommitment.${globalIndex}.name`,
+                                      );
                                     }
                                   }}
                                 />
@@ -341,7 +368,9 @@ export default function AcademicInfo() {
                                   {...field}
                                   min={1}
                                   max={15}
-                                  onChange={e => field.onChange(Number(e.target.value))}
+                                  onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                  }
                                 />
                                 <FormMessage />
                               </FormItem>
@@ -370,7 +399,11 @@ export default function AcademicInfo() {
                       const currentValue = field.value ?? [];
                       form.setValue("academic.timeCommitment", [
                         ...currentValue,
-                        { name: "Commitment Name", hours: 1, type: type as "CURRENT" | "PLANNED" }
+                        {
+                          name: "Commitment Name",
+                          hours: 1,
+                          type: type as "CURRENT" | "PLANNED",
+                        },
                       ]);
                     }}
                   >

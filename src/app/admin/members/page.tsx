@@ -3,5 +3,5 @@
 import { MembersPage } from "./memberPage";
 
 export default function Members() {
-    return <MembersPage />;
+  return <MembersPage />;
 }

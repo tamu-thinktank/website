@@ -235,20 +235,23 @@ const Scheduler: React.FC = () => {
       // Transform the data to match our Interviewer interface
       const formattedInterviewers: Interviewer[] = data.map((interviewer) => {
         // Process interviews if they exist
-        const interviewsData: InterviewResponse[] = interviewer.interviews ?? [];
-        const interviews = interviewsData.map((interview: InterviewResponse) => ({
-          id: interview.id,
-          applicantName: interview.isPlaceholder
-            ? interview.placeholderName ?? "Reserved Slot"
-            : interview.applicant?.fullName ?? "Unknown",
-          applicantId: interview.applicantId,
-          startTime: new Date(interview.startTime),
-          endTime: new Date(interview.endTime),
-          teamId: interview.teamId,
-          location: interview.location,
-          interviewerId: interview.interviewerId,
-          isPlaceholder: interview.isPlaceholder ?? false,
-        }));
+        const interviewsData: InterviewResponse[] =
+          interviewer.interviews ?? [];
+        const interviews = interviewsData.map(
+          (interview: InterviewResponse) => ({
+            id: interview.id,
+            applicantName: interview.isPlaceholder
+              ? (interview.placeholderName ?? "Reserved Slot")
+              : (interview.applicant?.fullName ?? "Unknown"),
+            applicantId: interview.applicantId,
+            startTime: new Date(interview.startTime),
+            endTime: new Date(interview.endTime),
+            teamId: interview.teamId,
+            location: interview.location,
+            interviewerId: interview.interviewerId,
+            isPlaceholder: interview.isPlaceholder ?? false,
+          }),
+        );
 
         return {
           id: interviewer.id,
@@ -565,8 +568,8 @@ const Scheduler: React.FC = () => {
     const maxInterviews = isWeekendDay ? 6 : 4;
 
     // Count interviews for this date
-    const interviewsOnDate = interviewer.interviews.filter(
-      (interview) => isSameDay(interview.startTime, date),
+    const interviewsOnDate = interviewer.interviews.filter((interview) =>
+      isSameDay(interview.startTime, date),
     ).length;
 
     if (interviewsOnDate >= maxInterviews) {
@@ -869,7 +872,9 @@ const Scheduler: React.FC = () => {
           if (existingIndex >= 0) {
             // Update existing priority
             updatedPriorities[existingIndex] = {
-              teamId: updatedPriorities[existingIndex]?.teamId ?? (teamId as Challenge),
+              teamId:
+                updatedPriorities[existingIndex]?.teamId ??
+                (teamId as Challenge),
               priority,
             };
           } else {
@@ -1302,14 +1307,14 @@ const Scheduler: React.FC = () => {
                   <ChevronRight className="h-5 w-5" />
                 </button>
                 <span className="text-lg font-medium">
-                  {viewMode === "day" ? (
-                    format(currentDate, "MMMM d, yyyy")
-                  ) : (() => {
-                    const lastDate = viewDates[viewDates.length - 1];
-                    return viewDates.length > 0 && viewDates[0] && lastDate
-                      ? `${format(viewDates[0], "MMM d")} - ${format(lastDate, "MMM d, yyyy")}`
-                      : "Invalid date range";
-                  })()}
+                  {viewMode === "day"
+                    ? format(currentDate, "MMMM d, yyyy")
+                    : (() => {
+                        const lastDate = viewDates[viewDates.length - 1];
+                        return viewDates.length > 0 && viewDates[0] && lastDate
+                          ? `${format(viewDates[0], "MMM d")} - ${format(lastDate, "MMM d, yyyy")}`
+                          : "Invalid date range";
+                      })()}
                 </span>
               </div>
 
@@ -1852,8 +1857,7 @@ const Scheduler: React.FC = () => {
                 <div className="col-span-3 text-neutral-200">
                   <>
                     {format(selectedInterview.startTime, "MMMM d, yyyy")} at{" "}
-                    {format(selectedInterview.startTime, "h:mm a")}{" "}
-                    -
+                    {format(selectedInterview.startTime, "h:mm a")} -
                     {format(selectedInterview.endTime, "h:mm a")}
                   </>
                 </div>
