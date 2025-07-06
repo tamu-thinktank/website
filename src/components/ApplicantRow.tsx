@@ -63,7 +63,7 @@ export const ApplicantRow: React.FC<ApplicantRowProps> = ({
           const response = await fetch(`/api/applicant/${applicant.id}`);
           if (response.ok) {
             const data = (await response.json()) as ApplicantResponse;
-            setCurrentStatus(data.status);
+            setCurrentStatus(data.status ?? undefined);
           }
         } catch (error) {
           console.error("Failed to fetch applicant status:", error);
