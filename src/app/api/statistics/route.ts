@@ -57,8 +57,8 @@ export async function GET(request: Request) {
     applications.forEach((app) => {
       // Count genders
       if (app.gender) {
-        genders[app.gender as string] = (genders[app.gender as string] ?? 0) + 1
-        detailedData.genders.push({ name: app.fullName, value: app.gender as string })
+        genders[app.gender] = (genders[app.gender] ?? 0) + 1
+        detailedData.genders.push({ name: app.fullName, value: app.gender })
       }
 
       // Count years
@@ -70,7 +70,7 @@ export async function GET(request: Request) {
       detailedData.majors.push({ name: app.fullName, value: app.major })
 
       // Count referral sources
-      if (app.referral && Array.isArray(app.referral)) {
+      if (Array.isArray(app.referral)) {
         (app.referral as string[]).forEach((ref) => {
           referrals[ref] = (referrals[ref] ?? 0) + 1
           detailedData.referrals.push({ name: app.fullName, value: ref })
