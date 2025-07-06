@@ -44,7 +44,7 @@ export const MembersPage: React.FC = () => {
       }
     };
 
-    fetchMemberData();
+    void fetchMemberData();
   }, []);
 
   const tableHeaders = [
@@ -56,7 +56,7 @@ export const MembersPage: React.FC = () => {
   ];
 
   const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  const ratingOptions = ["1/5", "2/5", "3/5", "4/5", "5/5", "Reset"];
+  // const ratingOptions = ["1/5", "2/5", "3/5", "4/5", "5/5", "Reset"];
   const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
   const majorOptions = [
     "Computer Science",

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+// import { PrismaClient } from "@prisma/client";
 
 // We'll keep prisma for future use
-const prisma = new PrismaClient();
+// const prisma = new PrismaClient();
 
 // Define the interview type
 interface Interview {
@@ -19,7 +19,7 @@ interface Interview {
 // Properly type the interviews array
 const interviews: Interview[] = [];
 
-export async function GET() {
+export function GET() {
   try {
     // Return the mock interviews
     return NextResponse.json(interviews);
@@ -66,12 +66,12 @@ export async function POST(request: Request) {
     const interview: Interview = {
       id: Math.random().toString(36).substring(2, 9),
       applicantId: data.applicantId,
-      applicantName: data.applicantName || "Unknown",
+      applicantName: data.applicantName ?? "Unknown",
       interviewerId: data.interviewerId,
       startTime: new Date(data.startTime),
       endTime: new Date(data.endTime),
       teamId: data.teamId,
-      location: data.location || "TBD",
+      location: data.location ?? "TBD",
     };
 
     // Add to our mock storage

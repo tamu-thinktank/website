@@ -1,18 +1,17 @@
-import { NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    
     const applicants = await prisma.application.findMany({
       where: {
         OR: [
           { status: "PENDING" },
           { status: "REJECTED_APP" },
-          { status: "REJECTED" }
-        ]
+          { status: "REJECTED" },
+        ],
       },
       select: {
         id: true,
@@ -22,20 +21,20 @@ export async function GET() {
         subteamPreferences: {
           select: {
             name: true,
-            interest: true
-          }
+            interest: true,
+          },
         },
         learningInterests: {
           select: {
             area: true,
-            interestLevel: true
-          }
+            interestLevel: true,
+          },
         },
         preferredPositions: {
           select: {
             position: true,
-            interest: true
-          }
+            interest: true,
+          },
         },
         preferredTeams: {
           select: { team: { select: { name: true } } },
@@ -46,18 +45,18 @@ export async function GET() {
         applicationType: true,
         status: true,
       },
-    })
+    });
 
     const formattedApplicants = applicants.map((applicant) => ({
       id: applicant.id,
       name: applicant.fullName,
       interests: applicant.learningInterests.map((pref) => ({
         area: pref.area,
-        interest: pref.interestLevel
+        interest: pref.interestLevel,
       })),
       officerpos: applicant.preferredPositions.map((pref) => ({
         position: pref.position,
-        interest: pref.interest
+        interest: pref.interest,
       })),
       teamRankings: applicant.preferredTeams.map((pref) => pref.team.name),
       major: applicant.major,
@@ -67,14 +66,16 @@ export async function GET() {
       status: applicant.status,
       subTeam: applicant.subteamPreferences.map((pref) => ({
         name: pref.name,
-        interest: pref.interest
+        interest: pref.interest,
       })),
-    }))
+    }));
 
-    return NextResponse.json(formattedApplicants)
+    return NextResponse.json(formattedApplicants);
   } catch (error) {
-    console.error("Error fetching applicants:", error)
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
+    console.error("Error fetching applicants:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
 }
-

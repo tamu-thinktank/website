@@ -18,9 +18,19 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { qOfficer } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { OfficerCommitment, OfficerPosition, InterestLevel } from "@prisma/client";
+import {
+  OfficerCommitment,
+  OfficerPosition,
+  InterestLevel,
+} from "@prisma/client";
 import { useFormContext } from "react-hook-form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ThinkTankInfo() {
   const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
@@ -29,7 +39,9 @@ export default function ThinkTankInfo() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{qOfficer.thinkTankInfo.title}</CardTitle>
+          <CardTitle className="text-center">
+            {qOfficer.thinkTankInfo.title}
+          </CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -43,7 +55,8 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.thinkTankInfo.officerCommitment} <span className="text-red-500">*</span>
+                  {qOfficer.thinkTankInfo.officerCommitment}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   The number of hours is doubled for Project Managers.
@@ -51,25 +64,38 @@ export default function ThinkTankInfo() {
               </CardHeader>
               <CardContent>
                 <RadioGroup
-                  onValueChange={(value) => field.onChange(value as OfficerCommitment)}
+                  onValueChange={(value) =>
+                    field.onChange(value as OfficerCommitment)
+                  }
                   value={field.value}
                 >
                   <div className="space-y-2">
                     <FormItem>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value={OfficerCommitment.YES} id="commitment-yes" />
+                        <RadioGroupItem
+                          value={OfficerCommitment.YES}
+                          id="commitment-yes"
+                        />
                         <FormLabel htmlFor="commitment-yes">Yes</FormLabel>
                       </div>
                     </FormItem>
                     <FormItem>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value={OfficerCommitment.PARTIAL} id="commitment-partial" />
-                        <FormLabel htmlFor="commitment-partial">No, I’m too busy for 1 of the semesters</FormLabel>
+                        <RadioGroupItem
+                          value={OfficerCommitment.PARTIAL}
+                          id="commitment-partial"
+                        />
+                        <FormLabel htmlFor="commitment-partial">
+                          No, I’m too busy for 1 of the semesters
+                        </FormLabel>
                       </div>
                     </FormItem>
                     <FormItem>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value={OfficerCommitment.NO} id="commitment-no" />
+                        <RadioGroupItem
+                          value={OfficerCommitment.NO}
+                          id="commitment-no"
+                        />
                         <FormLabel htmlFor="commitment-no">No</FormLabel>
                       </div>
                     </FormItem>
@@ -91,7 +117,8 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qOfficer.thinkTankInfo.preferredPositions} <span className="text-red-500">*</span>
+                  {qOfficer.thinkTankInfo.preferredPositions}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
                   For each selected position, rate your relative interest.
@@ -99,7 +126,9 @@ export default function ThinkTankInfo() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.values(OfficerPosition).map((position) => {
-                  const isSelected = field.value.some((p) => p.position === position);
+                  const isSelected = field.value.some(
+                    (p) => p.position === position,
+                  );
                   return (
                     <FormItem key={position}>
                       <div className="flex items-center space-x-2">
@@ -107,8 +136,16 @@ export default function ThinkTankInfo() {
                           checked={isSelected}
                           onCheckedChange={(checked) => {
                             const updatedPositions = checked
-                              ? [...field.value, { position, interestLevel: "MEDIUM" as InterestLevel }]
-                              : field.value.filter((p) => p.position !== position);
+                              ? [
+                                  ...field.value,
+                                  {
+                                    position,
+                                    interestLevel: "MEDIUM" as InterestLevel,
+                                  },
+                                ]
+                              : field.value.filter(
+                                  (p) => p.position !== position,
+                                );
                             field.onChange(updatedPositions);
                           }}
                         />
@@ -120,11 +157,17 @@ export default function ThinkTankInfo() {
                         <div className="mt-2">
                           <Select
                             value={
-                              field.value.find((p) => p.position === position)?.interestLevel ?? "MEDIUM"
+                              field.value.find((p) => p.position === position)
+                                ?.interestLevel ?? "MEDIUM"
                             }
                             onValueChange={(value) => {
                               const updated = field.value.map((p) =>
-                                p.position === position ? { ...p, interestLevel: value as InterestLevel } : p
+                                p.position === position
+                                  ? {
+                                      ...p,
+                                      interestLevel: value as InterestLevel,
+                                    }
+                                  : p,
                               );
                               field.onChange(updated);
                             }}
@@ -135,7 +178,8 @@ export default function ThinkTankInfo() {
                             <SelectContent>
                               {Object.values(InterestLevel).map((level) => (
                                 <SelectItem key={level} value={level}>
-                                  {level.charAt(0).toUpperCase() + level.slice(1).toLowerCase()}
+                                  {level.charAt(0).toUpperCase() +
+                                    level.slice(1).toLowerCase()}
                                 </SelectItem>
                               ))}
                             </SelectContent>

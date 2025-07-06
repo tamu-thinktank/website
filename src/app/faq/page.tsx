@@ -10,9 +10,9 @@ const Home: NextPage = () => {
     <>
       <SmoothScroll>
         <div className="bg-[#0C0D0E]">
-        <AppHeader />
+          <AppHeader />
           <main className="bg mb-40 pt-20">
-            <FAQHeader/>
+            <FAQHeader />
             <DCfaq />
             <MateRovFaq />
           </main>
