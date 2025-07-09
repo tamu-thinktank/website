@@ -17,12 +17,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { qMiniDC, PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
+import { PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
+import { qMiniDC } from "@/consts/minidc-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
 export default function PersonalInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyMiniDC"]>();
+  const form = useFormContext<RouterInputs["minidc"]["MiniDCApplyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">

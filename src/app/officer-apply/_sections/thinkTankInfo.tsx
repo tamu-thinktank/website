@@ -16,14 +16,15 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { qOfficer } from "@/consts/apply-form";
+import { qOfficer } from "@/consts/officer-apply-form";
+import type { OfficerPositionInterest } from "@/lib/validations/officer-apply";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { OfficerCommitment, OfficerPosition, InterestLevel } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function ThinkTankInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+  const form = useFormContext<RouterInputs["officer"]["OfficerApplyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">
@@ -99,7 +100,7 @@ export default function ThinkTankInfo() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.values(OfficerPosition).map((position) => {
-                  const isSelected = field.value.some((p) => p.position === position);
+                  const isSelected = field.value.some((p: OfficerPositionInterest) => p.position === position);
                   return (
                     <FormItem key={position}>
                       <div className="flex items-center space-x-2">
@@ -108,7 +109,7 @@ export default function ThinkTankInfo() {
                           onCheckedChange={(checked) => {
                             const updatedPositions = checked
                               ? [...field.value, { position, interestLevel: "MEDIUM" as InterestLevel }]
-                              : field.value.filter((p) => p.position !== position);
+                              : field.value.filter((p: OfficerPositionInterest) => p.position !== position);
                             field.onChange(updatedPositions);
                           }}
                         />
@@ -120,10 +121,10 @@ export default function ThinkTankInfo() {
                         <div className="mt-2">
                           <Select
                             value={
-                              field.value.find((p) => p.position === position)?.interestLevel ?? "MEDIUM"
+                              field.value.find((p: OfficerPositionInterest) => p.position === position)?.interestLevel ?? "MEDIUM"
                             }
                             onValueChange={(value) => {
-                              const updated = field.value.map((p) =>
+                              const updated = field.value.map((p: OfficerPositionInterest) =>
                                 p.position === position ? { ...p, interestLevel: value as InterestLevel } : p
                               );
                               field.onChange(updated);

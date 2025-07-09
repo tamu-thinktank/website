@@ -27,7 +27,7 @@ export default function Availability({
   setUserTimezone,
   table,
 }: AvailabilityProps) {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+  const form = useFormContext<RouterInputs["mateROV"]["MateROVApplyForm"]>();
   const color = useMemo(
     () => palette[Math.floor(Math.random() * palette.length)],
     [],

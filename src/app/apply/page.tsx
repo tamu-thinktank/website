@@ -9,7 +9,7 @@ import { useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { ApplyFormSchema } from "@/lib/validations/apply";
+import { DCMemberApplyFormSchema } from "@/lib/validations/dcmember-apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -38,10 +38,10 @@ export default function Apply() {
   const table = useCalculateTable(userTimezone);
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const form = usePersistForm<RouterInputs["public"]["applyForm"]>(
+  const form = usePersistForm<RouterInputs["dcmember"]["DCMemberApplyForm"]>(
     "apply-form-S2025-v1",
     {
-      resolver: zodResolver(ApplyFormSchema),
+      resolver: zodResolver(DCMemberApplyFormSchema),
       defaultValues: {
         personal: {
           preferredName: null,
@@ -50,8 +50,8 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: [""],
-          nextClasses: [""],
+          currentClasses: [{ value: "" }, { value: "" }],
+          nextClasses: [{ value: "" }, { value: "" }],
           timeCommitment: [],
         },
         thinkTankInfo: {
@@ -76,7 +76,7 @@ export default function Apply() {
     },
   );
 
-  const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
+  const { mutateAsync: submitForm } = api.dcmember.DCMemberApplyForm.useMutation({
     onSuccess: () => {
       // Reset form and local storage first
       form.reset();
@@ -118,7 +118,7 @@ export default function Apply() {
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
-    async (data: RouterInputs["public"]["applyForm"]) => {
+    async (data: RouterInputs["dcmember"]["DCMemberApplyForm"]) => {
       if (!resumeFile) {
         toast({
           variant: "destructive",
@@ -235,7 +235,7 @@ export default function Apply() {
                 />
               </ApplyTab>
               <TabsContent className="space-y-2" value="resume">
-                <ResumeUpload setResumeFile={setResumeFile} />
+                <ResumeUpload resumeFile={resumeFile} setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
                     className="bg-white text-black"
@@ -298,7 +298,7 @@ function ApplyTab({
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext<RouterInputs["dcmember"]["DCMemberApplyForm"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);

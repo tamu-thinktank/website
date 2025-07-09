@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { qMateROV } from "@/consts/apply-form";
+import { qMateROV } from "@/consts/materov-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
@@ -25,7 +25,7 @@ const wordCount = (text: string) => {
 };
 
 export default function OpenEndedQuestions() {
-  const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
+  const form = useFormContext<RouterInputs["mateROV"]["MateROVApplyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">
