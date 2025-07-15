@@ -22,7 +22,7 @@ export default function Officers() {
       bio: "Payload and Sensors Sub-Team lead for Team ORION and Vice President of ThinkTank. Loves the outdoors and playing guitar.",
     },
     {
-     id: 3,
+      id: 3,
       name: "Moksh Shah",
       role: "Mini-DC PM & DCPM",
       major: "Aerospace Engineering",
@@ -55,7 +55,7 @@ export default function Officers() {
       major: "Electrical Engineering",
       class: "27",
       image: "/images/avatars/adhithiv2526.webp",
-      bio: "Working on edesigning the main ThinkTank website as a part of Team Atlas, mostly front-end and UI/UX. Loves to cook, play music, and make art, and enjoys writing sonnets about cheese and other assorted topics.  ",
+      bio: "Working on redesigning the main ThinkTank website as a part of Team Atlas, mostly front-end and UI/UX. Loves to cook, play music, and make art, and enjoys writing sonnets about cheese and other assorted topics.",
     },
     {
       id: 7,
@@ -82,7 +82,7 @@ export default function Officers() {
       major: "Data Engineering",
       class: "27",
       image: "/images/avatars/diyadev2526",
-      bio: "Autonomy, Communication, and Navigation  sub-team in Servus- Finalist team for NASA's 2025 RASCAL Forum. Loves to read, play tennis, and doing new fun activities! ",
+      bio: "Autonomy, Communication, and Navigation sub-team in Servus - Finalist team for NASA's 2025 RASCAL Forum. Loves to read, play tennis, and try new fun activities!",
     },
     {
       id: 10,
@@ -91,18 +91,18 @@ export default function Officers() {
       major: "Electrical Engineering",
       class: "27",
       image: "/images/avatars/rohilvinnakota2526",
-      bio: "Maintenance and servicing sub team in Servus - Finalist in NASA's 2025 RASCAL forum. Loves to play tennis, basketball, and work out.",
+      bio: "Maintenance and servicing sub-team in Servus - Finalist in NASA's 2025 RASCAL Forum. Loves to play tennis, basketball, and work out.",
     },
     {
-    id: 11,
+      id: 11,
       name: "Joshua Wheeler",
       role: "Marketing",
       major: "Mechanical Engineering",
       class: "28",
       image: "/images/avatars/joshwheeler2526",
-      bio: "Mechanical subteam member in Team Servus- Finalist team for NASA's 2025 RASCAL Forum. Loves reading, writing, and taking pictures of food and sending them to friends with no context.",
+      bio: "Mechanical subteam member in Team Servus - Finalist team for NASA's 2025 RASCAL Forum. Loves reading, writing, and taking pictures of food and sending them to friends with no context.",
     },
-    {  
+    {
       id: 12,
       name: "Arjun Sawhney",
       role: "RCPM",
@@ -141,9 +141,7 @@ export default function Officers() {
 
               {/* Hover Overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-0 opacity-0 transition-all duration-300 ease-in-out group-hover:bg-opacity-60 group-hover:opacity-100">
-                <h3 className="text-2xl font-bold text-white">
-                  {officer.name}
-                </h3>
+                <h3 className="text-2xl font-bold text-white">{officer.name}</h3>
                 <p className="mt-1 text-xl font-semibold text-gray-200">
                   {officer.major} '{officer.class}
                 </p>
