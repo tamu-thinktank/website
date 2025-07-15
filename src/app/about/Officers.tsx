@@ -93,6 +93,7 @@ export default function Officers() {
       image: "/images/avatars/rohilvinnakota2526",
       bio: "Maintenance and servicing sub team in Servus - Finalist in NASA's 2025 RASCAL forum. Loves to play tennis, basketball, and work out.",
     },
+    {
     id: 11,
       name: "Joshua Wheeler",
       role: "Marketing",
@@ -101,7 +102,8 @@ export default function Officers() {
       image: "/images/avatars/joshwheeler2526",
       bio: "Mechanical subteam member in Team Servus- Finalist team for NASA's 2025 RASCAL Forum. Loves reading, writing, and taking pictures of food and sending them to friends with no context.",
     },
-  id: 12,
+    {  
+      id: 12,
       name: "Arjun Sawhney",
       role: "RCPM",
       major: "Aerospace Engineering",
