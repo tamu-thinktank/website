@@ -27,7 +27,7 @@ export default function Officers() {
       role: "Mini-DC PM & DCPM",
       major: "Aerospace Engineering",
       class: "27",
-      image: "/images/avatars/blank.webp",
+      image: "/images/avatars/moksh2526.webp",
       bio: "Thermal and Power Systems Engineer in Team Selenis - Won 1st place at the 2024 Engineering Project Showcase. Extensive research expertise in Lunar Space Operations. Loves to play tennis in his free time.",
     },
     {
@@ -36,7 +36,7 @@ export default function Officers() {
       role: "Treasurer",
       major: "Mechanical Engineering",
       class: "28",
-      image: "/images/avatars/blank.webp",
+      image: "/images/avatars/vasudhac2526.webp",
       bio: "Part of Mechanical subteam in Team Servus- Finalist team for NASA's 2025 RASCAL Forum. Some of her hobbies include baking, crocheting, and going to the gym!",
     },
     {
@@ -54,7 +54,7 @@ export default function Officers() {
       role: "Web Development",
       major: "Electrical Engineering",
       class: "27",
-      image: "/images/avatars/adhithiv2526.webp",
+      image: "/images/avatars/adhithiv2526",
       bio: "Working on edesigning the main ThinkTank website as a part of Team Atlas, mostly front-end and UI/UX. Loves to cook, play music, and make art, and enjoys writing sonnets about cheese and other assorted topics.  ",
     },
     {
