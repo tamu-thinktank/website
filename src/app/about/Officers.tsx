@@ -22,7 +22,7 @@ export default function Officers() {
       bio: "Payload and Sensors Sub-Team lead for Team ORION and Vice President of ThinkTank. Loves the outdoors and playing guitar.",
     },
     {
-     id: 3,
+      id: 3,
       name: "Moksh Shah",
       role: "Mini-DC PM & DCPM",
       major: "Aerospace Engineering",
@@ -93,7 +93,8 @@ export default function Officers() {
       image: "/images/avatars/rohilvinnakota2526",
       bio: "Maintenance and servicing sub team in Servus - Finalist in NASA's 2025 RASCAL forum. Loves to play tennis, basketball, and work out.",
     },
-    id: 11,
+    {
+      id: 11,
       name: "Joshua Wheeler",
       role: "Marketing",
       major: "Mechanical Engineering",
@@ -101,7 +102,8 @@ export default function Officers() {
       image: "/images/avatars/joshwheeler2526",
       bio: "Mechanical subteam member in Team Servus- Finalist team for NASA's 2025 RASCAL Forum. Loves reading, writing, and taking pictures of food and sending them to friends with no context.",
     },
-  id: 12,
+    {
+      id: 12,
       name: "Arjun Sawhney",
       role: "RCPM",
       major: "Aerospace Engineering",
