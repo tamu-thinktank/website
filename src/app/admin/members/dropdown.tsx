@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DropdownProps } from './membertypes';
+import type { DropdownProps } from './membertypes';
 
 export const Dropdown: React.FC<DropdownProps> = ({
   options,

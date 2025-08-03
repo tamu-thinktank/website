@@ -598,7 +598,7 @@ const Scheduler: React.FC = () => {
     });
   };
 
-  // Add a new interview
+  // Add a new interview (45 minutes = 3 x 15-minute slots)
   const addInterview = async () => {
     if (!selectedInterviewer || !selectedTimeSlot) {
       toast({
@@ -623,23 +623,33 @@ const Scheduler: React.FC = () => {
     const startTime = new Date(date);
     startTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
 
+    // Set end time to 45 minutes after start time (3 x 15-minute slots)
     const endTime = new Date(startTime);
-    endTime.setMinutes(endTime.getMinutes() + 15); // 15 minute interview
+    endTime.setMinutes(endTime.getMinutes() + 45);
 
-    // Check for time conflicts
+    // Check for time conflicts across all 3 slots
     const interviewer = interviewers.find((i) => i.id === selectedInterviewer);
-    if (interviewer && hasTimeConflict(interviewer, startTime, endTime)) {
-      toast({
-        title: "Time Conflict",
-        description:
-          "There is already an interview scheduled during this time slot.",
-        variant: "destructive",
-      });
-      return;
+    if (interviewer) {
+      // Check each 15-minute segment of the 45-minute block
+      for (let i = 0; i < 3; i++) {
+        const segmentStart = new Date(startTime);
+        segmentStart.setMinutes(segmentStart.getMinutes() + (i * 15));
+        const segmentEnd = new Date(segmentStart);
+        segmentEnd.setMinutes(segmentEnd.getMinutes() + 15);
+        
+        if (hasTimeConflict(interviewer, segmentStart, segmentEnd)) {
+          toast({
+            title: "Time Conflict",
+            description: `There is already an interview scheduled during the ${format(segmentStart, 'h:mm a')} - ${format(segmentEnd, 'h:mm a')} time slot.`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
     }
 
     // Find the selected applicant if not a placeholder
-    let applicantName = "Reserved Slot";
+    let applicantName = newInterview.isPlaceholder ? (newInterview.location || "Reserved Slot") : "";
     if (!newInterview.isPlaceholder) {
       const selectedApplicant = applicants.find(
         (a) => a.id === newInterview.applicantId,
@@ -655,10 +665,11 @@ const Scheduler: React.FC = () => {
       applicantName = selectedApplicant.name;
     }
 
+    // Create a single interview record for the 45-minute block
     const interview: Interview = {
       id: Math.random().toString(36).substring(2, 9),
       applicantName: newInterview.isPlaceholder
-        ? "Reserved Slot"
+        ? (newInterview.location || "Reserved Slot")
         : applicantName,
       applicantId: newInterview.isPlaceholder
         ? undefined
@@ -666,12 +677,14 @@ const Scheduler: React.FC = () => {
       startTime,
       endTime,
       teamId: newInterview.teamId || undefined,
-      location: newInterview.location || "TBD",
+      location: newInterview.isPlaceholder 
+        ? (newInterview.location || "Reserved")
+        : (newInterview.location || "TBD"),
       interviewerId: selectedInterviewer,
       isPlaceholder: newInterview.isPlaceholder,
     };
 
-    // Save to database first
+    // Save to database
     const success = await saveInterview(interview, selectedInterviewer);
 
     if (success) {
@@ -702,7 +715,7 @@ const Scheduler: React.FC = () => {
     }
   };
 
-  // Also modify the addMultipleInterviews function to check for conflicts
+  // Add multiple 45-minute interviews or reserved slots
   const addMultipleInterviews = async () => {
     if (!selectedInterviewer || selectedTimeSlots.length === 0) {
       toast({
@@ -724,7 +737,7 @@ const Scheduler: React.FC = () => {
     }
 
     // Find the selected applicant if not a placeholder
-    let applicantName = "Reserved Slot";
+    let applicantName = newInterview.isPlaceholder ? (newInterview.location || "Reserved Slot") : "";
     let applicantId = undefined;
     if (!newInterview.isPlaceholder) {
       const selectedApplicant = applicants.find(
@@ -744,43 +757,68 @@ const Scheduler: React.FC = () => {
 
     let successCount = 0;
     let failCount = 0;
-
-    // Check for conflicts in all selected time slots
     const interviewer = interviewers.find((i) => i.id === selectedInterviewer);
-    if (interviewer) {
-      const hasConflicts = selectedTimeSlots.some((slot) => {
-        const startTime = new Date(slot.date);
-        startTime.setHours(slot.timeSlot.hour, slot.timeSlot.minute, 0, 0);
-
-        const endTime = new Date(startTime);
-        endTime.setMinutes(endTime.getMinutes() + 15);
-
-        return hasTimeConflict(interviewer, startTime, endTime);
-      });
-
-      if (hasConflicts) {
-        toast({
-          title: "Time Conflict",
-          description:
-            "One or more selected time slots conflict with existing interviews.",
-          variant: "destructive",
-        });
-        return;
+    
+    // Process time slots in groups of 3 (for 45-minute blocks)
+    for (let i = 0; i < selectedTimeSlots.length; i += 3) {
+      const slotGroup = selectedTimeSlots.slice(i, i + 3);
+      
+      // Skip incomplete groups (less than 3 slots)
+      if (slotGroup.length < 3) {
+        failCount += slotGroup.length;
+        continue;
       }
-    }
-
-    // Create and save an interview for each selected time slot
-    for (const slot of selectedTimeSlots) {
-      const startTime = new Date(slot.date);
-      startTime.setHours(slot.timeSlot.hour, slot.timeSlot.minute, 0, 0);
-
+      
+      // Verify slots are consecutive
+      const firstSlot = slotGroup[0];
+      const firstStartTime = new Date(firstSlot.date);
+      firstStartTime.setHours(firstSlot.timeSlot.hour, firstSlot.timeSlot.minute, 0, 0);
+      
+      const expectedEndTime = new Date(firstStartTime);
+      expectedEndTime.setMinutes(expectedEndTime.getMinutes() + 45);
+      
+      const lastSlot = slotGroup[2];
+      const actualEndTime = new Date(lastSlot.date);
+      actualEndTime.setHours(lastSlot.timeSlot.hour, lastSlot.timeSlot.minute + 15, 0, 0);
+      
+      if (actualEndTime.getTime() !== expectedEndTime.getTime()) {
+        failCount += 3;
+        continue;
+      }
+      
+      // Check for conflicts in the 45-minute block
+      if (interviewer) {
+        let hasConflict = false;
+        for (let j = 0; j < 3; j++) {
+          const slot = slotGroup[j];
+          const segmentStart = new Date(slot.date);
+          segmentStart.setHours(slot.timeSlot.hour, slot.timeSlot.minute, 0, 0);
+          const segmentEnd = new Date(segmentStart);
+          segmentEnd.setMinutes(segmentEnd.getMinutes() + 15);
+          
+          if (hasTimeConflict(interviewer, segmentStart, segmentEnd)) {
+            hasConflict = true;
+            break;
+          }
+        }
+        
+        if (hasConflict) {
+          failCount += 3;
+          continue;
+        }
+      }
+      
+      // Create a single interview for the 45-minute block
+      const startTime = new Date(firstSlot.date);
+      startTime.setHours(firstSlot.timeSlot.hour, firstSlot.timeSlot.minute, 0, 0);
+      
       const endTime = new Date(startTime);
-      endTime.setMinutes(endTime.getMinutes() + 15);
+      endTime.setMinutes(endTime.getMinutes() + 45);
 
       const interview: Interview = {
         id: Math.random().toString(36).substring(2, 9),
         applicantName: newInterview.isPlaceholder
-          ? "Reserved Slot"
+          ? (newInterview.location || "Reserved Slot")
           : applicantName,
         applicantId: newInterview.isPlaceholder ? undefined : applicantId,
         startTime,
@@ -1083,6 +1121,132 @@ const Scheduler: React.FC = () => {
     }
   };
 
+  // Toggle busy status for selected time slots
+  const toggleBusySlots = async () => {
+    if (selectedTimeSlots.length === 0 || !selectedInterviewer) return;
+
+    try {
+      // Group slots by date to create 45-minute blocks
+      const slotsByDate: Record<string, Array<{hour: number, minute: number}>> = {};
+      
+      selectedTimeSlots.forEach(({date, timeSlot}) => {
+        const dateKey = format(date, 'yyyy-MM-dd');
+        if (!slotsByDate[dateKey]) {
+          slotsByDate[dateKey] = [];
+        }
+        slotsByDate[dateKey].push({
+          hour: timeSlot.hour,
+          minute: timeSlot.minute
+        });
+      });
+
+      // Process each date's slots
+      for (const [dateStr, slots] of Object.entries(slotsByDate)) {
+        // Sort slots by time
+        const sortedSlots = [...slots].sort((a, b) => 
+          a.hour === b.hour ? a.minute - b.minute : a.hour - b.hour
+        );
+
+        // Process in groups of 3 to create 45-minute blocks
+        for (let i = 0; i < sortedSlots.length; i += 3) {
+          const startSlot = sortedSlots[i];
+          const startDate = new Date(dateStr);
+          startDate.setHours(startSlot.hour, startSlot.minute, 0, 0);
+          
+          // End time is 45 minutes after start
+          const endDate = new Date(startDate);
+          endDate.setMinutes(endDate.getMinutes() + 45);
+
+          // Check if this is already marked as busy
+          const existingBusy = interviewers.some(interviewer => 
+            interviewer.interviews.some(interview => 
+              interview.isPlaceholder && 
+              interview.placeholderName === 'Busy' &&
+              new Date(interview.startTime).getTime() === startDate.getTime()
+            )
+          );
+
+          if (existingBusy) {
+            // If already busy, find and delete the busy slot
+            const interviewerWithBusy = interviewers.find(interviewer => 
+              interviewer.interviews.some(interview => 
+                interview.isPlaceholder && 
+                interview.placeholderName === 'Busy' &&
+                new Date(interview.startTime).getTime() === startDate.getTime()
+              )
+            );
+
+            if (interviewerWithBusy) {
+              const busyInterview = interviewerWithBusy.interviews.find(interview => 
+                interview.isPlaceholder && 
+                interview.placeholderName === 'Busy' &&
+                new Date(interview.startTime).getTime() === startDate.getTime()
+              );
+
+              if (busyInterview) {
+                await deleteInterview(busyInterview.id);
+                
+                // Update local state
+                setInterviewers(prev => 
+                  prev.map(interviewer => ({
+                    ...interviewer,
+                    interviews: interviewer.interviews.filter(i => i.id !== busyInterview.id)
+                  }))
+                );
+              }
+            }
+          } else {
+            // If not busy, create a new busy slot
+            const newInterview = {
+              startTime: startDate,
+              endTime: endDate,
+              location: 'Busy',
+              interviewerId: selectedInterviewer,
+              isPlaceholder: true,
+              placeholderName: 'Busy',
+              applicantName: 'Busy',
+              teamId: undefined
+            };
+
+            await saveInterview(newInterview);
+            
+            // Update local state
+            setInterviewers(prev => 
+              prev.map(interviewer => 
+                interviewer.id === selectedInterviewer
+                  ? {
+                      ...interviewer,
+                      interviews: [...interviewer.interviews, {
+                        ...newInterview,
+                        id: `temp-${Date.now()}`,
+                        startTime: startDate.toISOString(),
+                        endTime: endDate.toISOString()
+                      }]
+                    }
+                  : interviewer
+              )
+            );
+          }
+        }
+      }
+
+      // Clear selection after toggling
+      setSelectedTimeSlots([]);
+      toast({
+        title: "Success",
+        description: "Successfully updated busy status for selected time slots",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error('Error toggling busy status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update busy status. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Open the schedule modal with multiple selected time slots
   const openMultiSelectModal = () => {
     if (selectedTimeSlots.length === 0 || !selectedInterviewer) {
@@ -1234,6 +1398,26 @@ const Scheduler: React.FC = () => {
     );
   };
 
+  // Check if a time slot is marked as busy
+  const isBusySlot = (date: Date, timeSlot: TimeSlot) => {
+    const slotTime = new Date(date);
+    slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
+    
+    return interviewers.some(interviewer => 
+      interviewer.interviews.some(interview => {
+        if (!interview.isPlaceholder || interview.placeholderName !== 'Busy') {
+          return false;
+        }
+        
+        const interviewStart = new Date(interview.startTime);
+        const interviewEnd = new Date(interview.endTime);
+        
+        // Check if the slot time falls within the busy time range
+        return slotTime >= interviewStart && slotTime < interviewEnd;
+      })
+    );
+  };
+
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="flex flex-col overflow-hidden bg-neutral-950 text-xl font-medium shadow-[0px_4px_4px_rgba(0,0,0,0.25)]">
@@ -1332,27 +1516,49 @@ const Scheduler: React.FC = () => {
                 >
                   Week
                 </button>
-                <div className="ml-4 flex items-center gap-2">
-                  <Checkbox
-                    id="multi-select"
-                    checked={isMultiSelectMode}
-                    onCheckedChange={(checked) => {
-                      setIsMultiSelectMode(!!checked);
-                      setSelectedTimeSlots([]);
-                    }}
-                  />
-                  <Label htmlFor="multi-select" className="cursor-pointer">
-                    Multi-select mode
-                  </Label>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="multi-select"
+                      checked={isMultiSelectMode}
+                      onCheckedChange={(checked) => {
+                        setIsMultiSelectMode(!!checked);
+                        setSelectedTimeSlots([]);
+                      }}
+                    />
+                    <Label htmlFor="multi-select" className="cursor-pointer">
+                      Multi-select mode
+                    </Label>
+                  </div>
+                  
+                  {isMultiSelectMode && selectedTimeSlots.length > 0 && (
+                    <>
+                      <Button
+                        onClick={openMultiSelectModal}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        Schedule {selectedTimeSlots.length} Slots
+                      </Button>
+                      <Button
+                        onClick={toggleBusySlots}
+                        variant="outline"
+                        className="border-yellow-500 text-yellow-500 hover:bg-yellow-600 hover:text-white"
+                      >
+                        {selectedTimeSlots.some(slot => {
+                          const slotTime = new Date(slot.date);
+                          slotTime.setHours(slot.timeSlot.hour, slot.timeSlot.minute, 0, 0);
+                          return interviewers.some(interviewer => 
+                            interviewer.interviews.some(interview => 
+                              interview.isPlaceholder && 
+                              interview.placeholderName === 'Busy' &&
+                              new Date(interview.startTime).getTime() === slotTime.getTime()
+                            )
+                          );
+                        }) ? 'Mark as Available' : 'Mark as Busy'}
+                      </Button>
+                    </>
+                  )}
                 </div>
-                {isMultiSelectMode && selectedTimeSlots.length > 0 && (
-                  <Button
-                    onClick={openMultiSelectModal}
-                    className="ml-2 bg-blue-600 hover:bg-blue-700"
-                  >
-                    Schedule {selectedTimeSlots.length} Slots
-                  </Button>
-                )}
               </div>
             </div>
 
@@ -1572,6 +1778,9 @@ const Scheduler: React.FC = () => {
                                             isMultiSelectMode &&
                                               !hasInterview &&
                                               "hover:bg-blue-900/30",
+                                            isBusySlot(date, timeSlot) &&
+                                              !isSelected &&
+                                              "bg-yellow-900/30 hover:bg-yellow-800/40",
                                           )}
                                           onClick={() =>
                                             handleTimeSlotSelect(
@@ -1581,7 +1790,11 @@ const Scheduler: React.FC = () => {
                                             )
                                           }
                                         >
-                                          {hasInterview ? (
+                                          {isBusySlot(date, timeSlot) ? (
+                                            <div className="absolute inset-0 m-1 overflow-hidden rounded bg-yellow-600/80 p-1">
+                                              <div className="truncate text-xs font-medium">Busy</div>
+                                            </div>
+                                          ) : hasInterview ? (
                                             slotInterviews.map(
                                               (interview, i) => (
                                                 <div

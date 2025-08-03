@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TableHeaderProps } from './intervieweetypes';
+import type { TableHeaderProps } from './intervieweetypes';
 
 export const TableHeader: React.FC<TableHeaderProps> = ({ headers }) => {
   return (

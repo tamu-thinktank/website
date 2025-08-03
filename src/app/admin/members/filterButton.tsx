@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Dropdown } from './dropdown';
-import { FilterButtonProps } from './membertypes';
+import type { FilterButtonProps } from './membertypes';
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
   label,
