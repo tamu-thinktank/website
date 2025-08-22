@@ -5,6 +5,7 @@ import { FilterButton } from "./filterButton";
 import { TableHeader } from "./tableHeader";
 import type { ApplicantData, FilterState } from "./types";
 import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
+import { Button } from "@/components/ui/button";
 
 export const ApplicantsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -28,6 +29,7 @@ export const ApplicantsPage: React.FC = () => {
     string | null
   >(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [autoSchedulingIds, setAutoSchedulingIds] = React.useState<Set<string>>(new Set());
 
   const fetchApplicantData = async () => {
     try {
@@ -62,6 +64,140 @@ export const ApplicantsPage: React.FC = () => {
     setIsModalOpen(false);
     setSelectedApplicantId(null);
     void fetchApplicantData();
+  };
+
+  // Auto-schedule an applicant
+  const autoScheduleApplicant = async (applicantId: string, applicantName: string) => {
+    if (autoSchedulingIds.has(applicantId)) return; // Prevent double-clicking
+
+    setAutoSchedulingIds(prev => new Set([...prev, applicantId]));
+
+    try {
+      // First, get the applicant's details to determine team preferences
+      const applicantResponse = await fetch(`/api/applicant/${applicantId}`);
+      if (!applicantResponse.ok) {
+        throw new Error('Failed to fetch applicant details');
+      }
+
+      const applicant = await applicantResponse.json();
+      
+      // Extract team preferences based on application type
+      let preferredTeams: string[] = [];
+      
+      if (applicant.applicationType === "OFFICER" && applicant.preferredPositions) {
+        preferredTeams = applicant.preferredPositions.map((pos: any) => pos.position);
+      } else if (applicant.applicationType === "MATEROV" && applicant.subteamPreferences) {
+        preferredTeams = applicant.subteamPreferences.map((sub: any) => sub.name);
+      } else if (applicant.preferredTeams) {
+        preferredTeams = applicant.preferredTeams.map((team: any) => team.teamId);
+      }
+
+      // Generate available time slots for the next 2 weeks (business hours)
+      const availableSlots = [];
+      const now = new Date();
+      const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+      
+      for (let date = new Date(now); date <= twoWeeksFromNow; date.setDate(date.getDate() + 1)) {
+        // Skip weekends
+        if (date.getDay() === 0 || date.getDay() === 6) continue;
+        
+        // Business hours: 8 AM to 10 PM in 15-minute increments
+        for (let hour = 8; hour < 22; hour++) {
+          for (let minute = 0; minute < 60; minute += 15) {
+            availableSlots.push({
+              hour,
+              minute,
+              date: date.toISOString(),
+            });
+          }
+        }
+      }
+
+      // Call auto-scheduler API
+      const response = await fetch('/api/auto-schedule', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          intervieweeId: applicantId,
+          preferredTeams,
+          availableSlots,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to auto-schedule interview');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.suggestedSlot) {
+        const { interviewer, slot } = result.suggestedSlot;
+        
+        // Schedule the interview immediately
+        const scheduleResponse = await fetch('/api/schedule-interview', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            applicantId: applicantId,
+            interviewerId: interviewer.interviewerId,
+            time: new Date(slot.date).toISOString(),
+            location: 'To be determined',
+            teamId: preferredTeams[0] || null,
+          }),
+        });
+
+        if (!scheduleResponse.ok) {
+          throw new Error('Failed to schedule the interview');
+        }
+
+        // If the applicant was PENDING, update their status to INTERVIEWING
+        if (applicant.status === 'PENDING') {
+          try {
+            const updateStatusResponse = await fetch(`/api/applicant/${applicantId}/status`, {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                status: 'INTERVIEWING'
+              }),
+            });
+
+            if (!updateStatusResponse.ok) {
+              console.warn('Failed to update applicant status to INTERVIEWING');
+            }
+          } catch (statusError) {
+            console.warn('Error updating applicant status:', statusError);
+          }
+        }
+
+        // Success notification
+        alert(`✅ Auto-scheduled interview for ${applicantName} with ${interviewer.name} on ${new Date(slot.date).toLocaleDateString()} at ${slot.hour}:${slot.minute.toString().padStart(2, '0')}`);
+        
+        // Refresh applicant data
+        void fetchApplicantData();
+      } else {
+        // Show available matches but couldn't auto-schedule
+        if (result.matches && result.matches.length > 0) {
+          alert(`⚠️ Found ${result.matches.length} potential interviewer(s) for ${applicantName}, but couldn't auto-schedule. Please use manual scheduling.`);
+        } else {
+          alert(`❌ No available interviewers found for ${applicantName}'s team preferences.`);
+        }
+      }
+    } catch (error) {
+      console.error('Error auto-scheduling:', error);
+      alert(`❌ Failed to auto-schedule interview for ${applicantName}. Please try manual scheduling.`);
+    } finally {
+      setAutoSchedulingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(applicantId);
+        return newSet;
+      });
+    }
   };
 
   const tableHeaders = [
@@ -435,10 +571,31 @@ export const ApplicantsPage: React.FC = () => {
                         {applicant.major}
                       </div>
                       <div className="flex-1 text-center">{applicant.year}</div>
-                      <div
-                        className={`flex-1 text-center ${getStatusColor(applicant.rating)}`}
-                      >
-                        {applicant.rating}
+                      <div className="flex flex-1 items-center justify-center gap-2">
+                        <div
+                          className={`text-center ${getStatusColor(applicant.rating)}`}
+                        >
+                          {applicant.rating}
+                        </div>
+                        {(applicant.rating === "PENDING" || applicant.rating === "INTERVIEWING") && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-7 px-3 text-xs"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              void autoScheduleApplicant(applicant.id, applicant.name);
+                            }}
+                            disabled={autoSchedulingIds.has(applicant.id)}
+                            title={
+                              applicant.rating === "PENDING"
+                                ? "Auto-schedule interview for pending applicant"
+                                : "Auto-schedule interview"
+                            }
+                          >
+                            {autoSchedulingIds.has(applicant.id) ? "Scheduling..." : "Auto-Schedule"}
+                          </Button>
+                        )}
                       </div>
                     </div>
                     {index < filteredApplicants.length - 1 && (

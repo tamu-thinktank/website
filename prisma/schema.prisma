@@ -55,8 +55,11 @@ model User {
   accounts      Account[]
   sessions      Session[]
   availability  OfficerTime[]
-  targetTeams   Challenge[] // teams officer is interviewing for
+  targetTeams   String[] // teams officer is interviewing for
   interviews    Interview[] // interviews conducted by this officer
+  busyTimes     InterviewerBusyTime[] // busy time intervals for this interviewer
+
+  @@index([targetTeams]) // Optimize auto-scheduler queries
 }
 
 model VerificationToken {
@@ -285,6 +288,8 @@ model Application {
   interviewStage  Boolean           @default(false)
   location        String? // interview location if accepted
   applicationType ApplicationType?
+  assignedTeam    String? // Team assigned during interview process
+  challengePreference Challenge? // Preferred challenge for this application
 
   // personal info section
   fullName      String
@@ -338,11 +343,11 @@ model Application {
   interviews     Interview[] // interviews for this applicant
   interviewNotes InterviewNote[] // notes about this applicant
 
-  // Add assigned team field
-  assignedTeam String?
 
   @@unique([uin, applicationType])
   @@unique([email, applicationType])
+  @@index([status, applicationType]) // Optimize applicant filtering
+  @@index([uin]) // Optimize UIN lookups
 }
 
 // New model for interviews
@@ -363,6 +368,8 @@ model Interview {
 
   @@index([applicantId])
   @@index([interviewerId])
+  @@index([interviewerId, startTime, endTime]) // Optimize scheduler queries
+  @@index([startTime, endTime]) // Optimize time-based lookups
 }
 
 // Simplified InterviewNote model - only contains applicantId and content
@@ -375,4 +382,19 @@ model InterviewNote {
   updatedAt   DateTime    @updatedAt
 
   @@index([applicantId])
+}
+
+// Busy time intervals for interviewers
+model InterviewerBusyTime {
+  id            String   @id @default(cuid())
+  interviewerId String
+  interviewer   User     @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
+  startTime     DateTime
+  endTime       DateTime
+  reason        String?  // Optional description for the busy period
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([interviewerId])
+  @@index([startTime, endTime])
 }

@@ -17,13 +17,15 @@ const RatingDropdown = ({ ratingFilter, setRatingFilter }: { ratingFilter: strin
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button
-                    className="flex items-center justify-between w-40 rounded-full border-[0.75px] border-white bg-background px-4 py-2 text-white"
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-40 justify-between"
                     aria-label="Select Rating"
                 >
                     {ratingFilter || "All Ratings"}
-                    <ChevronDown className="ml-2 h-4 w-4 text-white" />
-                </button>
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 className="min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
@@ -62,13 +64,15 @@ const TeamDropdown = ({ teamFilter, setTeamFilter }: { teamFilter: string; setTe
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button
-                    className="flex items-center justify-between w-40 rounded-full border-[0.75px] border-white bg-background px-4 py-2 text-white"
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-40 justify-between"
                     aria-label="Select Teams"
                 >
                     {teamFilter || "All Teams"}
-                    <ChevronDown className="ml-2 h-4 w-4 text-white" />
-                </button>
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 className="min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
@@ -148,7 +152,7 @@ export default function ApplicantsTable() {
                 />
                 <RatingDropdown ratingFilter={ratingFilter} setRatingFilter={setRatingFilter} />
                 <TeamDropdown teamFilter={teamFilter} setTeamFilter={setTeamFilter} />
-                <Button className="border-white rounded-full text-white border-[0.75px] bg-background">More</Button>
+                <Button variant="outline">More</Button>
             </div>
             <div className="w-[70%] border rounded-lg border-white border-[0.75px]">
                 <Table>

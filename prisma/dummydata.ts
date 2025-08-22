@@ -29,13 +29,32 @@ async function createDummyUsers(numUsers = 8) {
   console.log(`Creating ${numUsers} dummy users...`)
   const existingEmails = new Set<string>()
   
+  // Available teams for target assignment - broader set including specialties and positions
+  const availableTeams = [
+    'TSGC', 
+    'AIAA',
+    'VICE_PRESIDENT',
+    'PROJECT_MANAGER', 
+    'COMPUTATION_COMMUNICATIONS',
+    'ELECTRICAL_POWER',
+    'FLUIDS_PROPULSION', 
+    'GNC',
+    'THERMAL_MECHANISMS_STRUCTURES',
+    'MATE_ROV_LEADERSHIP'
+  ] as const
+  
   for (let i = 0; i < numUsers; i++) {
+    // Assign 1-2 target teams randomly
+    const numTargetTeams = faker.number.int({ min: 1, max: 2 })
+    const targetTeams = faker.helpers.arrayElements(availableTeams, numTargetTeams)
+    
     await prisma.user.create({
       data: {
         name: faker.person.fullName(),
         email: generateUniqueEmail(existingEmails),
         emailVerified: Math.random() > 0.5 ? faker.date.recent() : null,
         image: faker.image.avatar(),
+        targetTeams: targetTeams,
       },
     })
   }
@@ -84,7 +103,16 @@ async function createDummyApplications(numApplications = 25) {
   const applicationTypes = ['DCMEMBER', 'OFFICER', 'MATEROV', 'MINIDC'] as const
   const years = ['FRESHMAN', 'SOPHOMORE', 'JUNIOR', 'SENIOR', 'GRADUATE'] as const
   const majors = ['ENGR', 'OPEN', 'AERO', 'BAEN', 'BMEN', 'CHEN', 'CPEN', 'CSCE', 'CVEN', 'ELEN', 'EVEN', 'ETID', 'ISEN', 'MSEN', 'MEEN', 'MMET', 'MXET', 'NUEN', 'OCEN', 'PETE', 'OTHER'] as const
-  const statuses = ['PENDING', 'ACCEPTED', 'REJECTED', 'REJECTED_APP', 'REJECTED_INT', 'INTERVIEWING'] as const
+  // Weighted status distribution - more PENDING and INTERVIEWING for testing
+  const getRandomStatus = () => {
+    const rand = Math.random()
+    if (rand < 0.4) return 'PENDING'        // 40% pending
+    if (rand < 0.7) return 'INTERVIEWING'   // 30% interviewing
+    if (rand < 0.8) return 'ACCEPTED'       // 10% accepted
+    if (rand < 0.9) return 'REJECTED'       // 10% rejected
+    if (rand < 0.95) return 'REJECTED_APP'  // 5% rejected app
+    return 'REJECTED_INT'                   // 5% rejected interview
+  }
   const interestLevels = ['HIGH', 'MEDIUM', 'LOW'] as const
   const referralSources = ['MSC_OPEN_HOUSE', 'ESO_OPEN_HOUSE', 'MULTISECTION', 'REFERRAL', 'INSTAGRAM', 'FLYERS'] as const
   
@@ -122,7 +150,7 @@ async function createDummyApplications(numApplications = 25) {
         signatureCommitment: Math.random() > 0.5 ? fullName : null,
         signatureAccountability: Math.random() > 0.5 ? fullName : null,
         signatureQuality: Math.random() > 0.5 ? fullName : null,
-        status: faker.helpers.arrayElement(statuses),
+        status: getRandomStatus(),
         
         // Officer-specific fields
         summerPlans: appType === 'OFFICER' ? faker.lorem.paragraph({ min: 2, max: 5 }).substring(0, 100) : null,
@@ -266,9 +294,9 @@ async function createDummyAvailability() {
     const numTimes = faker.number.int({ min: 5, max: 15 })
     
     for (let i = 0; i < numTimes; i++) {
-      const baseTime = faker.date.future({ days: 14 })
+      const baseTime = faker.date.soon({ days: 14 })
       baseTime.setMinutes(0, 0, 0) // Round to nearest hour
-      baseTime.setHours(faker.number.int({ min: 9, max: 17 })) // Business hours
+      baseTime.setHours(faker.number.int({ min: 8, max: 21 })) // Business hours 8am-10pm
       
       const gridTime = baseTime.toISOString()
       
@@ -281,35 +309,91 @@ async function createDummyAvailability() {
     }
   }
   
-  // Create officer availability
-  const availabilityTypes = ['AVAILABLE', 'BUSY'] as const
-  
+  // Create officer availability (using updated schema) - reduced since default is now available
   for (const user of users) {
-    const numTimes = faker.number.int({ min: 10, max: 25 })
+    const numTimes = faker.number.int({ min: 5, max: 15 }) // Reduced since default is available
     
     for (let i = 0; i < numTimes; i++) {
-      const baseTime = faker.date.future({ days: 14 })
+      const baseTime = faker.date.soon({ days: 14 })
       baseTime.setMinutes(0, 0, 0)
-      baseTime.setHours(faker.number.int({ min: 8, max: 18 }))
+      baseTime.setHours(faker.number.int({ min: 8, max: 21 })) // Business hours 8am-10pm
       
       const gridTime = baseTime.toISOString()
       const selectedAt = new Date().toISOString()
-      const availabilityType = faker.helpers.arrayElement(availabilityTypes)
       
       await prisma.officerTime.create({
         data: {
           gridTime: gridTime,
           officerId: user.id,
           selectedAt: selectedAt,
-          type: availabilityType,
-          isRecurring: faker.datatype.boolean(),
-          reason: availabilityType === 'BUSY' ? faker.lorem.sentence() : null,
         },
       }).catch(() => {}) // Ignore conflicts
     }
   }
   
   console.log('✓ Created availability data')
+}
+
+async function createDummyBusyTimes() {
+  console.log('Creating dummy busy times for interviewers...')
+  
+  const users = await prisma.user.findMany()
+  
+  for (const user of users) {
+    // Create 2-5 busy time periods for each interviewer
+    const numBusyTimes = faker.number.int({ min: 2, max: 5 })
+    
+    for (let i = 0; i < numBusyTimes; i++) {
+      const baseTime = faker.date.soon({ days: 14 })
+      
+      // Set to business hours (8 AM to 6 PM)
+      baseTime.setHours(faker.number.int({ min: 8, max: 18 }))
+      baseTime.setMinutes(faker.helpers.arrayElement([0, 15, 30, 45])) // 15-minute increments
+      baseTime.setSeconds(0, 0)
+      
+      const startTime = new Date(baseTime)
+      
+      // Create busy periods of 45 minutes, 1.5 hours, or 3 hours
+      const durationOptions = [45, 90, 180] // minutes
+      const duration = faker.helpers.arrayElement(durationOptions)
+      const endTime = new Date(startTime.getTime() + (duration * 60 * 1000))
+      
+      // Ensure we don't go past business hours (6 PM)
+      const businessEnd = new Date(startTime)
+      businessEnd.setHours(18, 0, 0, 0)
+      
+      if (endTime > businessEnd) {
+        endTime.setTime(businessEnd.getTime())
+      }
+      
+      // Skip if the busy time is too short (less than 30 minutes)
+      if (endTime.getTime() - startTime.getTime() < 30 * 60 * 1000) {
+        continue
+      }
+      
+      const reasons = [
+        'Class: ENGR 489',
+        'Meeting with advisor', 
+        'Lab work',
+        'Other commitments',
+        'Personal appointment',
+        'Research meeting',
+        'Study group',
+        null // Some busy times without reason
+      ]
+      
+      await prisma.interviewerBusyTime.create({
+        data: {
+          interviewerId: user.id,
+          startTime: startTime,
+          endTime: endTime,
+          reason: faker.helpers.arrayElement(reasons),
+        },
+      }).catch(() => {}) // Ignore conflicts (overlapping times)
+    }
+  }
+  
+  console.log('✓ Created busy time data')
 }
 
 async function main() {
@@ -319,15 +403,17 @@ async function main() {
     // Create data in order of dependencies
     await createDummyUsers(8)
     await createDummyTeamsAndResearchAreas()
-    await createDummyApplications(25)
+    await createDummyApplications(40)
     await createDummyAvailability()
+    await createDummyBusyTimes()
     
     console.log('\n✅ All dummy data created successfully!')
     console.log('\nSummary:')
-    console.log('- 8 officers (users)')
+    console.log('- 8 officers (users) with target teams')
     console.log('- 2 teams with research areas')
-    console.log('- 25 applications with preferences, commitments, and related data')
+    console.log('- 40 applications with preferences, commitments, and related data (40% PENDING, 30% INTERVIEWING)')
     console.log('- Availability data for both applicants and officers')
+    console.log('- Busy time intervals for interviewers')
     
   } catch (error) {
     console.error('❌ Error creating dummy data:', error)

@@ -3,9 +3,9 @@ import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const applicantId = params.id
+    const { id: applicantId } = await params
 
     const notes = await prisma.interviewNote.findMany({
       where: { applicantId },

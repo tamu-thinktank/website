@@ -31,37 +31,142 @@ export async function POST(request: Request) {
       )
     }
 
-    // Parse the time string
+    // Parse and validate the time string
     const startTime = new Date(time)
     const endTime = new Date(startTime.getTime() + 45 * 60000) // 45 minutes later
     
-    // Check for time conflicts
+    // Validate the time is not in the past (allow some buffer for scheduling)
+    const now = new Date()
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000)
+    
+    if (startTime < fiveMinutesAgo) {
+      return NextResponse.json(
+        { error: "Cannot schedule interviews in the past" }, 
+        { status: 400 }
+      )
+    }
+    
+    // Validate the time is within business hours (8 AM - 10 PM)
+    const hour = startTime.getHours()
+    if (hour < 8 || hour >= 22) {
+      return NextResponse.json(
+        { error: "Interviews can only be scheduled between 8 AM and 10 PM" }, 
+        { status: 400 }
+      )
+    }
+    
+    // Validate that the interview doesn't extend past 10 PM
+    const endHour = endTime.getHours()
+    const endMinute = endTime.getMinutes()
+    if (endHour > 22 || (endHour === 22 && endMinute > 0)) {
+      return NextResponse.json(
+        { error: "Interview would extend past 10 PM business hours" }, 
+        { status: 400 }
+      )
+    }
+    
+    // Check for time conflicts with existing interviews for this interviewer
     const conflictingInterviews = await db.interview.findMany({
       where: {
         interviewerId,
         OR: [
-          // New interview starts during an existing interview
+          // New interview overlaps with existing interview
           {
             startTime: { lt: endTime },
             endTime: { gt: startTime }
-          },
-          // New interview ends during an existing interview
-          {
-            startTime: { lt: endTime },
-            endTime: { gt: startTime }
-          },
-          // New interview completely contains an existing interview
-          {
-            startTime: { gte: startTime },
-            endTime: { lte: endTime }
           }
         ]
+      },
+      include: {
+        applicant: {
+          select: {
+            id: true,
+            fullName: true
+          }
+        }
       }
     })
 
     if (conflictingInterviews.length > 0) {
       return NextResponse.json(
-        { error: "Time slot conflicts with an existing interview" }, 
+        { 
+          error: "Time slot conflicts with an existing interview",
+          conflictingInterviews: conflictingInterviews.map(interview => ({
+            id: interview.id,
+            startTime: interview.startTime,
+            endTime: interview.endTime,
+            applicantName: interview.isPlaceholder ? interview.placeholderName : interview.applicant?.fullName,
+            location: interview.location
+          }))
+        }, 
+        { status: 409 }
+      )
+    }
+
+    // Check for conflicts with the same applicant having other interviews at overlapping times
+    if (!isPlaceholder && applicantId) {
+      const applicantConflicts = await db.interview.findMany({
+        where: {
+          applicantId,
+          OR: [
+            // Same applicant has interview overlapping with this new time
+            {
+              startTime: { lt: endTime },
+              endTime: { gt: startTime }
+            }
+          ]
+        },
+        include: {
+          interviewer: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        }
+      })
+
+      if (applicantConflicts.length > 0) {
+        return NextResponse.json(
+          { 
+            error: "Applicant already has a conflicting interview scheduled",
+            conflictingInterviews: applicantConflicts.map(interview => ({
+              id: interview.id,
+              startTime: interview.startTime,
+              endTime: interview.endTime,
+              interviewerName: interview.interviewer?.name,
+              location: interview.location
+            }))
+          }, 
+          { status: 409 }
+        )
+      }
+    }
+
+    // Check for time conflicts with busy times
+    const conflictingBusyTimes = await db.interviewerBusyTime.findMany({
+      where: {
+        interviewerId,
+        OR: [
+          // New interview overlaps with busy time
+          {
+            startTime: { lt: endTime },
+            endTime: { gt: startTime }
+          }
+        ]
+      }
+    })
+
+    if (conflictingBusyTimes.length > 0) {
+      return NextResponse.json(
+        { 
+          error: "Time slot conflicts with interviewer busy time",
+          busyTimes: conflictingBusyTimes.map(bt => ({
+            startTime: bt.startTime,
+            endTime: bt.endTime,
+            reason: bt.reason
+          }))
+        }, 
         { status: 400 }
       )
     }
