@@ -79,17 +79,17 @@ export const ApplicantsPage: React.FC = () => {
         throw new Error('Failed to fetch applicant details');
       }
 
-      const applicant = await applicantResponse.json();
+      const applicant = await applicantResponse.json() as any;
       
       // Extract team preferences based on application type
       let preferredTeams: string[] = [];
       
       if (applicant.applicationType === "OFFICER" && applicant.preferredPositions) {
-        preferredTeams = applicant.preferredPositions.map((pos: any) => pos.position);
+        preferredTeams = applicant?.preferredPositions?.map((pos: any) => pos?.position) || [];
       } else if (applicant.applicationType === "MATEROV" && applicant.subteamPreferences) {
-        preferredTeams = applicant.subteamPreferences.map((sub: any) => sub.name);
+        preferredTeams = applicant?.subteamPreferences?.map((sub: any) => sub?.name) || [];
       } else if (applicant.preferredTeams) {
-        preferredTeams = applicant.preferredTeams.map((team: any) => team.teamId);
+        preferredTeams = applicant?.preferredTeams?.map((team: any) => team?.teamId) || [];
       }
 
       // Generate available time slots for the next 2 weeks (business hours)
@@ -130,10 +130,10 @@ export const ApplicantsPage: React.FC = () => {
         throw new Error('Failed to auto-schedule interview');
       }
 
-      const result = await response.json();
+      const result = await response.json() as any;
 
       if (result.success && result.suggestedSlot) {
-        const { interviewer, slot } = result.suggestedSlot;
+        const { interviewer, slot } = result?.suggestedSlot || {};
         
         // Schedule the interview immediately
         const scheduleResponse = await fetch('/api/schedule-interview', {
@@ -143,8 +143,8 @@ export const ApplicantsPage: React.FC = () => {
           },
           body: JSON.stringify({
             applicantId: applicantId,
-            interviewerId: interviewer.interviewerId,
-            time: new Date(slot.date).toISOString(),
+            interviewerId: interviewer?.interviewerId,
+            time: new Date(slot?.date).toISOString(),
             location: 'To be determined',
             teamId: preferredTeams[0] || null,
           }),
@@ -155,7 +155,7 @@ export const ApplicantsPage: React.FC = () => {
         }
 
         // If the applicant was PENDING, update their status to INTERVIEWING
-        if (applicant.status === 'PENDING') {
+        if (applicant?.status === 'PENDING') {
           try {
             const updateStatusResponse = await fetch(`/api/applicant/${applicantId}/status`, {
               method: 'PATCH',
@@ -182,8 +182,8 @@ export const ApplicantsPage: React.FC = () => {
         void fetchApplicantData();
       } else {
         // Show available matches but couldn't auto-schedule
-        if (result.matches && result.matches.length > 0) {
-          alert(`⚠️ Found ${result.matches.length} potential interviewer(s) for ${applicantName}, but couldn't auto-schedule. Please use manual scheduling.`);
+        if (result?.matches && result?.matches?.length > 0) {
+          alert(`⚠️ Found ${result?.matches?.length} potential interviewer(s) for ${applicantName}, but couldn't auto-schedule. Please use manual scheduling.`);
         } else {
           alert(`❌ No available interviewers found for ${applicantName}'s team preferences.`);
         }
@@ -228,9 +228,9 @@ export const ApplicantsPage: React.FC = () => {
     "Reset",
   ];
 
-  const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  const ratingOptions = ["High", "Medium", "Low", "Reset"];
-  const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
+  const _teamOptions = ["Team A", "Team B", "Team C", "Reset"];
+  const _ratingOptions = ["High", "Medium", "Low", "Reset"];
+  const _interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
   const materovsubteams = [
     "COMPUTATION_COMMUNICATIONS",
     "ELECTRICAL_POWER",
@@ -283,7 +283,7 @@ export const ApplicantsPage: React.FC = () => {
     "Reset",
   ];
 
-  const handleTransfer = async () => {
+  const _handleTransfer = async () => {
     // Get applicants with PENDING status to transfer
     const applicantsToTransfer = applicantData.filter(
       (applicant) => applicant.status === "PENDING",

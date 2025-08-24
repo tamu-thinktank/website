@@ -177,7 +177,7 @@ export const ApplicantDetailsModal = ({
   // Add the scheduleInterviewEmail mutation
   const { mutate: sendInterviewEmail } =
     api.admin.scheduleInterview.useMutation({
-      onSuccess: (data, input) => {
+      onSuccess: (_data, input) => {
         toast({
           title: "Success",
           description: `Interview email sent to ${input.applicantName}`,
@@ -394,8 +394,8 @@ export const ApplicantDetailsModal = ({
     if (!selectedDate || !selectedTime) return "";
 
     const [hoursStr, minutesStr] = selectedTime.split(":");
-    const hours = Number.parseInt(hoursStr, 10) || 0; // Default to 0 if parsing fails
-    const minutes = Number.parseInt(minutesStr, 10) || 0; // Default to 0 if parsing fails
+    const hours = Number.parseInt(hoursStr!, 10) || 0; // Default to 0 if parsing fails
+    const minutes = Number.parseInt(minutesStr!, 10) || 0; // Default to 0 if parsing fails
 
     const dateTime = new Date(selectedDate);
     dateTime.setHours(hours, minutes, 0, 0);
@@ -491,7 +491,7 @@ export const ApplicantDetailsModal = ({
           `Failed to check interviewer schedule: ${response.status}`,
         );
       }
-      const data = await response.json();
+      const data = await response.json() as { hasConflict: boolean };
       return data.hasConflict;
     } catch (error) {
       console.error("Error checking interviewer schedule:", error);
@@ -709,7 +709,7 @@ export const ApplicantDetailsModal = ({
         return {
           ...prev,
           assignedTeam: newTeam || undefined,
-          status: newStatus || prev.status,
+          status: (newStatus as typeof prev.status) || prev.status,
         };
       });
 
@@ -808,38 +808,38 @@ export const ApplicantDetailsModal = ({
         throw new Error('Failed to auto-schedule interview');
       }
 
-      const result = await response.json();
+      const result = await response.json() as any;
 
       if (result.success && result.suggestedSlot) {
         const { interviewer, slot } = result.suggestedSlot;
         
         // Auto-fill the form with the suggested slot
-        setSelectedInterviewer(interviewer.interviewerId);
-        setSelectedDate(new Date(slot.date));
-        setSelectedTime(`${slot.hour}:${slot.minute.toString().padStart(2, '0')}`);
+        setSelectedInterviewer(interviewer?.interviewerId);
+        setSelectedDate(new Date(slot?.date));
+        setSelectedTime(`${slot?.hour}:${slot?.minute?.toString().padStart(2, '0')}`);
         
         toast({
           title: "Auto-Schedule Suggestion",
-          description: `Found match with ${interviewer.name} on ${new Date(slot.date).toLocaleDateString()} at ${slot.hour}:${slot.minute.toString().padStart(2, '0')}. Please review and confirm.`,
+          description: `Found match with ${interviewer?.name} on ${new Date(slot?.date).toLocaleDateString()} at ${slot?.hour}:${slot?.minute?.toString().padStart(2, '0')}. Please review and confirm.`,
         });
       } else {
         // Show all available matches
-        if (result.matches && result.matches.length > 0) {
+        if (result?.matches && result?.matches?.length > 0) {
           const topMatch = result.matches[0];
-          if (topMatch.availableSlots.length > 0) {
+          if (topMatch?.availableSlots?.length > 0) {
             const firstSlot = topMatch.availableSlots[0];
-            setSelectedInterviewer(topMatch.interviewerId);
-            setSelectedDate(new Date(firstSlot.date));
-            setSelectedTime(`${firstSlot.hour}:${firstSlot.minute.toString().padStart(2, '0')}`);
+            setSelectedInterviewer(topMatch?.interviewerId);
+            setSelectedDate(new Date(firstSlot?.date));
+            setSelectedTime(`${firstSlot?.hour}:${firstSlot?.minute?.toString().padStart(2, '0')}`);
             
             toast({
               title: "Auto-Schedule Suggestion", 
-              description: `Found partial match with ${topMatch.name}. ${result.matches.length} interviewer(s) available. Please review the suggestion.`,
+              description: `Found partial match with ${topMatch?.name}. ${result?.matches?.length} interviewer(s) available. Please review the suggestion.`,
             });
           } else {
             toast({
               title: "No Available Slots",
-              description: `Found ${result.matches.length} matching interviewer(s) but no available time slots. Please schedule manually.`,
+              description: `Found ${result?.matches?.length} matching interviewer(s) but no available time slots. Please schedule manually.`,
               variant: "destructive",
             });
           }

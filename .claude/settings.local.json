@@ -12,7 +12,9 @@
       "Bash(pnpm install:*)",
       "Bash(pnpm dev:*)",
       "Bash(curl:*)",
-      "Bash(npx prisma studio:*)"
+      "Bash(npx prisma studio:*)",
+      "Bash(pnpm lint:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }

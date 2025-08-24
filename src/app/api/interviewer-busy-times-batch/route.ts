@@ -21,8 +21,8 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = BatchBusyTimeSchema.parse(body)
     
-    const results = []
-    const errors = []
+    const results: any[] = []
+    const errors: any[] = []
     
     // Process operations in a transaction for consistency
     await db.$transaction(async (tx) => {
@@ -193,7 +193,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: results.length > 0,
       processed: results.length,
-      errors: errors.length,
+      errorsCount: errors.length,
       results,
       errors: errors.length > 0 ? errors : undefined
     })
@@ -218,6 +218,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
+    console.log("Batch API PUT request body:", body)
     
     // Schema for bulk time slot busy marking
     const BulkBusyTimeSchema = z.object({
@@ -232,6 +233,7 @@ export async function PUT(request: Request) {
     })
     
     const validatedData = BulkBusyTimeSchema.parse(body)
+    console.log("Validated data:", validatedData)
     const { interviewerId, timeSlots, markAsBusy, reason } = validatedData
     
     // Check if interviewer exists
@@ -247,7 +249,7 @@ export async function PUT(request: Request) {
       )
     }
     
-    const results = []
+    const results: any[] = []
     
     // Process in smaller batches to avoid transaction timeouts
     const BATCH_SIZE = 400; // Process max 400 slots at a time
@@ -278,7 +280,7 @@ export async function PUT(request: Request) {
                   interviewerId,
                   startTime: slotTime,
                   endTime: slotEndTime,
-                  reason: reason || 'Busy'
+                  reason: reason ?? 'Busy'
                 }
               })
               
@@ -333,6 +335,7 @@ export async function PUT(request: Request) {
     
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error("Zod validation error:", error.errors)
       return NextResponse.json(
         { error: "Invalid request data", details: error.errors },
         { status: 400 }
@@ -341,7 +344,10 @@ export async function PUT(request: Request) {
     
     console.error("Error bulk updating busy times:", error)
     return NextResponse.json(
-      { error: "Failed to bulk update busy times" },
+      { 
+        error: "Failed to bulk update busy times",
+        details: error instanceof Error ? error.message : 'Unknown error'
+      },
       { status: 500 }
     )
   }

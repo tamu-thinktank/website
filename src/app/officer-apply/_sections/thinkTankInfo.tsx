@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { qOfficer } from "@/consts/officer-apply-form";
-import type { OfficerPositionInterest } from "@/lib/validations/officer-apply";
+// import type { { position: OfficerPosition; interestLevel: InterestLevel } } from "@/lib/validations/officer-apply"; // Type doesn't exist
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { OfficerCommitment, OfficerPosition, InterestLevel } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
@@ -100,7 +100,7 @@ export default function ThinkTankInfo() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {Object.values(OfficerPosition).map((position) => {
-                  const isSelected = field.value.some((p: OfficerPositionInterest) => p.position === position);
+                  const isSelected = field.value.some((p: { position: OfficerPosition; interestLevel: InterestLevel }) => p.position === position);
                   return (
                     <FormItem key={position}>
                       <div className="flex items-center space-x-2">
@@ -109,7 +109,7 @@ export default function ThinkTankInfo() {
                           onCheckedChange={(checked) => {
                             const updatedPositions = checked
                               ? [...field.value, { position, interestLevel: "MEDIUM" as InterestLevel }]
-                              : field.value.filter((p: OfficerPositionInterest) => p.position !== position);
+                              : field.value.filter((p: { position: OfficerPosition; interestLevel: InterestLevel }) => p.position !== position);
                             field.onChange(updatedPositions);
                           }}
                         />
@@ -121,10 +121,10 @@ export default function ThinkTankInfo() {
                         <div className="mt-2">
                           <Select
                             value={
-                              field.value.find((p: OfficerPositionInterest) => p.position === position)?.interestLevel ?? "MEDIUM"
+                              field.value.find((p: { position: OfficerPosition; interestLevel: InterestLevel }) => p.position === position)?.interestLevel ?? "MEDIUM"
                             }
                             onValueChange={(value) => {
-                              const updated = field.value.map((p: OfficerPositionInterest) =>
+                              const updated = field.value.map((p: { position: OfficerPosition; interestLevel: InterestLevel }) =>
                                 p.position === position ? { ...p, interestLevel: value as InterestLevel } : p
                               );
                               field.onChange(updated);
