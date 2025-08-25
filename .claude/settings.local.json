@@ -14,7 +14,10 @@
       "Bash(curl:*)",
       "Bash(npx prisma studio:*)",
       "Bash(pnpm lint:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(npx prisma db seed:*)",
+      "Bash(timeout 30 npx tsx prisma/dummydata.ts)",
+      "Bash(npx prisma:*)"
     ],
     "deny": []
   }

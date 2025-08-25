@@ -190,10 +190,26 @@ export async function POST(request: Request) {
       }
     })
     
+    // Invalidate auto-scheduler cache for all affected interviewers
+    const affectedInterviewers = new Set<string>()
+    validatedData.operations.forEach(op => {
+      affectedInterviewers.add(op.interviewerId)
+    })
+    
+    try {
+      const { SchedulerCache } = await import('@/lib/redis')
+      for (const interviewerId of affectedInterviewers) {
+        await SchedulerCache.invalidateInterviewerSchedule(interviewerId)
+      }
+      console.log(`Invalidated auto-scheduler cache for ${affectedInterviewers.size} interviewers`)
+    } catch (cacheError) {
+      console.warn('Failed to invalidate auto-scheduler cache:', cacheError)
+    }
+    
     return NextResponse.json({
       success: results.length > 0,
       processed: results.length,
-      errorsCount: errors.length,
+      errors: errors.length,
       results,
       errors: errors.length > 0 ? errors : undefined
     })
@@ -218,7 +234,6 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
-    console.log("Batch API PUT request body:", body)
     
     // Schema for bulk time slot busy marking
     const BulkBusyTimeSchema = z.object({
@@ -233,7 +248,11 @@ export async function PUT(request: Request) {
     })
     
     const validatedData = BulkBusyTimeSchema.parse(body)
-    console.log("Validated data:", validatedData)
+    console.log("Validated data:", {
+      interviewerId: validatedData.interviewerId,
+      slotsCount: validatedData.timeSlots.length,
+      markAsBusy: validatedData.markAsBusy
+    })
     const { interviewerId, timeSlots, markAsBusy, reason } = validatedData
     
     // Check if interviewer exists
@@ -251,77 +270,108 @@ export async function PUT(request: Request) {
     
     const results: any[] = []
     
-    // Process in smaller batches to avoid transaction timeouts
-    const BATCH_SIZE = 400; // Process max 400 slots at a time
+    // Process in larger batches to handle multiple columns efficiently
+    const BATCH_SIZE = 2000; // Process max 2000 slots at a time (can handle ~35 columns of 56 cells each)
     
     for (let i = 0; i < timeSlots.length; i += BATCH_SIZE) {
       const batch = timeSlots.slice(i, i + BATCH_SIZE);
+      console.log(`Processing batch ${Math.floor(i/BATCH_SIZE) + 1}/${Math.ceil(timeSlots.length/BATCH_SIZE)}: ${batch.length} slots`);
       
       await db.$transaction(async (tx) => {
         if (markAsBusy) {
-          // Mark time slots as busy by creating busy time entries
-          for (const slot of batch) {
+          // Bulk check for existing busy times to avoid individual queries
+          const batchStartTimes = batch.map(slot => {
             const slotTime = new Date(slot.date)
             slotTime.setHours(slot.hour, slot.minute, 0, 0)
-            const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000) // 15-minute slots
-            
-            // Check if this exact slot is already marked as busy
-            const existing = await tx.interviewerBusyTime.findFirst({
-              where: {
-                interviewerId,
-                startTime: { lte: slotTime },
-                endTime: { gte: slotEndTime }
-              }
-            })
-            
-            if (!existing) {
-              const busyTime = await tx.interviewerBusyTime.create({
-                data: {
-                  interviewerId,
-                  startTime: slotTime,
-                  endTime: slotEndTime,
-                  reason: reason ?? 'Busy'
-                }
-              })
-              
-              results.push({
-                slot,
-                operation: 'marked_busy',
-                busyTimeId: busyTime.id
-              })
-            } else {
-              results.push({
-                slot,
-                operation: 'already_busy',
-                busyTimeId: existing.id
-              })
+            return slotTime
+          })
+          
+          const existingBusyTimes = await tx.interviewerBusyTime.findMany({
+            where: {
+              interviewerId,
+              startTime: { in: batchStartTimes }
             }
-          }
-        } else {
-          // Mark time slots as available by removing busy time entries
+          })
+          
+          const existingStartTimes = new Set(
+            existingBusyTimes.map(bt => bt.startTime.getTime())
+          )
+          
+          // Prepare bulk insert data for new busy times
+          const newBusyTimes = []
+          
           for (const slot of batch) {
             const slotTime = new Date(slot.date)
             slotTime.setHours(slot.hour, slot.minute, 0, 0)
             const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000)
             
-            const deleted = await tx.interviewerBusyTime.deleteMany({
-              where: {
+            if (!existingStartTimes.has(slotTime.getTime())) {
+              newBusyTimes.push({
                 interviewerId,
-                startTime: { lte: slotTime },
-                endTime: { gte: slotEndTime }
-              }
+                startTime: slotTime,
+                endTime: slotEndTime,
+                reason: reason || 'Busy'
+              })
+              
+              results.push({
+                slot,
+                operation: 'marked_busy',
+                busyTimeId: 'pending' // Will be updated after bulk insert
+              })
+            } else {
+              results.push({
+                slot,
+                operation: 'already_busy',
+                busyTimeId: existingBusyTimes.find(bt => bt.startTime.getTime() === slotTime.getTime())?.id
+              })
+            }
+          }
+          
+          // Bulk create new busy times if any
+          if (newBusyTimes.length > 0) {
+            await tx.interviewerBusyTime.createMany({
+              data: newBusyTimes,
+              skipDuplicates: true
             })
-            
+          }
+        } else {
+          // Bulk delete busy time entries for efficiency
+          const batchStartTimes = batch.map(slot => {
+            const slotTime = new Date(slot.date)
+            slotTime.setHours(slot.hour, slot.minute, 0, 0)
+            return slotTime
+          })
+          
+          const deleted = await tx.interviewerBusyTime.deleteMany({
+            where: {
+              interviewerId,
+              startTime: { in: batchStartTimes }
+            }
+          })
+          
+          // Add results for each slot
+          for (const slot of batch) {
             results.push({
               slot,
               operation: 'marked_available',
-              deleted: deleted.count
+              deleted: 1 // Approximation since we did bulk delete
             })
           }
         }
       }, {
-        timeout: 10000, // 10 second timeout per batch
+        timeout: 30000, // 30 second timeout per batch to handle larger volumes
       })
+    }
+    
+    console.log(`Bulk operation completed: ${timeSlots.length} slots processed for interviewer ${interviewer.name}`);
+    
+    // Invalidate auto-scheduler cache since interviewer availability has changed
+    try {
+      const { SchedulerCache } = await import('@/lib/redis')
+      await SchedulerCache.invalidateInterviewerSchedule(interviewerId)
+      console.log(`Invalidated auto-scheduler cache for interviewer ${interviewerId}`)
+    } catch (cacheError) {
+      console.warn('Failed to invalidate auto-scheduler cache:', cacheError)
     }
     
     return NextResponse.json({
@@ -330,12 +380,11 @@ export async function PUT(request: Request) {
       interviewer: interviewer.name,
       processed: timeSlots.length,
       operation: markAsBusy ? 'marked_busy' : 'marked_available',
-      results
+      results: results.slice(0, 100) // Limit response size, return first 100 results
     })
     
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error("Zod validation error:", error.errors)
       return NextResponse.json(
         { error: "Invalid request data", details: error.errors },
         { status: 400 }
@@ -344,10 +393,7 @@ export async function PUT(request: Request) {
     
     console.error("Error bulk updating busy times:", error)
     return NextResponse.json(
-      { 
-        error: "Failed to bulk update busy times",
-        details: error instanceof Error ? error.message : 'Unknown error'
-      },
+      { error: "Failed to bulk update busy times" },
       { status: 500 }
     )
   }

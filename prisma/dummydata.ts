@@ -401,19 +401,18 @@ async function main() {
   
   try {
     // Create data in order of dependencies
-    await createDummyUsers(8)
+    // NOTE: Removed createDummyUsers() - only real authenticated users should exist
     await createDummyTeamsAndResearchAreas()
     await createDummyApplications(40)
     await createDummyAvailability()
-    await createDummyBusyTimes()
+    // NOTE: Removed createDummyBusyTimes() - no dummy users to create busy times for
     
     console.log('\n✅ All dummy data created successfully!')
     console.log('\nSummary:')
-    console.log('- 8 officers (users) with target teams')
     console.log('- 2 teams with research areas')
     console.log('- 40 applications with preferences, commitments, and related data (40% PENDING, 30% INTERVIEWING)')
-    console.log('- Availability data for both applicants and officers')
-    console.log('- Busy time intervals for interviewers')
+    console.log('- Availability data for applicants only')
+    console.log('- No dummy users or interviewers created (use real authenticated users only)')
     
   } catch (error) {
     console.error('❌ Error creating dummy data:', error)

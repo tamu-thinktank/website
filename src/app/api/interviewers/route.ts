@@ -4,6 +4,7 @@ import { Challenge } from "@prisma/client"
 
 export async function GET() {
   try {
+    console.log("📋 [INTERVIEWERS API] Fetching all interviewers...")
     const interviewers = await db.user.findMany({
       select: {
         id: true,
@@ -22,9 +23,18 @@ export async function GET() {
       },
     })
 
+    console.log(`📋 [INTERVIEWERS API] Found ${interviewers.length} interviewer(s)`)
+    interviewers.forEach(interviewer => {
+      console.log(`  - ${interviewer.name} (${interviewer.email}) - Teams: [${interviewer.targetTeams?.join(', ') || 'none'}]`)
+    })
+
+    if (interviewers.length === 0) {
+      console.warn("⚠️  [INTERVIEWERS API] No interviewers found. Users need to log in first to create interviewer accounts.")
+    }
+
     return NextResponse.json(interviewers)
   } catch (error) {
-    console.error("Error fetching interviewers:", error)
+    console.error("❌ [INTERVIEWERS API] Error fetching interviewers:", error)
     return NextResponse.json({ error: "Failed to fetch interviewers" }, { status: 500 })
   }
 }

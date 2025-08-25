@@ -290,6 +290,7 @@ model Application {
   applicationType ApplicationType?
   assignedTeam    String? // Team assigned during interview process
   challengePreference Challenge? // Preferred challenge for this application
+  rating          Int? // Rating from 1-5 assigned by interviewers
 
   // personal info section
   fullName      String

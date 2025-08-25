@@ -92,12 +92,12 @@ export const ApplicantsPage: React.FC = () => {
         preferredTeams = applicant?.preferredTeams?.map((team: any) => team?.teamId) || [];
       }
 
-      // Generate available time slots for the next 2 weeks (business hours)
+      // Generate available time slots for the next 1 week (business hours)
       const availableSlots = [];
       const now = new Date();
-      const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
       
-      for (let date = new Date(now); date <= twoWeeksFromNow; date.setDate(date.getDate() + 1)) {
+      for (let date = new Date(now); date <= oneWeekFromNow; date.setDate(date.getDate() + 1)) {
         // Skip weekends
         if (date.getDay() === 0 || date.getDay() === 6) continue;
         

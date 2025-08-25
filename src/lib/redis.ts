@@ -182,6 +182,32 @@ export class SchedulerCache {
   }
   
   /**
+   * Invalidate interviewer schedule-related caches (busy times, availability, auto-scheduler results)
+   */
+  static async invalidateInterviewerSchedule(interviewerId: string) {
+    const keys = []
+    
+    // Invalidate availability cache for this interviewer
+    const availabilityPattern = `scheduler:availability:${interviewerId}:*`
+    const availabilityKeys = await redis.keys(availabilityPattern)
+    keys.push(...availabilityKeys)
+    
+    // Invalidate busy times pattern
+    const busyPattern = `scheduler:busy:${interviewerId}:*`
+    const busyKeys = await redis.keys(busyPattern)
+    keys.push(...busyKeys)
+    
+    // Invalidate all auto-scheduler results since this interviewer's availability changed
+    const autoSchedulerPattern = 'scheduler:auto:*'
+    const autoSchedulerKeys = await redis.keys(autoSchedulerPattern)
+    keys.push(...autoSchedulerKeys)
+    
+    if (keys.length > 0) {
+      return redis.del(...keys)
+    }
+  }
+  
+  /**
    * Bulk invalidation for major updates
    */
   static async invalidateAll() {

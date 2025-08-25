@@ -198,7 +198,7 @@ export const ApplicantDetailsModal = ({
     if (isOpen && applicantId) {
       void fetchApplicantDetails(applicantId);
       void fetchInterviewNotes(applicantId);
-      void seedAndFetchInterviewers();
+      void fetchInterviewers();
     } else {
       // Reset state when modal closes
       setApplicant(null);
@@ -268,12 +268,9 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-  const seedAndFetchInterviewers = async () => {
+  const fetchInterviewers = async () => {
     try {
-      // First seed the mock interviewers if they don't exist
-      await fetch("/api/seed-interviewers");
-
-      // Then fetch all interviewers
+      // Fetch all authenticated interviewers (real users only)
       const response = await fetch("/api/interviewers");
 
       if (!response.ok) {
@@ -282,8 +279,12 @@ export const ApplicantDetailsModal = ({
 
       const data = (await response.json()) as { id: string; name: string }[];
       setInterviewers(data);
+      
+      if (data.length === 0) {
+        console.warn("No interviewers found. Make sure you've logged in to create an interviewer account.");
+      }
     } catch (err) {
-      console.error("Error seeding and fetching interviewers:", err);
+      console.error("Error fetching interviewers:", err);
       toast({
         title: "Error",
         description: `Failed to load interviewers: ${err instanceof Error ? err.message : "Unknown error"}`,
@@ -770,12 +771,12 @@ export const ApplicantDetailsModal = ({
         preferredTeams = applicant.preferredTeams.map(team => team.teamId);
       }
 
-      // Generate available time slots for the next 2 weeks (business hours)
+      // Generate available time slots for the next 1 week (business hours)
       const availableSlots = [];
       const now = new Date();
-      const twoWeeksFromNow = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
       
-      for (let date = new Date(now); date <= twoWeeksFromNow; date.setDate(date.getDate() + 1)) {
+      for (let date = new Date(now); date <= oneWeekFromNow; date.setDate(date.getDate() + 1)) {
         // Skip weekends
         if (date.getDay() === 0 || date.getDay() === 6) continue;
         
@@ -1544,10 +1545,11 @@ export const ApplicantDetailsModal = ({
                   </Button>
 
                   <Button
+                    variant="outline"
                     onClick={() =>
                       handleStatusChange(ApplicationStatus.REJECTED)
                     }
-                    className="border border-white text-white hover:bg-white hover:text-neutral-900"
+                    className="border-white text-white hover:bg-white hover:text-neutral-900"
                   >
                     Reject
                   </Button>
@@ -1630,8 +1632,9 @@ export const ApplicantDetailsModal = ({
                   </div>
 
                   <Button
+                    variant="outline"
                     onClick={() => void updateAssignedTeam()}
-                    className="border border-white text-white hover:bg-white hover:text-neutral-900"
+                    className="border-white text-white hover:bg-white hover:text-neutral-900"
                     disabled={
                       assignedTeam === (applicant.assignedTeam ?? "NONE")
                     }
@@ -1686,8 +1689,9 @@ export const ApplicantDetailsModal = ({
                       className="min-h-[100px] border-neutral-700 bg-neutral-900"
                     />
                     <Button
+                      variant="outline"
                       onClick={() => void saveInterviewNote()}
-                      className="border border-white text-white hover:bg-white hover:text-neutral-900"
+                      className="border-white text-white hover:bg-white hover:text-neutral-900"
                       disabled={!newNote.trim()}
                     >
                       Save Notes

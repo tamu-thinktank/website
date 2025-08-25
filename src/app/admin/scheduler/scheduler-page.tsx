@@ -14,6 +14,10 @@ import {
   Search,
   Edit,
   Trash,
+  Eye,
+  Check,
+  X,
+  Calendar,
 } from "lucide-react";
 import {
   format,
@@ -1568,36 +1572,16 @@ const Scheduler: React.FC = () => {
     }
   };
 
-  // Handle time slot selection - now supports both single clicks and column selection
-  const handleTimeSlotSelect = async (
-    interviewerId: string,
-    date: Date,
-    timeSlot: TimeSlot,
-  ) => {
+  // Handle time slot selection - now shows context menu instead of immediate action
+  const handleTimeSlotSelect = (event: React.MouseEvent, interviewerId: string, date: Date, timeSlot: TimeSlot) => {
     // If this interviewer is in selection mode, add/remove slots
     if (selectedInterviewerForSelection === interviewerId) {
       handlePerInterviewerSlotSelect(interviewerId, date, timeSlot);
       return;
     }
 
-    // Single click functionality for busy/available toggle
-    // const isBusy = checkIsBusy(interviewerId, date, timeSlot);
-    // const hasInterview = getInterviewForSlot(interviewerId, date, timeSlot);
-    const isBusy = false; // TODO: implement checkIsBusy function
-    const hasInterview = null; // TODO: implement getInterviewForSlot function
-
-    // If slot has an interview, open the interview modal
-    if (hasInterview) {
-      setSelectedInterview(hasInterview);
-      setIsViewModalOpen(true);
-      return;
-    }
-
-    // Toggle busy status for single slot
-    await toggleSingleSlotBusy(interviewerId, date, timeSlot, !isBusy);
-
+    // If in multi-select mode, handle selection
     if (isMultiSelectMode) {
-      // If we're in multi-select mode, add this slot to our selected slots
       const newSlot = { date, timeSlot };
 
       // Check if this slot is already selected
@@ -1629,10 +1613,25 @@ const Scheduler: React.FC = () => {
       if (!selectedInterviewer) {
         setSelectedInterviewer(interviewerId);
       }
-    } else {
-      // If not in multi-select mode, use per-interviewer selection for quick busy marking
-      handlePerInterviewerSlotSelect(interviewerId, date, timeSlot);
+      return;
     }
+
+    // Single click - show context menu
+    event.preventDefault();
+    const x = event.clientX;
+    const y = event.clientY;
+    
+    const interview = getInterviewForSlot(interviewerId, date, timeSlot);
+
+    // Show context menu
+    setContextMenu({
+      x,
+      y,
+      interviewerId,
+      date,
+      timeSlot,
+      interview: interview || undefined
+    });
   };
 
   // Toggle busy status for selected time slots
@@ -1866,6 +1865,126 @@ const Scheduler: React.FC = () => {
     }
   };
 
+  // Context menu functionality
+  const [contextMenu, setContextMenu] = React.useState<{
+    x: number;
+    y: number;
+    interviewerId: string;
+    date: Date;
+    timeSlot: TimeSlot;
+    interview?: Interview;
+  } | null>(null);
+
+  const handleContextMenuAction = (action: string) => {
+    if (!contextMenu) return;
+
+    const { interviewerId, date, timeSlot, interview } = contextMenu;
+
+    switch (action) {
+      case 'mark-busy':
+        handleSingleSlotUpdate(interviewerId, date, timeSlot, true);
+        break;
+      case 'mark-available':
+        if (interview) {
+          // Handle removing interview or busy time
+          setSelectedInterview(interview);
+          handleDeleteInterview();
+        } else {
+          handleSingleSlotUpdate(interviewerId, date, timeSlot, false);
+        }
+        break;
+      case 'schedule-interview':
+        setSelectedInterviewer(interviewerId);
+        setSelectedTimeSlot({ date, timeSlot });
+        setSelectedTimeSlots([{ 
+          date, 
+          timeSlot
+        }]);
+        setIsScheduleModalOpen(true);
+        break;
+      case 'view-interview':
+        if (interview) {
+          setSelectedInterview(interview);
+          setIsViewModalOpen(true);
+        }
+        break;
+      case 'edit-interview':
+        if (interview) {
+          setSelectedInterview(interview);
+          setIsEditingInterview(true);
+          setIsViewModalOpen(true);
+        }
+        break;
+    }
+
+    setContextMenu(null);
+  };
+
+  // Handle single slot update for marking busy/available
+  const handleSingleSlotUpdate = async (
+    interviewerId: string,
+    date: Date,
+    timeSlot: TimeSlot,
+    markAsBusy: boolean
+  ) => {
+    try {
+      setIsProcessingBusyUpdate(true);
+
+      const slotTime = new Date(date);
+      slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
+      const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000);
+
+      const response = await fetch('/api/interviewer-busy-times-batch', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          interviewerId,
+          timeSlots: [{
+            date: slotTime.toISOString(),
+            hour: timeSlot.hour,
+            minute: timeSlot.minute,
+          }],
+          markAsBusy,
+          reason: markAsBusy ? 'Busy' : undefined,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update busy status');
+      }
+
+      // Refresh data
+      await fetchBusyTimes();
+      
+      toast({
+        title: "Success",
+        description: `Time slot marked as ${markAsBusy ? 'busy' : 'available'}`,
+      });
+
+    } catch (error) {
+      console.error('Error updating slot:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update time slot",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessingBusyUpdate(false);
+    }
+  };
+
+  // Click outside to close context menu
+  React.useEffect(() => {
+    const handleClickOutside = () => {
+      setContextMenu(null);
+    };
+
+    if (contextMenu) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [contextMenu]);
+
   // Check if a time slot is selected in multi-select mode
   const isTimeSlotSelected = (date: Date, timeSlot: TimeSlot) => {
     return selectedTimeSlots.some(
@@ -1884,6 +2003,27 @@ const Scheduler: React.FC = () => {
   // New selection system functions will be added here
 
   // Memoized busy slot checker to avoid recalculation
+  // Get interview for a specific slot
+  const getInterviewForSlot = React.useCallback((interviewerId: string, date: Date, timeSlot: TimeSlot): Interview | null => {
+    const slotTime = new Date(date);
+    slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
+    const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000);
+    
+    // Find interviews for this interviewer
+    const interviewerInterviews = interviewers.find(i => i.id === interviewerId)?.interviews || [];
+    
+    // Check if any interview overlaps with this time slot
+    const overlappingInterview = interviewerInterviews.find(interview => {
+      const interviewStart = new Date(interview.startTime);
+      const interviewEnd = new Date(interview.endTime);
+      
+      // Check if there's any overlap
+      return interviewStart < slotEndTime && interviewEnd > slotTime;
+    });
+    
+    return overlappingInterview || null;
+  }, [interviewers]);
+  
   const isBusySlot = React.useCallback((interviewerId: string, date: Date, timeSlot: TimeSlot) => {
     const slotTime = new Date(date);
     slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
@@ -1979,8 +2119,9 @@ const Scheduler: React.FC = () => {
                     !isPerInterviewerSelected &&
                     "bg-yellow-900/30 hover:bg-yellow-800/40",
                 )}
-                onClick={() =>
+                onClick={(e) =>
                   handleTimeSlotSelect(
+                    e,
                     interviewer.id,
                     date,
                     timeSlot,
@@ -2808,6 +2949,84 @@ const Scheduler: React.FC = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <div
+          className="fixed z-50 min-w-48 rounded-md bg-neutral-800 border border-neutral-600 shadow-lg"
+          style={{
+            left: contextMenu.x,
+            top: contextMenu.y,
+          }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="py-1">
+            {contextMenu.interview ? (
+              // Options for slots with interviews
+              <>
+                <button
+                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
+                  onClick={() => handleContextMenuAction('view-interview')}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Interview
+                </button>
+                <button
+                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
+                  onClick={() => handleContextMenuAction('edit-interview')}
+                >
+                  <Edit className="mr-2 h-4 w-4" />
+                  Edit Interview
+                </button>
+                <hr className="my-1 border-neutral-600" />
+                <button
+                  className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-neutral-700 flex items-center"
+                  onClick={() => handleContextMenuAction('mark-available')}
+                >
+                  <Trash className="mr-2 h-4 w-4" />
+                  Delete Interview
+                </button>
+              </>
+            ) : isBusySlot(contextMenu.interviewerId, contextMenu.date, contextMenu.timeSlot) ? (
+              // Options for busy slots without interviews
+              <>
+                <button
+                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
+                  onClick={() => handleContextMenuAction('mark-available')}
+                >
+                  <Check className="mr-2 h-4 w-4" />
+                  Mark Available
+                </button>
+                <button
+                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
+                  onClick={() => handleContextMenuAction('schedule-interview')}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Schedule Interview
+                </button>
+              </>
+            ) : (
+              // Options for available slots
+              <>
+                <button
+                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
+                  onClick={() => handleContextMenuAction('mark-busy')}
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Mark Busy
+                </button>
+                <button
+                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
+                  onClick={() => handleContextMenuAction('schedule-interview')}
+                >
+                  <Calendar className="mr-2 h-4 w-4" />
+                  Schedule Interview
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </DndProvider>
   );
 };

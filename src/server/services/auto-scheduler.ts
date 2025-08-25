@@ -148,28 +148,76 @@ async function checkApplicantConflicts(
 
 /**
  * Batch check interviewer availability for multiple slots
- * Simplified version using direct database calls
+ * Efficiently checks busy times for all interviewers and slots at once
  */
 async function batchCheckInterviewerAvailability(
   interviewerIds: string[],
   slots: TimeSlot[]
 ): Promise<Record<string, Record<string, boolean>>> {
-  // For simplicity, return empty availability (will fall back to individual checks)
-  const fallback: Record<string, Record<string, boolean>> = {}
+  const availability: Record<string, Record<string, boolean>> = {}
+  
+  // Initialize availability as true for all business hours slots
   for (const interviewerId of interviewerIds) {
-    fallback[interviewerId] = {}
+    availability[interviewerId] = {}
     for (const slot of slots) {
-      const gridTime = new Date(slot.date)
-      gridTime.setHours(slot.hour, slot.minute, 0, 0)
-      fallback[interviewerId][gridTime.toISOString()] = false
+      // Only check business hours (8am-10pm)
+      if (slot.hour >= 8 && slot.hour < 22) {
+        const gridTime = new Date(slot.date)
+        gridTime.setHours(slot.hour, slot.minute, 0, 0)
+        availability[interviewerId][gridTime.toISOString()] = true
+      }
     }
   }
-  return fallback
+  
+  // Get all busy times and existing interviews for these interviewers in the relevant date range
+  const minDate = new Date(Math.min(...slots.map(s => s.date.getTime())))
+  const maxDate = new Date(Math.max(...slots.map(s => s.date.getTime())))
+  maxDate.setHours(23, 59, 59, 999) // End of day
+  
+  const [busyTimes, existingInterviews] = await Promise.all([
+    db.interviewerBusyTime.findMany({
+      where: {
+        interviewerId: { in: interviewerIds },
+        startTime: { lte: maxDate },
+        endTime: { gte: minDate }
+      }
+    }),
+    db.interview.findMany({
+      where: {
+        interviewerId: { in: interviewerIds },
+        startTime: { lte: maxDate },
+        endTime: { gte: minDate }
+      }
+    })
+  ])
+  
+  // Mark slots as unavailable if they overlap with busy times or existing interviews
+  const allConflicts = [...busyTimes, ...existingInterviews]
+  
+  for (const conflict of allConflicts) {
+    const interviewerId = 'interviewerId' in conflict ? conflict.interviewerId : (conflict as any).interviewerId
+    
+    for (const slot of slots) {
+      const slotTime = new Date(slot.date)
+      slotTime.setHours(slot.hour, slot.minute, 0, 0)
+      const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000)
+      
+      // Check if slot overlaps with busy time or interview
+      if (conflict.startTime < slotEndTime && conflict.endTime > slotTime) {
+        const key = slotTime.toISOString()
+        if (availability[interviewerId]?.[key] !== undefined) {
+          availability[interviewerId][key] = false
+        }
+      }
+    }
+  }
+  
+  return availability
 }
 
 /**
  * Check if interviewer has availability during a time slot
- * Default: All slots 8am-10pm are available unless marked as busy
+ * Checks both busy times and existing interviews
  */
 async function checkInterviewerAvailability(
   interviewerId: string,
@@ -185,7 +233,7 @@ async function checkInterviewerAvailability(
   slotTime.setHours(slot.hour, slot.minute, 0, 0)
   const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000)
   
-  // Check if this time is marked as busy (instead of checking for availability)
+  // Check if this time is marked as busy
   const busyTime = await db.interviewerBusyTime.findFirst({
     where: {
       interviewerId,
@@ -198,8 +246,25 @@ async function checkInterviewerAvailability(
     }
   })
   
-  // Available if NOT busy
-  return busyTime === null
+  if (busyTime) {
+    return false // Slot is marked as busy
+  }
+  
+  // Also check for existing interviews that would conflict
+  const existingInterview = await db.interview.findFirst({
+    where: {
+      interviewerId,
+      OR: [
+        {
+          startTime: { lt: slotEndTime },
+          endTime: { gt: slotTime }
+        }
+      ]
+    }
+  })
+  
+  // Available if NOT busy and no conflicting interviews
+  return existingInterview === null
 }
 
 /**
@@ -271,8 +336,20 @@ function getHierarchicalScore(priorityIndex: number): number {
 export async function autoScheduleInterview(
   request: SchedulingRequest
 ): Promise<SchedulingResult> {
-  const { intervieweeId, preferredTeams, availableSlots } = request
+  const { intervieweeId, preferredTeams } = request
+  let { availableSlots } = request
   const errors: string[] = []
+  const startTime = Date.now()
+  
+  console.log(`🚀 [AUTO-SCHEDULER] Starting for applicant: ${intervieweeId}`)
+  console.log(`📊 [AUTO-SCHEDULER] Request details: ${preferredTeams.length} preferred teams [${preferredTeams.join(', ')}], ${availableSlots.length} time slots`)
+  
+  // Limit the number of slots to prevent performance issues
+  // Take only the first 500 slots (about 125 hours worth) to keep queries manageable
+  if (availableSlots.length > 500) {
+    console.log(`⚠️  [AUTO-SCHEDULER] Limiting availableSlots from ${availableSlots.length} to 500 for performance`)
+    availableSlots = availableSlots.slice(0, 500)
+  }
   
   try {
     // Check cache for recent results
@@ -293,12 +370,14 @@ export async function autoScheduleInterview(
     }
     
     // Validate interviewee exists
+    console.log(`🔍 [AUTO-SCHEDULER] Looking up applicant: ${intervieweeId}`)
     const interviewee = await db.application.findUnique({
       where: { id: intervieweeId },
       select: { id: true, fullName: true }
     })
     
     if (!interviewee) {
+      console.log(`❌ [AUTO-SCHEDULER] ERROR: Applicant not found: ${intervieweeId}`)
       return {
         success: false,
         matches: [],
@@ -306,7 +385,10 @@ export async function autoScheduleInterview(
       }
     }
     
+    console.log(`✓ [AUTO-SCHEDULER] Found applicant: ${interviewee.fullName}`)
+    
     // Get all interviewers
+    console.log(`👥 [AUTO-SCHEDULER] Fetching interviewers...`)
     const interviewers = await db.user.findMany({
       select: {
         id: true,
@@ -316,16 +398,38 @@ export async function autoScheduleInterview(
       }
     })
     
+    console.log(`👥 [AUTO-SCHEDULER] Found ${interviewers.length} interviewer(s):`)
+    interviewers.forEach(interviewer => {
+      console.log(`  - ${interviewer.name} (${interviewer.email}) - Teams: [${interviewer.targetTeams?.join(', ') || 'none'}]`)
+    })
+    
+    if (interviewers.length === 0) {
+      console.log(`❌ [AUTO-SCHEDULER] ERROR: No interviewers found. Make sure users have logged in.`)
+      return {
+        success: false,
+        matches: [],
+        errors: ['No interviewers available. Please ensure at least one user has logged in.']
+      }
+    }
+    
     // Batch check availability for all interviewers and slots at once
     const interviewerIds = interviewers.map(i => i.id)
+    console.log(`⏰ [AUTO-SCHEDULER] Batch checking availability for ${interviewerIds.length} interviewers across ${availableSlots.length} slots...`)
+    const batchStartTime = Date.now()
     const availabilityBatch = await batchCheckInterviewerAvailability(interviewerIds, availableSlots)
+    const batchEndTime = Date.now()
+    console.log(`⏰ [AUTO-SCHEDULER] Batch availability check completed in ${batchEndTime - batchStartTime}ms`)
     
     const matches: InterviewerMatch[] = []
     const fallbackMatches: InterviewerMatch[] = []
     
+    console.log(`🎯 [AUTO-SCHEDULER] Scoring interviewer matches...`)
+    
     // Evaluate each interviewer
     for (const interviewer of interviewers) {
       const matchScore = calculateMatchScore(interviewer.targetTeams, preferredTeams)
+      
+      console.log(`  - ${interviewer.name}: score ${matchScore} (interviewer teams: [${interviewer.targetTeams?.join(', ') || 'none'}] vs preferred: [${preferredTeams.join(', ')}])`)
       
       // Process both priority matches (with team overlap) and fallback matches (all available)
       const isExactMatch = matchScore > 0
@@ -341,19 +445,42 @@ export async function autoScheduleInterview(
       }
       
       const interviewerAvailability = availabilityBatch[interviewer.id] || {}
+      let slotsChecked = 0
+      let conflictsFound = 0
+      
+      console.log(`📋 [AUTO-SCHEDULER] Checking ${availableSlots.length} slots for ${interviewer.name}...`)
       
       // Check each available slot for this interviewer
       for (const slot of availableSlots) {
+        slotsChecked++
         // Check if this slot is in business hours (8am-10pm)
         if (slot.hour < 8 || slot.hour >= 22) {
           continue
         }
         
-        // For now, assume all business hours are available (busy times are checked separately)
-        // This can be optimized later to batch check busy times as well
-        const hasAvailability = await checkInterviewerAvailability(interviewer.id, slot)
+        // Check if interviewer has availability for a full 45-minute interview starting at this slot
+        let hasAvailability = true
+        
+        // Check all three 15-minute segments needed for a 45-minute interview
+        for (let i = 0; i < 3; i++) {
+          const segmentTime = new Date(slot.date)
+          segmentTime.setHours(slot.hour, slot.minute + (i * 15), 0, 0)
+          const segmentKey = segmentTime.toISOString()
+          
+          // Use batch data if available, otherwise assume available (default for business hours)
+          let segmentAvailable = interviewerAvailability[segmentKey] !== undefined ? 
+            interviewerAvailability[segmentKey] : 
+            true // Default to available if not in batch data (optimistic approach)
+            
+          if (!segmentAvailable) {
+            hasAvailability = false
+            break
+          }
+        }
         
         if (!hasAvailability) {
+          interviewerMatch.conflicts.push('Interviewer not available for full 45-minute block')
+          conflictsFound++
           continue
         }
         
@@ -369,6 +496,7 @@ export async function autoScheduleInterview(
         
         if (startHour < 8 || startHour >= 22 || endHour > 22 || (endHour === 22 && endMinute > 0)) {
           interviewerMatch.conflicts.push('Outside business hours (8 AM - 10 PM)')
+          conflictsFound++
           continue
         }
         
@@ -384,6 +512,7 @@ export async function autoScheduleInterview(
           interviewerMatch.availableSlots.push(slot)
         } else {
           interviewerMatch.conflicts.push(...allConflicts)
+          conflictsFound++
         }
       }
       
@@ -395,6 +524,8 @@ export async function autoScheduleInterview(
         dateB.setHours(b.hour, b.minute, 0, 0)
         return dateA.getTime() - dateB.getTime()
       })
+      
+      console.log(`  ✓ ${interviewer.name}: ${interviewerMatch.availableSlots.length} available slots, ${conflictsFound} conflicts (${slotsChecked} slots checked)`)
       
       // Add to appropriate list based on team match
       if (isExactMatch) {
@@ -419,10 +550,10 @@ export async function autoScheduleInterview(
       
       // Secondary sort: earliest available slot (sooner is better) - find first availability for highest relevance
       if (a.availableSlots.length > 0 && b.availableSlots.length > 0) {
-        const earliestA = new Date(a.availableSlots[0].date)
-        earliestA.setHours(a.availableSlots[0].hour, a.availableSlots[0].minute, 0, 0)
-        const earliestB = new Date(b.availableSlots[0].date)
-        earliestB.setHours(b.availableSlots[0].hour, b.availableSlots[0].minute, 0, 0)
+        const earliestA = new Date(a.availableSlots[0]!.date)
+        earliestA.setHours(a.availableSlots[0]!.hour, a.availableSlots[0]!.minute, 0, 0)
+        const earliestB = new Date(b.availableSlots[0]!.date)
+        earliestB.setHours(b.availableSlots[0]!.hour, b.availableSlots[0]!.minute, 0, 0)
         
         if (earliestA.getTime() !== earliestB.getTime()) {
           return earliestA.getTime() - earliestB.getTime()
@@ -443,10 +574,10 @@ export async function autoScheduleInterview(
       // Sort fallback matches by earliest available slot and number of slots
       fallbackMatches.sort((a, b) => {
         if (a.availableSlots.length > 0 && b.availableSlots.length > 0) {
-          const earliestA = new Date(a.availableSlots[0].date)
-          earliestA.setHours(a.availableSlots[0].hour, a.availableSlots[0].minute, 0, 0)
-          const earliestB = new Date(b.availableSlots[0].date)
-          earliestB.setHours(b.availableSlots[0].hour, b.availableSlots[0].minute, 0, 0)
+          const earliestA = new Date(a.availableSlots[0]!.date)
+          earliestA.setHours(a.availableSlots[0]!.hour, a.availableSlots[0]!.minute, 0, 0)
+          const earliestB = new Date(b.availableSlots[0]!.date)
+          earliestB.setHours(b.availableSlots[0]!.hour, b.availableSlots[0]!.minute, 0, 0)
           
           const timeDiff = earliestA.getTime() - earliestB.getTime()
           if (timeDiff !== 0) return timeDiff
@@ -473,6 +604,31 @@ export async function autoScheduleInterview(
       }
     }
 
+    const endTime = Date.now()
+    const totalTime = endTime - startTime
+    
+    console.log(`📊 [AUTO-SCHEDULER] Results Summary:`)
+    console.log(`  - Priority matches: ${matches.length}`)
+    console.log(`  - Fallback matches: ${fallbackMatches.length}`)
+    console.log(`  - Total viable matches: ${finalMatches.length}`)
+    
+    if (suggestedSlot) {
+      const slotDate = new Date(suggestedSlot.slot.date)
+      slotDate.setHours(suggestedSlot.slot.hour, suggestedSlot.slot.minute, 0, 0)
+      console.log(`✅ [AUTO-SCHEDULER] SUCCESS: Best match found!`)
+      console.log(`  - Interviewer: ${suggestedSlot.interviewer.name} (score: ${suggestedSlot.interviewer.matchScore})`)
+      console.log(`  - Time slot: ${slotDate.toLocaleDateString()} ${slotDate.toLocaleTimeString()}`)
+    } else {
+      console.log(`❌ [AUTO-SCHEDULER] No available slots found`)
+      if (finalMatches.length > 0) {
+        console.log(`  - Found ${finalMatches.length} matching interviewer(s) but no available slots`)
+      } else {
+        console.log(`  - No interviewers available that match the criteria`)
+      }
+    }
+    
+    console.log(`⚡ [AUTO-SCHEDULER] Performance: ${totalTime}ms total`)
+
     const result: SchedulingResult = {
       success: finalMatches.length > 0,
       matches: finalMatches.slice(0, 5), // Return top 5 matches
@@ -491,7 +647,8 @@ export async function autoScheduleInterview(
     return result
     
   } catch (error) {
-    console.error('Auto-scheduling error:', error)
+    const errorTime = Date.now() - startTime
+    console.error(`💥 [AUTO-SCHEDULER] FATAL ERROR after ${errorTime}ms:`, error)
     return {
       success: false,
       matches: [],
