@@ -36,6 +36,7 @@ import type { ApplicationStatus } from "@prisma/client";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { TableHeader } from "./tableHeader";
+import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 import {
   Dialog,
   DialogContent,
@@ -157,6 +158,8 @@ const Scheduler: React.FC = () => {
   const [viewMode, setViewMode] = React.useState<ViewMode>("week");
   const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
+  const [isApplicantModalOpen, setIsApplicantModalOpen] = React.useState(false);
+  const [selectedApplicantId, setSelectedApplicantId] = React.useState<string | null>(null);
   const [selectedInterviewer, setSelectedInterviewer] = React.useState<
     string | null
   >(null);
@@ -473,13 +476,13 @@ const Scheduler: React.FC = () => {
         throw new Error("Failed to fetch busy times");
       }
 
-      const data = await response.json() as Array<{
+      const data = await response.json() as {
         id: string;
         interviewerId: string;
         startTime: string;
         endTime: string;
         reason?: string;
-      }>;
+      }[];
 
       // Group busy times by interviewer ID
       const groupedBusyTimes: Record<string, { id: string; startTime: Date; endTime: Date; reason?: string }[]> = {};
@@ -2170,10 +2173,16 @@ const Scheduler: React.FC = () => {
                         )}
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent triggering the slot click handler
-                          setSelectedInterview(interview);
-                          setIsViewModalOpen(true);
+                          if (interview.applicantId) {
+                            setSelectedApplicantId(interview.applicantId);
+                            setIsApplicantModalOpen(true);
+                          } else {
+                            // Fallback to interview view for placeholder interviews
+                            setSelectedInterview(interview);
+                            setIsViewModalOpen(true);
+                          }
                         }}
-                        title="Click to view/edit interview"
+                        title="Click to view applicant details"
                       >
                         <div className="truncate text-xs font-medium">
                           {interview.applicantName}
@@ -2206,33 +2215,11 @@ const Scheduler: React.FC = () => {
 
         <div className="mt-1 flex w-full flex-col items-center overflow-hidden px-20 pb-96 pt-11 max-md:max-w-full max-md:px-5 max-md:pb-24">
           <div className="mb-0 flex w-full max-w-[1537px] flex-col max-md:mb-2.5 max-md:max-w-full">
-            <div className="self-start pb-10 text-center text-5xl font-semibold max-md:text-4xl">
+            <div className="self-start pb-5 text-center text-5xl font-semibold max-md:text-4xl">
               Scheduler
             </div>
 
-            <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
-              <div
-                onClick={() => setSelectedCategory("OFFICER")}
-                className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
-                  selectedCategory === "OFFICER"
-                    ? "bg-stone-600 text-white"
-                    : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
-                }`}
-              >
-                OFFICER
-              </div>
-              <div className="w-[1.5px] bg-neutral-200"></div>
-              <div
-                onClick={() => setSelectedCategory("MATE ROV")}
-                className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
-                  selectedCategory === "MATE ROV"
-                    ? "bg-stone-600 text-white"
-                    : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
-                }`}
-              >
-                MATE ROV
-              </div>
-            </div>
+            
 
             <div className="mt-9 h-px w-full shrink-0 border border-solid border-neutral-200" />
 
@@ -3052,6 +3039,16 @@ const Scheduler: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Applicant Details Modal */}
+      <ApplicantDetailsModal
+        isOpen={isApplicantModalOpen}
+        onClose={() => {
+          setIsApplicantModalOpen(false);
+          setSelectedApplicantId(null);
+        }}
+        applicantId={selectedApplicantId}
+      />
     </DndProvider>
   );
 };

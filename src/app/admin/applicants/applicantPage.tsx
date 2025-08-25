@@ -393,56 +393,78 @@ export const ApplicantsPage: React.FC = () => {
   };
 
   const filteredApplicants = React.useMemo(() => {
-    return applicantData.filter((applicant) => {
-      const matchesCategory = applicant.category === selectedCategory;
-      const matchesSearch = applicant.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesMajor = !filters.major || applicant.major === filters.major;
-      const matchesInterests =
-        !filters.interests ||
-        applicant.interests.some(
-          (interest) => interest.area === filters.interests,
-        );
-      
-      // Team filtering logic for different application types
-      const matchesTeam = (() => {
-        if (!filters.team) return true;
+    return applicantData
+      .filter((applicant) => {
+        const matchesCategory = applicant.category === selectedCategory;
+        const matchesSearch = applicant.name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesMajor = !filters.major || applicant.major === filters.major;
+        const matchesInterests =
+          !filters.interests ||
+          applicant.interests.some(
+            (interest) => interest.area === filters.interests,
+          );
         
-        switch (selectedCategory) {
-          case "OFFICER":
-            return applicant.officerpos.some((pos) => pos.position === filters.team);
-          case "MATEROV":
-            return applicant.subTeam.some((team) => team.name === filters.team);
-          case "DCMEMBER":
-          case "MINIDC":
-            return applicant.subTeam.some((team) => team.name === filters.team);
-          default:
-            return true;
-        }
-      })();
-      
-      const matchesStatus = !filters.status || applicant.status === filters.status;
-      
-      // Rating filter - handle both numeric ratings and "Unrated"
-      const matchesRating = (() => {
-        if (!filters.rating) return true;
-        if (filters.rating === "Unrated") {
-          return applicant.rating === null || applicant.rating === undefined;
-        }
-        return applicant.rating?.toString() === filters.rating;
-      })();
+        // Team filtering logic for different application types
+        const matchesTeam = (() => {
+          if (!filters.team) return true;
+          
+          switch (selectedCategory) {
+            case "OFFICER":
+              return applicant.officerpos.some((pos) => pos.position === filters.team);
+            case "MATEROV":
+              return applicant.subTeam.some((team) => team.name === filters.team);
+            case "DCMEMBER":
+            case "MINIDC":
+              return applicant.subTeam.some((team) => team.name === filters.team);
+            default:
+              return true;
+          }
+        })();
+        
+        const matchesStatus = !filters.status || applicant.status === filters.status;
+        
+        // Rating filter - handle both numeric ratings and "Unrated"
+        const matchesRating = (() => {
+          if (!filters.rating) return true;
+          if (filters.rating === "Unrated") {
+            return applicant.rating === null || applicant.rating === undefined;
+          }
+          return applicant.rating?.toString() === filters.rating;
+        })();
 
-      return (
-        matchesCategory &&
-        matchesSearch &&
-        matchesMajor &&
-        matchesInterests &&
-        matchesTeam &&
-        matchesStatus &&
-        matchesRating
-      );
-    });
+        return (
+          matchesCategory &&
+          matchesSearch &&
+          matchesMajor &&
+          matchesInterests &&
+          matchesTeam &&
+          matchesStatus &&
+          matchesRating
+        );
+      })
+      .sort((a, b) => {
+        // Sort by rating: rated applicants first (highest to lowest), then unrated
+        const aRating = a.rating ?? 0;
+        const bRating = b.rating ?? 0;
+        
+        // If both have ratings, sort highest to lowest
+        if (aRating > 0 && bRating > 0) {
+          return bRating - aRating;
+        }
+        
+        // If only one has a rating, put the rated one first
+        if (aRating > 0 && bRating === 0) {
+          return -1;
+        }
+        if (aRating === 0 && bRating > 0) {
+          return 1;
+        }
+        
+        // If neither has a rating, maintain original order
+        return 0;
+      });
   }, [searchQuery, filters, applicantData, selectedCategory]);
 
   const handleFilterChange =

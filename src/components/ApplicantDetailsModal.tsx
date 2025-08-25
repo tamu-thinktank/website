@@ -159,42 +159,37 @@ export const ApplicantDetailsModal = ({
   const _router = useRouter();
   const { data: _session } = useSession();
 
-  // Add the sendRejectEmail function using tRPC mutation
-  const { mutate: sendRejectEmail } = api.admin.rejectAppEmail.useMutation({
-    onSuccess: (data, input) => {
+  // Send rejection email using API route
+  const sendRejectEmail = async (data: { applicantName: string; applicantEmail: string }) => {
+    try {
+      const response = await fetch("/api/send-rejection-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          applicantName: data.applicantName,
+          applicantEmail: data.applicantEmail,
+          applicationType: applicant?.applicationType ?? "General",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send rejection email");
+      }
+
       toast({
         title: "Success",
-        description: `Rejection email sent to ${input.applicantName}`,
+        description: `Rejection email sent to ${data.applicantName}`,
       });
-    },
-    onError: (err) => {
+    } catch (err) {
       console.error("Error sending rejection email:", err);
       toast({
         title: "Error",
         description: "Failed to send rejection email. Please try again.",
         variant: "destructive",
       });
-    },
-  });
+    }
+  };
 
-  // Add the scheduleInterviewEmail mutation
-  const { mutate: sendInterviewEmail } =
-    api.admin.scheduleInterview.useMutation({
-      onSuccess: (_data, input) => {
-        toast({
-          title: "Success",
-          description: `Interview email sent to ${input.applicantName}`,
-        });
-      },
-      onError: (err) => {
-        console.error("Error sending interview email:", err);
-        toast({
-          title: "Error",
-          description: "Failed to send interview email. Please try again.",
-          variant: "destructive",
-        });
-      },
-    });
 
   // Save applicant rating
   const saveApplicantRating = async (rating: number | null) => {
@@ -213,7 +208,11 @@ export const ApplicantDetailsModal = ({
         throw new Error('Failed to save rating');
       }
 
+      // Update both the rating state and the applicant object
       setApplicantRating(rating);
+      if (applicant) {
+        setApplicant({ ...applicant, rating });
+      }
       toast({
         title: "Success",
         description: `Rating ${rating ? `updated to ${rating}` : 'removed'}`,
@@ -234,8 +233,12 @@ export const ApplicantDetailsModal = ({
       void fetchApplicantDetails(applicantId);
       void fetchInterviewNotes(applicantId);
       void fetchInterviewers();
-    } else {
-      // Reset state when modal closes
+    }
+  }, [isOpen, applicantId]);
+
+  // Reset state only when modal closes (not when applicantId changes)
+  useEffect(() => {
+    if (!isOpen) {
       setApplicant(null);
       setInterviewNotes([]);
       setNewNote("");
@@ -247,12 +250,13 @@ export const ApplicantDetailsModal = ({
       setAssignedTeam("");
       setApplicantRating(null);
     }
-  }, [isOpen, applicantId]);
+  }, [isOpen]);
 
-  // Add useEffect to initialize assignedTeam when applicant data is loaded
+  // Add useEffect to initialize assignedTeam and rating when applicant data is loaded
   useEffect(() => {
     if (applicant) {
       setAssignedTeam(applicant.assignedTeam ?? "NONE");
+      setApplicantRating(applicant.rating || null);
     }
   }, [applicant]);
 
@@ -272,8 +276,6 @@ export const ApplicantDetailsModal = ({
       const data = (await response.json()) as ApplicantDetails;
       console.log("Fetched applicant details:", data);
       setApplicant(data);
-      setAssignedTeam(data.assignedTeam ?? "NONE");
-      setApplicantRating(data.rating || null);
     } catch (err) {
       console.error("Error fetching applicant details:", err);
       setError(
@@ -402,8 +404,8 @@ export const ApplicantDetailsModal = ({
         newStatus === ApplicationStatus.REJECTED_APP ||
         newStatus === ApplicationStatus.REJECTED_INT
       ) {
-        // Send rejection email using the mutation
-        sendRejectEmail({
+        // Send rejection email using the API route
+        await sendRejectEmail({
           applicantName: applicant.fullName,
           applicantEmail: applicant.email,
         });
@@ -636,22 +638,9 @@ export const ApplicantDetailsModal = ({
         status: ApplicationStatus.INTERVIEWING,
       });
 
-      // Send interview email using the tRPC mutation - similar to how rejection email is sent
-      sendInterviewEmail({
-        officerId: interviewer.id,
-        officerName: interviewer.name,
-        officerEmail: `${interviewer.name.toLowerCase().replace(/\s+/g, ".")}@example.com`,
-        applicantName: applicant.fullName,
-        applicantEmail: applicant.email,
-        startTime: interviewDateTime,
-        location: interviewRoom,
-        team: assignedTeam === "NONE" ? "" : assignedTeam,
-        applicationType: applicant.applicationType ?? "General",
-      });
-
       toast({
         title: "Success",
-        description: `Interview scheduled successfully for ${formattedTime} and email sent`,
+        description: `Interview scheduled successfully for ${formattedTime}`,
       });
 
       // Refresh applicant details to get updated status
@@ -661,6 +650,79 @@ export const ApplicantDetailsModal = ({
       toast({
         title: "Error",
         description: `Failed to schedule interview: ${err instanceof Error ? err.message : "Unknown error"}`,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
+  // Send interview email separately
+  const sendInterviewEmailOnly = async () => {
+    if (!applicant || !applicantId) {
+      toast({
+        title: "Error",
+        description: "No applicant data available",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check if interview is scheduled
+    if (applicant.status !== ApplicationStatus.INTERVIEWING) {
+      toast({
+        title: "Error",
+        description: "Interview must be scheduled before sending email",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsSendingEmail(true);
+
+      // Fetch interview details from API
+      const response = await fetch(`/api/applicant/${applicantId}/interview`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch interview details");
+      }
+
+      const interviewData = await response.json();
+      if (!interviewData || !interviewData.interviewer) {
+        throw new Error("No interview data found");
+      }
+
+      // Send interview email using API route
+      const emailResponse = await fetch("/api/send-interview-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          officerId: interviewData.interviewer.id,
+          officerName: interviewData.interviewer.name,
+          officerEmail: "lucasvad123@gmail.com", // Updated to use test email
+          applicantName: applicant.fullName,
+          applicantEmail: applicant.email,
+          startTime: interviewData.startTime,
+          location: interviewData.location || "TBD",
+          team: applicant.assignedTeam || "",
+          applicationType: applicant.applicationType ?? "General",
+        }),
+      });
+
+      if (!emailResponse.ok) {
+        throw new Error("Failed to send email");
+      }
+
+      toast({
+        title: "Success",
+        description: "Interview email sent successfully",
+      });
+
+    } catch (err) {
+      console.error("Error sending interview email:", err);
+      toast({
+        title: "Error",
+        description: `Failed to send interview email: ${err instanceof Error ? err.message : "Unknown error"}`,
         variant: "destructive",
       });
     } finally {
@@ -989,7 +1051,7 @@ export const ApplicantDetailsModal = ({
         status: rejectionStatus,
       }),
     })
-      .then((response) => {
+      .then(async (response) => {
         if (!response.ok) {
           throw new Error(
             `Failed to update application status: ${response.status}`,
@@ -1005,8 +1067,8 @@ export const ApplicantDetailsModal = ({
           };
         });
 
-        // Send rejection email using the tRPC mutation
-        sendRejectEmail({
+        // Send rejection email using the API route
+        await sendRejectEmail({
           applicantName: applicant.fullName,
           applicantEmail: applicant.email,
         });
@@ -1024,7 +1086,7 @@ export const ApplicantDetailsModal = ({
           variant: "destructive",
         });
       });
-  }, [applicantId, applicant, sendRejectEmail, toast]);
+  }, [applicantId, applicant, toast]);
 
   if (!isOpen) return null;
 
@@ -1645,8 +1707,20 @@ export const ApplicantDetailsModal = ({
                   >
                     {isSendingEmail
                       ? "Scheduling..."
-                      : "Schedule Interview & Send Email"}
+                      : "Schedule Interview"}
                   </Button>
+
+                  {/* Send Interview Email button - show if interview is scheduled or interview exists */}
+                  {(applicant?.status === ApplicationStatus.INTERVIEWING || applicant?.interviewStage) && (
+                    <Button
+                      variant="outline"
+                      onClick={() => void sendInterviewEmailOnly()}
+                      className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                      disabled={isSendingEmail}
+                    >
+                      {isSendingEmail ? "Sending Email..." : "Send Interview Email"}
+                    </Button>
+                  )}
 
                   <Button
                     variant="outline"
