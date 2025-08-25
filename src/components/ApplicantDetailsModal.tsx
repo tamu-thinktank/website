@@ -245,6 +245,7 @@ export const ApplicantDetailsModal = ({
       setSelectedTime("");
       setInterviewRoom("");
       setAssignedTeam("");
+      setApplicantRating(null);
     }
   }, [isOpen, applicantId]);
 
@@ -1015,7 +1016,7 @@ export const ApplicantDetailsModal = ({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-h-[90vh] max-w-4xl overflow-y-auto border-neutral-700 bg-neutral-900 text-white">
+        <DialogContent className="max-h-[95vh] max-w-6xl overflow-y-auto border-neutral-700 bg-neutral-900 text-white">
           <DialogHeader>
             <DialogTitle className="text-2xl">
               {loading
@@ -1033,9 +1034,9 @@ export const ApplicantDetailsModal = ({
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-neutral-600 border-t-white"></div>
             </div>
           ) : applicant ? (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Info Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-neutral-800 p-5">
+              <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-neutral-800 p-4">
                 <div className="space-y-1">
                   <h3 className="text-xl font-semibold">
                     {applicant.fullName}

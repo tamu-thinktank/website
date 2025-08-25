@@ -55,7 +55,7 @@ const COLORS = [
 export function StatisticsVisualizer() {
   const [loading, setLoading] = useState<boolean>(true);
   const [stats, setStats] = useState<StatisticsData | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>("OFFICER");
+  const [selectedCategory, setSelectedCategory] = useState<string>("DCMEMBER");
 
   // Update the fetchStatisticsForTeam function to ensure it's correctly passing the applicationType
   const fetchStatisticsForTeam = async (applicationType: string) => {
@@ -117,8 +117,19 @@ export function StatisticsVisualizer() {
 
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
+              onClick={() => setSelectedCategory("DCMEMBER")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+                selectedCategory === "DCMEMBER"
+                  ? "bg-gradient-to-r from-stone-700 to-stone-600 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
+              }`}
+            >
+              DC MEMBER
+            </div>
+            <div className="w-[1.5px] bg-neutral-200"></div>
+            <div
               onClick={() => setSelectedCategory("OFFICER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 text-center transition-colors max-md:max-w-full ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
                 selectedCategory === "OFFICER"
                   ? "bg-gradient-to-r from-stone-700 to-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
@@ -129,13 +140,24 @@ export function StatisticsVisualizer() {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MATEROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 text-center transition-colors max-md:max-w-full ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
                 selectedCategory === "MATEROV"
                   ? "bg-gradient-to-r from-stone-600 to-stone-700 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
               }`}
             >
               MATE ROV
+            </div>
+            <div className="w-[1.5px] bg-neutral-200"></div>
+            <div
+              onClick={() => setSelectedCategory("MINIDC")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+                selectedCategory === "MINIDC"
+                  ? "bg-gradient-to-r from-stone-600 to-stone-700 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
+              }`}
+            >
+              MINI DC
             </div>
           </div>
 

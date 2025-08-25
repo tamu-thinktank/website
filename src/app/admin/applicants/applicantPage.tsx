@@ -212,7 +212,8 @@ export const ApplicantsPage: React.FC = () => {
 
   const officerHeaders = [
     "Name",
-    "Position Preference",
+    "Position Preferences",
+    "Team Rankings",
     "Major",
     "Year",
     "Status",
@@ -641,76 +642,80 @@ export const ApplicantsPage: React.FC = () => {
                       >
                         {applicant.name}
                       </div>
-                      <div>
-                        {applicant.interests && applicant.interests.length > 0
-                          ? applicant.interests.map((pref) => (
-                              <div
-                                className="flex-1 text-center"
-                                key={pref.area}
-                              >
-                                {pref.area} ({pref.interest.toLowerCase()})
+                      <div className="flex-1 text-center">
+                        {/* Research Interests Display */}
+                        {(() => {
+                          if (selectedCategory === "OFFICER" && applicant.officerpos && applicant.officerpos.length > 0) {
+                            // For officer applications, show position preferences
+                            const displayItems = applicant.officerpos.slice(0, 2);
+                            const remainingCount = applicant.officerpos.length - 2;
+                            return (
+                              <div className="space-y-1">
+                                {displayItems.map((pref, idx) => (
+                                  <div key={`${pref.position}-${idx}`} className="text-xs">
+                                    {pref.position} ({pref.interest.toLowerCase()})
+                                  </div>
+                                ))}
+                                {remainingCount > 0 && (
+                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                )}
                               </div>
-                            ))
-                          : null}
+                            );
+                          } else if (applicant.interests && applicant.interests.length > 0) {
+                            // For other applications, show research interests
+                            const displayItems = applicant.interests.slice(0, 2);
+                            const remainingCount = applicant.interests.length - 2;
+                            return (
+                              <div className="space-y-1">
+                                {displayItems.map((pref, idx) => (
+                                  <div key={`${pref.area}-${idx}`} className="text-xs">
+                                    {pref.area} ({pref.interest.toLowerCase()})
+                                  </div>
+                                ))}
+                                {remainingCount > 0 && (
+                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                )}
+                              </div>
+                            );
+                          }
+                          return <div className="text-neutral-500">N/A</div>;
+                        })()}
                       </div>
-                      <div>
-                        {applicant.subTeam && applicant.subTeam.length > 0
-                          ? applicant.subTeam.map((pref) => (
-                              <div
-                                className="flex-1 text-center"
-                                key={pref.name}
-                              >
-                                {pref.name} ({pref.interest.toLowerCase()})
+                      <div className="flex-1 text-center">
+                        {/* Team Rankings Display */}
+                        {(() => {
+                          if (applicant.subTeam && applicant.subTeam.length > 0) {
+                            const displayItems = applicant.subTeam.slice(0, 2);
+                            const remainingCount = applicant.subTeam.length - 2;
+                            return (
+                              <div className="space-y-1">
+                                {displayItems.map((pref, idx) => (
+                                  <div key={`${pref.name}-${idx}`} className="text-xs">
+                                    {pref.name} ({pref.interest.toLowerCase()})
+                                  </div>
+                                ))}
+                                {remainingCount > 0 && (
+                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                )}
                               </div>
-                            ))
-                          : null}
-                      </div>
-                      <div>
-                        {applicant.officerpos && applicant.officerpos.length > 0
-                          ? applicant.officerpos.map((pref) => (
-                              <div
-                                className="flex-1 text-center"
-                                key={pref.position}
-                              >
-                                {pref.position} ({pref.interest.toLowerCase()})
-                              </div>
-                            ))
-                          : null}
+                            );
+                          }
+                          return <div className="text-neutral-500">N/A</div>;
+                        })()}
                       </div>
                       <div className="flex-1 text-center">
                         {applicant.major}
                       </div>
-                      <div className="flex-1 text-center">{applicant.year}</div>
-                      <div className="flex flex-1 items-center justify-center gap-2">
-                        <div
-                          className={`text-center ${getStatusColor(applicant.status)}`}
-                        >
+                      <div className="flex-1 text-center">
+                        {applicant.year}
+                      </div>
+                      <div className="flex-1 text-center">
+                        <div className={getStatusColor(applicant.status)}>
                           {applicant.status}
                         </div>
                       </div>
                       <div className="flex-1 text-center">
-                        {applicant.rating ? applicant.rating : "Unrated"}
-                      </div>
-                      <div className="flex flex-1 items-center justify-center gap-2">
-                        {(applicant.status === "PENDING" || applicant.status === "INTERVIEWING") && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 px-3 text-xs"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void autoScheduleApplicant(applicant.id, applicant.name);
-                            }}
-                            disabled={autoSchedulingIds.has(applicant.id)}
-                            title={
-                              applicant.status === "PENDING"
-                                ? "Auto-schedule interview for pending applicant"
-                                : "Auto-schedule interview"
-                            }
-                          >
-                            {autoSchedulingIds.has(applicant.id) ? "Scheduling..." : "Auto-Schedule"}
-                          </Button>
-                        )}
+                        {applicant.rating ? `⭐ ${applicant.rating}/5` : "Unrated"}
                       </div>
                     </div>
                     {index < filteredApplicants.length - 1 && (
