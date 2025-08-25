@@ -811,20 +811,32 @@ export const ApplicantDetailsModal = ({
       // Generate available time slots for the next 1 week (business hours)
       const availableSlots = [];
       const now = new Date();
-      const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
       
-      for (let date = new Date(now); date <= oneWeekFromNow; date.setDate(date.getDate() + 1)) {
+      // Start from tomorrow to avoid past date issues
+      const startDate = new Date(now);
+      startDate.setDate(now.getDate() + 1);
+      startDate.setHours(0, 0, 0, 0); // Reset to start of day
+      
+      const oneWeekFromNow = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+      
+      for (let currentDate = new Date(startDate); currentDate <= oneWeekFromNow; currentDate.setDate(currentDate.getDate() + 1)) {
         // Skip weekends
-        if (date.getDay() === 0 || date.getDay() === 6) continue;
+        if (currentDate.getDay() === 0 || currentDate.getDay() === 6) continue;
         
         // Business hours: 8 AM to 10 PM in 15-minute increments
         for (let hour = 8; hour < 22; hour++) {
           for (let minute = 0; minute < 60; minute += 15) {
-            availableSlots.push({
-              hour,
-              minute,
-              date: date.toISOString(),
-            });
+            const slotDateTime = new Date(currentDate);
+            slotDateTime.setHours(hour, minute, 0, 0);
+            
+            // Only include slots that are in the future
+            if (slotDateTime > now) {
+              availableSlots.push({
+                hour,
+                minute,
+                date: slotDateTime.toISOString(),
+              });
+            }
           }
         }
       }
@@ -878,6 +890,9 @@ export const ApplicantDetailsModal = ({
         if (applicantId) {
           await fetchApplicantDetails(applicantId);
         }
+        
+        // Close modal since applicant is now scheduled
+        onClose();
         
         return; // Exit early since interview was created successfully
       }

@@ -5,6 +5,7 @@ interface TimeSlot {
   hour: number
   minute: number
   date: Date
+  timestamp?: number  // Cached timestamp for performance optimization
 }
 
 interface SchedulingRequest {
@@ -48,7 +49,7 @@ interface SchedulingResult {
 }
 
 /**
- * Generate 15-minute time slots for a given date range
+ * Generate 15-minute time slots for a given date range with pre-computed timestamps
  */
 function generateTimeSlots(startDate: Date, endDate: Date): TimeSlot[] {
   const slots: TimeSlot[] = []
@@ -58,10 +59,15 @@ function generateTimeSlots(startDate: Date, endDate: Date): TimeSlot[] {
     // Business hours: 8 AM to 10 PM
     for (let hour = 8; hour < 22; hour++) {
       for (let minute = 0; minute < 60; minute += 15) {
+        const slotDate = new Date(current)
+        const slotTime = new Date(current)
+        slotTime.setHours(hour, minute, 0, 0)
+        
         slots.push({
           hour,
           minute,
-          date: new Date(current)
+          date: slotDate,
+          timestamp: slotTime.getTime()  // Pre-compute timestamp for efficient sorting
         })
       }
     }
@@ -162,7 +168,7 @@ async function checkApplicantConflicts(
 
 /**
  * Batch check interviewer availability for multiple slots
- * Efficiently checks busy times for all interviewers and slots at once
+ * Efficiently checks busy times, interviews, and daily limits for all interviewers and slots at once
  */
 async function batchCheckInterviewerAvailability(
   interviewerIds: string[],
@@ -226,12 +232,57 @@ async function batchCheckInterviewerAvailability(
     }
   }
   
+  // Check daily interview limits for each interviewer on each day
+  const uniqueDates = [...new Set(slots.map(s => s.date.toDateString()))]
+  const dailyInterviewCounts: Record<string, Record<string, number>> = {}
+  
+  for (const interviewerId of interviewerIds) {
+    dailyInterviewCounts[interviewerId] = {}
+    
+    for (const dateString of uniqueDates) {
+      const date = new Date(dateString)
+      const dayStart = new Date(date)
+      dayStart.setHours(0, 0, 0, 0)
+      const dayEnd = new Date(date)
+      dayEnd.setHours(23, 59, 59, 999)
+      
+      const interviewsToday = await db.interview.count({
+        where: {
+          interviewerId,
+          startTime: {
+            gte: dayStart,
+            lte: dayEnd
+          }
+        }
+      })
+      
+      dailyInterviewCounts[interviewerId][dateString] = interviewsToday
+    }
+  }
+  
+  // Mark slots as unavailable if daily limit (4 interviews) is reached
+  for (const interviewerId of interviewerIds) {
+    for (const slot of slots) {
+      const dateString = slot.date.toDateString()
+      const interviewsToday = dailyInterviewCounts[interviewerId][dateString] || 0
+      
+      if (interviewsToday >= 4) {
+        const slotTime = new Date(slot.date)
+        slotTime.setHours(slot.hour, slot.minute, 0, 0)
+        const key = slotTime.toISOString()
+        if (availability[interviewerId]?.[key] !== undefined) {
+          availability[interviewerId][key] = false
+        }
+      }
+    }
+  }
+  
   return availability
 }
 
 /**
  * Check if interviewer has availability during a time slot
- * Checks both busy times and existing interviews
+ * Checks busy times, existing interviews, and daily interview limits
  */
 async function checkInterviewerAvailability(
   interviewerId: string,
@@ -242,9 +293,12 @@ async function checkInterviewerAvailability(
     return false
   }
   
-  // Create the exact time for this slot
-  const slotTime = new Date(slot.date)
-  slotTime.setHours(slot.hour, slot.minute, 0, 0)
+  // Create the exact time for this slot - use cached timestamp if available
+  const slotTime = slot.timestamp ? new Date(slot.timestamp) : (() => {
+    const time = new Date(slot.date)
+    time.setHours(slot.hour, slot.minute, 0, 0)
+    return time
+  })()
   const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000)
   
   // Check if this time is marked as busy
@@ -277,8 +331,32 @@ async function checkInterviewerAvailability(
     }
   })
   
-  // Available if NOT busy and no conflicting interviews
-  return existingInterview === null
+  if (existingInterview) {
+    return false // Time conflict with existing interview
+  }
+
+  // Check daily interview limit (4 interviews per day for auto-scheduler)
+  const dayStart = new Date(slot.date)
+  dayStart.setHours(0, 0, 0, 0)
+  const dayEnd = new Date(slot.date)
+  dayEnd.setHours(23, 59, 59, 999)
+  
+  const interviewsToday = await db.interview.count({
+    where: {
+      interviewerId,
+      startTime: {
+        gte: dayStart,
+        lte: dayEnd
+      }
+    }
+  })
+  
+  // Auto-scheduler limit: max 4 interviews per day
+  if (interviewsToday >= 4) {
+    return false // Daily interview limit reached for auto-scheduling
+  }
+  
+  return true
 }
 
 /**
@@ -303,6 +381,7 @@ function calculateMatchScore(
   }
   
   let totalScore = 0
+  let bestMatchScore = 0
   
   // Hierarchical scoring: Priority 1 = 1000 points, Priority 2 = 500 points, etc.
   commonTeams.forEach(team => {
@@ -318,12 +397,21 @@ function calculateMatchScore(
     const matchScore = interviewerBaseScore + intervieweeBaseScore
     
     // Add bonus for exact priority matches (both have same priority for this team)
-    const priorityMatchBonus = interviewerPriority === intervieweePriority ? 200 : 0
+    const priorityMatchBonus = interviewerPriority === intervieweePriority ? 300 : 0
     
-    totalScore += matchScore + priorityMatchBonus
+    // Add bonus for high priority matches (Priority 1 or 2)
+    const highPriorityBonus = (interviewerPriority < 2 && intervieweePriority < 2) ? 150 : 0
+    
+    const teamScore = matchScore + priorityMatchBonus + highPriorityBonus
+    
+    totalScore += teamScore
+    bestMatchScore = Math.max(bestMatchScore, teamScore)
   })
   
-  return totalScore
+  // Weight the final score to emphasize the best single match while still rewarding multiple matches
+  const finalScore = bestMatchScore * 2 + totalScore
+  
+  return finalScore
 }
 
 /**
@@ -364,12 +452,16 @@ async function createInterviewRecord(
   // Use a transaction to ensure atomicity
   const result = await db.$transaction(async (tx) => {
     // Update application status to INTERVIEWING
-    await tx.application.update({
+    const updatedApplication = await tx.application.update({
       where: { id: intervieweeId },
       data: { 
-        status: ApplicationStatus.INTERVIEWING
+        status: ApplicationStatus.INTERVIEWING,
+        // Set interview stage to true
+        interviewStage: true
       }
     })
+    
+    console.log(`✅ [AUTO-SCHEDULER] Updated application status: ${updatedApplication.id} -> ${updatedApplication.status}`)
     
     // Create the interview record
     const interview = await tx.interview.create({
@@ -394,6 +486,15 @@ async function createInterviewRecord(
     
     return interview
   })
+  
+  // Clear any caches that might be showing stale data
+  try {
+    const { SchedulerCache } = await import('@/lib/redis')
+    await SchedulerCache.invalidateApplicant(intervieweeId)
+    console.log(`🗑️ [AUTO-SCHEDULER] Cleared cache for applicant: ${intervieweeId}`)
+  } catch (cacheError) {
+    console.warn('Failed to clear applicant cache:', cacheError)
+  }
   
   console.log(`✅ [AUTO-SCHEDULER] Interview created successfully: ${result.id}`)
   
@@ -538,6 +639,14 @@ export async function autoScheduleInterview(
           continue
         }
         
+        // Check if the slot is in the past
+        const slotDateTime = new Date(slot.date)
+        slotDateTime.setHours(slot.hour, slot.minute, 0, 0)
+        const now = new Date()
+        if (slotDateTime <= now) {
+          continue // Skip past slots
+        }
+        
         // Check if interviewer has availability for a full 45-minute interview starting at this slot
         let hasAvailability = true
         
@@ -597,12 +706,17 @@ export async function autoScheduleInterview(
       }
       
       // Sort available slots by date/time (earliest first) for better scheduling
+      // Pre-compute timestamps if not already cached
+      interviewerMatch.availableSlots.forEach(slot => {
+        if (!slot.timestamp) {
+          const slotTime = new Date(slot.date)
+          slotTime.setHours(slot.hour, slot.minute, 0, 0)
+          slot.timestamp = slotTime.getTime()
+        }
+      })
+      
       interviewerMatch.availableSlots.sort((a, b) => {
-        const dateA = new Date(a.date)
-        dateA.setHours(a.hour, a.minute, 0, 0)
-        const dateB = new Date(b.date)
-        dateB.setHours(b.hour, b.minute, 0, 0)
-        return dateA.getTime() - dateB.getTime()
+        return (a.timestamp || 0) - (b.timestamp || 0)
       })
       
       console.log(`  ✓ ${interviewer.name}: ${interviewerMatch.availableSlots.length} available slots, ${conflictsFound} conflicts (${slotsChecked} slots checked)`)
@@ -630,13 +744,24 @@ export async function autoScheduleInterview(
       
       // Secondary sort: earliest available slot (sooner is better) - find first availability for highest relevance
       if (a.availableSlots.length > 0 && b.availableSlots.length > 0) {
-        const earliestA = new Date(a.availableSlots[0]!.date)
-        earliestA.setHours(a.availableSlots[0]!.hour, a.availableSlots[0]!.minute, 0, 0)
-        const earliestB = new Date(b.availableSlots[0]!.date)
-        earliestB.setHours(b.availableSlots[0]!.hour, b.availableSlots[0]!.minute, 0, 0)
+        const slotA = a.availableSlots[0]!
+        const slotB = b.availableSlots[0]!
         
-        if (earliestA.getTime() !== earliestB.getTime()) {
-          return earliestA.getTime() - earliestB.getTime()
+        // Use cached timestamp or compute if missing
+        const timestampA = slotA.timestamp || (() => {
+          const time = new Date(slotA.date)
+          time.setHours(slotA.hour, slotA.minute, 0, 0)
+          return time.getTime()
+        })()
+        
+        const timestampB = slotB.timestamp || (() => {
+          const time = new Date(slotB.date)
+          time.setHours(slotB.hour, slotB.minute, 0, 0)
+          return time.getTime()
+        })()
+        
+        if (timestampA !== timestampB) {
+          return timestampA - timestampB
         }
       }
       
@@ -654,12 +779,23 @@ export async function autoScheduleInterview(
       // Sort fallback matches by earliest available slot and number of slots
       fallbackMatches.sort((a, b) => {
         if (a.availableSlots.length > 0 && b.availableSlots.length > 0) {
-          const earliestA = new Date(a.availableSlots[0]!.date)
-          earliestA.setHours(a.availableSlots[0]!.hour, a.availableSlots[0]!.minute, 0, 0)
-          const earliestB = new Date(b.availableSlots[0]!.date)
-          earliestB.setHours(b.availableSlots[0]!.hour, b.availableSlots[0]!.minute, 0, 0)
+          const slotA = a.availableSlots[0]!
+          const slotB = b.availableSlots[0]!
           
-          const timeDiff = earliestA.getTime() - earliestB.getTime()
+          // Use cached timestamp or compute if missing
+          const timestampA = slotA.timestamp || (() => {
+            const time = new Date(slotA.date)
+            time.setHours(slotA.hour, slotA.minute, 0, 0)
+            return time.getTime()
+          })()
+          
+          const timestampB = slotB.timestamp || (() => {
+            const time = new Date(slotB.date)
+            time.setHours(slotB.hour, slotB.minute, 0, 0)
+            return time.getTime()
+          })()
+          
+          const timeDiff = timestampA - timestampB
           if (timeDiff !== 0) return timeDiff
         }
         return b.availableSlots.length - a.availableSlots.length
@@ -801,7 +937,8 @@ export async function findAvailableSlots(
       availableSlots.push({
         hour: current.getHours(),
         minute: current.getMinutes(),
-        date: new Date(date)
+        date: new Date(date),
+        timestamp: current.getTime()  // Pre-compute timestamp for efficient sorting
       })
     }
     

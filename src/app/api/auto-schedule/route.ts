@@ -25,12 +25,19 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = AutoScheduleSchema.parse(body)
     
-    // Convert date strings to Date objects
-    const availableSlots = validatedData.availableSlots.map(slot => ({
-      hour: slot.hour,
-      minute: slot.minute,
-      date: new Date(slot.date)
-    }))
+    // Convert date strings to Date objects and pre-compute timestamps
+    const availableSlots = validatedData.availableSlots.map(slot => {
+      const slotDate = new Date(slot.date)
+      const slotTime = new Date(slotDate)
+      slotTime.setHours(slot.hour, slot.minute, 0, 0)
+      
+      return {
+        hour: slot.hour,
+        minute: slot.minute,
+        date: slotDate,
+        timestamp: slotTime.getTime()  // Pre-compute timestamp for performance optimization
+      }
+    })
     
     const result = await autoScheduleInterview({
       intervieweeId: validatedData.intervieweeId,
