@@ -52,6 +52,7 @@ export async function GET() {
         },
         applicationType: true,
         status: true,
+        rating: true,
       },
     })
 
@@ -69,9 +70,9 @@ export async function GET() {
       teamRankings: applicant.preferredTeams.map((pref) => pref.team.name),
       major: applicant.major,
       year: applicant.year,
-      rating: applicant.status,
+      rating: applicant.rating, // Actual rating from 1-5
       category: applicant.applicationType,
-      status: applicant.status,
+      status: applicant.status, // PENDING, INTERVIEWING, etc.
       subTeam: applicant.subteamPreferences.map((pref) => ({
         name: pref.name,
         interest: pref.interest

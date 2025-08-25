@@ -17,7 +17,8 @@
       "mcp__ide__getDiagnostics",
       "Bash(npx prisma db seed:*)",
       "Bash(timeout 30 npx tsx prisma/dummydata.ts)",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   }

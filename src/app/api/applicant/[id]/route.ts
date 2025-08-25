@@ -47,6 +47,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         summerPlans: true,
         assignedTeam: true,
         resumeId: true,
+        rating: true,
         subteamPreferences: true,
         referral: true,
         officerCommitment: true,

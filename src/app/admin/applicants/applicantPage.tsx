@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 
 export const ApplicantsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState("OFFICER");
+  const [selectedCategory, setSelectedCategory] = React.useState("DCMEMBER");
   const [filters, setFilters] = React.useState<FilterState>({
     team: "",
     position: "",
@@ -200,21 +200,43 @@ export const ApplicantsPage: React.FC = () => {
     }
   };
 
-  const tableHeaders = [
+  const dcMemberHeaders = [
     "Name",
     "Research Interests",
     "Team Rankings",
     "Major",
     "Year",
     "Status",
+    "Rating",
   ];
 
-  const officerheaders = [
+  const officerHeaders = [
     "Name",
     "Position Preference",
     "Major",
     "Year",
     "Status",
+    "Rating",
+  ];
+
+  const materovHeaders = [
+    "Name",
+    "Research Interests",
+    "Team Rankings",
+    "Major",
+    "Year",
+    "Status", 
+    "Rating",
+  ];
+
+  const miniDcHeaders = [
+    "Name",
+    "Research Interests",
+    "Team Rankings",
+    "Major",
+    "Year",
+    "Status",
+    "Rating",
   ];
 
   const officerpositions = [
@@ -231,6 +253,12 @@ export const ApplicantsPage: React.FC = () => {
   const _teamOptions = ["Team A", "Team B", "Team C", "Reset"];
   const _ratingOptions = ["High", "Medium", "Low", "Reset"];
   const _interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
+  
+  // Team options for each application type
+  const dcMemberTeams = ["TSGC", "AIAA", "No Preference", "Reset"];
+  const miniDcTeams = ["TSGC", "AIAA", "Project Team A", "Project Team B", "Reset"];
+  const ratingOptions = ["1", "2", "3", "4", "5", "Unrated", "Reset"];
+  
   const materovsubteams = [
     "COMPUTATION_COMMUNICATIONS",
     "ELECTRICAL_POWER",
@@ -361,14 +389,34 @@ export const ApplicantsPage: React.FC = () => {
         applicant.interests.some(
           (interest) => interest.area === filters.interests,
         );
-      const matchesTeam =
-        selectedCategory === "OFFICER"
-          ? !filters.team ||
-            applicant.officerpos.some((pos) => pos.position === filters.team)
-          : !filters.team ||
-            applicant.subTeam.some((team) => team.name === filters.team);
-      const matchesStatus =
-        !filters.status || applicant.rating === filters.status;
+      
+      // Team filtering logic for different application types
+      const matchesTeam = (() => {
+        if (!filters.team) return true;
+        
+        switch (selectedCategory) {
+          case "OFFICER":
+            return applicant.officerpos.some((pos) => pos.position === filters.team);
+          case "MATEROV":
+            return applicant.subTeam.some((team) => team.name === filters.team);
+          case "DCMEMBER":
+          case "MINIDC":
+            return applicant.subTeam.some((team) => team.name === filters.team);
+          default:
+            return true;
+        }
+      })();
+      
+      const matchesStatus = !filters.status || applicant.status === filters.status;
+      
+      // Rating filter - handle both numeric ratings and "Unrated"
+      const matchesRating = (() => {
+        if (!filters.rating) return true;
+        if (filters.rating === "Unrated") {
+          return applicant.rating === null || applicant.rating === undefined;
+        }
+        return applicant.rating?.toString() === filters.rating;
+      })();
 
       return (
         matchesCategory &&
@@ -376,7 +424,8 @@ export const ApplicantsPage: React.FC = () => {
         matchesMajor &&
         matchesInterests &&
         matchesTeam &&
-        matchesStatus
+        matchesStatus &&
+        matchesRating
       );
     });
   }, [searchQuery, filters, applicantData, selectedCategory]);
@@ -439,8 +488,19 @@ export const ApplicantsPage: React.FC = () => {
 
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
+              onClick={() => setSelectedCategory("DCMEMBER")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+                selectedCategory === "DCMEMBER"
+                  ? "bg-stone-600 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
+              }`}
+            >
+              DC MEMBER
+            </div>
+            <div className="w-[1.5px] bg-neutral-200"></div>
+            <div
               onClick={() => setSelectedCategory("OFFICER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
                 selectedCategory === "OFFICER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -451,13 +511,24 @@ export const ApplicantsPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MATEROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
                 selectedCategory === "MATEROV"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
               }`}
             >
               MATE ROV
+            </div>
+            <div className="w-[1.5px] bg-neutral-200"></div>
+            <div
+              onClick={() => setSelectedCategory("MINIDC")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+                selectedCategory === "MINIDC"
+                  ? "bg-stone-600 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
+              }`}
+            >
+              MINI DC
             </div>
           </div>
 
@@ -473,12 +544,34 @@ export const ApplicantsPage: React.FC = () => {
             />
             <div className="h-12 w-[1px] bg-neutral-400"></div>
             <FilterButton
-              label={selectedCategory === "OFFICER" ? "Position" : "Sub-Team"}
-              options={
-                selectedCategory === "OFFICER"
-                  ? officerpositions
-                  : materovsubteams
-              }
+              label={(() => {
+                switch (selectedCategory) {
+                  case "OFFICER":
+                    return "Position";
+                  case "MATEROV":
+                    return "Sub-Team";
+                  case "DCMEMBER":
+                    return "Team";
+                  case "MINIDC":
+                    return "Team";
+                  default:
+                    return "Team";
+                }
+              })()}
+              options={(() => {
+                switch (selectedCategory) {
+                  case "OFFICER":
+                    return officerpositions;
+                  case "MATEROV":
+                    return materovsubteams;
+                  case "DCMEMBER":
+                    return dcMemberTeams;
+                  case "MINIDC":
+                    return miniDcTeams;
+                  default:
+                    return dcMemberTeams;
+                }
+              })()}
               onOptionSelect={handleFilterChange("team")}
               selected={filters.team ?? "Team"}
             />
@@ -502,13 +595,30 @@ export const ApplicantsPage: React.FC = () => {
               onOptionSelect={handleFilterChange("status")}
               selected={filters.status ?? "Status"}
             />
+            <FilterButton
+              label="Rating"
+              options={ratingOptions}
+              onOptionSelect={handleFilterChange("rating")}
+              selected={filters.rating ?? "Rating"}
+            />
           </div>
 
           <div className="mt-7 flex w-full flex-col rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full max-md:pb-24">
             <TableHeader
-              headers={
-                selectedCategory === "OFFICER" ? officerheaders : tableHeaders
-              }
+              headers={(() => {
+                switch (selectedCategory) {
+                  case "OFFICER":
+                    return officerHeaders;
+                  case "MATEROV":
+                    return materovHeaders;
+                  case "DCMEMBER":
+                    return dcMemberHeaders;
+                  case "MINIDC":
+                    return miniDcHeaders;
+                  default:
+                    return dcMemberHeaders;
+                }
+              })()}
             />
             {loading ? (
               <div className="py-10 text-center text-neutral-200">
@@ -573,11 +683,16 @@ export const ApplicantsPage: React.FC = () => {
                       <div className="flex-1 text-center">{applicant.year}</div>
                       <div className="flex flex-1 items-center justify-center gap-2">
                         <div
-                          className={`text-center ${getStatusColor(applicant.rating)}`}
+                          className={`text-center ${getStatusColor(applicant.status)}`}
                         >
-                          {applicant.rating}
+                          {applicant.status}
                         </div>
-                        {(applicant.rating === "PENDING" || applicant.rating === "INTERVIEWING") && (
+                      </div>
+                      <div className="flex-1 text-center">
+                        {applicant.rating ? applicant.rating : "Unrated"}
+                      </div>
+                      <div className="flex flex-1 items-center justify-center gap-2">
+                        {(applicant.status === "PENDING" || applicant.status === "INTERVIEWING") && (
                           <Button
                             variant="outline"
                             size="sm"
@@ -588,7 +703,7 @@ export const ApplicantsPage: React.FC = () => {
                             }}
                             disabled={autoSchedulingIds.has(applicant.id)}
                             title={
-                              applicant.rating === "PENDING"
+                              applicant.status === "PENDING"
                                 ? "Auto-schedule interview for pending applicant"
                                 : "Auto-schedule interview"
                             }

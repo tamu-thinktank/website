@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { Challenge } from "@prisma/client"
+import { Challenge, ApplicationStatus } from "@prisma/client"
 
 interface TimeSlot {
   hour: number
@@ -11,6 +11,7 @@ interface SchedulingRequest {
   intervieweeId: string
   preferredTeams: string[]
   availableSlots: TimeSlot[]
+  autoCreateInterview?: boolean  // New parameter to control automatic interview creation
 }
 
 interface InterviewerMatch {
@@ -23,6 +24,18 @@ interface InterviewerMatch {
   conflicts: string[]
 }
 
+interface CreatedInterview {
+  id: string
+  applicantId: string
+  interviewerId: string
+  startTime: Date
+  endTime: Date
+  location: string
+  teamId?: string
+  applicantName: string
+  interviewerName: string
+}
+
 interface SchedulingResult {
   success: boolean
   matches: InterviewerMatch[]
@@ -30,6 +43,7 @@ interface SchedulingResult {
     interviewer: InterviewerMatch
     slot: TimeSlot
   }
+  createdInterview?: CreatedInterview  // New field for automatically created interviews
   errors: string[]
 }
 
@@ -331,12 +345,78 @@ function getHierarchicalScore(priorityIndex: number): number {
 }
 
 /**
+ * Automatically create an interview record in the database
+ */
+async function createInterviewRecord(
+  intervieweeId: string,
+  interviewer: InterviewerMatch,
+  slot: TimeSlot,
+  applicantName: string
+): Promise<CreatedInterview> {
+  const startTime = new Date(slot.date)
+  startTime.setHours(slot.hour, slot.minute, 0, 0)
+  
+  const endTime = new Date(startTime)
+  endTime.setMinutes(endTime.getMinutes() + 45) // 45-minute interviews
+  
+  console.log(`🔄 [AUTO-SCHEDULER] Creating interview record for ${applicantName} with ${interviewer.name}`)
+  
+  // Use a transaction to ensure atomicity
+  const result = await db.$transaction(async (tx) => {
+    // Update application status to INTERVIEWING
+    await tx.application.update({
+      where: { id: intervieweeId },
+      data: { 
+        status: ApplicationStatus.INTERVIEWING
+      }
+    })
+    
+    // Create the interview record
+    const interview = await tx.interview.create({
+      data: {
+        applicantId: intervieweeId,
+        interviewerId: interviewer.interviewerId,
+        startTime,
+        endTime,
+        location: "To be determined", // Default location
+        teamId: null, // No specific team assignment yet
+        isPlaceholder: false
+      },
+      include: {
+        applicant: {
+          select: { fullName: true }
+        },
+        interviewer: {
+          select: { name: true }
+        }
+      }
+    })
+    
+    return interview
+  })
+  
+  console.log(`✅ [AUTO-SCHEDULER] Interview created successfully: ${result.id}`)
+  
+  return {
+    id: result.id,
+    applicantId: result.applicantId!,
+    interviewerId: result.interviewerId,
+    startTime: result.startTime,
+    endTime: result.endTime,
+    location: result.location,
+    teamId: result.teamId || undefined,
+    applicantName: result.applicant?.fullName || applicantName,
+    interviewerName: result.interviewer?.name || interviewer.name
+  }
+}
+
+/**
  * Auto-schedule interviews for an interviewee
  */
 export async function autoScheduleInterview(
   request: SchedulingRequest
 ): Promise<SchedulingResult> {
-  const { intervieweeId, preferredTeams } = request
+  const { intervieweeId, preferredTeams, autoCreateInterview = false } = request
   let { availableSlots } = request
   const errors: string[] = []
   const startTime = Date.now()
@@ -591,6 +671,7 @@ export async function autoScheduleInterview(
     
     // Find the best suggestion using enhanced selection logic
     let suggestedSlot: SchedulingResult['suggestedSlot']
+    let createdInterview: CreatedInterview | undefined
     
     const bestMatch = finalMatches.find(match => match.availableSlots.length > 0)
     if (bestMatch && bestMatch.availableSlots.length > 0) {
@@ -600,6 +681,24 @@ export async function autoScheduleInterview(
         suggestedSlot = {
           interviewer: bestMatch,
           slot: earliestSlot
+        }
+        
+        // If auto-create is enabled, automatically create the interview
+        if (autoCreateInterview && suggestedSlot) {
+          try {
+            console.log(`🤖 [AUTO-SCHEDULER] Auto-creating interview for ${interviewee.fullName}`)
+            createdInterview = await createInterviewRecord(
+              intervieweeId,
+              bestMatch,
+              earliestSlot,
+              interviewee.fullName
+            )
+            console.log(`✅ [AUTO-SCHEDULER] Interview auto-created: ${createdInterview.id}`)
+          } catch (error) {
+            console.error(`❌ [AUTO-SCHEDULER] Failed to auto-create interview:`, error)
+            errors.push(`Failed to create interview automatically: ${error instanceof Error ? error.message : 'Unknown error'}`)
+            // Don't return early - still provide suggestion as fallback
+          }
         }
       }
     }
@@ -633,6 +732,7 @@ export async function autoScheduleInterview(
       success: finalMatches.length > 0,
       matches: finalMatches.slice(0, 5), // Return top 5 matches
       suggestedSlot,
+      createdInterview,
       errors
     }
     

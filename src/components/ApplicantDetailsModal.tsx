@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { Star } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -62,6 +63,7 @@ interface ApplicantDetails {
   secondQuestion: string;
   thirdQuestion?: string;
   meetings: boolean;
+  rating?: number | null;
   weeklyCommitment: boolean;
   currentClasses: string[];
   nextClasses: string[];
@@ -153,6 +155,7 @@ export const ApplicantDetailsModal = ({
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [assignedTeam, setAssignedTeam] = useState("");
   const [isAutoScheduling, setIsAutoScheduling] = useState(false);
+  const [applicantRating, setApplicantRating] = useState<number | null>(null);
   const _router = useRouter();
   const { data: _session } = useSession();
 
@@ -192,6 +195,38 @@ export const ApplicantDetailsModal = ({
         });
       },
     });
+
+  // Save applicant rating
+  const saveApplicantRating = async (rating: number | null) => {
+    if (!applicantId) return;
+
+    try {
+      const response = await fetch(`/api/applicants/${applicantId}/rating`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rating }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save rating');
+      }
+
+      setApplicantRating(rating);
+      toast({
+        title: "Success",
+        description: `Rating ${rating ? `updated to ${rating}` : 'removed'}`,
+      });
+    } catch (error) {
+      console.error('Error saving rating:', error);
+      toast({
+        title: "Error", 
+        description: "Failed to save rating. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Fetch applicant details when the modal opens and applicantId changes
   useEffect(() => {
@@ -237,6 +272,7 @@ export const ApplicantDetailsModal = ({
       console.log("Fetched applicant details:", data);
       setApplicant(data);
       setAssignedTeam(data.assignedTeam ?? "NONE");
+      setApplicantRating(data.rating || null);
     } catch (err) {
       console.error("Error fetching applicant details:", err);
       setError(
@@ -792,7 +828,7 @@ export const ApplicantDetailsModal = ({
         }
       }
 
-      // Call auto-scheduler API
+      // Call auto-scheduler API with automatic interview creation enabled
       const response = await fetch('/api/auto-schedule', {
         method: 'POST',
         headers: {
@@ -802,15 +838,50 @@ export const ApplicantDetailsModal = ({
           intervieweeId: applicantId,
           preferredTeams,
           availableSlots,
+          autoCreateInterview: true,  // Enable automatic interview creation
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to auto-schedule interview');
+        // Try to get more detailed error from response
+        let errorMessage = 'Failed to auto-schedule interview';
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (parseError) {
+          console.error("Error parsing error response:", parseError);
+        }
+        throw new Error(errorMessage);
       }
 
       const result = await response.json() as any;
+      
+      // Check for errors in successful response
+      if (result.errors && result.errors.length > 0) {
+        const errorMessage = result.errors.join(', ');
+        throw new Error(errorMessage);
+      }
 
+      // Check if interview was automatically created
+      if (result.success && result.createdInterview) {
+        const interview = result.createdInterview;
+        
+        toast({
+          title: "Interview Scheduled Successfully!",
+          description: `Interview automatically scheduled with ${interview.interviewerName} on ${new Date(interview.startTime).toLocaleDateString()} at ${new Date(interview.startTime).toLocaleTimeString()}.`,
+        });
+        
+        // Refresh applicant details to show updated status
+        if (applicantId) {
+          await fetchApplicantDetails(applicantId);
+        }
+        
+        return; // Exit early since interview was created successfully
+      }
+      
+      // Fallback: If auto-creation failed but we have a suggestion, show it
       if (result.success && result.suggestedSlot) {
         const { interviewer, slot } = result.suggestedSlot;
         
@@ -821,7 +892,8 @@ export const ApplicantDetailsModal = ({
         
         toast({
           title: "Auto-Schedule Suggestion",
-          description: `Found match with ${interviewer?.name} on ${new Date(slot?.date).toLocaleDateString()} at ${slot?.hour}:${slot?.minute?.toString().padStart(2, '0')}. Please review and confirm.`,
+          description: `Found match with ${interviewer?.name} on ${new Date(slot?.date).toLocaleDateString()} at ${slot?.hour}:${slot?.minute?.toString().padStart(2, '0')}. Please review and confirm manually.`,
+          variant: "default",
         });
       } else {
         // Show all available matches
@@ -854,9 +926,25 @@ export const ApplicantDetailsModal = ({
       }
     } catch (error) {
       console.error('Error auto-scheduling interview:', error);
+      
+      // Extract more detailed error information
+      let errorMessage = "Failed to auto-schedule. Please try manual scheduling.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+      
+      // Handle specific error cases
+      if (errorMessage.includes("conflicts")) {
+        errorMessage = "No available time slots found due to scheduling conflicts. Please try manual scheduling.";
+      } else if (errorMessage.includes("No interviewers")) {
+        errorMessage = "No interviewers available for your application type. Please contact admin.";
+      } else if (errorMessage.includes("Failed to create interview")) {
+        errorMessage = "Found a match but failed to create interview. Please try manual scheduling with the suggested slot.";
+      }
+      
       toast({
         title: "Auto-Schedule Error",
-        description: error instanceof Error ? error.message : "Failed to auto-schedule. Please try manual scheduling.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -1641,6 +1729,44 @@ export const ApplicantDetailsModal = ({
                   >
                     Update Status/Team
                   </Button>
+                </div>
+              </div>
+
+              {/* Rating Section */}
+              <div className="space-y-4 rounded-lg border border-neutral-700 bg-neutral-800 p-4">
+                <h3 className="text-lg font-semibold">Applicant Rating</h3>
+                <div className="space-y-3">
+                  <Label>Rate this applicant (1-5 stars)</Label>
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => saveApplicantRating(star)}
+                        className="transition-colors hover:scale-110"
+                      >
+                        <Star
+                          className={`h-8 w-8 ${
+                            applicantRating && star <= applicantRating
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-neutral-500 hover:text-yellow-300"
+                          }`}
+                        />
+                      </button>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => saveApplicantRating(null)}
+                      className="ml-4 border-neutral-600 text-neutral-300 hover:bg-neutral-700"
+                    >
+                      Clear Rating
+                    </Button>
+                  </div>
+                  {applicantRating && (
+                    <p className="text-sm text-neutral-400">
+                      Current rating: {applicantRating} out of 5 stars
+                    </p>
+                  )}
                 </div>
               </div>
 

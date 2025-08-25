@@ -10,7 +10,8 @@ const AutoScheduleSchema = z.object({
     hour: z.number().int().min(0).max(23),
     minute: z.number().int().min(0).max(59),
     date: z.string().datetime()
-  }))
+  })),
+  autoCreateInterview: z.boolean().optional().default(false)  // New parameter for automatic booking
 })
 
 const FindSlotsSchema = z.object({
@@ -34,7 +35,8 @@ export async function POST(request: Request) {
     const result = await autoScheduleInterview({
       intervieweeId: validatedData.intervieweeId,
       preferredTeams: validatedData.preferredTeams,
-      availableSlots
+      availableSlots,
+      autoCreateInterview: validatedData.autoCreateInterview
     })
     
     return NextResponse.json(result)
