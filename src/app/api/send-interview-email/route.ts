@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import sendEmail from "@/server/service/email"
+import { InterviewEmail } from "../../../../emails/interview"
 
 const SendInterviewEmailSchema = z.object({
   officerId: z.string(),
@@ -29,19 +31,38 @@ export async function POST(request: Request) {
       hour12: true
     }).format(new Date(validatedData.startTime));
 
-    // For now, just log the email data (in real implementation, this would send actual emails)
-    console.log("Sending interview email:", {
-      to: validatedData.applicantEmail,
-      from: "lucasvad123@gmail.com", // Updated to use test email
+    // Log the email data for debugging
+    console.log("📧 [EMAIL] Sending interview email:", {
+      to: "lucasvad123@gmail.com", // Testing with your email
+      originalTo: validatedData.applicantEmail,
       subject: "ThinkTank Application Interview",
       interviewer: validatedData.officerName,
       time: centralTime,
       location: validatedData.location,
       team: validatedData.team,
+      applicationType: validatedData.applicationType,
     })
 
-    // Simulate email sending delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      // Actually send the email using your email service
+      const emailResult = await sendEmail({
+        to: ["lucasvad123@gmail.com"], // Send to your test email
+        subject: "ThinkTank Application Interview",
+        template: InterviewEmail({
+          userFirstname: validatedData.applicantName.split(' ')[0] || validatedData.applicantName,
+          time: centralTime,
+          location: validatedData.location,
+          interviewerName: validatedData.officerName,
+          team: validatedData.team,
+          applicationType: validatedData.applicationType || "General",
+        }),
+      })
+      
+      console.log("✅ [EMAIL] Interview email sent successfully:", emailResult)
+    } catch (emailError) {
+      console.error("❌ [EMAIL] Failed to send interview email:", emailError)
+      throw emailError
+    }
 
     return NextResponse.json({ 
       success: true, 

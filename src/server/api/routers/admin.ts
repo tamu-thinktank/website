@@ -6,6 +6,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc"
 import { getAllApplications, getAvailabities, getTargetTeams } from "@/server/db/queries"
 import sendEmail from "@/server/service/email"
 import DriveService from "@/server/service/google-drive"
+import { SchedulerCache, CacheTTL } from "@/lib/redis"
 import { Temporal } from "@js-temporal/polyfill"
 import { Challenge } from "@prisma/client"
 import InterviewEmail from "emails/interview"
@@ -136,6 +137,12 @@ export const adminRouter = createTRPCRouter({
     return true
   }),
   getApplicants: protectedProcedure.output(ApplicantsSchema).query(async ({ ctx }) => {
+    // Try to get from Redis cache first
+    const cached = await SchedulerCache.getApplicants()
+    if (cached) {
+      return cached
+    }
+
     const applications = await ctx.db.application.findMany({
       select: {
         id: true,
@@ -144,7 +151,13 @@ export const adminRouter = createTRPCRouter({
         submittedAt: true,
         status: true,
       },
+      orderBy: {
+        submittedAt: 'desc'
+      }
     })
+
+    // Cache the result
+    await SchedulerCache.setApplicants(applications, 'all', CacheTTL.SHORT)
 
     return applications
   }),
@@ -152,12 +165,22 @@ export const adminRouter = createTRPCRouter({
     .input(z.string().cuid2())
     .output(ApplicantSchema)
     .query(async ({ input, ctx }) => {
+      // Try to get from Redis cache first
+      const cached = await SchedulerCache.getApplicant(input)
+      if (cached) {
+        return cached
+      }
+
       const application = await ctx.db.application.findUnique({
         where: {
           id: input,
         },
         include: {
-          meetingTimes: true,
+          meetingTimes: {
+            orderBy: {
+              gridTime: 'asc'
+            }
+          },
         },
       })
 
@@ -165,7 +188,7 @@ export const adminRouter = createTRPCRouter({
         throw new Error("Application not found")
       }
 
-      return {
+      const result = {
         ...application,
         personal: {
           ...application,
@@ -182,6 +205,11 @@ export const adminRouter = createTRPCRouter({
           .map((meetingTime) => meetingTime.toString()),
         resumeId: application.resumeId,
       }
+
+      // Cache the result for future requests
+      await SchedulerCache.setApplicant(input, result, CacheTTL.MEDIUM)
+
+      return result
     }),
   updateApplicant: protectedProcedure
     .input(
@@ -212,6 +240,12 @@ export const adminRouter = createTRPCRouter({
       } catch (e) {
         throw new Error("Failed to move resume: " + (e as Error).message)
       }
+
+      // Invalidate caches after successful update
+      await Promise.all([
+        SchedulerCache.invalidateApplicant(applicantId),
+        SchedulerCache.invalidateApplicants(),
+      ])
 
       return true
     }),

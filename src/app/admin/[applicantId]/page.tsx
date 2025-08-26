@@ -95,17 +95,28 @@ export default function ApplicantPage() {
   // get applicant data into Q&A format
 
   const { applicantId } = useParams<{ applicantId: string }>();
+  
+  // Parallelize data fetching - start both queries simultaneously
   const {
     data: applicant,
     isError: isApplicantError,
     isLoading: isApplicantLoading,
   } = api.admin.getApplicant.useQuery(applicantId, {
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-    retry: false,
-    retryOnMount: false,
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    refetchOnMount: true, // Refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when returning to tab
+    retry: 2, // Retry failed requests twice
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   });
+
+  // Start officer availability query in parallel if we have an interested challenge
+  const { data: officerTimes } = api.admin.getAvailabilities.useQuery(
+    { targetTeam: applicant?.interests?.interestedChallenge },
+    {
+      enabled: !!applicant?.interests?.interestedChallenge,
+      staleTime: 60000, // Officer availability is less frequently updated
+    }
+  );
 
   const QAs: ReturnType<typeof getQAs> = useMemo(() => {
     if (!applicant) {
@@ -141,11 +152,11 @@ export default function ApplicantPage() {
     queryKey: ["get-resume", applicant?.resumeId, session?.user.email],
     queryFn: getResume,
     enabled: !!applicant && !!session,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
-    retry: false,
-    retryOnMount: false,
+    staleTime: 5 * 60 * 1000, // Consider resume data fresh for 5 minutes
+    refetchOnMount: false, // Don't refetch resume on every mount (heavy operation)
+    refetchOnWindowFocus: false, // Don't refetch resume on focus
+    retry: 1, // Retry once for resume fetching
+    retryDelay: 2000, // Wait 2 seconds before retry
   });
 
   useEffect(() => {
@@ -184,6 +195,7 @@ export default function ApplicantPage() {
             meetingTimes={applicant.meetingTimes}
             resumeId={applicant.resumeId}
             interestedChallenge={applicant.interests.interestedChallenge}
+            officerTimes={officerTimes}
           />
         ) : null}
         <Table
@@ -239,6 +251,7 @@ function Buttons({
   meetingTimes,
   resumeId,
   interestedChallenge,
+  officerTimes,
 }: {
   applicantId: string;
   applicantName: string;
@@ -246,12 +259,10 @@ function Buttons({
   meetingTimes: RouterOutputs["admin"]["getApplicant"]["meetingTimes"];
   resumeId: string;
   interestedChallenge: Challenge;
+  officerTimes?: RouterOutputs["admin"]["getAvailabilities"];
 }) {
   const router = useRouter();
   const apiUtils = api.useUtils();
-  const { data: officerTimes } = api.admin.getAvailabilities.useQuery({
-    targetTeam: interestedChallenge,
-  });
 
   const soonestOfficer = useMemo(() => {
     if (!officerTimes) return;
