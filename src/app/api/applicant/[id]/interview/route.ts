@@ -3,10 +3,10 @@ import { db } from "@/lib/db"
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
 
     // Find the most recent interview for this applicant
     const interview = await db.interview.findFirst({

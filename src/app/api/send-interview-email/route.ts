@@ -18,13 +18,24 @@ export async function POST(request: Request) {
     const body = await request.json()
     const validatedData = SendInterviewEmailSchema.parse(body)
 
+    // Convert time to Central Time
+    const centralTime = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Chicago',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }).format(new Date(validatedData.startTime));
+
     // For now, just log the email data (in real implementation, this would send actual emails)
     console.log("Sending interview email:", {
       to: validatedData.applicantEmail,
       from: "lucasvad123@gmail.com", // Updated to use test email
-      subject: `Interview Scheduled - ${validatedData.applicationType || "General"} Application`,
+      subject: "ThinkTank Application Interview",
       interviewer: validatedData.officerName,
-      time: validatedData.startTime,
+      time: centralTime,
       location: validatedData.location,
       team: validatedData.team,
     })

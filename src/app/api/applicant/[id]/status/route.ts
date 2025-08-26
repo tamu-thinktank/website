@@ -2,9 +2,9 @@ import { NextResponse } from "next/server"
 import { ApplicationStatus } from "@prisma/client"
 import { db } from "@/lib/db"
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const { id } = await params
     const body = (await request.json()) as { status: ApplicationStatus }
     const { status } = body
 

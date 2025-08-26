@@ -2173,16 +2173,10 @@ const Scheduler: React.FC = () => {
                         )}
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent triggering the slot click handler
-                          if (interview.applicantId) {
-                            setSelectedApplicantId(interview.applicantId);
-                            setIsApplicantModalOpen(true);
-                          } else {
-                            // Fallback to interview view for placeholder interviews
-                            setSelectedInterview(interview);
-                            setIsViewModalOpen(true);
-                          }
+                          setSelectedInterview(interview);
+                          setIsViewModalOpen(true);
                         }}
-                        title="Click to view applicant details"
+                        title="Click to view/edit interview"
                       >
                         <div className="truncate text-xs font-medium">
                           {interview.applicantName}
@@ -2858,7 +2852,20 @@ const Scheduler: React.FC = () => {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label className="text-right font-medium">Applicant</Label>
                   <div className="col-span-3 text-neutral-200">
-                    {selectedInterview.applicantName}
+                    {selectedInterview.applicantId ? (
+                      <button
+                        onClick={() => {
+                          setSelectedApplicantId(selectedInterview.applicantId);
+                          setIsApplicantModalOpen(true);
+                        }}
+                        className="text-blue-400 hover:text-blue-300 underline cursor-pointer transition-colors"
+                        title="Click to view applicant details"
+                      >
+                        {selectedInterview.applicantName}
+                      </button>
+                    ) : (
+                      selectedInterview.applicantName
+                    )}
                   </div>
                 </div>
               )}

@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     console.log("Sending rejection email:", {
       to: validatedData.applicantEmail,
       from: "lucasvad123@gmail.com", // Updated to use test email
-      subject: `Application Update - ${validatedData.applicationType || "General"} Application`,
+      subject: "ThinkTank Application Update",
       applicant: validatedData.applicantName,
     })
 
