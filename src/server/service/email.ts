@@ -26,7 +26,7 @@ export default async function sendEmail({
   console.log(`📧 [EMAIL-SERVICE] From: ${env.APP_EMAIL}`);
   console.log(`📧 [EMAIL-SERVICE] To: ${to.join(', ')}`);
   console.log(`📧 [EMAIL-SERVICE] Subject: ${subject}`);
-  console.log(`📧 [EMAIL-SERVICE] CC: ${cc?.join(', ') || 'None'}`);
+  console.log(`📧 [EMAIL-SERVICE] CC: ${cc?.join(', ') ?? 'None'}`);
   
   return new Promise((resolve, reject) => {
     try {
@@ -53,7 +53,7 @@ export default async function sendEmail({
           console.log(`📧 [EMAIL-SERVICE] Rejected: ${info.rejected?.toString()}`);
           console.log(`📧 [EMAIL-SERVICE] Response: ${info.response}`);
           
-          const message = `Message delivered to ${info.accepted?.toString() || 'recipients'}`;
+          const message = `Message delivered to ${info.accepted?.toString() ?? 'recipients'}`;
           return resolve(message);
         },
       );

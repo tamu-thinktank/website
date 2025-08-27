@@ -1,5 +1,5 @@
 import { db } from "@/lib/db"
-import { Challenge, ApplicationStatus } from "@prisma/client"
+import { ApplicationStatus } from "@prisma/client"
 
 interface TimeSlot {
   hour: number
@@ -106,7 +106,7 @@ async function checkSlotConflicts(
   })
   
   if (conflictingInterviews.length > 0) {
-    const applicantName = conflictingInterviews[0]?.applicant?.fullName || conflictingInterviews[0]?.placeholderName || 'Unknown applicant'
+    const applicantName = conflictingInterviews[0]?.applicant?.fullName ?? conflictingInterviews[0]?.placeholderName ?? 'Unknown applicant'
     conflicts.push(`Interview conflict: ${applicantName}`)
   }
   
@@ -124,7 +124,7 @@ async function checkSlotConflicts(
   })
   
   if (conflictingBusyTimes.length > 0) {
-    const reason = conflictingBusyTimes[0]?.reason || 'Busy time'
+    const reason = conflictingBusyTimes[0]?.reason ?? 'Busy time'
     conflicts.push(`Busy conflict: ${reason}`)
   }
   
@@ -159,7 +159,7 @@ async function checkApplicantConflicts(
   })
   
   if (conflictingInterviews.length > 0) {
-    const interviewerName = conflictingInterviews[0]?.interviewer?.name || 'Unknown interviewer'
+    const interviewerName = conflictingInterviews[0]?.interviewer?.name ?? 'Unknown interviewer'
     conflicts.push(`Applicant has conflicting interview with: ${interviewerName}`)
   }
   
@@ -178,7 +178,7 @@ async function precomputeInterviewerAvailability(
   
   // Generate all possible 15-minute slots in the date range
   const allSlots = generateTimeSlots(dateRange.start, dateRange.end)
-  const totalSlots = allSlots.length
+  //const totalSlots = allSlots.length
   
   // Get all conflicts in parallel for all interviewers
   const [busyTimes, existingInterviews, dailyInterviewCounts] = await Promise.all([
@@ -225,7 +225,7 @@ async function precomputeInterviewerAvailability(
   // Convert daily counts to lookup
   const dailyCounts: Record<string, Record<string, number>> = {}
   dailyInterviewCounts.forEach(({ interviewerId, counts }) => {
-    if (interviewerId && counts) {
+    if (interviewerId) {
       dailyCounts[interviewerId] = counts
     }
   })
@@ -478,7 +478,7 @@ async function createInterviewRecord(
     location: result.location,
     teamId: result.teamId || undefined,
     applicantName: result.applicant?.fullName || applicantName,
-    interviewerName: result.interviewer?.name || interviewer.name
+    interviewerName: result.interviewer.name || interviewer.name
   }
 }
 

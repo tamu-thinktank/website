@@ -3,7 +3,7 @@ import { SchedulerCache } from "@/lib/redis"
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
+    const body = await request.json() as { type: string; interviewerId?: string; dates?: string[] }
     const { type, interviewerId, dates } = body
 
     switch (type) {
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
       case 'interviews':
         if (dates && Array.isArray(dates)) {
           for (const date of dates) {
-            await SchedulerCache.invalidateInterviews(date)
+            await SchedulerCache.invalidateInterviews(date as string)
           }
         } else {
           await SchedulerCache.invalidateInterviews()

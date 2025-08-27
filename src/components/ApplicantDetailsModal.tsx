@@ -668,8 +668,8 @@ export const ApplicantDetailsModal = ({
       return;
     }
 
-    // More flexible check - allow if interviewing or has interview stage
-    if (applicant.status !== ApplicationStatus.INTERVIEWING && !applicant.interviewStage) {
+    // More flexible check - allow if interviewing
+    if (applicant.status !== ApplicationStatus.INTERVIEWING) {
       toast({
         title: "Error",
         description: "Interview must be scheduled before sending email",
@@ -693,7 +693,7 @@ export const ApplicantDetailsModal = ({
       }
 
       // Use fallback data if interview details are not available
-      if (!interviewData || !interviewData.interviewer) {
+      if (!interviewData || !(interviewData as any).interviewer) {
         interviewData = {
           interviewer: {
             id: "fallback",
@@ -710,13 +710,13 @@ export const ApplicantDetailsModal = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          officerId: interviewData.interviewer.id,
-          officerName: interviewData.interviewer.name,
+          officerId: (interviewData as any).interviewer.id,
+          officerName: (interviewData as any).interviewer.name,
           officerEmail: "lucasvad123@gmail.com", // Updated to use test email
           applicantName: applicant.fullName,
           applicantEmail: applicant.email,
-          startTime: interviewData.startTime,
-          location: interviewData.location || "TBD",
+          startTime: (interviewData as any).startTime,
+          location: (interviewData as any).location || "TBD",
           team: applicant.assignedTeam || "",
           applicationType: applicant.applicationType ?? "General",
         }),
@@ -934,7 +934,7 @@ export const ApplicantDetailsModal = ({
         // Try to get more detailed error from response
         let errorMessage = 'Failed to auto-schedule interview';
         try {
-          const errorData = await response.json();
+          const errorData = await response.json() as any;
           if (errorData.error) {
             errorMessage = errorData.error;
           }
@@ -1724,7 +1724,7 @@ export const ApplicantDetailsModal = ({
                   </Button>
 
                   {/* Send Interview Email button - always show if interview is scheduled */}
-                  {applicant && (applicant.status === ApplicationStatus.INTERVIEWING || applicant.interviewStage) && (
+                  {applicant && applicant.status === ApplicationStatus.INTERVIEWING && (
                     <Button
                       variant="outline"
                       onClick={() => void sendInterviewEmailOnly()}

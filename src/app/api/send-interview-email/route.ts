@@ -49,7 +49,7 @@ export async function POST(request: Request) {
         to: ["lucasvad123@gmail.com"], // Send to your test email
         subject: "ThinkTank Application Interview",
         template: InterviewEmail({
-          userFirstname: validatedData.applicantName.split(' ')[0] || validatedData.applicantName,
+          userFirstname: validatedData.applicantName.split(' ')[0] ?? validatedData.applicantName,
           time: centralTime,
           location: validatedData.location,
           interviewerName: validatedData.officerName,

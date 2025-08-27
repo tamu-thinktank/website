@@ -1,5 +1,7 @@
 import { Challenge, InterestLevel, ExperienceLevel, LearningInterestLevel } from "@prisma/client";
 
+export const longAnswerLimit = 250;
+
 export const challenges: {
   id: Challenge;
   label: string;
@@ -11,6 +13,57 @@ export const challenges: {
       link: "https://ig.utexas.edu/tsgc/design-challenge/",
     },
   ];
+
+// General member application questions
+export const q = {
+  personal: {
+    title: "Personal Information",
+    fullName: "Full Name",
+    preferredName: "Preferred Name",
+    pronouns: "Preferred Pronouns",  
+    gender: "Gender",
+    uin: "UIN",
+    email: "TAMU Email",
+    altEmail: "Additional Email Contact", 
+    phone: "Contact Number",
+  },
+  academic: {
+    title: "Academic Information",
+    year: "Current Year at TAMU",
+    major: "Major",
+    currentClasses: "Current Semester Classes",
+    nextClasses: "Next Semester Classes",
+  },
+  thinkTankInfo: {
+    title: "ThinkTank Information",
+    meetings: "Are you able to attend a majority of meetings in-person?",
+    weeklyCommitment: "Are you able to commit 8-10 hours per week for the entire duration of the project?",
+    preferredTeams: "For each selected team, rate your relative interest compared to other teams.",
+    researchAreas: "For each selected research area, rate your relative interest compared to other research areas.",
+    referralSources: "Where did you hear about us? (Select all that apply)",
+  },
+  interests: {
+    title: "Interests & Challenges",
+    interestedAnswer: "What interests you about ThinkTank?",
+    challenges: "Which challenges are you interested in participating in?",
+    interestedChallenge: "Which challenge are you most interested in?", 
+    passionAnswer: "What are you passionate about?",
+    isLeadership: "Are you interested in leadership opportunities?",
+  },
+  leadership: {
+    title: "Experience & Skills",
+    skillsAnswer: "Describe your relevant technical skills and experience.",
+    conflictsAnswer: "Describe any potential conflicts or constraints.",
+    timeManagement: "How do you manage your time effectively?",
+    relevantExperience: "Describe your relevant project or work experience.",
+    timeCommitment: "Describe your time commitments for the upcoming semesters.",
+  },
+  openEndedQuestions: {
+    title: "Open-Ended Questions", 
+    firstQuestion: "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
+    secondQuestion: "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
+  },
+};
 
 // Team and Research Area Types
 interface Team {

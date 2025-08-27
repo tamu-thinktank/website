@@ -20,7 +20,9 @@
       "Bash(npx prisma:*)",
       "Bash(node:*)",
       "Bash(git checkout:*)",
-      "Bash(timeout 10 pnpm dev)"
+      "Bash(timeout 10 pnpm dev)",
+      "Bash(git rm:*)",
+      "Bash(timeout 60 pnpm build)"
     ],
     "deny": []
   }

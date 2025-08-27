@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db";
+import { db } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body = await request.json() as { interviewerIds: string[]; timeSlots: string[] };
     const { interviewerIds, timeSlots } = body;
 
     if (!interviewerIds || !timeSlots) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Fetch all officer times in a single query using OR conditions
-    const officerTimes = await prisma.officerTime.findMany({
+    const officerTimes = await db.officerTime.findMany({
       where: {
         OR: whereConditions
       },
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
     // Mark the slots that exist in the database
     for (const officerTime of officerTimes) {
       if (grouped[officerTime.officerId]) {
-        grouped[officerTime.officerId][officerTime.gridTime] = true;
+        grouped[officerTime.officerId]![officerTime.gridTime] = true;
       }
     }
 

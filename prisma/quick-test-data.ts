@@ -35,14 +35,13 @@ async function createTestApplications() {
   const majors = ['AERO', 'MEEN', 'CSCE', 'ELEN', 'CVEN', 'CHEN'] as const
   
   // Create 15 applications: 10 INTERVIEWING, 3 PENDING, 2 others
-  const applications = [
-    ...Array(10).fill('INTERVIEWING'),
-    ...Array(3).fill('PENDING'), 
-    ...Array(2).fill('ACCEPTED')
+  const applications: string[] = [
+    ...Array(10).fill('INTERVIEWING') as string[],
+    ...Array(3).fill('PENDING') as string[], 
+    ...Array(2).fill('ACCEPTED') as string[]
   ]
   
-  for (let i = 0; i < applications.length; i++) {
-    const status = applications[i]
+  for (const status of applications) {
     const fullName = faker.person.fullName()
     
     const application = await prisma.application.create({
@@ -64,7 +63,7 @@ async function createTestApplications() {
         secondQuestion: faker.lorem.paragraph(3),
         thirdQuestion: faker.lorem.paragraph(3),
         resumeId: faker.string.uuid(),
-        status: status as any,
+        status: status as 'INTERVIEWING' | 'PENDING' | 'ACCEPTED',
       },
     })
     

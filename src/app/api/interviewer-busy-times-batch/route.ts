@@ -209,7 +209,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: results.length > 0,
       processed: results.length,
-      errors: errors.length,
+      errorCount: errors.length,
       results,
       errors: errors.length > 0 ? errors : undefined
     })

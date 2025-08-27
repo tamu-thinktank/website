@@ -154,7 +154,7 @@ export default function ApplicantsTable() {
                 <TeamDropdown teamFilter={teamFilter} setTeamFilter={setTeamFilter} />
                 <Button variant="outline">More</Button>
             </div>
-            <div className="w-[70%] border rounded-lg border-white border-[0.75px]">
+            <div className="w-[70%] rounded-lg border-white border-[0.75px]">
                 <Table>
                     <TableHeader>
                         <TableRow className="border-b border-white bg-zinc-700 border-opacity-25">

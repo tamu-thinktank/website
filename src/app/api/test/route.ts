@@ -30,8 +30,8 @@ export async function GET(request: Request) {
         (acc, obj) => {
           // Handle array fields like referral which is ReferralSource[]
           if (Array.isArray(obj[key])) {
-            obj[key].forEach((value: string) => {
-              acc[value] = (acc[value] || 0) + 1
+            obj[key].forEach((value: unknown) => {
+              acc[value as string] = (acc[value as string] || 0) + 1
             })
           } else {
             const value = obj[key] || "Unknown" // Handle null values

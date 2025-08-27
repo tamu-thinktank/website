@@ -147,19 +147,19 @@ export const MembersPage: React.FC = () => {
       const matchesInterests =
         !filters.interests ||
         applicant.interests.some(
-          (interest) => interest.area === filters.interests,
+          (interest) => interest === filters.interests,
         );
       const matchesTeam = (() => {
         if (!filters.team) return true;
         
         switch (selectedCategory) {
           case "OFFICER":
-            return applicant.officerpos?.some((pos) => pos.position === filters.team) || false;
+            return (applicant as any).officerpos?.some((pos: any) => pos.position === filters.team) || false;
           case "MATEROV":
-            return applicant.subTeam?.some((team) => team.name === filters.team) || false;
+            return (applicant as any).subTeam?.some((team: any) => team.name === filters.team) || false;
           case "DCMEMBER":
           case "MINIDC":
-            return applicant.subTeam?.some((team) => team.name === filters.team) || false;
+            return (applicant as any).subTeam?.some((team: any) => team.name === filters.team) || false;
           default:
             return true;
         }

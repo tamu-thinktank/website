@@ -27,7 +27,7 @@ export const adminRouter = createTRPCRouter({
     )
     .output(teamsSchema)
     .query(async ({ ctx }) => {
-      return await getTargetTeams(ctx.session.user.id)
+      return await getTargetTeams(ctx.session.user.id) as ("TSGC" | "AIAA")[]
     }),
   updateTargetTeams: protectedProcedure
     .input(
@@ -137,12 +137,6 @@ export const adminRouter = createTRPCRouter({
     return true
   }),
   getApplicants: protectedProcedure.output(ApplicantsSchema).query(async ({ ctx }) => {
-    // Try to get from Redis cache first
-    const cached = await SchedulerCache.getApplicants()
-    if (cached) {
-      return cached
-    }
-
     const applications = await ctx.db.application.findMany({
       select: {
         id: true,
@@ -163,13 +157,7 @@ export const adminRouter = createTRPCRouter({
   }),
   getApplicant: protectedProcedure
     .input(z.string().cuid2())
-    .output(ApplicantSchema)
     .query(async ({ input, ctx }) => {
-      // Try to get from Redis cache first
-      const cached = await SchedulerCache.getApplicant(input)
-      if (cached) {
-        return cached
-      }
 
       const application = await ctx.db.application.findUnique({
         where: {
@@ -189,21 +177,71 @@ export const adminRouter = createTRPCRouter({
       }
 
       const result = {
-        ...application,
+        // Top level fields
+        id: application.id,
+        submittedAt: application.submittedAt,
+        status: application.status,
+        location: application.location,
+        
+        // Nested personal section
         personal: {
-          ...application,
+          fullName: application.fullName,
+          preferredName: application.preferredName,
+          pronouns: application.pronouns,
+          gender: application.gender,
+          uin: application.uin,
+          email: application.email,
+          altEmail: application.altEmail,
+          phone: application.phone,
         },
+        
+        // Nested academic section  
+        academic: {
+          year: application.year,
+          major: application.major,
+          currentClasses: application.currentClasses,
+          nextClasses: application.nextClasses,
+          // timeCommitment: [], // Not available on this model
+        },
+        
+        // Nested thinkTankInfo section
+        thinkTankInfo: {
+          meetings: application.meetings,
+          weeklyCommitment: application.weeklyCommitment,
+          // preferredTeams: [], // Not available on this model
+          // researchAreas: [], // Not available on this model
+          referralSources: application.referral,
+        },
+        
+        // Nested interests/challenges section
         interests: {
-          ...application,
+          interestedChallenge: application.challengePreference,
         },
+        
+        // Nested leadership section (using available fields)
         leadership: {
-          ...application,
+          // These fields might not exist for all application types
         },
+        
+        // Nested open ended questions section
+        openEndedQuestions: {
+          firstQuestion: application.firstQuestion,
+          secondQuestion: application.secondQuestion,
+        },
+        
+        // Resume section
+        resume: {
+          resumeId: application.resumeId,
+          signatureCommitment: application.signatureCommitment,
+          signatureAccountability: application.signatureAccountability,
+          signatureQuality: application.signatureQuality,
+        },
+        
+        // Meeting times
         meetingTimes: application.meetingTimes
           .map((meetingTime) => Temporal.ZonedDateTime.from(meetingTime.gridTime))
           .sort((a, b) => Temporal.ZonedDateTime.compare(a, b))
           .map((meetingTime) => meetingTime.toString()),
-        resumeId: application.resumeId,
       }
 
       // Cache the result for future requests
@@ -266,9 +304,9 @@ export const adminRouter = createTRPCRouter({
     .mutation(
       async ({
         input: {
-          officerId,
+          officerId: _officerId,
           officerName,
-          officerEmail,
+          officerEmail: _officerEmail,
           applicantName,
           applicantEmail,
           startTime,
@@ -276,7 +314,7 @@ export const adminRouter = createTRPCRouter({
           team,
           applicationType,
         },
-        ctx,
+        ctx: _ctx,
       }) => {
         try {
           // Parse the startTime string
@@ -286,7 +324,7 @@ export const adminRouter = createTRPCRouter({
           // the time is likely being interpreted as UTC when it should be in Central Time
 
           // Format the time explicitly for Central Time (UTC-5/UTC-6)
-          const options = {
+          const options: Intl.DateTimeFormatOptions = {
             year: "numeric",
             month: "short",
             day: "numeric",

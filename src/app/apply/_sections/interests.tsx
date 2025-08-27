@@ -21,7 +21,7 @@ import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 
 export default function Interests() {
-  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const form = useFormContext();
 
   return (
     <div className="flex flex-col gap-4">
@@ -95,7 +95,7 @@ export default function Interests() {
                               <Checkbox
                                 id={`checkbox-${challenge.id}`}
                                 checked={field.value.some(
-                                  (value) => value === challenge.id,
+                                  (value: string) => value === challenge.id,
                                 )}
                                 onCheckedChange={(checked) => {
                                   return checked
@@ -105,7 +105,7 @@ export default function Interests() {
                                       ])
                                     : field.onChange(
                                         field.value.filter(
-                                          (value) => value !== challenge.id,
+                                          (value: string) => value !== challenge.id,
                                         ),
                                       );
                                 }}

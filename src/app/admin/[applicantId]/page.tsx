@@ -49,11 +49,8 @@ import PdfViewer from "./pdf-viewer";
 /**
  * @returns Array of string Q&A pairs for each section, make sure questions and answers object share the same key names
  */
-function getQAs<
-  Section extends keyof typeof q,
-  QKey extends keyof (typeof q)[Section],
-  AKey extends keyof RouterOutputs["admin"]["getApplicant"][Section],
->(answers: RouterOutputs["admin"]["getApplicant"]) {
+function getQAs(answers: RouterOutputs["admin"]["getApplicant"]) {
+  type Section = keyof typeof q;
   const QAs = new Map<Section, [string, string][]>();
 
   (Object.keys(q) as Section[]).forEach((section) => {
@@ -65,8 +62,8 @@ function getQAs<
     Object.keys(q[section]).forEach((qkey) => {
       if (qkey === "title") return;
 
-      const question = q[section][qkey as QKey];
-      const answer = answers[section][qkey as AKey];
+      const question = (q[section] as Record<string, unknown>)[qkey] as string;
+      const answer = (answers as any)[section]?.[qkey];
       if (qkey === "challenges") {
         currSection?.push([
           question,
@@ -111,9 +108,9 @@ export default function ApplicantPage() {
 
   // Start officer availability query in parallel if we have an interested challenge
   const { data: officerTimes } = api.admin.getAvailabilities.useQuery(
-    { targetTeam: applicant?.interests?.interestedChallenge },
+    { targetTeam: ((applicant as any)?.interests?.interestedChallenge as "TSGC" | "AIAA") ?? "TSGC" },
     {
-      enabled: !!applicant?.interests?.interestedChallenge,
+      enabled: !!((applicant as any)?.interests?.interestedChallenge),
       staleTime: 60000, // Officer availability is less frequently updated
     }
   );
@@ -130,7 +127,7 @@ export default function ApplicantPage() {
 
   const getResumeURL = new URL("/api/get-resume", window.location.origin);
   const params = new URLSearchParams({
-    resumeId: applicant?.resumeId ?? "",
+    resumeId: applicant?.resume?.resumeId ?? "",
     userEmail: session?.user.email ?? "",
   });
   getResumeURL.search = params.toString();
@@ -149,7 +146,7 @@ export default function ApplicantPage() {
     isLoading: isResumeLoading,
     isError: isResumeError,
   } = useQuery({
-    queryKey: ["get-resume", applicant?.resumeId, session?.user.email],
+    queryKey: ["get-resume", applicant?.resume?.resumeId, session?.user.email],
     queryFn: getResume,
     enabled: !!applicant && !!session,
     staleTime: 5 * 60 * 1000, // Consider resume data fresh for 5 minutes
@@ -193,8 +190,8 @@ export default function ApplicantPage() {
             applicantName={applicant.personal.fullName}
             applicantEmail={applicant.personal.email}
             meetingTimes={applicant.meetingTimes}
-            resumeId={applicant.resumeId}
-            interestedChallenge={applicant.interests.interestedChallenge}
+            resumeId={applicant.resume?.resumeId}
+            interestedChallenge={(applicant as any).interests?.interestedChallenge}
             officerTimes={officerTimes}
           />
         ) : null}
@@ -216,7 +213,7 @@ export default function ApplicantPage() {
             </CardContent>
           )) ?? null}
         </Card>
-        {applicant.interests.isLeadership ? (
+        {(applicant as any).interests?.isLeadership ? (
           <Card className="mb-4">
             <CardHeader>
               <H3>{q.leadership.title}</H3>
@@ -250,7 +247,7 @@ function Buttons({
   applicantEmail,
   meetingTimes,
   resumeId,
-  interestedChallenge,
+  interestedChallenge: _interestedChallenge,
   officerTimes,
 }: {
   applicantId: string;

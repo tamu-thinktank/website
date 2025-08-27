@@ -25,7 +25,7 @@ function generateUniqueUIN(existingUINs: Set<number>): number {
   return uin
 }
 
-async function createDummyUsers(numUsers = 8) {
+async function _createDummyUsers(numUsers = 8) {
   console.log(`Creating ${numUsers} dummy users...`)
   const existingEmails = new Set<string>()
   
@@ -334,7 +334,7 @@ async function createDummyAvailability() {
   console.log('✓ Created availability data')
 }
 
-async function createDummyBusyTimes() {
+async function _createDummyBusyTimes() {
   console.log('Creating dummy busy times for interviewers...')
   
   const users = await prisma.user.findMany()

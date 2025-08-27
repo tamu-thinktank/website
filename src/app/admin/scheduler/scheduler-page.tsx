@@ -531,11 +531,11 @@ const Scheduler: React.FC = () => {
         // Try to get the detailed error message from the API response
         let errorMessage = "Failed to schedule interview. Please try again.";
         try {
-          const errorData = await response.json();
-          if (errorData.error) {
+          const errorData = await response.json() as any;
+          if (errorData?.error) {
             errorMessage = errorData.error;
             // If there are conflicting interviews, show specific details
-            if (errorData.conflictingInterviews && errorData.conflictingInterviews.length > 0) {
+            if (errorData?.conflictingInterviews && errorData.conflictingInterviews.length > 0) {
               const conflicts = errorData.conflictingInterviews;
               const conflictDetails = conflicts.map((conflict: any) => 
                 `${conflict.applicantName || 'Reserved'} at ${new Date(conflict.startTime).toLocaleString()}`
@@ -2855,7 +2855,7 @@ const Scheduler: React.FC = () => {
                     {selectedInterview.applicantId ? (
                       <button
                         onClick={() => {
-                          setSelectedApplicantId(selectedInterview.applicantId);
+                          setSelectedApplicantId(selectedInterview.applicantId || null);
                           setIsApplicantModalOpen(true);
                         }}
                         className="text-blue-400 hover:text-blue-300 underline cursor-pointer transition-colors"
@@ -3054,7 +3054,7 @@ const Scheduler: React.FC = () => {
           setIsApplicantModalOpen(false);
           setSelectedApplicantId(null);
         }}
-        applicantId={selectedApplicantId}
+        applicantId={selectedApplicantId ?? undefined}
       />
     </DndProvider>
   );
