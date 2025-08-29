@@ -39,7 +39,7 @@ const Challenges = () => {
       dtype: "Showcase",
     },
     {
-      teamName: "Altas",
+      teamName: "Atlas",
       shortOverview: "Design ThinkTank’s Next-Gen Website",
       competitionOverview:
         "ThinkTank is creating a team to overhaul both the frontend and backend of our website. We’re looking to vastly improve the applicant experience as well as enhance the administrative tools ThinkTank needs to run.",
