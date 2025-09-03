@@ -13,6 +13,10 @@ const SendInterviewEmailSchema = z.object({
   location: z.string(),
   team: z.string().optional(),
   applicationType: z.string().optional(),
+  // New fields for separate interviewer and interviewee emails
+  sendToInterviewer: z.boolean().optional().default(true),
+  sendToInterviewee: z.boolean().optional().default(true),
+  intervieweeTimeOffset: z.number().optional().default(15), // offset in minutes for interviewee
 });
 
 export async function POST(request: Request) {
@@ -20,55 +24,128 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = SendInterviewEmailSchema.parse(body);
 
-    // Convert time to Central Time
-    const centralTime = new Intl.DateTimeFormat("en-US", {
-      timeZone: "America/Chicago",
+    const baseStartTime = new Date(validatedData.startTime);
+    
+    // Convert interviewer time (actual start time) to Central Time
+    const interviewerCentralTime = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Chicago", 
       year: "numeric",
       month: "long",
       day: "numeric",
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
-    }).format(new Date(validatedData.startTime));
+    }).format(baseStartTime);
 
-    // Log the email data for debugging
-    console.log("📧 [EMAIL] Sending interview email:", {
-      to: "lucasvad123@gmail.com", // Testing with your email
-      originalTo: validatedData.applicantEmail,
-      subject: "ThinkTank Application Interview",
-      interviewer: validatedData.officerName,
-      time: centralTime,
-      location: validatedData.location,
-      team: validatedData.team,
-      applicationType: validatedData.applicationType,
-    });
+    // Calculate interviewee time with offset, handling edge cases
+    // For interviews shorter than the offset time, use the original time
+    // For interviews that would extend past business hours, cap the offset
+    let offsetMinutes = validatedData.intervieweeTimeOffset;
+    
+    // Standard interview duration is 45 minutes
+    const interviewDuration = 45;
+    
+    // If the offset is greater than or equal to the interview duration, use original time
+    if (offsetMinutes >= interviewDuration) {
+      offsetMinutes = 0;
+      console.log("📧 [EMAIL] Interview duration too short for offset, using original time");
+    }
+    
+    // Check if offset would go past 10 PM business hours
+    const potentialEndTime = new Date(baseStartTime.getTime() + offsetMinutes * 60000);
+    const endHour = potentialEndTime.getHours();
+    
+    if (endHour >= 22) { // 10 PM or later
+      offsetMinutes = 0;
+      console.log("📧 [EMAIL] Offset would extend past business hours, using original time");
+    }
+    
+    const intervieweeStartTime = new Date(baseStartTime.getTime() + offsetMinutes * 60000);
+    const intervieweeCentralTime = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Chicago",
+      year: "numeric", 
+      month: "long",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(intervieweeStartTime);
 
-    try {
-      // Actually send the email using your email service
-      const emailResult = await sendEmail({
-        to: ["lucasvad123@gmail.com"], // Send to your test email
-        subject: "ThinkTank Application Interview",
-        template: InterviewEmail({
-          userFirstname:
-            validatedData.applicantName.split(" ")[0] ??
-            validatedData.applicantName,
-          time: centralTime,
-          location: validatedData.location,
-          interviewerName: validatedData.officerName,
-          team: validatedData.team,
-          applicationType: validatedData.applicationType || "General",
-        }),
+    const emailResults: string[] = [];
+
+    // Send email to interviewer with actual start time
+    if (validatedData.sendToInterviewer) {
+      console.log("📧 [EMAIL] Sending interview email to interviewer:", {
+        to: validatedData.officerEmail,
+        subject: "ThinkTank Interview - Interviewer Notification",
+        interviewer: validatedData.officerName,
+        time: interviewerCentralTime,
+        location: validatedData.location,
+        team: validatedData.team,
+        applicationType: validatedData.applicationType,
       });
 
-      console.log("✅ [EMAIL] Interview email sent successfully:", emailResult);
-    } catch (emailError) {
-      console.error("❌ [EMAIL] Failed to send interview email:", emailError);
-      throw emailError;
+      try {
+        const interviewerEmailResult = await sendEmail({
+          to: [validatedData.officerEmail],
+          subject: "ThinkTank Interview - Interviewer Notification", 
+          template: InterviewEmail({
+            userFirstname: validatedData.officerName.split(" ")[0] ?? validatedData.officerName,
+            time: interviewerCentralTime,
+            location: validatedData.location,
+            interviewerName: validatedData.officerName,
+            team: validatedData.team,
+            applicationType: validatedData.applicationType || "General",
+          }),
+        });
+
+        emailResults.push(`Interviewer email: ${interviewerEmailResult}`);
+        console.log("✅ [EMAIL] Interviewer email sent successfully:", interviewerEmailResult);
+      } catch (emailError) {
+        console.error("❌ [EMAIL] Failed to send interviewer email:", emailError);
+        throw new Error(`Failed to send interviewer email: ${emailError}`);
+      }
+    }
+
+    // Send email to interviewee with offset time  
+    if (validatedData.sendToInterviewee) {
+      console.log("📧 [EMAIL] Sending interview email to interviewee:", {
+        to: "lucasvad123@gmail.com", // Testing with your email
+        originalTo: validatedData.applicantEmail,
+        subject: "ThinkTank Application Interview",
+        interviewer: validatedData.officerName, 
+        time: intervieweeCentralTime,
+        location: validatedData.location,
+        team: validatedData.team,
+        applicationType: validatedData.applicationType,
+      });
+
+      try {
+        const intervieweeEmailResult = await sendEmail({
+          to: ["lucasvad123@gmail.com"], // Send to test email
+          subject: "ThinkTank Application Interview",
+          template: InterviewEmail({
+            userFirstname: validatedData.applicantName.split(" ")[0] ?? validatedData.applicantName,
+            time: intervieweeCentralTime, // Use offset time for interviewee
+            location: validatedData.location,
+            interviewerName: validatedData.officerName,
+            team: validatedData.team,
+            applicationType: validatedData.applicationType || "General",
+          }),
+        });
+
+        emailResults.push(`Interviewee email: ${intervieweeEmailResult}`);
+        console.log("✅ [EMAIL] Interviewee email sent successfully:", intervieweeEmailResult);
+      } catch (emailError) {
+        console.error("❌ [EMAIL] Failed to send interviewee email:", emailError);
+        throw new Error(`Failed to send interviewee email: ${emailError}`);
+      }
     }
 
     return NextResponse.json({
       success: true,
-      message: "Interview email sent successfully",
+      message: "Interview emails sent successfully",
+      results: emailResults,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

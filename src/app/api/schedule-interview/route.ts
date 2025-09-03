@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { ApplicationStatus } from "@prisma/client";
 import { db } from "@/lib/db";
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -41,6 +40,7 @@ export async function POST(request: Request) {
     const endTime = new Date(startTime.getTime() + 45 * 60000); // 45 minutes later
 
     // Validate the time is not in the past (allow some buffer for scheduling)
+    // Use UTC for both times to avoid timezone issues during manual booking
     const now = new Date();
     const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
 
@@ -52,7 +52,11 @@ export async function POST(request: Request) {
     }
 
     // Validate the time is within business hours (8 AM - 10 PM)
-    const hour = startTime.getHours();
+    // Convert to local time for business hours validation
+    const localStartTime = new Date(startTime.getTime());
+    const localEndTime = new Date(endTime.getTime());
+    
+    const hour = localStartTime.getHours();
     if (hour < 8 || hour >= 22) {
       return NextResponse.json(
         { error: "Interviews can only be scheduled between 8 AM and 10 PM" },
@@ -61,8 +65,8 @@ export async function POST(request: Request) {
     }
 
     // Validate that the interview doesn't extend past 10 PM
-    const endHour = endTime.getHours();
-    const endMinute = endTime.getMinutes();
+    const endHour = localEndTime.getHours();
+    const endMinute = localEndTime.getMinutes();
     if (endHour > 22 || (endHour === 22 && endMinute > 0)) {
       return NextResponse.json(
         { error: "Interview would extend past 10 PM business hours" },
@@ -247,7 +251,10 @@ export async function POST(request: Request) {
         applicant: isPlaceholder
           ? false
           : {
-              select: { fullName: true },
+              select: { 
+                fullName: true,
+                email: true
+              },
             },
       },
     });
@@ -260,6 +267,39 @@ export async function POST(request: Request) {
     console.log(
       `Interview scheduled for ${logName} with ${interviewer.name} at ${startTime.toLocaleString()} in ${location}`,
     );
+
+    // Send emails to both interviewer and interviewee (if not a placeholder)
+    if (!isPlaceholder && interview.applicant) {
+      try {
+        const emailResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/send-interview-email`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            officerId: interviewer.id,
+            officerName: interviewer.name,
+            officerEmail: interviewer.email,
+            applicantName: interview.applicant.fullName,
+            applicantEmail: interview.applicant.email,
+            startTime: startTime.toISOString(),
+            location: location,
+            team: teamId || "General",
+            applicationType: "General",
+            sendToInterviewer: true,
+            sendToInterviewee: true,
+            intervieweeTimeOffset: 15, // 15-minute offset for interviewee
+          }),
+        });
+
+        if (!emailResponse.ok) {
+          console.error("Failed to send interview emails:", await emailResponse.text());
+        } else {
+          console.log("✅ Interview emails sent successfully");
+        }
+      } catch (emailError) {
+        console.error("Error sending interview emails:", emailError);
+        // Don't fail the interview creation if email fails
+      }
+    }
 
     return NextResponse.json({
       ...interview,

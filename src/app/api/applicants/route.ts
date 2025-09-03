@@ -3,7 +3,6 @@ import { PrismaClient } from "@prisma/client";
 import { SchedulerCache } from "@/lib/redis";
 
 const prisma = new PrismaClient();
-
 export async function GET() {
   try {
     // Try to get cached applicants first

@@ -10,7 +10,6 @@ const transporter = createTransport({
     pass: env.APP_PW,
   },
 });
-
 export default async function sendEmail({
   to,
   cc,
