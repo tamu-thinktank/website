@@ -159,7 +159,9 @@ const Scheduler: React.FC = () => {
   const [isScheduleModalOpen, setIsScheduleModalOpen] = React.useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = React.useState(false);
   const [isApplicantModalOpen, setIsApplicantModalOpen] = React.useState(false);
-  const [selectedApplicantId, setSelectedApplicantId] = React.useState<string | null>(null);
+  const [selectedApplicantId, setSelectedApplicantId] = React.useState<
+    string | null
+  >(null);
   const [selectedInterviewer, setSelectedInterviewer] = React.useState<
     string | null
   >(null);
@@ -184,21 +186,27 @@ const Scheduler: React.FC = () => {
   >([]);
 
   // Selection state for column-based selection
-  const [selectedInterviewerForSelection, setSelectedInterviewerForSelection] = React.useState<string | null>(null);
+  const [selectedInterviewerForSelection, setSelectedInterviewerForSelection] =
+    React.useState<string | null>(null);
 
   // Per-interviewer selected slots for individual controls
-  const [perInterviewerSelections, setPerInterviewerSelections] = React.useState<
-    Record<string, { date: Date; timeSlot: TimeSlot }[]>
-  >({});
+  const [perInterviewerSelections, setPerInterviewerSelections] =
+    React.useState<Record<string, { date: Date; timeSlot: TimeSlot }[]>>({});
 
-  const [isProcessingBusyUpdate, setIsProcessingBusyUpdate] = React.useState(false);
+  const [isProcessingBusyUpdate, setIsProcessingBusyUpdate] =
+    React.useState(false);
 
   // State for busy times
   const [busyTimes, setBusyTimes] = React.useState<
-    Record<string, { id: string; startTime: Date; endTime: Date; reason?: string }[]>
+    Record<
+      string,
+      { id: string; startTime: Date; endTime: Date; reason?: string }[]
+    >
   >({});
   const [_isLoadingBusyTimes, setIsLoadingBusyTimes] = React.useState(false);
-  const [isUpdatingTeamPriority, setIsUpdatingTeamPriority] = React.useState<string | null>(null);
+  const [isUpdatingTeamPriority, setIsUpdatingTeamPriority] = React.useState<
+    string | null
+  >(null);
 
   const [newInterview, setNewInterview] = React.useState({
     applicantId: "",
@@ -252,8 +260,6 @@ const Scheduler: React.FC = () => {
   React.useEffect(() => {
     void fetchBusyTimes();
   }, [currentDate, viewMode]);
-
-
 
   // Fetch interviewers from the database
   const fetchInterviewers = async () => {
@@ -322,14 +328,18 @@ const Scheduler: React.FC = () => {
         {
           id: "2",
           name: "Jane Smith",
-          priorityTeams: [{ teamId: OfficerPosition.PROJECT_MANAGER, priority: 1 }],
+          priorityTeams: [
+            { teamId: OfficerPosition.PROJECT_MANAGER, priority: 1 },
+          ],
           interviews: [],
           openCalendar: false,
         },
         {
           id: "3",
           name: "Alex Chen",
-          priorityTeams: [{ teamId: OfficerPosition.WEB_DEV_LEAD, priority: 1 }],
+          priorityTeams: [
+            { teamId: OfficerPosition.WEB_DEV_LEAD, priority: 1 },
+          ],
           interviews: [],
           openCalendar: false,
         },
@@ -461,22 +471,22 @@ const Scheduler: React.FC = () => {
       // Get busy times for the current view range
       const startDate = viewDates[0];
       const endDate = viewDates[viewDates.length - 1];
-      
+
       if (!startDate || !endDate) {
         console.warn("No view dates available for fetching busy times");
         setIsLoadingBusyTimes(false);
         return;
       }
-      
+
       const response = await fetch(
-        `/api/interviewer-busy-times?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`
+        `/api/interviewer-busy-times?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
       );
 
       if (!response.ok) {
         throw new Error("Failed to fetch busy times");
       }
 
-      const data = await response.json() as {
+      const data = (await response.json()) as {
         id: string;
         interviewerId: string;
         startTime: string;
@@ -485,8 +495,11 @@ const Scheduler: React.FC = () => {
       }[];
 
       // Group busy times by interviewer ID
-      const groupedBusyTimes: Record<string, { id: string; startTime: Date; endTime: Date; reason?: string }[]> = {};
-      
+      const groupedBusyTimes: Record<
+        string,
+        { id: string; startTime: Date; endTime: Date; reason?: string }[]
+      > = {};
+
       data.forEach((busyTime: any) => {
         if (!groupedBusyTimes[busyTime.interviewerId]) {
           groupedBusyTimes[busyTime.interviewerId] = [];
@@ -531,15 +544,21 @@ const Scheduler: React.FC = () => {
         // Try to get the detailed error message from the API response
         let errorMessage = "Failed to schedule interview. Please try again.";
         try {
-          const errorData = await response.json() as any;
+          const errorData = (await response.json()) as any;
           if (errorData?.error) {
             errorMessage = errorData.error;
             // If there are conflicting interviews, show specific details
-            if (errorData?.conflictingInterviews && errorData.conflictingInterviews.length > 0) {
+            if (
+              errorData?.conflictingInterviews &&
+              errorData.conflictingInterviews.length > 0
+            ) {
               const conflicts = errorData.conflictingInterviews;
-              const conflictDetails = conflicts.map((conflict: any) => 
-                `${conflict.applicantName || 'Reserved'} at ${new Date(conflict.startTime).toLocaleString()}`
-              ).join(', ');
+              const conflictDetails = conflicts
+                .map(
+                  (conflict: any) =>
+                    `${conflict.applicantName || "Reserved"} at ${new Date(conflict.startTime).toLocaleString()}`,
+                )
+                .join(", ");
               errorMessage = `${errorMessage}. Conflicts with: ${conflictDetails}`;
             }
           }
@@ -547,7 +566,7 @@ const Scheduler: React.FC = () => {
           console.error("Error parsing response:", parseError);
           // Fall back to generic message if we can't parse the response
         }
-        
+
         toast({
           title: "Scheduling Error",
           description: errorMessage,
@@ -573,7 +592,10 @@ const Scheduler: React.FC = () => {
       console.error("Error saving interview:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to schedule interview. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to schedule interview. Please try again.",
         variant: "destructive",
       });
       return false;
@@ -743,14 +765,14 @@ const Scheduler: React.FC = () => {
       // Check each 15-minute segment of the 45-minute block
       for (let i = 0; i < 3; i++) {
         const segmentStart = new Date(startTime);
-        segmentStart.setMinutes(segmentStart.getMinutes() + (i * 15));
+        segmentStart.setMinutes(segmentStart.getMinutes() + i * 15);
         const segmentEnd = new Date(segmentStart);
         segmentEnd.setMinutes(segmentEnd.getMinutes() + 15);
-        
+
         if (hasTimeConflict(interviewer, segmentStart, segmentEnd)) {
           toast({
             title: "Time Conflict",
-            description: `There is already an interview scheduled during the ${format(segmentStart, 'h:mm a')} - ${format(segmentEnd, 'h:mm a')} time slot.`,
+            description: `There is already an interview scheduled during the ${format(segmentStart, "h:mm a")} - ${format(segmentEnd, "h:mm a")} time slot.`,
             variant: "destructive",
           });
           return;
@@ -759,7 +781,9 @@ const Scheduler: React.FC = () => {
     }
 
     // Find the selected applicant if not a placeholder
-    let applicantName = newInterview.isPlaceholder ? (newInterview.location || "Reserved Slot") : "";
+    let applicantName = newInterview.isPlaceholder
+      ? newInterview.location || "Reserved Slot"
+      : "";
     if (!newInterview.isPlaceholder) {
       const selectedApplicant = applicants.find(
         (a) => a.id === newInterview.applicantId,
@@ -779,7 +803,7 @@ const Scheduler: React.FC = () => {
     const interview: Interview = {
       id: Math.random().toString(36).substring(2, 9),
       applicantName: newInterview.isPlaceholder
-        ? (newInterview.location || "Reserved Slot")
+        ? newInterview.location || "Reserved Slot"
         : applicantName,
       applicantId: newInterview.isPlaceholder
         ? undefined
@@ -787,9 +811,9 @@ const Scheduler: React.FC = () => {
       startTime,
       endTime,
       teamId: newInterview.teamId || undefined,
-      location: newInterview.isPlaceholder 
-        ? (newInterview.location || "Reserved")
-        : (newInterview.location || "TBD"),
+      location: newInterview.isPlaceholder
+        ? newInterview.location || "Reserved"
+        : newInterview.location || "TBD",
       interviewerId: selectedInterviewer,
       isPlaceholder: newInterview.isPlaceholder,
     };
@@ -847,7 +871,9 @@ const Scheduler: React.FC = () => {
     }
 
     // Find the selected applicant if not a placeholder
-    let applicantName = newInterview.isPlaceholder ? (newInterview.location || "Reserved Slot") : "";
+    let applicantName = newInterview.isPlaceholder
+      ? newInterview.location || "Reserved Slot"
+      : "";
     let applicantId = undefined;
     if (!newInterview.isPlaceholder) {
       const selectedApplicant = applicants.find(
@@ -868,44 +894,54 @@ const Scheduler: React.FC = () => {
     let successCount = 0;
     let failCount = 0;
     const interviewer = interviewers.find((i) => i.id === selectedInterviewer);
-    
+
     // Process time slots in groups of 3 (for 45-minute blocks)
     for (let i = 0; i < selectedTimeSlots.length; i += 3) {
       const slotGroup = selectedTimeSlots.slice(i, i + 3);
-      
+
       // Skip incomplete groups (less than 3 slots)
       if (slotGroup.length < 3) {
         failCount += slotGroup.length;
         continue;
       }
-      
+
       // Verify slots are consecutive
       const firstSlot = slotGroup[0];
       if (!firstSlot) {
         failCount += 3;
         continue;
       }
-      
+
       const firstStartTime = new Date(firstSlot.date);
-      firstStartTime.setHours(firstSlot.timeSlot.hour, firstSlot.timeSlot.minute, 0, 0);
-      
+      firstStartTime.setHours(
+        firstSlot.timeSlot.hour,
+        firstSlot.timeSlot.minute,
+        0,
+        0,
+      );
+
       const expectedEndTime = new Date(firstStartTime);
       expectedEndTime.setMinutes(expectedEndTime.getMinutes() + 45);
-      
+
       const lastSlot = slotGroup[2];
       if (!lastSlot) {
         failCount += 3;
         continue;
       }
-      
+
       const actualEndTime = new Date(lastSlot.date);
-      actualEndTime.setHours(lastSlot.timeSlot.hour, lastSlot.timeSlot.minute + 15, 0, 0);
-      
+      actualEndTime.setHours(
+        lastSlot.timeSlot.hour,
+        lastSlot.timeSlot.minute + 15,
+        0,
+        0,
+      );
+
       if (actualEndTime.getTime() !== expectedEndTime.getTime()) {
         failCount += 3;
         continue;
       }
-      
+
       // Check for conflicts in the 45-minute block
       if (interviewer) {
         let hasConflict = false;
@@ -915,35 +951,40 @@ const Scheduler: React.FC = () => {
             hasConflict = true;
             break;
           }
-          
+
           const segmentStart = new Date(slot.date);
           segmentStart.setHours(slot.timeSlot.hour, slot.timeSlot.minute, 0, 0);
           const segmentEnd = new Date(segmentStart);
           segmentEnd.setMinutes(segmentEnd.getMinutes() + 15);
-          
+
           if (hasTimeConflict(interviewer, segmentStart, segmentEnd)) {
             hasConflict = true;
             break;
           }
         }
-        
+
         if (hasConflict) {
           failCount += 3;
           continue;
         }
       }
-      
+
       // Create a single interview for the 45-minute block
       const startTime = new Date(firstSlot.date);
-      startTime.setHours(firstSlot.timeSlot.hour, firstSlot.timeSlot.minute, 0, 0);
-      
+      startTime.setHours(
+        firstSlot.timeSlot.hour,
+        firstSlot.timeSlot.minute,
+        0,
+        0,
+      );
+
       const endTime = new Date(startTime);
       endTime.setMinutes(endTime.getMinutes() + 45);
 
       const interview: Interview = {
         id: Math.random().toString(36).substring(2, 9),
         applicantName: newInterview.isPlaceholder
-          ? (newInterview.location || "Reserved Slot")
+          ? newInterview.location || "Reserved Slot"
           : applicantName,
         applicantId: newInterview.isPlaceholder ? undefined : applicantId,
         startTime,
@@ -1041,9 +1082,14 @@ const Scheduler: React.FC = () => {
           priority,
         };
       } else {
-        // Add new priority - ensure teamId is a valid OfficerPosition  
-        if (Object.values(OfficerPosition).includes(teamId as OfficerPosition)) {
-          updatedPriorities.push({ teamId: teamId as OfficerPosition, priority });
+        // Add new priority - ensure teamId is a valid OfficerPosition
+        if (
+          Object.values(OfficerPosition).includes(teamId as OfficerPosition)
+        ) {
+          updatedPriorities.push({
+            teamId: teamId as OfficerPosition,
+            priority,
+          });
         }
       }
 
@@ -1076,7 +1122,9 @@ const Scheduler: React.FC = () => {
 
       if (!response.ok) {
         // Revert optimistic update on error
-        const originalInterviewer = interviewers.find((i) => i.id === interviewerId);
+        const originalInterviewer = interviewers.find(
+          (i) => i.id === interviewerId,
+        );
         if (originalInterviewer) {
           setInterviewers((prev) =>
             prev.map((int) => {
@@ -1093,14 +1141,17 @@ const Scheduler: React.FC = () => {
       // Success - the optimistic update was correct, no need to update again
 
       // Success feedback
-      const teamName = teams.find(t => t.id === teamId)?.name || teamId;
+      const teamName = teams.find((t) => t.id === teamId)?.name || teamId;
       toast({
         title: "Success",
         description: `Updated priority for ${teamName}`,
         variant: "default",
       });
 
-      console.log(`Updated team priorities for interviewer ${interviewerId}:`, sortedTeams);
+      console.log(
+        `Updated team priorities for interviewer ${interviewerId}:`,
+        sortedTeams,
+      );
     } catch (error) {
       console.error("Error updating team priorities:", error);
       toast({
@@ -1160,7 +1211,9 @@ const Scheduler: React.FC = () => {
 
       if (!response.ok) {
         // Revert optimistic update on error
-        const originalInterviewer = interviewers.find((i) => i.id === interviewerId);
+        const originalInterviewer = interviewers.find(
+          (i) => i.id === interviewerId,
+        );
         if (originalInterviewer) {
           setInterviewers((prev) =>
             prev.map((int) => {
@@ -1177,14 +1230,17 @@ const Scheduler: React.FC = () => {
       // Success - optimistic update was correct
 
       // Success feedback
-      const teamName = teams.find(t => t.id === teamId)?.name || teamId;
+      const teamName = teams.find((t) => t.id === teamId)?.name || teamId;
       toast({
         title: "Success",
         description: `Removed ${teamName} from priorities`,
         variant: "default",
       });
 
-      console.log(`Removed team priority for interviewer ${interviewerId}:`, teamId);
+      console.log(
+        `Removed team priority for interviewer ${interviewerId}:`,
+        teamId,
+      );
     } catch (error) {
       console.error("Error removing team priority:", error);
       toast({
@@ -1238,9 +1294,10 @@ const Scheduler: React.FC = () => {
   // Memoized time slots to prevent recalculation during re-renders (8am-10pm)
   const timeSlots = React.useMemo(() => {
     const slots: TimeSlot[] = [];
-    for (let hour = 8; hour < 22; hour++) { // 8am to 9:45pm (last slot before 10pm)
+    for (let hour = 8; hour < 22; hour++) {
+      // 8am to 9:45pm (last slot before 10pm)
       for (let minute = 0; minute < 60; minute += 15) {
-        slots.push({ hour, minute, formatted: '' });
+        slots.push({ hour, minute, formatted: "" });
       }
     }
     return slots;
@@ -1248,7 +1305,7 @@ const Scheduler: React.FC = () => {
 
   // Generate formatted time slots for header display (memoized)
   const _formattedTimeSlots = React.useMemo(() => {
-    return timeSlots.map(slot => {
+    return timeSlots.map((slot) => {
       const formattedHour = slot.hour % 12 === 0 ? 12 : slot.hour % 12;
       const period = slot.hour < 12 ? "AM" : "PM";
       return {
@@ -1274,45 +1331,50 @@ const Scheduler: React.FC = () => {
   // Column selection utilities for day-based selection
 
   const selectAllSlotsInColumn = (interviewerId: string, date: Date) => {
-    const slotsInColumn = timeSlots.map(timeSlot => ({ date, timeSlot }));
+    const slotsInColumn = timeSlots.map((timeSlot) => ({ date, timeSlot }));
     const currentSlots = perInterviewerSelections[interviewerId] || [];
-    
+
     // Check if any slots in this column are already selected
-    const hasSelectedSlots = slotsInColumn.some(slot => 
-      currentSlots.some(selected => 
-        isSameDay(selected.date, slot.date) &&
-        selected.timeSlot.hour === slot.timeSlot.hour &&
-        selected.timeSlot.minute === slot.timeSlot.minute
-      )
+    const hasSelectedSlots = slotsInColumn.some((slot) =>
+      currentSlots.some(
+        (selected) =>
+          isSameDay(selected.date, slot.date) &&
+          selected.timeSlot.hour === slot.timeSlot.hour &&
+          selected.timeSlot.minute === slot.timeSlot.minute,
+      ),
     );
-    
+
     if (hasSelectedSlots) {
       // Deselect all slots in this column
-      setPerInterviewerSelections(prev => ({
+      setPerInterviewerSelections((prev) => ({
         ...prev,
-        [interviewerId]: currentSlots.filter(selected => 
-          !slotsInColumn.some(slot => 
-            isSameDay(selected.date, slot.date) &&
-            selected.timeSlot.hour === slot.timeSlot.hour &&
-            selected.timeSlot.minute === slot.timeSlot.minute
-          )
-        )
+        [interviewerId]: currentSlots.filter(
+          (selected) =>
+            !slotsInColumn.some(
+              (slot) =>
+                isSameDay(selected.date, slot.date) &&
+                selected.timeSlot.hour === slot.timeSlot.hour &&
+                selected.timeSlot.minute === slot.timeSlot.minute,
+            ),
+        ),
       }));
     } else {
       // Select all slots in this column
-      setPerInterviewerSelections(prev => {
+      setPerInterviewerSelections((prev) => {
         const existing = prev[interviewerId] || [];
-        const newSlots = slotsInColumn.filter(slot => 
-          !existing.some(selected => 
-            isSameDay(selected.date, slot.date) &&
-            selected.timeSlot.hour === slot.timeSlot.hour &&
-            selected.timeSlot.minute === slot.timeSlot.minute
-          )
+        const newSlots = slotsInColumn.filter(
+          (slot) =>
+            !existing.some(
+              (selected) =>
+                isSameDay(selected.date, slot.date) &&
+                selected.timeSlot.hour === slot.timeSlot.hour &&
+                selected.timeSlot.minute === slot.timeSlot.minute,
+            ),
         );
-        
+
         return {
           ...prev,
-          [interviewerId]: [...existing, ...newSlots]
+          [interviewerId]: [...existing, ...newSlots],
         };
       });
     }
@@ -1325,13 +1387,14 @@ const Scheduler: React.FC = () => {
     timeSlot: TimeSlot,
   ) => {
     const newSlot = { date, timeSlot };
-    
-    setPerInterviewerSelections(prev => {
+
+    setPerInterviewerSelections((prev) => {
       const currentSlots = prev[interviewerId] || [];
       const isAlreadySelected = currentSlots.some(
-        slot => isSameDay(slot.date, date) &&
-                 slot.timeSlot.hour === timeSlot.hour &&
-                 slot.timeSlot.minute === timeSlot.minute
+        (slot) =>
+          isSameDay(slot.date, date) &&
+          slot.timeSlot.hour === timeSlot.hour &&
+          slot.timeSlot.minute === timeSlot.minute,
       );
 
       if (isAlreadySelected) {
@@ -1339,38 +1402,51 @@ const Scheduler: React.FC = () => {
         return {
           ...prev,
           [interviewerId]: currentSlots.filter(
-            slot => !(isSameDay(slot.date, date) &&
-                     slot.timeSlot.hour === timeSlot.hour &&
-                     slot.timeSlot.minute === timeSlot.minute)
-          )
+            (slot) =>
+              !(
+                isSameDay(slot.date, date) &&
+                slot.timeSlot.hour === timeSlot.hour &&
+                slot.timeSlot.minute === timeSlot.minute
+              ),
+          ),
         };
       } else {
         // Add to selection
         return {
           ...prev,
-          [interviewerId]: [...currentSlots, newSlot]
+          [interviewerId]: [...currentSlots, newSlot],
         };
       }
     });
   };
 
   // Check if a slot is selected for a specific interviewer
-  const _isPerInterviewerSlotSelected = (interviewerId: string, date: Date, timeSlot: TimeSlot) => {
+  const _isPerInterviewerSlotSelected = (
+    interviewerId: string,
+    date: Date,
+    timeSlot: TimeSlot,
+  ) => {
     const slots = perInterviewerSelections[interviewerId] || [];
     return slots.some(
-      slot => isSameDay(slot.date, date) &&
-               slot.timeSlot.hour === timeSlot.hour &&
-               slot.timeSlot.minute === timeSlot.minute
+      (slot) =>
+        isSameDay(slot.date, date) &&
+        slot.timeSlot.hour === timeSlot.hour &&
+        slot.timeSlot.minute === timeSlot.minute,
     );
   };
 
   // Check if a slot is selected for this interviewer
-  const isSlotSelected = (interviewerId: string, date: Date, timeSlot: TimeSlot) => {
+  const isSlotSelected = (
+    interviewerId: string,
+    date: Date,
+    timeSlot: TimeSlot,
+  ) => {
     const slots = perInterviewerSelections[interviewerId] || [];
     return slots.some(
-      slot => isSameDay(slot.date, date) &&
-               slot.timeSlot.hour === timeSlot.hour &&
-               slot.timeSlot.minute === timeSlot.minute
+      (slot) =>
+        isSameDay(slot.date, date) &&
+        slot.timeSlot.hour === timeSlot.hour &&
+        slot.timeSlot.minute === timeSlot.minute,
     );
   };
 
@@ -1379,14 +1455,14 @@ const Scheduler: React.FC = () => {
     interviewerId: string,
     date: Date,
     timeSlot: TimeSlot,
-    markAsBusy: boolean
+    markAsBusy: boolean,
   ) => {
     try {
       const slotTime = new Date(date);
       slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
 
       // Optimistic update - update UI immediately
-      setBusyTimes(prev => {
+      setBusyTimes((prev) => {
         const interviewerBusyTimes = prev[interviewerId] || [];
         const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000);
 
@@ -1400,54 +1476,55 @@ const Scheduler: React.FC = () => {
                 id: `temp-${Date.now()}`,
                 startTime: slotTime,
                 endTime: slotEndTime,
-                reason: 'Busy'
-              }
-            ]
+                reason: "Busy",
+              },
+            ],
           };
         } else {
           // Remove busy time
           return {
             ...prev,
-            [interviewerId]: interviewerBusyTimes.filter(bt => 
-              !(bt.startTime <= slotTime && bt.endTime > slotTime)
-            )
+            [interviewerId]: interviewerBusyTimes.filter(
+              (bt) => !(bt.startTime <= slotTime && bt.endTime > slotTime),
+            ),
           };
         }
       });
 
       // API call to persist the change
-      const response = await fetch('/api/interviewer-busy-times-batch', {
-        method: 'PUT',
+      const response = await fetch("/api/interviewer-busy-times-batch", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           interviewerId,
-          timeSlots: [{
-            date: slotTime.toISOString(),
-            hour: timeSlot.hour,
-            minute: timeSlot.minute
-          }],
+          timeSlots: [
+            {
+              date: slotTime.toISOString(),
+              hour: timeSlot.hour,
+              minute: timeSlot.minute,
+            },
+          ],
           markAsBusy,
-          reason: markAsBusy ? 'Busy' : undefined
+          reason: markAsBusy ? "Busy" : undefined,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update busy status');
+        throw new Error("Failed to update busy status");
       }
 
       // Refresh data to ensure consistency
       await fetchBusyTimes();
-      
     } catch (error) {
-      console.error('Error updating single slot busy status:', error);
+      console.error("Error updating single slot busy status:", error);
       toast({
         title: "Error",
         description: "Failed to update busy status. Please try again.",
         variant: "destructive",
       });
-      
+
       // Revert optimistic update on error
       await fetchBusyTimes();
     }
@@ -1459,18 +1536,18 @@ const Scheduler: React.FC = () => {
     if (slots.length === 0 || isProcessingBusyUpdate) return;
 
     setIsProcessingBusyUpdate(true);
-    
+
     try {
       // Check if any slots are currently busy to determine the toggle direction
       const interviewerBusyTimes = busyTimes[interviewerId] || [];
       let hasBusySlots = false;
-      
+
       for (const { date, timeSlot } of slots) {
         const slotTime = new Date(date);
         slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
         const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000);
 
-        const existingBusy = interviewerBusyTimes.find(busyTime => {
+        const existingBusy = interviewerBusyTimes.find((busyTime) => {
           const busyStart = new Date(busyTime.startTime);
           const busyEnd = new Date(busyTime.endTime);
           return slotTime < busyEnd && slotEndTime > busyStart;
@@ -1485,9 +1562,9 @@ const Scheduler: React.FC = () => {
       const markAsBusy = !hasBusySlots;
 
       // Optimistic update - update UI immediately for better perceived performance
-      setBusyTimes(prev => {
+      setBusyTimes((prev) => {
         const currentBusyTimes = prev[interviewerId] || [];
-        
+
         if (markAsBusy) {
           // Add all slots as busy
           const newBusyTimes = slots.map(({ date, timeSlot }) => {
@@ -1497,20 +1574,20 @@ const Scheduler: React.FC = () => {
               id: `temp-${Date.now()}-${timeSlot.hour}-${timeSlot.minute}`,
               startTime: slotTime,
               endTime: new Date(slotTime.getTime() + 15 * 60 * 1000),
-              reason: 'Busy'
+              reason: "Busy",
             };
           });
-          
+
           return {
             ...prev,
-            [interviewerId]: [...currentBusyTimes, ...newBusyTimes]
+            [interviewerId]: [...currentBusyTimes, ...newBusyTimes],
           };
         } else {
           // Remove busy times that overlap with selected slots
-          const filteredBusyTimes = currentBusyTimes.filter(busyTime => {
+          const filteredBusyTimes = currentBusyTimes.filter((busyTime) => {
             const busyStart = new Date(busyTime.startTime);
             const busyEnd = new Date(busyTime.endTime);
-            
+
             return !slots.some(({ date, timeSlot }) => {
               const slotTime = new Date(date);
               slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
@@ -1518,10 +1595,10 @@ const Scheduler: React.FC = () => {
               return slotTime < busyEnd && slotEndTime > busyStart;
             });
           });
-          
+
           return {
             ...prev,
-            [interviewerId]: filteredBusyTimes
+            [interviewerId]: filteredBusyTimes,
           };
         }
       });
@@ -1530,7 +1607,7 @@ const Scheduler: React.FC = () => {
       const timeSlots = slots.map(({ date, timeSlot }) => ({
         date: date.toISOString(),
         hour: timeSlot.hour,
-        minute: timeSlot.minute
+        minute: timeSlot.minute,
       }));
 
       // Prepare request payload
@@ -1538,61 +1615,64 @@ const Scheduler: React.FC = () => {
         interviewerId,
         timeSlots,
         markAsBusy: markAsBusy,
-        reason: markAsBusy ? 'Marked as busy' : undefined
+        reason: markAsBusy ? "Marked as busy" : undefined,
       };
-      
-      console.log('Batch API request payload:', requestPayload);
+
+      console.log("Batch API request payload:", requestPayload);
 
       // Use batch API to toggle busy status
-      const response = await fetch('/api/interviewer-busy-times-batch', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/interviewer-busy-times-batch", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestPayload),
       });
 
       if (response.ok) {
         const result = await response.json();
-        
+
         // Invalidate cache for this interviewer's busy times
         try {
-          await fetch('/api/cache/invalidate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          await fetch("/api/cache/invalidate", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              type: 'busyTimes',
+              type: "busyTimes",
               interviewerId,
-              dates: slots.map(slot => slot.date.toISOString().split('T')[0])
+              dates: slots.map((slot) => slot.date.toISOString().split("T")[0]),
             }),
           });
         } catch (cacheError) {
-          console.warn('Cache invalidation failed:', cacheError);
+          console.warn("Cache invalidation failed:", cacheError);
         }
-        
+
         // Clear selection for this interviewer
-        setPerInterviewerSelections(prev => ({
+        setPerInterviewerSelections((prev) => ({
           ...prev,
-          [interviewerId]: []
+          [interviewerId]: [],
         }));
 
         // Show enhanced success toast with progress indicator
         toast({
           title: "✅ Bulk update completed",
-          description: `${markAsBusy ? 'Marked as busy' : 'Marked as available'}: ${(result as any)?.processed || 0} time slot${((result as any)?.processed || 0) > 1 ? 's' : ''}`,
+          description: `${markAsBusy ? "Marked as busy" : "Marked as available"}: ${(result as any)?.processed || 0} time slot${((result as any)?.processed || 0) > 1 ? "s" : ""}`,
         });
 
         // Refresh busy times to ensure consistency
         await fetchBusyTimes();
       } else {
         const error = await response.json();
-        console.error('Batch API error response:', error);
-        console.error('Response status:', response.status);
-        throw new Error((error as any)?.error || 'Failed to update busy times');
+        console.error("Batch API error response:", error);
+        console.error("Response status:", response.status);
+        throw new Error((error as any)?.error || "Failed to update busy times");
       }
     } catch (error) {
-      console.error('Error toggling busy status:', error);
+      console.error("Error toggling busy status:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update busy times. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update busy times. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -1601,7 +1681,12 @@ const Scheduler: React.FC = () => {
   };
 
   // Handle time slot selection - now shows context menu instead of immediate action
-  const handleTimeSlotSelect = (event: React.MouseEvent, interviewerId: string, date: Date, timeSlot: TimeSlot) => {
+  const handleTimeSlotSelect = (
+    event: React.MouseEvent,
+    interviewerId: string,
+    date: Date,
+    timeSlot: TimeSlot,
+  ) => {
     // If this interviewer is in selection mode, add/remove slots
     if (selectedInterviewerForSelection === interviewerId) {
       handlePerInterviewerSlotSelect(interviewerId, date, timeSlot);
@@ -1648,7 +1733,7 @@ const Scheduler: React.FC = () => {
     event.preventDefault();
     const x = event.clientX;
     const y = event.clientY;
-    
+
     const interview = getInterviewForSlot(interviewerId, date, timeSlot);
 
     // Show context menu
@@ -1658,16 +1743,21 @@ const Scheduler: React.FC = () => {
       interviewerId,
       date,
       timeSlot,
-      interview: interview || undefined
+      interview: interview || undefined,
     });
   };
 
   // Toggle busy status for selected time slots
   const toggleBusySlots = async () => {
-    if (selectedTimeSlots.length === 0 || !selectedInterviewer || isProcessingBusyUpdate) return;
+    if (
+      selectedTimeSlots.length === 0 ||
+      !selectedInterviewer ||
+      isProcessingBusyUpdate
+    )
+      return;
 
     setIsProcessingBusyUpdate(true);
-    
+
     try {
       let successCount = 0;
       let errorCount = 0;
@@ -1680,19 +1770,22 @@ const Scheduler: React.FC = () => {
 
         // Check if this slot is already marked as busy
         const interviewerBusyTimes = busyTimes[selectedInterviewer] || [];
-        const existingBusy = interviewerBusyTimes.find(busyTime => {
+        const existingBusy = interviewerBusyTimes.find((busyTime) => {
           const busyStart = new Date(busyTime.startTime);
           const busyEnd = new Date(busyTime.endTime);
-          
+
           // Check if our 15-minute slot overlaps with existing busy time
           return slotTime < busyEnd && slotEndTime > busyStart;
         });
 
         if (existingBusy) {
           // If already busy, delete the busy time
-          const response = await fetch(`/api/interviewer-busy-times/${existingBusy.id}`, {
-            method: 'DELETE',
-          });
+          const response = await fetch(
+            `/api/interviewer-busy-times/${existingBusy.id}`,
+            {
+              method: "DELETE",
+            },
+          );
 
           if (response.ok) {
             successCount++;
@@ -1701,16 +1794,16 @@ const Scheduler: React.FC = () => {
           }
         } else {
           // If not busy, create a new 15-minute busy time
-          const response = await fetch('/api/interviewer-busy-times', {
-            method: 'POST',
+          const response = await fetch("/api/interviewer-busy-times", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({
               interviewerId: selectedInterviewer,
               startTime: slotTime.toISOString(),
               endTime: slotEndTime.toISOString(),
-              reason: 'Marked as busy via scheduler',
+              reason: "Marked as busy via scheduler",
             }),
           });
 
@@ -1726,12 +1819,12 @@ const Scheduler: React.FC = () => {
       if (successCount > 0) {
         toast({
           title: "Busy times updated",
-          description: `Updated ${successCount} time slot${successCount > 1 ? 's' : ''}${errorCount > 0 ? ` (${errorCount} failed)` : ''}`,
+          description: `Updated ${successCount} time slot${successCount > 1 ? "s" : ""}${errorCount > 0 ? ` (${errorCount} failed)` : ""}`,
         });
       } else if (errorCount > 0) {
         toast({
           title: "Error",
-          description: `Failed to update ${errorCount} time slot${errorCount > 1 ? 's' : ''}`,
+          description: `Failed to update ${errorCount} time slot${errorCount > 1 ? "s" : ""}`,
           variant: "destructive",
         });
       }
@@ -1739,12 +1832,14 @@ const Scheduler: React.FC = () => {
       // Refresh busy times and clear selection
       await fetchBusyTimes();
       setSelectedTimeSlots([]);
-      
     } catch (error) {
-      console.error('Error toggling busy status:', error);
+      console.error("Error toggling busy status:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to update busy status. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to update busy status. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -1909,10 +2004,10 @@ const Scheduler: React.FC = () => {
     const { interviewerId, date, timeSlot, interview } = contextMenu;
 
     switch (action) {
-      case 'mark-busy':
+      case "mark-busy":
         handleSingleSlotUpdate(interviewerId, date, timeSlot, true);
         break;
-      case 'mark-available':
+      case "mark-available":
         if (interview) {
           // Handle removing interview or busy time
           setSelectedInterview(interview);
@@ -1921,22 +2016,24 @@ const Scheduler: React.FC = () => {
           handleSingleSlotUpdate(interviewerId, date, timeSlot, false);
         }
         break;
-      case 'schedule-interview':
+      case "schedule-interview":
         setSelectedInterviewer(interviewerId);
         setSelectedTimeSlot({ date, timeSlot });
-        setSelectedTimeSlots([{ 
-          date, 
-          timeSlot
-        }]);
+        setSelectedTimeSlots([
+          {
+            date,
+            timeSlot,
+          },
+        ]);
         setIsScheduleModalOpen(true);
         break;
-      case 'view-interview':
+      case "view-interview":
         if (interview) {
           setSelectedInterview(interview);
           setIsViewModalOpen(true);
         }
         break;
-      case 'edit-interview':
+      case "edit-interview":
         if (interview) {
           setSelectedInterview(interview);
           setIsEditingInterview(true);
@@ -1953,7 +2050,7 @@ const Scheduler: React.FC = () => {
     interviewerId: string,
     date: Date,
     timeSlot: TimeSlot,
-    markAsBusy: boolean
+    markAsBusy: boolean,
   ) => {
     try {
       setIsProcessingBusyUpdate(true);
@@ -1962,35 +2059,36 @@ const Scheduler: React.FC = () => {
       slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
       const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000);
 
-      const response = await fetch('/api/interviewer-busy-times-batch', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/interviewer-busy-times-batch", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           interviewerId,
-          timeSlots: [{
-            date: slotTime.toISOString(),
-            hour: timeSlot.hour,
-            minute: timeSlot.minute,
-          }],
+          timeSlots: [
+            {
+              date: slotTime.toISOString(),
+              hour: timeSlot.hour,
+              minute: timeSlot.minute,
+            },
+          ],
           markAsBusy,
-          reason: markAsBusy ? 'Busy' : undefined,
+          reason: markAsBusy ? "Busy" : undefined,
         }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to update busy status');
+        throw new Error("Failed to update busy status");
       }
 
       // Refresh data
       await fetchBusyTimes();
-      
+
       toast({
         title: "Success",
-        description: `Time slot marked as ${markAsBusy ? 'busy' : 'available'}`,
+        description: `Time slot marked as ${markAsBusy ? "busy" : "available"}`,
       });
-
     } catch (error) {
-      console.error('Error updating slot:', error);
+      console.error("Error updating slot:", error);
       toast({
         title: "Error",
         description: "Failed to update time slot",
@@ -2008,8 +2106,8 @@ const Scheduler: React.FC = () => {
     };
 
     if (contextMenu) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
     }
   }, [contextMenu]);
 
@@ -2024,149 +2122,154 @@ const Scheduler: React.FC = () => {
   };
 
   // Helper function to create unique slot key
-  const _getSlotKey = (interviewerId: string, date: Date, timeSlot: TimeSlot) => {
-    return `${interviewerId}-${format(date, 'yyyy-MM-dd')}-${timeSlot.hour}-${timeSlot.minute}`;
+  const _getSlotKey = (
+    interviewerId: string,
+    date: Date,
+    timeSlot: TimeSlot,
+  ) => {
+    return `${interviewerId}-${format(date, "yyyy-MM-dd")}-${timeSlot.hour}-${timeSlot.minute}`;
   };
 
   // New selection system functions will be added here
 
   // Memoized busy slot checker to avoid recalculation
   // Get interview for a specific slot
-  const getInterviewForSlot = React.useCallback((interviewerId: string, date: Date, timeSlot: TimeSlot): Interview | null => {
-    const slotTime = new Date(date);
-    slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
-    const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000);
-    
-    // Find interviews for this interviewer
-    const interviewerInterviews = interviewers.find(i => i.id === interviewerId)?.interviews || [];
-    
-    // Check if any interview overlaps with this time slot
-    const overlappingInterview = interviewerInterviews.find(interview => {
-      const interviewStart = new Date(interview.startTime);
-      const interviewEnd = new Date(interview.endTime);
-      
-      // Check if there's any overlap
-      return interviewStart < slotEndTime && interviewEnd > slotTime;
-    });
-    
-    return overlappingInterview || null;
-  }, [interviewers]);
-  
-  const isBusySlot = React.useCallback((interviewerId: string, date: Date, timeSlot: TimeSlot) => {
-    const slotTime = new Date(date);
-    slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
-    const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000); // 15 minutes later
-    
-    const interviewerBusyTimes = busyTimes[interviewerId] || [];
-    
-    return interviewerBusyTimes.some(busyTime => {
-      const busyStart = new Date(busyTime.startTime);
-      const busyEnd = new Date(busyTime.endTime);
-      
-      // Check if the 15-minute slot overlaps with any busy time
-      return slotTime < busyEnd && slotEndTime > busyStart;
-    });
-  }, [busyTimes]);
+  const getInterviewForSlot = React.useCallback(
+    (
+      interviewerId: string,
+      date: Date,
+      timeSlot: TimeSlot,
+    ): Interview | null => {
+      const slotTime = new Date(date);
+      slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
+      const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000);
+
+      // Find interviews for this interviewer
+      const interviewerInterviews =
+        interviewers.find((i) => i.id === interviewerId)?.interviews || [];
+
+      // Check if any interview overlaps with this time slot
+      const overlappingInterview = interviewerInterviews.find((interview) => {
+        const interviewStart = new Date(interview.startTime);
+        const interviewEnd = new Date(interview.endTime);
+
+        // Check if there's any overlap
+        return interviewStart < slotEndTime && interviewEnd > slotTime;
+      });
+
+      return overlappingInterview || null;
+    },
+    [interviewers],
+  );
+
+  const isBusySlot = React.useCallback(
+    (interviewerId: string, date: Date, timeSlot: TimeSlot) => {
+      const slotTime = new Date(date);
+      slotTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
+      const slotEndTime = new Date(slotTime.getTime() + 15 * 60 * 1000); // 15 minutes later
+
+      const interviewerBusyTimes = busyTimes[interviewerId] || [];
+
+      return interviewerBusyTimes.some((busyTime) => {
+        const busyStart = new Date(busyTime.startTime);
+        const busyEnd = new Date(busyTime.endTime);
+
+        // Check if the 15-minute slot overlaps with any busy time
+        return slotTime < busyEnd && slotEndTime > busyStart;
+      });
+    },
+    [busyTimes],
+  );
 
   // Memoized TimeSlot component to prevent unnecessary re-renders
-  const TimeSlotComponent = React.memo(({ 
-    timeSlot, 
-    timeIndex, 
-    interviewer, 
-    viewDates 
-  }: {
-    timeSlot: TimeSlot;
-    timeIndex: number;
-    interviewer: Interviewer;
-    viewDates: Date[];
-  }) => {
-    return (
-      <div
-        key={timeIndex}
-        className="grid grid-cols-[100px_1fr] border-b border-neutral-700"
-      >
-        <div className="flex items-center justify-center border-r border-neutral-700 bg-neutral-800 p-2 text-xs font-medium">
-          {`${timeSlot.hour}:${timeSlot.minute.toString().padStart(2, "0")}`}
-        </div>
-        <div className="grid grid-cols-7">
-          {viewDates.map((date, dateIndex) => {
-            const slotInterviews = interviewer.interviews.filter(
-              (interview) => {
-                const interviewStart = new Date(interview.startTime);
-                const interviewEnd = new Date(interview.endTime);
-                
-                // Create current slot time range
-                const slotStart = new Date(date);
-                slotStart.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
-                const slotEnd = new Date(slotStart.getTime() + 15 * 60 * 1000); // 15 minutes later
-                
-                // Check if the interview overlaps with this 15-minute slot
-                return (
-                  isSameDay(interviewStart, date) &&
-                  interviewStart < slotEnd &&
-                  interviewEnd > slotStart
-                );
-              }
-            );
+  const TimeSlotComponent = React.memo(
+    ({
+      timeSlot,
+      timeIndex,
+      interviewer,
+      viewDates,
+    }: {
+      timeSlot: TimeSlot;
+      timeIndex: number;
+      interviewer: Interviewer;
+      viewDates: Date[];
+    }) => {
+      return (
+        <div
+          key={timeIndex}
+          className="grid grid-cols-[100px_1fr] border-b border-neutral-700"
+        >
+          <div className="flex items-center justify-center border-r border-neutral-700 bg-neutral-800 p-2 text-xs font-medium">
+            {`${timeSlot.hour}:${timeSlot.minute.toString().padStart(2, "0")}`}
+          </div>
+          <div className="grid grid-cols-7">
+            {viewDates.map((date, dateIndex) => {
+              const slotInterviews = interviewer.interviews.filter(
+                (interview) => {
+                  const interviewStart = new Date(interview.startTime);
+                  const interviewEnd = new Date(interview.endTime);
 
-            const hasInterview = slotInterviews.length > 0;
-            const isSelected =
-              isMultiSelectMode &&
-              isTimeSlotSelected(date, timeSlot);
-            const isPerInterviewerSelected = 
-              !isMultiSelectMode &&
-              isSlotSelected(interviewer.id, date, timeSlot);
-            const isBusy = isBusySlot(
-              interviewer.id,
-              date,
-              timeSlot
-            );
+                  // Create current slot time range
+                  const slotStart = new Date(date);
+                  slotStart.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
+                  const slotEnd = new Date(
+                    slotStart.getTime() + 15 * 60 * 1000,
+                  ); // 15 minutes later
 
-            return (
-              <div
-                key={dateIndex}
-                className={cn(
-                  "relative cursor-pointer border-l border-neutral-700 p-1 hover:bg-neutral-800 select-none",
-                  isWeekend(date) &&
-                    "bg-neutral-800/50",
-                  hasInterview && "bg-stone-700/50",
-                  isSelected &&
-                    "bg-blue-900/30 ring-2 ring-blue-500",
-                  isPerInterviewerSelected &&
-                    "bg-green-900/30 ring-2 ring-green-500",
-                  isMultiSelectMode &&
-                    !hasInterview &&
-                    !isBusy &&
-                    "hover:bg-blue-900/30",
-                  !isMultiSelectMode &&
-                    !hasInterview &&
-                    !isBusy &&
-                    "hover:bg-green-900/30",
-                  isBusy &&
-                    !isSelected &&
-                    !isPerInterviewerSelected &&
-                    "bg-yellow-900/30 hover:bg-yellow-800/40",
-                )}
-                onClick={(e) =>
-                  handleTimeSlotSelect(
-                    e,
-                    interviewer.id,
-                    date,
-                    timeSlot,
-                  )
-                }
-              >
-                {isBusy ? (
-                  <div className="absolute inset-0 m-1 overflow-hidden rounded bg-yellow-600/80 p-1">
-                    <div className="truncate text-xs font-medium">Busy</div>
-                  </div>
-                ) : hasInterview ? (
-                  slotInterviews.map(
-                    (interview, i) => (
+                  // Check if the interview overlaps with this 15-minute slot
+                  return (
+                    isSameDay(interviewStart, date) &&
+                    interviewStart < slotEnd &&
+                    interviewEnd > slotStart
+                  );
+                },
+              );
+
+              const hasInterview = slotInterviews.length > 0;
+              const isSelected =
+                isMultiSelectMode && isTimeSlotSelected(date, timeSlot);
+              const isPerInterviewerSelected =
+                !isMultiSelectMode &&
+                isSlotSelected(interviewer.id, date, timeSlot);
+              const isBusy = isBusySlot(interviewer.id, date, timeSlot);
+
+              return (
+                <div
+                  key={dateIndex}
+                  className={cn(
+                    "relative cursor-pointer select-none border-l border-neutral-700 p-1 hover:bg-neutral-800",
+                    isWeekend(date) && "bg-neutral-800/50",
+                    hasInterview && "bg-stone-700/50",
+                    isSelected && "bg-blue-900/30 ring-2 ring-blue-500",
+                    isPerInterviewerSelected &&
+                      "bg-green-900/30 ring-2 ring-green-500",
+                    isMultiSelectMode &&
+                      !hasInterview &&
+                      !isBusy &&
+                      "hover:bg-blue-900/30",
+                    !isMultiSelectMode &&
+                      !hasInterview &&
+                      !isBusy &&
+                      "hover:bg-green-900/30",
+                    isBusy &&
+                      !isSelected &&
+                      !isPerInterviewerSelected &&
+                      "bg-yellow-900/30 hover:bg-yellow-800/40",
+                  )}
+                  onClick={(e) =>
+                    handleTimeSlotSelect(e, interviewer.id, date, timeSlot)
+                  }
+                >
+                  {isBusy ? (
+                    <div className="absolute inset-0 m-1 overflow-hidden rounded bg-yellow-600/80 p-1">
+                      <div className="truncate text-xs font-medium">Busy</div>
+                    </div>
+                  ) : hasInterview ? (
+                    slotInterviews.map((interview, i) => (
                       <div
                         key={i}
                         className={cn(
-                          "absolute inset-0 m-1 overflow-hidden rounded p-1 cursor-pointer hover:opacity-80 transition-opacity",
+                          "absolute inset-0 m-1 cursor-pointer overflow-hidden rounded p-1 transition-opacity hover:opacity-80",
                           interview.isPlaceholder
                             ? "bg-blue-600"
                             : "bg-stone-600",
@@ -2185,20 +2288,20 @@ const Scheduler: React.FC = () => {
                           📍 {interview.location}
                         </div>
                       </div>
-                    ),
-                  )
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center opacity-0 transition-opacity hover:opacity-100">
-                    <Plus className="h-4 w-4 text-neutral-400" />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                    ))
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center opacity-0 transition-opacity hover:opacity-100">
+                      <Plus className="h-4 w-4 text-neutral-400" />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    );
-  });
+      );
+    },
+  );
 
   return (
     <DndProvider backend={HTML5Backend}>
@@ -2212,8 +2315,6 @@ const Scheduler: React.FC = () => {
             <div className="self-start pb-5 text-center text-5xl font-semibold max-md:text-4xl">
               Scheduler
             </div>
-
-            
 
             <div className="mt-9 h-px w-full shrink-0 border border-solid border-neutral-200" />
 
@@ -2290,7 +2391,7 @@ const Scheduler: React.FC = () => {
                       Multi-select mode
                     </Label>
                   </div>
-                  
+
                   {isMultiSelectMode && selectedTimeSlots.length > 0 && (
                     <>
                       <Button
@@ -2305,10 +2406,19 @@ const Scheduler: React.FC = () => {
                         className="border-yellow-500 text-yellow-500 hover:bg-yellow-600 hover:text-white"
                         disabled={isProcessingBusyUpdate}
                       >
-{isProcessingBusyUpdate ? 'Updating...' : 
-                          (selectedTimeSlots.some(slot => 
-                          selectedInterviewer && isBusySlot(selectedInterviewer, slot.date, slot.timeSlot)
-                        ) ? 'Mark as Available' : 'Mark as Busy')}
+                        {isProcessingBusyUpdate
+                          ? "Updating..."
+                          : selectedTimeSlots.some(
+                                (slot) =>
+                                  selectedInterviewer &&
+                                  isBusySlot(
+                                    selectedInterviewer,
+                                    slot.date,
+                                    slot.timeSlot,
+                                  ),
+                              )
+                            ? "Mark as Available"
+                            : "Mark as Busy"}
                       </Button>
                     </>
                   )}
@@ -2366,13 +2476,15 @@ const Scheduler: React.FC = () => {
                               const team = teams.find(
                                 (t) => t.id === teamPriority.teamId,
                               );
-                              const isUpdating = isUpdatingTeamPriority === `${interviewer.id}-${teamPriority.teamId}`;
+                              const isUpdating =
+                                isUpdatingTeamPriority ===
+                                `${interviewer.id}-${teamPriority.teamId}`;
                               return (
                                 <div
                                   key={i}
                                   className={`inline-flex h-8 items-center rounded-full px-3 py-1 text-xs backdrop-blur-sm transition-opacity ${
-                                    isUpdating 
-                                      ? "bg-blue-700/80 opacity-75" 
+                                    isUpdating
+                                      ? "bg-blue-700/80 opacity-75"
                                       : "bg-stone-700/80"
                                   }`}
                                 >
@@ -2413,7 +2525,9 @@ const Scheduler: React.FC = () => {
                                     ),
                                 )
                                 .map((team, i) => {
-                                  const isUpdating = isUpdatingTeamPriority === `${interviewer.id}-${team.id}`;
+                                  const isUpdating =
+                                    isUpdatingTeamPriority ===
+                                    `${interviewer.id}-${team.id}`;
                                   return (
                                     <DropdownMenuItem
                                       key={i}
@@ -2456,43 +2570,71 @@ const Scheduler: React.FC = () => {
                     {interviewer.openCalendar && (
                       <div className="border-t border-neutral-200 bg-neutral-900/50 p-4">
                         {/* Per-interviewer floating controls */}
-                        {(perInterviewerSelections[interviewer.id]?.length || 0) > 0 && (
+                        {(perInterviewerSelections[interviewer.id]?.length ||
+                          0) > 0 && (
                           <div className="mb-4 flex items-center justify-between rounded-lg border border-green-600/30 bg-green-900/20 p-3">
                             <div className="flex items-center gap-2">
                               <span className="text-sm font-medium text-green-400">
-                                {perInterviewerSelections[interviewer.id]?.length || 0} slot{(perInterviewerSelections[interviewer.id]?.length || 0) > 1 ? 's' : ''} selected
+                                {perInterviewerSelections[interviewer.id]
+                                  ?.length || 0}{" "}
+                                slot
+                                {(perInterviewerSelections[interviewer.id]
+                                  ?.length || 0) > 1
+                                  ? "s"
+                                  : ""}{" "}
+                                selected
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <Button
                                 size="sm"
-                                onClick={() => toggleBusyForInterviewer(interviewer.id)}
-                                className="bg-yellow-600 hover:bg-yellow-700 text-xs"
+                                onClick={() =>
+                                  toggleBusyForInterviewer(interviewer.id)
+                                }
+                                className="bg-yellow-600 text-xs hover:bg-yellow-700"
                                 disabled={isProcessingBusyUpdate}
                               >
-                                {isProcessingBusyUpdate ? 'Updating...' : 
-                                (perInterviewerSelections[interviewer.id]?.some(slot => 
-                                  isBusySlot(interviewer.id, slot.date, slot.timeSlot)
-                                ) ? 'Mark Available' : 'Mark Busy')}
+                                {isProcessingBusyUpdate
+                                  ? "Updating..."
+                                  : perInterviewerSelections[
+                                        interviewer.id
+                                      ]?.some((slot) =>
+                                        isBusySlot(
+                                          interviewer.id,
+                                          slot.date,
+                                          slot.timeSlot,
+                                        ),
+                                      )
+                                    ? "Mark Available"
+                                    : "Mark Busy"}
                               </Button>
                               <Button
                                 size="sm"
-                                onClick={() => openScheduleModal(interviewer.id, 
-                                  perInterviewerSelections[interviewer.id]?.[0]?.date!,
-                                  perInterviewerSelections[interviewer.id]?.[0]?.timeSlot!
-                                )}
-                                className="bg-blue-600 hover:bg-blue-700 text-xs"
+                                onClick={() =>
+                                  openScheduleModal(
+                                    interviewer.id,
+                                    perInterviewerSelections[
+                                      interviewer.id
+                                    ]?.[0]?.date!,
+                                    perInterviewerSelections[
+                                      interviewer.id
+                                    ]?.[0]?.timeSlot!,
+                                  )
+                                }
+                                className="bg-blue-600 text-xs hover:bg-blue-700"
                               >
                                 Schedule Interview
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => setPerInterviewerSelections(prev => ({
-                                  ...prev,
-                                  [interviewer.id]: []
-                                }))}
-                                className="border-neutral-700 bg-neutral-800 hover:bg-neutral-700 text-xs"
+                                onClick={() =>
+                                  setPerInterviewerSelections((prev) => ({
+                                    ...prev,
+                                    [interviewer.id]: [],
+                                  }))
+                                }
+                                className="border-neutral-700 bg-neutral-800 text-xs hover:bg-neutral-700"
                               >
                                 Clear Selection
                               </Button>
@@ -2503,30 +2645,40 @@ const Scheduler: React.FC = () => {
                         {/* Lasso selection tool toggle */}
                         <div className="mb-4 flex items-center justify-between rounded-lg border border-neutral-700 bg-neutral-800 p-3">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-neutral-300">Lasso Selection:</span>
+                            <span className="text-sm font-medium text-neutral-300">
+                              Lasso Selection:
+                            </span>
                             <button
-                              className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                                selectedInterviewerForSelection === interviewer.id 
-                                  ? 'bg-green-600 text-white' 
-                                  : 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+                              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                                selectedInterviewerForSelection ===
+                                interviewer.id
+                                  ? "bg-green-600 text-white"
+                                  : "bg-neutral-700 text-neutral-300 hover:bg-neutral-600"
                               }`}
                               onClick={() => {
                                 setSelectedInterviewerForSelection(
-                                  selectedInterviewerForSelection === interviewer.id ? null : interviewer.id
+                                  selectedInterviewerForSelection ===
+                                    interviewer.id
+                                    ? null
+                                    : interviewer.id,
                                 );
                                 // setSelectionMode('select'); // TODO: implement setSelectionMode function
                               }}
                             >
-                              {selectedInterviewerForSelection === interviewer.id ? 'Disable' : 'Enable'}
+                              {selectedInterviewerForSelection ===
+                              interviewer.id
+                                ? "Disable"
+                                : "Enable"}
                             </button>
                           </div>
-                          {selectedInterviewerForSelection === interviewer.id && (
+                          {selectedInterviewerForSelection ===
+                            interviewer.id && (
                             <div className="text-xs text-green-400">
                               Click and drag to select multiple time slots
                             </div>
                           )}
                         </div>
-                        
+
                         <div className="overflow-visible">
                           <div className="min-w-[800px]">
                             {/* Calendar Header */}
@@ -2539,39 +2691,64 @@ const Scheduler: React.FC = () => {
                               >
                                 {viewDates.map((date, i) => {
                                   // Check if any slots in this column are selected
-                                  const slotsInColumn = timeSlots.map(timeSlot => ({ date, timeSlot }));
-                                  const currentSlots = perInterviewerSelections[interviewer.id] || [];
-                                  const selectedSlotsInColumn = slotsInColumn.filter(slot => 
-                                    currentSlots.some(selected => 
-                                      isSameDay(selected.date, slot.date) &&
-                                      selected.timeSlot.hour === slot.timeSlot.hour &&
-                                      selected.timeSlot.minute === slot.timeSlot.minute
-                                    )
+                                  const slotsInColumn = timeSlots.map(
+                                    (timeSlot) => ({ date, timeSlot }),
                                   );
-                                  
-                                  const hasAnySelected = selectedSlotsInColumn.length > 0;
-                                  const allSelected = selectedSlotsInColumn.length === slotsInColumn.length;
-                                  
+                                  const currentSlots =
+                                    perInterviewerSelections[interviewer.id] ||
+                                    [];
+                                  const selectedSlotsInColumn =
+                                    slotsInColumn.filter((slot) =>
+                                      currentSlots.some(
+                                        (selected) =>
+                                          isSameDay(selected.date, slot.date) &&
+                                          selected.timeSlot.hour ===
+                                            slot.timeSlot.hour &&
+                                          selected.timeSlot.minute ===
+                                            slot.timeSlot.minute,
+                                      ),
+                                    );
+
+                                  const hasAnySelected =
+                                    selectedSlotsInColumn.length > 0;
+                                  const allSelected =
+                                    selectedSlotsInColumn.length ===
+                                    slotsInColumn.length;
+
                                   return (
                                     <div
                                       key={i}
                                       className={cn(
-                                        "border-l border-neutral-700 p-2 text-center font-medium cursor-pointer transition-colors",
+                                        "cursor-pointer border-l border-neutral-700 p-2 text-center font-medium transition-colors",
                                         isWeekend(date) && "bg-neutral-800",
-                                        hasAnySelected && allSelected && "bg-green-600/30 border-green-400",
-                                        hasAnySelected && !allSelected && "bg-yellow-600/30 border-yellow-400",
-                                        selectedInterviewerForSelection === interviewer.id && "hover:bg-blue-500/20"
+                                        hasAnySelected &&
+                                          allSelected &&
+                                          "border-green-400 bg-green-600/30",
+                                        hasAnySelected &&
+                                          !allSelected &&
+                                          "border-yellow-400 bg-yellow-600/30",
+                                        selectedInterviewerForSelection ===
+                                          interviewer.id &&
+                                          "hover:bg-blue-500/20",
                                       )}
                                       onClick={() => {
-                                        if (selectedInterviewerForSelection === interviewer.id) {
-                                          selectAllSlotsInColumn(interviewer.id, date);
+                                        if (
+                                          selectedInterviewerForSelection ===
+                                          interviewer.id
+                                        ) {
+                                          selectAllSlotsInColumn(
+                                            interviewer.id,
+                                            date,
+                                          );
                                         }
                                       }}
-                                      title={selectedInterviewerForSelection === interviewer.id 
-                                        ? hasAnySelected 
-                                          ? `Click to deselect ${selectedSlotsInColumn.length}/${slotsInColumn.length} slots for ${format(date, "EEE MMM d")}`
-                                          : `Click to select all time slots for ${format(date, "EEE MMM d")}`
-                                        : format(date, "EEE MMM d")
+                                      title={
+                                        selectedInterviewerForSelection ===
+                                        interviewer.id
+                                          ? hasAnySelected
+                                            ? `Click to deselect ${selectedSlotsInColumn.length}/${slotsInColumn.length} slots for ${format(date, "EEE MMM d")}`
+                                            : `Click to select all time slots for ${format(date, "EEE MMM d")}`
+                                          : format(date, "EEE MMM d")
                                       }
                                     >
                                       <div>{format(date, "EEE")}</div>
@@ -2579,10 +2756,16 @@ const Scheduler: React.FC = () => {
                                         {format(date, "d")}
                                       </div>
                                       {hasAnySelected && (
-                                        <div className={cn("text-xs mt-1", 
-                                          allSelected ? "text-green-300" : "text-yellow-300"
-                                        )}>
-                                          {selectedSlotsInColumn.length}/{slotsInColumn.length}
+                                        <div
+                                          className={cn(
+                                            "mt-1 text-xs",
+                                            allSelected
+                                              ? "text-green-300"
+                                              : "text-yellow-300",
+                                          )}
+                                        >
+                                          {selectedSlotsInColumn.length}/
+                                          {slotsInColumn.length}
                                         </div>
                                       )}
                                     </div>
@@ -2855,10 +3038,12 @@ const Scheduler: React.FC = () => {
                     {selectedInterview.applicantId ? (
                       <button
                         onClick={() => {
-                          setSelectedApplicantId(selectedInterview.applicantId || null);
+                          setSelectedApplicantId(
+                            selectedInterview.applicantId || null,
+                          );
                           setIsApplicantModalOpen(true);
                         }}
-                        className="text-blue-400 hover:text-blue-300 underline cursor-pointer transition-colors"
+                        className="cursor-pointer text-blue-400 underline transition-colors hover:text-blue-300"
                         title="Click to view applicant details"
                       >
                         {selectedInterview.applicantName}
@@ -2972,7 +3157,7 @@ const Scheduler: React.FC = () => {
       {/* Context Menu */}
       {contextMenu && (
         <div
-          className="fixed z-50 min-w-48 rounded-md bg-neutral-800 border border-neutral-600 shadow-lg"
+          className="fixed z-50 min-w-48 rounded-md border border-neutral-600 bg-neutral-800 shadow-lg"
           style={{
             left: contextMenu.x,
             top: contextMenu.y,
@@ -2984,41 +3169,45 @@ const Scheduler: React.FC = () => {
               // Options for slots with interviews
               <>
                 <button
-                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
-                  onClick={() => handleContextMenuAction('view-interview')}
+                  className="flex w-full items-center px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700"
+                  onClick={() => handleContextMenuAction("view-interview")}
                 >
                   <Eye className="mr-2 h-4 w-4" />
                   View Interview
                 </button>
                 <button
-                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
-                  onClick={() => handleContextMenuAction('edit-interview')}
+                  className="flex w-full items-center px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700"
+                  onClick={() => handleContextMenuAction("edit-interview")}
                 >
                   <Edit className="mr-2 h-4 w-4" />
                   Edit Interview
                 </button>
                 <hr className="my-1 border-neutral-600" />
                 <button
-                  className="w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-neutral-700 flex items-center"
-                  onClick={() => handleContextMenuAction('mark-available')}
+                  className="flex w-full items-center px-4 py-2 text-left text-sm text-red-400 hover:bg-neutral-700"
+                  onClick={() => handleContextMenuAction("mark-available")}
                 >
                   <Trash className="mr-2 h-4 w-4" />
                   Delete Interview
                 </button>
               </>
-            ) : isBusySlot(contextMenu.interviewerId, contextMenu.date, contextMenu.timeSlot) ? (
+            ) : isBusySlot(
+                contextMenu.interviewerId,
+                contextMenu.date,
+                contextMenu.timeSlot,
+              ) ? (
               // Options for busy slots without interviews
               <>
                 <button
-                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
-                  onClick={() => handleContextMenuAction('mark-available')}
+                  className="flex w-full items-center px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700"
+                  onClick={() => handleContextMenuAction("mark-available")}
                 >
                   <Check className="mr-2 h-4 w-4" />
                   Mark Available
                 </button>
                 <button
-                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
-                  onClick={() => handleContextMenuAction('schedule-interview')}
+                  className="flex w-full items-center px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700"
+                  onClick={() => handleContextMenuAction("schedule-interview")}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
                   Schedule Interview
@@ -3028,15 +3217,15 @@ const Scheduler: React.FC = () => {
               // Options for available slots
               <>
                 <button
-                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
-                  onClick={() => handleContextMenuAction('mark-busy')}
+                  className="flex w-full items-center px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700"
+                  onClick={() => handleContextMenuAction("mark-busy")}
                 >
                   <X className="mr-2 h-4 w-4" />
                   Mark Busy
                 </button>
                 <button
-                  className="w-full px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700 flex items-center"
-                  onClick={() => handleContextMenuAction('schedule-interview')}
+                  className="flex w-full items-center px-4 py-2 text-left text-sm text-neutral-200 hover:bg-neutral-700"
+                  onClick={() => handleContextMenuAction("schedule-interview")}
                 >
                   <Calendar className="mr-2 h-4 w-4" />
                   Schedule Interview

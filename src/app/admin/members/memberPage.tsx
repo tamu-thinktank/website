@@ -79,11 +79,7 @@ export const MembersPage: React.FC = () => {
     "Year",
   ];
 
-  const dcMemberTeams = [
-    "TSGC",
-    "AIAA",
-    "Reset",
-  ];
+  const dcMemberTeams = ["TSGC", "AIAA", "Reset"];
 
   const officerpositions = [
     "VICE_PRESIDENT",
@@ -106,11 +102,7 @@ export const MembersPage: React.FC = () => {
     "Reset",
   ];
 
-  const miniDcTeams = [
-    "MINI_DC_TEAM_1",
-    "MINI_DC_TEAM_2",
-    "Reset",
-  ];
+  const miniDcTeams = ["MINI_DC_TEAM_1", "MINI_DC_TEAM_2", "Reset"];
 
   const mateinterests = [
     "SOFTWARE",
@@ -146,20 +138,30 @@ export const MembersPage: React.FC = () => {
       const matchesMajor = !filters.major || applicant.major === filters.major;
       const matchesInterests =
         !filters.interests ||
-        applicant.interests.some(
-          (interest) => interest === filters.interests,
-        );
+        applicant.interests.some((interest) => interest === filters.interests);
       const matchesTeam = (() => {
         if (!filters.team) return true;
-        
+
         switch (selectedCategory) {
           case "OFFICER":
-            return (applicant as any).officerpos?.some((pos: any) => pos.position === filters.team) || false;
+            return (
+              (applicant as any).officerpos?.some(
+                (pos: any) => pos.position === filters.team,
+              ) || false
+            );
           case "MATEROV":
-            return (applicant as any).subTeam?.some((team: any) => team.name === filters.team) || false;
+            return (
+              (applicant as any).subTeam?.some(
+                (team: any) => team.name === filters.team,
+              ) || false
+            );
           case "DCMEMBER":
           case "MINIDC":
-            return (applicant as any).subTeam?.some((team: any) => team.name === filters.team) || false;
+            return (
+              (applicant as any).subTeam?.some(
+                (team: any) => team.name === filters.team,
+              ) || false
+            );
           default:
             return true;
         }
@@ -201,7 +203,7 @@ export const MembersPage: React.FC = () => {
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
               onClick={() => setSelectedCategory("DCMEMBER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "DCMEMBER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -212,7 +214,7 @@ export const MembersPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("OFFICER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "OFFICER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -223,7 +225,7 @@ export const MembersPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MATEROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "MATEROV"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -234,7 +236,7 @@ export const MembersPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MINIDC")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "MINIDC"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -344,18 +346,30 @@ export const MembersPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Research Interests Display */}
                         {(() => {
-                          if (applicant.interests && applicant.interests.length > 0) {
-                            const displayItems = applicant.interests.slice(0, 2);
-                            const remainingCount = applicant.interests.length - 2;
+                          if (
+                            applicant.interests &&
+                            applicant.interests.length > 0
+                          ) {
+                            const displayItems = applicant.interests.slice(
+                              0,
+                              2,
+                            );
+                            const remainingCount =
+                              applicant.interests.length - 2;
                             return (
                               <div className="space-y-1">
                                 {displayItems.map((interest, idx) => (
-                                  <div key={`${interest}-${idx}`} className="text-xs">
+                                  <div
+                                    key={`${interest}-${idx}`}
+                                    className="text-xs"
+                                  >
                                     {interest}
                                   </div>
                                 ))}
                                 {remainingCount > 0 && (
-                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                  <div className="text-xs text-neutral-400">
+                                    +{remainingCount} more
+                                  </div>
                                 )}
                               </div>
                             );
@@ -366,18 +380,30 @@ export const MembersPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Team Rankings Display */}
                         {(() => {
-                          if (applicant.teamRankings && applicant.teamRankings.length > 0) {
-                            const displayItems = applicant.teamRankings.slice(0, 2);
-                            const remainingCount = applicant.teamRankings.length - 2;
+                          if (
+                            applicant.teamRankings &&
+                            applicant.teamRankings.length > 0
+                          ) {
+                            const displayItems = applicant.teamRankings.slice(
+                              0,
+                              2,
+                            );
+                            const remainingCount =
+                              applicant.teamRankings.length - 2;
                             return (
                               <div className="space-y-1">
                                 {displayItems.map((team, idx) => (
-                                  <div key={`${team}-${idx}`} className="text-xs">
+                                  <div
+                                    key={`${team}-${idx}`}
+                                    className="text-xs"
+                                  >
                                     {team}
                                   </div>
                                 ))}
                                 {remainingCount > 0 && (
-                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                  <div className="text-xs text-neutral-400">
+                                    +{remainingCount} more
+                                  </div>
                                 )}
                               </div>
                             );

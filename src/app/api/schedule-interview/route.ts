@@ -1,70 +1,75 @@
-import { NextResponse } from "next/server"
-import { ApplicationStatus } from "@prisma/client"
-import { db } from "@/lib/db"
+import { NextResponse } from "next/server";
+import { ApplicationStatus } from "@prisma/client";
+import { db } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { 
-      applicantId, 
-      interviewerId, 
-      time, 
-      location, 
-      teamId, 
-      isPlaceholder = false, 
-      applicantName = null 
+    const body = await request.json();
+    const {
+      applicantId,
+      interviewerId,
+      time,
+      location,
+      teamId,
+      isPlaceholder = false,
+      applicantName = null,
     } = body as {
-      applicantId?: string
-      interviewerId: string
-      time: string
-      location: string
-      teamId?: string
-      isPlaceholder?: boolean
-      applicantName?: string | null
-    }
+      applicantId?: string;
+      interviewerId: string;
+      time: string;
+      location: string;
+      teamId?: string;
+      isPlaceholder?: boolean;
+      applicantName?: string | null;
+    };
 
     // For reserved slots, we don't need an applicantId but we need a name
-    if ((!applicantId && !isPlaceholder) || !interviewerId || !time || !location) {
+    if (
+      (!applicantId && !isPlaceholder) ||
+      !interviewerId ||
+      !time ||
+      !location
+    ) {
       return NextResponse.json(
-        { error: "Missing required fields" }, 
-        { status: 400 }
-      )
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     // Parse and validate the time string
-    const startTime = new Date(time)
-    const endTime = new Date(startTime.getTime() + 45 * 60000) // 45 minutes later
-    
+    const startTime = new Date(time);
+    const endTime = new Date(startTime.getTime() + 45 * 60000); // 45 minutes later
+
     // Validate the time is not in the past (allow some buffer for scheduling)
-    const now = new Date()
-    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000)
-    
+    const now = new Date();
+    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
+
     if (startTime < fiveMinutesAgo) {
       return NextResponse.json(
-        { error: "Cannot schedule interviews in the past" }, 
-        { status: 400 }
-      )
+        { error: "Cannot schedule interviews in the past" },
+        { status: 400 },
+      );
     }
-    
+
     // Validate the time is within business hours (8 AM - 10 PM)
-    const hour = startTime.getHours()
+    const hour = startTime.getHours();
     if (hour < 8 || hour >= 22) {
       return NextResponse.json(
-        { error: "Interviews can only be scheduled between 8 AM and 10 PM" }, 
-        { status: 400 }
-      )
+        { error: "Interviews can only be scheduled between 8 AM and 10 PM" },
+        { status: 400 },
+      );
     }
-    
+
     // Validate that the interview doesn't extend past 10 PM
-    const endHour = endTime.getHours()
-    const endMinute = endTime.getMinutes()
+    const endHour = endTime.getHours();
+    const endMinute = endTime.getMinutes();
     if (endHour > 22 || (endHour === 22 && endMinute > 0)) {
       return NextResponse.json(
-        { error: "Interview would extend past 10 PM business hours" }, 
-        { status: 400 }
-      )
+        { error: "Interview would extend past 10 PM business hours" },
+        { status: 400 },
+      );
     }
-    
+
     // Check for time conflicts with existing interviews for this interviewer
     const conflictingInterviews = await db.interview.findMany({
       where: {
@@ -73,34 +78,36 @@ export async function POST(request: Request) {
           // New interview overlaps with existing interview
           {
             startTime: { lt: endTime },
-            endTime: { gt: startTime }
-          }
-        ]
+            endTime: { gt: startTime },
+          },
+        ],
       },
       include: {
         applicant: {
           select: {
             id: true,
-            fullName: true
-          }
-        }
-      }
-    })
+            fullName: true,
+          },
+        },
+      },
+    });
 
     if (conflictingInterviews.length > 0) {
       return NextResponse.json(
-        { 
+        {
           error: "Time slot conflicts with an existing interview",
-          conflictingInterviews: conflictingInterviews.map(interview => ({
+          conflictingInterviews: conflictingInterviews.map((interview) => ({
             id: interview.id,
             startTime: interview.startTime,
             endTime: interview.endTime,
-            applicantName: interview.isPlaceholder ? interview.placeholderName : interview.applicant?.fullName,
-            location: interview.location
-          }))
-        }, 
-        { status: 409 }
-      )
+            applicantName: interview.isPlaceholder
+              ? interview.placeholderName
+              : interview.applicant?.fullName,
+            location: interview.location,
+          })),
+        },
+        { status: 409 },
+      );
     }
 
     // Check for conflicts with the same applicant having other interviews at overlapping times
@@ -112,34 +119,34 @@ export async function POST(request: Request) {
             // Same applicant has interview overlapping with this new time
             {
               startTime: { lt: endTime },
-              endTime: { gt: startTime }
-            }
-          ]
+              endTime: { gt: startTime },
+            },
+          ],
         },
         include: {
           interviewer: {
             select: {
               id: true,
-              name: true
-            }
-          }
-        }
-      })
+              name: true,
+            },
+          },
+        },
+      });
 
       if (applicantConflicts.length > 0) {
         return NextResponse.json(
-          { 
+          {
             error: "Applicant already has a conflicting interview scheduled",
-            conflictingInterviews: applicantConflicts.map(interview => ({
+            conflictingInterviews: applicantConflicts.map((interview) => ({
               id: interview.id,
               startTime: interview.startTime,
               endTime: interview.endTime,
               interviewerName: interview.interviewer?.name,
-              location: interview.location
-            }))
-          }, 
-          { status: 409 }
-        )
+              location: interview.location,
+            })),
+          },
+          { status: 409 },
+        );
       }
     }
 
@@ -151,24 +158,24 @@ export async function POST(request: Request) {
           // New interview overlaps with busy time
           {
             startTime: { lt: endTime },
-            endTime: { gt: startTime }
-          }
-        ]
-      }
-    })
+            endTime: { gt: startTime },
+          },
+        ],
+      },
+    });
 
     if (conflictingBusyTimes.length > 0) {
       return NextResponse.json(
-        { 
+        {
           error: "Time slot conflicts with interviewer busy time",
-          busyTimes: conflictingBusyTimes.map(bt => ({
+          busyTimes: conflictingBusyTimes.map((bt) => ({
             startTime: bt.startTime,
             endTime: bt.endTime,
-            reason: bt.reason
-          }))
-        }, 
-        { status: 400 }
-      )
+            reason: bt.reason,
+          })),
+        },
+        { status: 400 },
+      );
     }
 
     // Get the interviewer details
@@ -179,10 +186,13 @@ export async function POST(request: Request) {
         name: true,
         email: true,
       },
-    })
+    });
 
     if (!interviewer) {
-      return NextResponse.json({ error: "Interviewer not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Interviewer not found" },
+        { status: 404 },
+      );
     }
 
     // For regular interviews, verify the applicant exists
@@ -195,10 +205,13 @@ export async function POST(request: Request) {
           email: true,
           status: true,
         },
-      })
+      });
 
       if (!applicant) {
-        return NextResponse.json({ error: "Applicant not found" }, { status: 404 })
+        return NextResponse.json(
+          { error: "Applicant not found" },
+          { status: 404 },
+        );
       }
 
       // Update the application status to INTERVIEWING if it's not already
@@ -209,8 +222,10 @@ export async function POST(request: Request) {
             status: ApplicationStatus.INTERVIEWING,
             assignedTeam: teamId,
           },
-        })
-        console.log(`Status updated for ${applicant.fullName}: ${applicant.status} -> INTERVIEWING`)
+        });
+        console.log(
+          `Status updated for ${applicant.fullName}: ${applicant.status} -> INTERVIEWING`,
+        );
       }
     }
 
@@ -224,34 +239,39 @@ export async function POST(request: Request) {
         location,
         teamId,
         isPlaceholder,
-        placeholderName: isPlaceholder ? (applicantName || "Reserved Slot") : null,
+        placeholderName: isPlaceholder
+          ? applicantName || "Reserved Slot"
+          : null,
       },
       include: {
-        applicant: isPlaceholder ? false : {
-          select: { fullName: true }
-        }
-      }
-    })
+        applicant: isPlaceholder
+          ? false
+          : {
+              select: { fullName: true },
+            },
+      },
+    });
 
     // Log the scheduling
-    const logName = isPlaceholder 
-      ? `Reserved slot (${applicantName || 'No name'})` 
-      : interview.applicant?.fullName || 'Unknown applicant'
-      
+    const logName = isPlaceholder
+      ? `Reserved slot (${applicantName || "No name"})`
+      : interview.applicant?.fullName || "Unknown applicant";
+
     console.log(
-      `Interview scheduled for ${logName} with ${interviewer.name} at ${startTime.toLocaleString()} in ${location}`
-    )
+      `Interview scheduled for ${logName} with ${interviewer.name} at ${startTime.toLocaleString()} in ${location}`,
+    );
 
     return NextResponse.json({
       ...interview,
-      applicantName: isPlaceholder ? (applicantName || "Reserved Slot") : interview.applicant?.fullName
-    })
+      applicantName: isPlaceholder
+        ? applicantName || "Reserved Slot"
+        : interview.applicant?.fullName,
+    });
   } catch (error) {
-    console.error("Error scheduling interview:", error)
+    console.error("Error scheduling interview:", error);
     return NextResponse.json(
-      { error: "Failed to schedule interview. Please try again later." }, 
-      { status: 500 }
-    )
+      { error: "Failed to schedule interview. Please try again later." },
+      { status: 500 },
+    );
   }
 }
-

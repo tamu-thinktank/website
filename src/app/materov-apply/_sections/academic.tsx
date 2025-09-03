@@ -18,7 +18,13 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { qMateROV } from "@/consts/materov-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
@@ -29,40 +35,44 @@ import { X } from "lucide-react";
 export default function MateROVAcademicInfo() {
   const form = useFormContext<RouterInputs["mateROV"]["MateROVApplyForm"]>();
 
-  const { formState: { errors } } = form;
-  
-    const {
-      fields: currentClassesFields,
-      append: appendCurrentClass,
-      remove: removeCurrentClass,
-    } = useFieldArray({
-      control: form.control,
-      name: "academic.currentClasses",
-    });
-  
-    const {
-      fields: nextClassesFields,
-      append: appendNextClass,
-      remove: removeNextClass,
-    } = useFieldArray({
-      control: form.control,
-      name: "academic.nextClasses",
-    });
-  
-    const {
-      fields: commitmentFields,
-      append: appendCommitment,
-      remove: removeCommitment,
-    } = useFieldArray({
-      control: form.control,
-      name: "academic.timeCommitment",
-    });
+  const {
+    formState: { errors },
+  } = form;
+
+  const {
+    fields: currentClassesFields,
+    append: appendCurrentClass,
+    remove: removeCurrentClass,
+  } = useFieldArray({
+    control: form.control,
+    name: "academic.currentClasses",
+  });
+
+  const {
+    fields: nextClassesFields,
+    append: appendNextClass,
+    remove: removeNextClass,
+  } = useFieldArray({
+    control: form.control,
+    name: "academic.nextClasses",
+  });
+
+  const {
+    fields: commitmentFields,
+    append: appendCommitment,
+    remove: removeCommitment,
+  } = useFieldArray({
+    control: form.control,
+    name: "academic.timeCommitment",
+  });
 
   return (
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{qMateROV.academic.title}</CardTitle>
+          <CardTitle className="text-center">
+            {qMateROV.academic.title}
+          </CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -76,7 +86,8 @@ export default function MateROVAcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qMateROV.academic.year} <span className="text-red-500">*</span>
+                  {qMateROV.academic.year}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -111,18 +122,18 @@ export default function MateROVAcademicInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {qMateROV.academic.major} <span className="text-red-500">*</span>
+                  {qMateROV.academic.major}{" "}
+                  <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Use the 4 letter uppercase abbreviation of your major. If in general engineering, respond with your intended major. If undecided, respond with 'OPEN'
+                  Use the 4 letter uppercase abbreviation of your major. If in
+                  general engineering, respond with your intended major. If
+                  undecided, respond with 'OPEN'
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Select
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select your major" />
                     </SelectTrigger>
@@ -146,7 +157,7 @@ export default function MateROVAcademicInfo() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {qMateROV.academic.currentClasses} 
+            {qMateROV.academic.currentClasses}
             <span className="text-red-500">*</span>
           </CardTitle>
           <CardDescription>
@@ -156,7 +167,8 @@ export default function MateROVAcademicInfo() {
             <br />
             - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
             <br />
-            If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
+            If you have fewer than two courses, use 'NULL 101' as a placeholder
+            and contact us.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -167,10 +179,7 @@ export default function MateROVAcademicInfo() {
                 name={`academic.currentClasses.${index}.value`}
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <Input
-                      {...field}
-                      placeholder="XXXX 123"
-                    />
+                    <Input {...field} placeholder="XXXX 123" />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -180,7 +189,7 @@ export default function MateROVAcademicInfo() {
                 variant="outline"
                 size="icon"
                 onClick={() => removeCurrentClass(index)}
-              >            
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -193,7 +202,9 @@ export default function MateROVAcademicInfo() {
             Add Class
           </Button>
           {errors.academic?.currentClasses?.message && (
-            <p className="mt-2 text-sm font-medium text-destructive">{errors.academic.currentClasses.message}</p>
+            <p className="mt-2 text-sm font-medium text-destructive">
+              {errors.academic.currentClasses.message}
+            </p>
           )}
         </CardContent>
       </Card>
@@ -202,7 +213,7 @@ export default function MateROVAcademicInfo() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            {qMateROV.academic.nextClasses} 
+            {qMateROV.academic.nextClasses}
             <span className="text-red-500">*</span>
           </CardTitle>
           <CardDescription>
@@ -212,7 +223,8 @@ export default function MateROVAcademicInfo() {
             <br />
             - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
             <br />
-            If you have fewer than two courses, use 'NULL 101' as a placeholder and contact us.
+            If you have fewer than two courses, use 'NULL 101' as a placeholder
+            and contact us.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
@@ -223,10 +235,7 @@ export default function MateROVAcademicInfo() {
                 name={`academic.nextClasses.${index}.value`}
                 render={({ field }) => (
                   <FormItem className="flex-1">
-                    <Input
-                      {...field}
-                      placeholder="XXXX 123"
-                    />
+                    <Input {...field} placeholder="XXXX 123" />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -236,7 +245,7 @@ export default function MateROVAcademicInfo() {
                 variant="outline"
                 size="icon"
                 onClick={() => removeNextClass(index)}
-              >            
+              >
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -249,7 +258,9 @@ export default function MateROVAcademicInfo() {
             Add Class
           </Button>
           {errors.academic?.nextClasses?.message && (
-            <p className="mt-2 text-sm font-medium text-destructive">{errors.academic.nextClasses.message}</p>
+            <p className="mt-2 text-sm font-medium text-destructive">
+              {errors.academic.nextClasses.message}
+            </p>
           )}
         </CardContent>
       </Card>
@@ -264,59 +275,73 @@ export default function MateROVAcademicInfo() {
               <Card key={type}>
                 <CardHeader>
                   <CardTitle>
-                    {type === "CURRENT" ? "Current Time Commitments" : "Planned Time Commitments"}
+                    {type === "CURRENT"
+                      ? "Current Time Commitments"
+                      : "Planned Time Commitments"}
                   </CardTitle>
                   <CardDescription>
                     Enter commitments between 1-15 hours per week
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  {commitmentFields.map((item, index) => (
-                    item.type === type && (
-                      <div key={item.id} className ="grid grid-cols-[1fr_4rem_2.5rem] gap-2 items-start">
-                        <FormField
-                          control={form.control}
-                          name={`academic.timeCommitment.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <Input
-                                {...field}
-                                placeholder="Commitment Name"
-                              />
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name={`academic.timeCommitment.${index}.hours`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <Input
-                                {...field}
-                                type="number"
-                                placeholder="Hours per week"
-                                onChange={e => field.onChange(parseInt(e.target.value, 10))}
-                              />
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="icon"
-                          onClick={() => removeCommitment(index)}
+                  {commitmentFields.map(
+                    (item, index) =>
+                      item.type === type && (
+                        <div
+                          key={item.id}
+                          className="grid grid-cols-[1fr_4rem_2.5rem] items-start gap-2"
                         >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    )
-                  ))}
+                          <FormField
+                            control={form.control}
+                            name={`academic.timeCommitment.${index}.name`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Input
+                                  {...field}
+                                  placeholder="Commitment Name"
+                                />
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`academic.timeCommitment.${index}.hours`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <Input
+                                  {...field}
+                                  type="number"
+                                  placeholder="Hours per week"
+                                  onChange={(e) =>
+                                    field.onChange(parseInt(e.target.value, 10))
+                                  }
+                                />
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            onClick={() => removeCommitment(index)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ),
+                  )}
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => appendCommitment({ name: "", hours: 1, type: type as CommitmentType })}
+                    onClick={() =>
+                      appendCommitment({
+                        name: "",
+                        hours: 1,
+                        type: type as CommitmentType,
+                      })
+                    }
                   >
                     Add Commitment
                   </Button>
@@ -325,7 +350,9 @@ export default function MateROVAcademicInfo() {
             ))}
             {errors.academic?.timeCommitment?.message && (
               <div className="px-6">
-                <p className="-mt-4 text-sm font-medium text-destructive">{errors.academic.timeCommitment.message}</p>
+                <p className="-mt-4 text-sm font-medium text-destructive">
+                  {errors.academic.timeCommitment.message}
+                </p>
               </div>
             )}
           </FormItem>

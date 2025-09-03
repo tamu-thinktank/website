@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: {
-        startTime: 'asc',
+        startTime: "asc",
       },
     });
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching interviews:", error);
     return NextResponse.json(
       { error: "Failed to fetch interviews" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

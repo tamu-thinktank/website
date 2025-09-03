@@ -1,17 +1,20 @@
-import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import type { ApplicationStatus } from "@prisma/client"
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import type { ApplicationStatus } from "@prisma/client";
 
 interface TeamUpdateRequest {
-  assignedTeam: string | null
+  assignedTeam: string | null;
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
   try {
-    const id = params.id
-    const body = (await request.json()) as TeamUpdateRequest
+    const id = params.id;
+    const body = (await request.json()) as TeamUpdateRequest;
 
-    console.log("Updating team for applicant:", id, "to:", body.assignedTeam)
+    console.log("Updating team for applicant:", id, "to:", body.assignedTeam);
 
     let status: ApplicationStatus;
     let interviewStage: boolean;
@@ -40,11 +43,14 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         fullName: true,
         assignedTeam: true,
       },
-    })
+    });
 
-    return NextResponse.json(updatedApplicant)
+    return NextResponse.json(updatedApplicant);
   } catch (error) {
-    console.error("Error updating team assignment:", error)
-    return NextResponse.json({ error: "Failed to update team assignment" }, { status: 500 })
+    console.error("Error updating team assignment:", error);
+    return NextResponse.json(
+      { error: "Failed to update team assignment" },
+      { status: 500 },
+    );
   }
 }

@@ -92,7 +92,7 @@ export default function ApplicantPage() {
   // get applicant data into Q&A format
 
   const { applicantId } = useParams<{ applicantId: string }>();
-  
+
   // Parallelize data fetching - start both queries simultaneously
   const {
     data: applicant,
@@ -108,11 +108,16 @@ export default function ApplicantPage() {
 
   // Start officer availability query in parallel if we have an interested challenge
   const { data: officerTimes } = api.admin.getAvailabilities.useQuery(
-    { targetTeam: ((applicant as any)?.interests?.interestedChallenge as "TSGC" | "AIAA") ?? "TSGC" },
     {
-      enabled: !!((applicant as any)?.interests?.interestedChallenge),
+      targetTeam:
+        ((applicant as any)?.interests?.interestedChallenge as
+          | "TSGC"
+          | "AIAA") ?? "TSGC",
+    },
+    {
+      enabled: !!(applicant as any)?.interests?.interestedChallenge,
       staleTime: 60000, // Officer availability is less frequently updated
-    }
+    },
   );
 
   const QAs: ReturnType<typeof getQAs> = useMemo(() => {
@@ -191,7 +196,9 @@ export default function ApplicantPage() {
             applicantEmail={applicant.personal.email}
             meetingTimes={applicant.meetingTimes}
             resumeId={applicant.resume?.resumeId}
-            interestedChallenge={(applicant as any).interests?.interestedChallenge}
+            interestedChallenge={
+              (applicant as any).interests?.interestedChallenge
+            }
             officerTimes={officerTimes}
           />
         ) : null}

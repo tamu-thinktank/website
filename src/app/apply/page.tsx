@@ -76,31 +76,32 @@ export default function Apply() {
     },
   );
 
-  const { mutateAsync: submitForm } = api.dcmember.DCMemberApplyForm.useMutation({
-    onSuccess: () => {
-      // Reset form and local storage first
-      form.reset();
-      window.localStorage.removeItem("apply-form-S2025-v1");
+  const { mutateAsync: submitForm } =
+    api.dcmember.DCMemberApplyForm.useMutation({
+      onSuccess: () => {
+        // Reset form and local storage first
+        form.reset();
+        window.localStorage.removeItem("apply-form-S2025-v1");
 
-      // Then show toast and confirmation
-      toast({
-        title: "Form Submitted!",
-        description:
-          "Contact tamuthinktank@gmail.com if you do not receive an email by April 2nd.",
-        duration: 10000,
-      });
-      setShowConfirmation(true);
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        variant: "destructive",
-        description:
-          "UIN or email already submitted for this application. Contact us at tamuthinktank@gmail.com if you believe this is an error.",
-        duration: 5000,
-      });
-    },
-  });
+        // Then show toast and confirmation
+        toast({
+          title: "Form Submitted!",
+          description:
+            "Contact tamuthinktank@gmail.com if you do not receive an email by April 2nd.",
+          duration: 10000,
+        });
+        setShowConfirmation(true);
+      },
+      onError: () => {
+        toast({
+          title: "Error",
+          variant: "destructive",
+          description:
+            "UIN or email already submitted for this application. Contact us at tamuthinktank@gmail.com if you believe this is an error.",
+          duration: 5000,
+        });
+      },
+    });
 
   const { mutateAsync: uploadResume } = useMutation<
     UploadResumeResponse,
@@ -235,7 +236,10 @@ export default function Apply() {
                 />
               </ApplyTab>
               <TabsContent className="space-y-2" value="resume">
-                <ResumeUpload resumeFile={resumeFile} setResumeFile={setResumeFile} />
+                <ResumeUpload
+                  resumeFile={resumeFile}
+                  setResumeFile={setResumeFile}
+                />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
                     className="bg-white text-black"

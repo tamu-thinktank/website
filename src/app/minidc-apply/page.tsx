@@ -55,7 +55,7 @@ export default function ApplyMiniDC() {
           resumeId: "",
           signatureCommitment: "",
           signatureAccountability: "",
-          signatureQuality: ""
+          signatureQuality: "",
         },
       },
     },
@@ -66,11 +66,12 @@ export default function ApplyMiniDC() {
       // Reset form and local storage first
       form.reset();
       window.localStorage.removeItem("apply-minidc-form-S2025-v1");
-      
+
       // Then show toast and confirmation
       toast({
         title: "Form Submitted!",
-        description: "Contact tamuthinktank@gmail.com if you do not receive an email within 3 days after the application deadline.",
+        description:
+          "Contact tamuthinktank@gmail.com if you do not receive an email within 3 days after the application deadline.",
         duration: 10000,
       });
       setShowConfirmation(true);
@@ -111,10 +112,10 @@ export default function ApplyMiniDC() {
         });
         return;
       }
-  
+
       const formData = new FormData();
       formData.append("resume", resumeFile);
-  
+
       try {
         const uploadResult = await uploadResume(formData);
         const updatedData = {
@@ -122,9 +123,9 @@ export default function ApplyMiniDC() {
           resume: {
             ...data.resume,
             resumeId: uploadResult.resumeId,
-          }
+          },
         };
-  
+
         await submitForm(updatedData);
       } catch (err) {
         toast({
@@ -132,14 +133,14 @@ export default function ApplyMiniDC() {
           title: "Error",
           description: (err as Error).message,
         });
-        
+
         // Clean up resume if upload failed
         if (data.resume.resumeId) {
           await deleteResume({ resumeId: data.resume.resumeId });
         }
       }
     },
-    [resumeFile, uploadResume, submitForm, deleteResume, toast]
+    [resumeFile, uploadResume, submitForm, deleteResume, toast],
   );
 
   if (showConfirmation) {
@@ -198,7 +199,10 @@ export default function ApplyMiniDC() {
               </ApplyTab>
 
               <TabsContent className="space-y-2" value="resume">
-                <ResumeUpload resumeFile={resumeFile} setResumeFile={setResumeFile} />
+                <ResumeUpload
+                  resumeFile={resumeFile}
+                  setResumeFile={setResumeFile}
+                />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
                     className="bg-white text-black"
@@ -210,7 +214,7 @@ export default function ApplyMiniDC() {
                     type="submit"
                     className="bg-white text-black hover:bg-white hover:text-black"
                     disabled={
-                      form.formState.isSubmitting || 
+                      form.formState.isSubmitting ||
                       form.formState.isValidating ||
                       !form.formState.isValid ||
                       !form.watch("resume.signatureCommitment") ||
@@ -277,20 +281,20 @@ function ApplyTab({
     if (currentTab === "start") {
       return;
     }
-  
+
     const result = await form.trigger(currentTab, {
-      shouldFocus: true
+      shouldFocus: true,
     });
-  
+
     if (result) {
       setIsValid(true);
       scrollToTop();
     } else {
       setIsValid(false);
     }
-  
+
     setIsChecked(true);
-  }, [currentTab, form, scrollToTop]);  
+  }, [currentTab, form, scrollToTop]);
 
   useEffect(() => {
     if (!isChecked) return;

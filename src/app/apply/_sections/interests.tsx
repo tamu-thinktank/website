@@ -105,7 +105,8 @@ export default function Interests() {
                                       ])
                                     : field.onChange(
                                         field.value.filter(
-                                          (value: string) => value !== challenge.id,
+                                          (value: string) =>
+                                            value !== challenge.id,
                                         ),
                                       );
                                 }}

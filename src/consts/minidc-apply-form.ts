@@ -25,13 +25,16 @@ export const qMiniDC: MiniDCQuestions = {
     major: "Major",
     currentClasses: "Current Semester Classes",
     timeCommitment: "Time Commitments",
-    weeklyCommitment: "Are you able to commit 5-7 hours per week (equivalent to 1 in-major engineering course) to your team for the entire duration of the project?"
+    weeklyCommitment:
+      "Are you able to commit 5-7 hours per week (equivalent to 1 in-major engineering course) to your team for the entire duration of the project?",
   },
 
   openEndedQuestions: {
     title: "Open-Ended Questions",
-    previousApplication: "Have you previously applied to ThinkTank? If yes, please specify which design challenge you applied for, and indicate the semester in which you applied.",
-    goals: "What do you hope to achieve by participating in the Mini Design Challenge Competition?",
+    previousApplication:
+      "Have you previously applied to ThinkTank? If yes, please specify which design challenge you applied for, and indicate the semester in which you applied.",
+    goals:
+      "What do you hope to achieve by participating in the Mini Design Challenge Competition?",
   },
 
   resume: {
@@ -39,6 +42,6 @@ export const qMiniDC: MiniDCQuestions = {
     resumeId: "Resume Upload",
     signatureCommitment: "Commitment Signature",
     signatureAccountability: "Accountability Signature",
-    signatureQuality: "Quality Pledge Signature"
-  }
+    signatureQuality: "Quality Pledge Signature",
+  },
 };

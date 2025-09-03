@@ -30,20 +30,26 @@ export const qMateROV: MATEROVQuestions = {
 
   thinkTankInfo: {
     title: "ThinkTank Information",
-    meetings: "Are you able to commit to and attend weekly team meetings in person, which will take place on Saturdays for the next 2 semesters?",
-    weeklyCommitment: "Are you able to commit 8-10 hours per week (equivalent to 1 in-major engineering course) to your team for the entire duration of the project?",
+    meetings:
+      "Are you able to commit to and attend weekly team meetings in person, which will take place on Saturdays for the next 2 semesters?",
+    weeklyCommitment:
+      "Are you able to commit 8-10 hours per week (equivalent to 1 in-major engineering course) to your team for the entire duration of the project?",
     subteamPreferences: "Preferred Subteams",
     skills: "Experience & Skills",
     learningInterests: "What do you most want to learn?",
-    previousParticipation: "Have you participated in a ThinkTank Design Challenge before?",
+    previousParticipation:
+      "Have you participated in a ThinkTank Design Challenge before?",
     referralSources: "Where did you hear about us?",
   },
 
   openEndedQuestions: {
     title: "Open-Ended Questions",
-    firstQuestion: "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
-    secondQuestion: "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
-    thirdQuestion: "If you were previously in a ThinkTank design team, which previous team were you a member of and what did you specifically contribute? If you were not previously in ThinkTank, but have participated in an engineering design competition before, what was it and how did you contribute to the team?",
+    firstQuestion:
+      "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
+    secondQuestion:
+      "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
+    thirdQuestion:
+      "If you were previously in a ThinkTank design team, which previous team were you a member of and what did you specifically contribute? If you were not previously in ThinkTank, but have participated in an engineering design competition before, what was it and how did you contribute to the team?",
   },
 
   resume: {
@@ -51,6 +57,6 @@ export const qMateROV: MATEROVQuestions = {
     resumeId: "Resume Upload",
     signatureCommitment: "Commitment Signature",
     signatureAccountability: "Accountability Signature",
-    signatureQuality: "Quality Pledge Signature"
-  }
+    signatureQuality: "Quality Pledge Signature",
+  },
 };

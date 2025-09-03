@@ -42,8 +42,7 @@ export const qOfficer: OfficerQuestions = {
     title: "Open-Ended Questions",
     firstQuestion:
       "Which previous team were you a member of and what did you specifically contribute?",
-    secondQuestion:
-      "Why do you want to become a ThinkTank Officer?",
+    secondQuestion: "Why do you want to become a ThinkTank Officer?",
   },
 
   resume: {
@@ -51,6 +50,6 @@ export const qOfficer: OfficerQuestions = {
     resumeId: "Resume Upload",
     signatureCommitment: "Commitment Signature",
     signatureAccountability: "Accountability Signature",
-    signatureQuality: "Quality Pledge Signature"
-  }
+    signatureQuality: "Quality Pledge Signature",
+  },
 };

@@ -21,7 +21,10 @@ import { useFormContext } from "react-hook-form";
 
 const wordCount = (text: string) => {
   if (!text.trim()) return 0;
-  return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+  return text
+    .trim()
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
 };
 
 export default function OpenEndedQuestions() {
@@ -31,7 +34,9 @@ export default function OpenEndedQuestions() {
     <div className="flex flex-col gap-4">
       <Card>
         <CardHeader>
-          <CardTitle className="text-center">{q.openEndedQuestions.title}</CardTitle>
+          <CardTitle className="text-center">
+            {q.openEndedQuestions.title}
+          </CardTitle>
           <Separator />
         </CardHeader>
       </Card>
@@ -47,7 +52,8 @@ export default function OpenEndedQuestions() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {q.openEndedQuestions.firstQuestion} <span className="text-red-500">*</span>
+                    {q.openEndedQuestions.firstQuestion}{" "}
+                    <span className="text-red-500">*</span>
                   </CardTitle>
                   <CardDescription>250 word maximum length</CardDescription>
                 </CardHeader>
@@ -59,7 +65,9 @@ export default function OpenEndedQuestions() {
                       className="min-h-[150px]"
                     />
                   </FormControl>
-                  <div className={`text-sm ${count > 250 ? "text-destructive" : "text-muted-foreground"}`}>
+                  <div
+                    className={`text-sm ${count > 250 ? "text-destructive" : "text-muted-foreground"}`}
+                  >
                     {count}/250 words
                   </div>
                   <FormMessage />
@@ -81,7 +89,8 @@ export default function OpenEndedQuestions() {
               <Card>
                 <CardHeader>
                   <CardTitle>
-                    {q.openEndedQuestions.secondQuestion} <span className="text-red-500">*</span>
+                    {q.openEndedQuestions.secondQuestion}{" "}
+                    <span className="text-red-500">*</span>
                   </CardTitle>
                   <CardDescription>250 word maximum length</CardDescription>
                 </CardHeader>
@@ -93,7 +102,9 @@ export default function OpenEndedQuestions() {
                       className="min-h-[150px]"
                     />
                   </FormControl>
-                  <div className={`text-sm ${count > 250 ? "text-destructive" : "text-muted-foreground"}`}>
+                  <div
+                    className={`text-sm ${count > 250 ? "text-destructive" : "text-muted-foreground"}`}
+                  >
                     {count}/250 words
                   </div>
                   <FormMessage />

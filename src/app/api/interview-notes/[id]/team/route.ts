@@ -1,17 +1,20 @@
-import { NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 interface TeamUpdateRequest {
-  assignedTeam: string | null
+  assignedTeam: string | null;
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
   try {
-    const id = params.id
-    const body = (await request.json()) as TeamUpdateRequest
-    const { assignedTeam } = body
+    const id = params.id;
+    const body = (await request.json()) as TeamUpdateRequest;
+    const { assignedTeam } = body;
 
     // Update the application with the assigned team
     const updatedApplicant = await prisma.application.update({
@@ -24,12 +27,14 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         fullName: true,
         assignedTeam: true,
       },
-    })
+    });
 
-    return NextResponse.json(updatedApplicant)
+    return NextResponse.json(updatedApplicant);
   } catch (error) {
-    console.error("Error updating team assignment:", error)
-    return NextResponse.json({ error: "Failed to update team assignment" }, { status: 500 })
+    console.error("Error updating team assignment:", error);
+    return NextResponse.json(
+      { error: "Failed to update team assignment" },
+      { status: 500 },
+    );
   }
 }
-

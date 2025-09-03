@@ -160,7 +160,10 @@ export const ApplicantDetailsModal = ({
   const { data: _session } = useSession();
 
   // Send rejection email using API route
-  const sendRejectEmail = async (data: { applicantName: string; applicantEmail: string }) => {
+  const sendRejectEmail = async (data: {
+    applicantName: string;
+    applicantEmail: string;
+  }) => {
     try {
       const response = await fetch("/api/send-rejection-email", {
         method: "POST",
@@ -190,22 +193,21 @@ export const ApplicantDetailsModal = ({
     }
   };
 
-
   // Save applicant rating
   const saveApplicantRating = async (rating: number | null) => {
     if (!applicantId) return;
 
     try {
       const response = await fetch(`/api/applicants/${applicantId}/rating`, {
-        method: 'PATCH',
+        method: "PATCH",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ rating }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save rating');
+        throw new Error("Failed to save rating");
       }
 
       // Update both the rating state and the applicant object
@@ -215,12 +217,12 @@ export const ApplicantDetailsModal = ({
       }
       toast({
         title: "Success",
-        description: `Rating ${rating ? `updated to ${rating}` : 'removed'}`,
+        description: `Rating ${rating ? `updated to ${rating}` : "removed"}`,
       });
     } catch (error) {
-      console.error('Error saving rating:', error);
+      console.error("Error saving rating:", error);
       toast({
-        title: "Error", 
+        title: "Error",
         description: "Failed to save rating. Please try again.",
         variant: "destructive",
       });
@@ -318,9 +320,11 @@ export const ApplicantDetailsModal = ({
 
       const data = (await response.json()) as { id: string; name: string }[];
       setInterviewers(data);
-      
+
       if (data.length === 0) {
-        console.warn("No interviewers found. Make sure you've logged in to create an interviewer account.");
+        console.warn(
+          "No interviewers found. Make sure you've logged in to create an interviewer account.",
+        );
       }
     } catch (err) {
       console.error("Error fetching interviewers:", err);
@@ -531,7 +535,7 @@ export const ApplicantDetailsModal = ({
           `Failed to check interviewer schedule: ${response.status}`,
         );
       }
-      const data = await response.json() as { hasConflict: boolean };
+      const data = (await response.json()) as { hasConflict: boolean };
       return data.hasConflict;
     } catch (error) {
       console.error("Error checking interviewer schedule:", error);
@@ -698,10 +702,10 @@ export const ApplicantDetailsModal = ({
           interviewer: {
             id: "fallback",
             name: "TBD",
-            email: "lucasvad123@gmail.com"
+            email: "lucasvad123@gmail.com",
           },
           startTime: new Date().toISOString(),
-          location: "TBD"
+          location: "TBD",
         };
       }
 
@@ -730,7 +734,6 @@ export const ApplicantDetailsModal = ({
         title: "Success",
         description: "Interview email sent successfully",
       });
-
     } catch (err) {
       console.error("Error sending interview email:", err);
       toast({
@@ -753,20 +756,20 @@ export const ApplicantDetailsModal = ({
       // Team values that should set status to ACCEPTED
       const teamValues = [
         "PROJECT_MANAGER",
-        "MARKETING_SPECIALIST", 
+        "MARKETING_SPECIALIST",
         "GRAPHIC_DESIGNER",
         "WEB_DEV_LEAD",
         "TREASURER",
-        "DC_PROGRAM_MANAGER"
+        "DC_PROGRAM_MANAGER",
       ];
 
       // Status values that should clear team assignment
       const statusValues = [
         "NONE",
-        "INTERVIEWING", 
+        "INTERVIEWING",
         "REJECTED_APP",
         "REJECTED_INT",
-        "REJECTED"
+        "REJECTED",
       ];
 
       let newTeam: string | null = null;
@@ -783,7 +786,10 @@ export const ApplicantDetailsModal = ({
       }
 
       // Update team assignment if needed
-      if (newTeam !== null || (statusValues.includes(assignedTeam) && applicant?.assignedTeam)) {
+      if (
+        newTeam !== null ||
+        (statusValues.includes(assignedTeam) && applicant?.assignedTeam)
+      ) {
         const teamResponse = await fetch(`/api/applicant/${applicantId}/team`, {
           method: "PATCH",
           headers: {
@@ -795,21 +801,26 @@ export const ApplicantDetailsModal = ({
         });
 
         if (!teamResponse.ok) {
-          throw new Error(`Failed to update team assignment: ${teamResponse.status}`);
+          throw new Error(
+            `Failed to update team assignment: ${teamResponse.status}`,
+          );
         }
       }
 
       // Update status if needed
       if (newStatus && newStatus !== applicant?.status) {
-        const statusResponse = await fetch(`/api/applicant/${applicantId}/status`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
+        const statusResponse = await fetch(
+          `/api/applicant/${applicantId}/status`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              status: newStatus,
+            }),
           },
-          body: JSON.stringify({
-            status: newStatus,
-          }),
-        });
+        );
 
         if (!statusResponse.ok) {
           throw new Error(`Failed to update status: ${statusResponse.status}`);
@@ -874,36 +885,50 @@ export const ApplicantDetailsModal = ({
 
       // Get applicant's preferred teams based on application type
       let preferredTeams: string[] = [];
-      
-      if (applicant.applicationType === "OFFICER" && applicant.preferredPositions) {
-        preferredTeams = applicant.preferredPositions.map(pos => pos.position);
-      } else if (applicant.applicationType === "MATEROV" && applicant.subteamPreferences) {
-        preferredTeams = applicant.subteamPreferences.map(sub => sub.name);
+
+      if (
+        applicant.applicationType === "OFFICER" &&
+        applicant.preferredPositions
+      ) {
+        preferredTeams = applicant.preferredPositions.map(
+          (pos) => pos.position,
+        );
+      } else if (
+        applicant.applicationType === "MATEROV" &&
+        applicant.subteamPreferences
+      ) {
+        preferredTeams = applicant.subteamPreferences.map((sub) => sub.name);
       } else if (applicant.preferredTeams) {
-        preferredTeams = applicant.preferredTeams.map(team => team.teamId);
+        preferredTeams = applicant.preferredTeams.map((team) => team.teamId);
       }
 
       // Generate available time slots for the next 1 week (business hours)
       const availableSlots = [];
       const now = new Date();
-      
+
       // Start from tomorrow to avoid past date issues
       const startDate = new Date(now);
       startDate.setDate(now.getDate() + 1);
       startDate.setHours(0, 0, 0, 0); // Reset to start of day
-      
-      const oneWeekFromNow = new Date(startDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-      
-      for (let currentDate = new Date(startDate); currentDate <= oneWeekFromNow; currentDate.setDate(currentDate.getDate() + 1)) {
+
+      const oneWeekFromNow = new Date(
+        startDate.getTime() + 7 * 24 * 60 * 60 * 1000,
+      );
+
+      for (
+        let currentDate = new Date(startDate);
+        currentDate <= oneWeekFromNow;
+        currentDate.setDate(currentDate.getDate() + 1)
+      ) {
         // Skip weekends
         if (currentDate.getDay() === 0 || currentDate.getDay() === 6) continue;
-        
+
         // Business hours: 8 AM to 10 PM in 15-minute increments
         for (let hour = 8; hour < 22; hour++) {
           for (let minute = 0; minute < 60; minute += 15) {
             const slotDateTime = new Date(currentDate);
             slotDateTime.setHours(hour, minute, 0, 0);
-            
+
             // Only include slots that are in the future
             if (slotDateTime > now) {
               availableSlots.push({
@@ -917,24 +942,24 @@ export const ApplicantDetailsModal = ({
       }
 
       // Call auto-scheduler API with automatic interview creation enabled
-      const response = await fetch('/api/auto-schedule', {
-        method: 'POST',
+      const response = await fetch("/api/auto-schedule", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           intervieweeId: applicantId,
           preferredTeams,
           availableSlots,
-          autoCreateInterview: true,  // Enable automatic interview creation
+          autoCreateInterview: true, // Enable automatic interview creation
         }),
       });
 
       if (!response.ok) {
         // Try to get more detailed error from response
-        let errorMessage = 'Failed to auto-schedule interview';
+        let errorMessage = "Failed to auto-schedule interview";
         try {
-          const errorData = await response.json() as any;
+          const errorData = (await response.json()) as any;
           if (errorData.error) {
             errorMessage = errorData.error;
           }
@@ -944,46 +969,48 @@ export const ApplicantDetailsModal = ({
         throw new Error(errorMessage);
       }
 
-      const result = await response.json() as any;
-      
+      const result = (await response.json()) as any;
+
       // Check for errors in successful response
       if (result.errors && result.errors.length > 0) {
-        const errorMessage = result.errors.join(', ');
+        const errorMessage = result.errors.join(", ");
         throw new Error(errorMessage);
       }
 
       // Check if interview was automatically created
       if (result.success && result.createdInterview) {
         const interview = result.createdInterview;
-        
+
         toast({
           title: "Interview Scheduled Successfully!",
           description: `Interview automatically scheduled with ${interview.interviewerName} on ${new Date(interview.startTime).toLocaleDateString()} at ${new Date(interview.startTime).toLocaleTimeString()}.`,
         });
-        
+
         // Refresh applicant details to show updated status
         if (applicantId) {
           await fetchApplicantDetails(applicantId);
         }
-        
+
         // Close modal since applicant is now scheduled
         onClose();
-        
+
         return; // Exit early since interview was created successfully
       }
-      
+
       // Fallback: If auto-creation failed but we have a suggestion, show it
       if (result.success && result.suggestedSlot) {
         const { interviewer, slot } = result.suggestedSlot;
-        
+
         // Auto-fill the form with the suggested slot
         setSelectedInterviewer(interviewer?.interviewerId);
         setSelectedDate(new Date(slot?.date));
-        setSelectedTime(`${slot?.hour}:${slot?.minute?.toString().padStart(2, '0')}`);
-        
+        setSelectedTime(
+          `${slot?.hour}:${slot?.minute?.toString().padStart(2, "0")}`,
+        );
+
         toast({
           title: "Auto-Schedule Suggestion",
-          description: `Found match with ${interviewer?.name} on ${new Date(slot?.date).toLocaleDateString()} at ${slot?.hour}:${slot?.minute?.toString().padStart(2, '0')}. Please review and confirm manually.`,
+          description: `Found match with ${interviewer?.name} on ${new Date(slot?.date).toLocaleDateString()} at ${slot?.hour}:${slot?.minute?.toString().padStart(2, "0")}. Please review and confirm manually.`,
           variant: "default",
         });
       } else {
@@ -994,10 +1021,12 @@ export const ApplicantDetailsModal = ({
             const firstSlot = topMatch.availableSlots[0];
             setSelectedInterviewer(topMatch?.interviewerId);
             setSelectedDate(new Date(firstSlot?.date));
-            setSelectedTime(`${firstSlot?.hour}:${firstSlot?.minute?.toString().padStart(2, '0')}`);
-            
+            setSelectedTime(
+              `${firstSlot?.hour}:${firstSlot?.minute?.toString().padStart(2, "0")}`,
+            );
+
             toast({
-              title: "Auto-Schedule Suggestion", 
+              title: "Auto-Schedule Suggestion",
               description: `Found partial match with ${topMatch?.name}. ${result?.matches?.length} interviewer(s) available. Please review the suggestion.`,
             });
           } else {
@@ -1010,29 +1039,34 @@ export const ApplicantDetailsModal = ({
         } else {
           toast({
             title: "No Matches Found",
-            description: "No interviewers found matching the applicant's team preferences. Please schedule manually.",
+            description:
+              "No interviewers found matching the applicant's team preferences. Please schedule manually.",
             variant: "destructive",
           });
         }
       }
     } catch (error) {
-      console.error('Error auto-scheduling interview:', error);
-      
+      console.error("Error auto-scheduling interview:", error);
+
       // Extract more detailed error information
-      let errorMessage = "Failed to auto-schedule. Please try manual scheduling.";
+      let errorMessage =
+        "Failed to auto-schedule. Please try manual scheduling.";
       if (error instanceof Error) {
         errorMessage = error.message;
       }
-      
+
       // Handle specific error cases
       if (errorMessage.includes("conflicts")) {
-        errorMessage = "No available time slots found due to scheduling conflicts. Please try manual scheduling.";
+        errorMessage =
+          "No available time slots found due to scheduling conflicts. Please try manual scheduling.";
       } else if (errorMessage.includes("No interviewers")) {
-        errorMessage = "No interviewers available for your application type. Please contact admin.";
+        errorMessage =
+          "No interviewers available for your application type. Please contact admin.";
       } else if (errorMessage.includes("Failed to create interview")) {
-        errorMessage = "Found a match but failed to create interview. Please try manual scheduling with the suggested slot.";
+        errorMessage =
+          "Found a match but failed to create interview. Please try manual scheduling with the suggested slot.";
       }
-      
+
       toast({
         title: "Auto-Schedule Error",
         description: errorMessage,
@@ -1637,24 +1671,29 @@ export const ApplicantDetailsModal = ({
                       </SelectTrigger>
                       <SelectContent className="border-neutral-700 bg-neutral-900">
                         {/* Business hours: 8am-10pm in 15-minute increments */}
-                        {Array.from({ length: 14 }).map((_, index) => {
-                          const hour = index + 8; // Start at 8am
-                          return Array.from({ length: 4 }).map((_, minuteIndex) => {
-                            const minute = minuteIndex * 15; // 0, 15, 30, 45
-                            const timeValue = `${hour}:${minute.toString().padStart(2, '0')}`;
-                            const displayTime = hour < 12
-                              ? `${hour}:${minute.toString().padStart(2, '0')} AM`
-                              : hour === 12
-                                ? `12:${minute.toString().padStart(2, '0')} PM`
-                                : `${hour - 12}:${minute.toString().padStart(2, '0')} PM`;
-                            
-                            return (
-                              <SelectItem key={timeValue} value={timeValue}>
-                                {displayTime}
-                              </SelectItem>
+                        {Array.from({ length: 14 })
+                          .map((_, index) => {
+                            const hour = index + 8; // Start at 8am
+                            return Array.from({ length: 4 }).map(
+                              (_, minuteIndex) => {
+                                const minute = minuteIndex * 15; // 0, 15, 30, 45
+                                const timeValue = `${hour}:${minute.toString().padStart(2, "0")}`;
+                                const displayTime =
+                                  hour < 12
+                                    ? `${hour}:${minute.toString().padStart(2, "0")} AM`
+                                    : hour === 12
+                                      ? `12:${minute.toString().padStart(2, "0")} PM`
+                                      : `${hour - 12}:${minute.toString().padStart(2, "0")} PM`;
+
+                                return (
+                                  <SelectItem key={timeValue} value={timeValue}>
+                                    {displayTime}
+                                  </SelectItem>
+                                );
+                              },
                             );
-                          });
-                        }).flat()}
+                          })
+                          .flat()}
                       </SelectContent>
                     </Select>
                   </div>
@@ -1691,7 +1730,7 @@ export const ApplicantDetailsModal = ({
                 </div>
 
                 <div className="flex flex-wrap gap-3 pt-2">
-                  {(applicant.status === ApplicationStatus.INTERVIEWING || 
+                  {(applicant.status === ApplicationStatus.INTERVIEWING ||
                     applicant.status === ApplicationStatus.PENDING) && (
                     <Button
                       onClick={() => void autoScheduleInterview()}
@@ -1718,22 +1757,23 @@ export const ApplicantDetailsModal = ({
                       isSendingEmail
                     }
                   >
-                    {isSendingEmail
-                      ? "Scheduling..."
-                      : "Schedule Interview"}
+                    {isSendingEmail ? "Scheduling..." : "Schedule Interview"}
                   </Button>
 
                   {/* Send Interview Email button - always show if interview is scheduled */}
-                  {applicant && applicant.status === ApplicationStatus.INTERVIEWING && (
-                    <Button
-                      variant="outline"
-                      onClick={() => void sendInterviewEmailOnly()}
-                      className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
-                      disabled={isSendingEmail}
-                    >
-                      {isSendingEmail ? "Sending Email..." : "Send Interview Email"}
-                    </Button>
-                  )}
+                  {applicant &&
+                    applicant.status === ApplicationStatus.INTERVIEWING && (
+                      <Button
+                        variant="outline"
+                        onClick={() => void sendInterviewEmailOnly()}
+                        className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                        disabled={isSendingEmail}
+                      >
+                        {isSendingEmail
+                          ? "Sending Email..."
+                          : "Send Interview Email"}
+                      </Button>
+                    )}
 
                   <Button
                     variant="outline"
@@ -1766,53 +1806,95 @@ export const ApplicantDetailsModal = ({
                         <SelectItem value="NONE" className="text-neutral-400">
                           📋 Pending (No Team)
                         </SelectItem>
-                        <SelectItem value="INTERVIEWING" className="text-blue-400">
+                        <SelectItem
+                          value="INTERVIEWING"
+                          className="text-blue-400"
+                        >
                           💬 Interviewing
                         </SelectItem>
-                        
+
                         {/* Team Options (will set status to ACCEPTED) */}
-                        <SelectItem value="PROJECT_MANAGER" className="text-green-400">
+                        <SelectItem
+                          value="PROJECT_MANAGER"
+                          className="text-green-400"
+                        >
                           ✅ PROJECT MANAGER (Accept)
                         </SelectItem>
-                        <SelectItem value="MARKETING_SPECIALIST" className="text-green-400">
+                        <SelectItem
+                          value="MARKETING_SPECIALIST"
+                          className="text-green-400"
+                        >
                           ✅ MARKETING SPECIALIST (Accept)
                         </SelectItem>
-                        <SelectItem value="GRAPHIC_DESIGNER" className="text-green-400">
+                        <SelectItem
+                          value="GRAPHIC_DESIGNER"
+                          className="text-green-400"
+                        >
                           ✅ GRAPHIC DESIGNER (Accept)
                         </SelectItem>
-                        <SelectItem value="WEB_DEV_LEAD" className="text-green-400">
+                        <SelectItem
+                          value="WEB_DEV_LEAD"
+                          className="text-green-400"
+                        >
                           ✅ WEB DEV LEAD (Accept)
                         </SelectItem>
-                        <SelectItem value="TREASURER" className="text-green-400">
+                        <SelectItem
+                          value="TREASURER"
+                          className="text-green-400"
+                        >
                           ✅ TREASURER (Accept)
                         </SelectItem>
-                        <SelectItem value="DC_PROGRAM_MANAGER" className="text-green-400">
+                        <SelectItem
+                          value="DC_PROGRAM_MANAGER"
+                          className="text-green-400"
+                        >
                           ✅ DC PROGRAM MANAGER (Accept)
                         </SelectItem>
-                        <SelectItem value="COMPUTATION_COMMUNICATIONS" className="text-green-400">
+                        <SelectItem
+                          value="COMPUTATION_COMMUNICATIONS"
+                          className="text-green-400"
+                        >
                           ✅ Computation & Communications (Accept)
                         </SelectItem>
-                        <SelectItem value="ELECTRICAL_POWER" className="text-green-400">
+                        <SelectItem
+                          value="ELECTRICAL_POWER"
+                          className="text-green-400"
+                        >
                           ✅ Electrical & Power Systems (Accept)
                         </SelectItem>
-                        <SelectItem value="FLUIDS_PROPULSION" className="text-green-400">
+                        <SelectItem
+                          value="FLUIDS_PROPULSION"
+                          className="text-green-400"
+                        >
                           ✅ Fluids & Propulsion (Accept)
                         </SelectItem>
                         <SelectItem value="GNC" className="text-green-400">
                           ✅ Guidance, Navigation & Control (Accept)
                         </SelectItem>
-                        <SelectItem value="THERMAL_MECHANISMS" className="text-green-400">
+                        <SelectItem
+                          value="THERMAL_MECHANISMS"
+                          className="text-green-400"
+                        >
                           ✅ Thermal, Mechanisms & Structures (Accept)
                         </SelectItem>
-                        <SelectItem value="MATEROV_LEADERSHIP" className="text-green-400">
+                        <SelectItem
+                          value="MATEROV_LEADERSHIP"
+                          className="text-green-400"
+                        >
                           ✅ MATE ROV Leadership (Accept)
                         </SelectItem>
-                        
+
                         {/* Rejection Options */}
-                        <SelectItem value="REJECTED_APP" className="text-red-400">
+                        <SelectItem
+                          value="REJECTED_APP"
+                          className="text-red-400"
+                        >
                           ❌ Rejected - Application Stage
                         </SelectItem>
-                        <SelectItem value="REJECTED_INT" className="text-red-400">
+                        <SelectItem
+                          value="REJECTED_INT"
+                          className="text-red-400"
+                        >
                           ❌ Rejected - Interview Stage
                         </SelectItem>
                         <SelectItem value="REJECTED" className="text-red-400">

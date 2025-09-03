@@ -1,6 +1,6 @@
-import { z } from 'zod';
-import { DCMemberApplyFormSchema } from './dcmember-apply';
-import { statusSchema } from './apply';
+import { z } from "zod";
+import { DCMemberApplyFormSchema } from "./dcmember-apply";
+import { statusSchema } from "./apply";
 
 /**
  * For list of applicants in admin page

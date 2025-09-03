@@ -27,12 +27,15 @@ export default function ResumeUpload({
   setResumeFile: (file?: File) => void;
 }) {
   const form = useFormContext<RouterInputs["officer"]["OfficerApplyForm"]>();
-  const fullName = useWatch({ control: form.control, name: "personal.fullName" });
+  const fullName = useWatch({
+    control: form.control,
+    name: "personal.fullName",
+  });
 
   const signatureTexts = [
     `I, ${fullName}, understand that becoming a ThinkTank Officer is a major commitment for an entire year. I will likely not have the time to join any other major technical organization while I am a ThinkTank Officer.`,
     `I, ${fullName}, believe I am able to commit to this position for the total duration. If this is to change for unforeseeable circumstances, I understand I must disclose this information to ThinkTank.`,
-    `If selected for this position, I, ${fullName}, understand that many future engineering students are counting on me to provide them the opportunity to succeed, just like the officers before did for me.`
+    `If selected for this position, I, ${fullName}, understand that many future engineering students are counting on me to provide them the opportunity to succeed, just like the officers before did for me.`,
   ];
 
   return (
@@ -42,9 +45,10 @@ export default function ResumeUpload({
           Resume Submission <span className="text-red-500">*</span>
         </CardTitle>
         <CardDescription>
-          Please upload your resume as a PDF file (max 20MB). We do not expect applicants
-          to have any prior official engineering experience. All we ask is for
-          your experience in general as well as anything that makes you stand out.
+          Please upload your resume as a PDF file (max 20MB). We do not expect
+          applicants to have any prior official engineering experience. All we
+          ask is for your experience in general as well as anything that makes
+          you stand out.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -58,7 +62,10 @@ export default function ResumeUpload({
               <div className="flex items-center gap-4 pt-2">
                 <Label
                   htmlFor="resume-file-input"
-                  className={cn( buttonVariants({ variant: "outline" }), "cursor-pointer" )}
+                  className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "cursor-pointer",
+                  )}
                 >
                   Choose File
                 </Label>
@@ -71,7 +78,8 @@ export default function ResumeUpload({
                     onChange={(e) => {
                       const resume = e.target.files?.[0];
                       if (resume) {
-                        if (resume.size > 20 * 1024 * 1024) { // 20MB
+                        if (resume.size > 20 * 1024 * 1024) {
+                          // 20MB
                           form.setError("resume.resumeId", {
                             message: "File size must be less than 20MB",
                           });
@@ -94,7 +102,8 @@ export default function ResumeUpload({
                 {resumeFile ? (
                   <p className="text-sm font-medium text-muted-foreground">
                     <span className="font-bold text-green-500">✓ </span>
-                    {resumeFile.name} ({(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
+                    {resumeFile.name} (
+                    {(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
                   </p>
                 ) : (
                   <p className="text-sm text-muted-foreground">
@@ -102,7 +111,7 @@ export default function ResumeUpload({
                   </p>
                 )}
               </div>
-            <FormMessage />
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -116,9 +125,11 @@ export default function ResumeUpload({
             <FormField
               control={form.control}
               name={
-                index === 0 ? "resume.signatureCommitment" :
-                index === 1 ? "resume.signatureAccountability" : 
-                "resume.signatureQuality"
+                index === 0
+                  ? "resume.signatureCommitment"
+                  : index === 1
+                    ? "resume.signatureAccountability"
+                    : "resume.signatureQuality"
               }
               render={({ field }) => (
                 <FormItem>

@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
   }
 
   const resumeFile = await DriveService.getFileData(resumeId);
-  
+
   // Cache the resume data for future requests (15 minutes TTL)
   try {
     await redis.set(cacheKey, resumeFile, { ex: CacheTTL.MEDIUM });
@@ -41,6 +41,6 @@ export async function GET(req: NextRequest) {
     // If caching fails, continue with response
     console.warn("Resume cache write failed:", error);
   }
-  
+
   return NextResponse.json(resumeFile);
 }

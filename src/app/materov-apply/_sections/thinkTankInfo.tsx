@@ -17,7 +17,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { INTEREST_LEVELS, MATEROV_SUBTEAM_OPTIONS, SKILL_OPTIONS, LEARNING_AREA_OPTIONS, EXPERIENCE_LEVELS, LEARNING_INTEREST_LEVELS } from "@/consts/apply-form";
+import {
+  INTEREST_LEVELS,
+  MATEROV_SUBTEAM_OPTIONS,
+  SKILL_OPTIONS,
+  LEARNING_AREA_OPTIONS,
+  EXPERIENCE_LEVELS,
+  LEARNING_INTEREST_LEVELS,
+} from "@/consts/apply-form";
 import { qMateROV } from "@/consts/materov-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import type {

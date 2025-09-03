@@ -118,7 +118,7 @@ export function StatisticsVisualizer() {
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
               onClick={() => setSelectedCategory("DCMEMBER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "DCMEMBER"
                   ? "bg-gradient-to-r from-stone-700 to-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
@@ -129,7 +129,7 @@ export function StatisticsVisualizer() {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("OFFICER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "OFFICER"
                   ? "bg-gradient-to-r from-stone-700 to-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
@@ -140,7 +140,7 @@ export function StatisticsVisualizer() {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MATEROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "MATEROV"
                   ? "bg-gradient-to-r from-stone-600 to-stone-700 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"
@@ -151,7 +151,7 @@ export function StatisticsVisualizer() {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MINIDC")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "MINIDC"
                   ? "bg-gradient-to-r from-stone-600 to-stone-700 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-neutral-900 hover:text-white"

@@ -79,18 +79,23 @@ export const authOptions: NextAuthOptions = {
     createUser: async ({ user }) => {
       // Set default target teams for new users
       console.log(`🆕 [AUTH] Creating new user: ${user.name} (${user.email})`);
-      
+
       // Default teams - can be customized later by the user
       const defaultTeams = ["PROJECT_MANAGER"]; // Start with a general team
-      
+
       try {
         await db.user.update({
           where: { id: user.id },
-          data: { targetTeams: defaultTeams }
+          data: { targetTeams: defaultTeams },
         });
-        console.log(`✅ [AUTH] Set default targetTeams for ${user.name}: [${defaultTeams.join(', ')}]`);
+        console.log(
+          `✅ [AUTH] Set default targetTeams for ${user.name}: [${defaultTeams.join(", ")}]`,
+        );
       } catch (error) {
-        console.error(`❌ [AUTH] Failed to set default targetTeams for ${user.name}:`, error);
+        console.error(
+          `❌ [AUTH] Failed to set default targetTeams for ${user.name}:`,
+          error,
+        );
       }
     },
   },

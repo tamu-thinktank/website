@@ -124,16 +124,8 @@ export const IntervieweesPage: React.FC = () => {
   const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
   const ratingOptions = ["High", "Medium", "Low", "Reset"];
   const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
-  const dcMemberTeams = [
-    "TSGC",
-    "AIAA", 
-    "Reset",
-  ];
-  const miniDcTeams = [
-    "MINI_DC_TEAM_1",
-    "MINI_DC_TEAM_2",
-    "Reset",
-  ];
+  const dcMemberTeams = ["TSGC", "AIAA", "Reset"];
+  const miniDcTeams = ["MINI_DC_TEAM_1", "MINI_DC_TEAM_2", "Reset"];
   const materovsubteams = [
     "COMPUTATION_COMMUNICATIONS",
     "ELECTRICAL_POWER",
@@ -300,10 +292,12 @@ export const IntervieweesPage: React.FC = () => {
         );
       const matchesTeam = (() => {
         if (!filters.team) return true;
-        
+
         switch (selectedCategory) {
           case "OFFICER":
-            return applicant.officerpos.some((pos) => pos.position === filters.team);
+            return applicant.officerpos.some(
+              (pos) => pos.position === filters.team,
+            );
           case "MATEROV":
             return applicant.subTeam.some((team) => team.name === filters.team);
           case "DCMEMBER":
@@ -361,7 +355,7 @@ export const IntervieweesPage: React.FC = () => {
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
               onClick={() => setSelectedCategory("DCMEMBER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "DCMEMBER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -372,7 +366,7 @@ export const IntervieweesPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("OFFICER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "OFFICER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -383,7 +377,7 @@ export const IntervieweesPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MATEROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "MATEROV"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -394,7 +388,7 @@ export const IntervieweesPage: React.FC = () => {
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
               onClick={() => setSelectedCategory("MINIDC")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 px-4 text-center transition-colors text-sm ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "MINIDC"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -513,35 +507,61 @@ export const IntervieweesPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Research Interests Display */}
                         {(() => {
-                          if (selectedCategory === "OFFICER" && applicant.officerpos && applicant.officerpos.length > 0) {
+                          if (
+                            selectedCategory === "OFFICER" &&
+                            applicant.officerpos &&
+                            applicant.officerpos.length > 0
+                          ) {
                             // For officer applications, show position preferences
-                            const displayItems = applicant.officerpos.slice(0, 2);
-                            const remainingCount = applicant.officerpos.length - 2;
+                            const displayItems = applicant.officerpos.slice(
+                              0,
+                              2,
+                            );
+                            const remainingCount =
+                              applicant.officerpos.length - 2;
                             return (
                               <div className="space-y-1">
                                 {displayItems.map((pref, idx) => (
-                                  <div key={`${pref.position}-${idx}`} className="text-xs">
-                                    {pref.position} ({pref.interest.toLowerCase()})
+                                  <div
+                                    key={`${pref.position}-${idx}`}
+                                    className="text-xs"
+                                  >
+                                    {pref.position} (
+                                    {pref.interest.toLowerCase()})
                                   </div>
                                 ))}
                                 {remainingCount > 0 && (
-                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                  <div className="text-xs text-neutral-400">
+                                    +{remainingCount} more
+                                  </div>
                                 )}
                               </div>
                             );
-                          } else if (applicant.interests && applicant.interests.length > 0) {
+                          } else if (
+                            applicant.interests &&
+                            applicant.interests.length > 0
+                          ) {
                             // For other applications, show research interests
-                            const displayItems = applicant.interests.slice(0, 2);
-                            const remainingCount = applicant.interests.length - 2;
+                            const displayItems = applicant.interests.slice(
+                              0,
+                              2,
+                            );
+                            const remainingCount =
+                              applicant.interests.length - 2;
                             return (
                               <div className="space-y-1">
                                 {displayItems.map((pref, idx) => (
-                                  <div key={`${pref.area}-${idx}`} className="text-xs">
+                                  <div
+                                    key={`${pref.area}-${idx}`}
+                                    className="text-xs"
+                                  >
                                     {pref.area} ({pref.interest.toLowerCase()})
                                   </div>
                                 ))}
                                 {remainingCount > 0 && (
-                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                  <div className="text-xs text-neutral-400">
+                                    +{remainingCount} more
+                                  </div>
                                 )}
                               </div>
                             );
@@ -552,18 +572,26 @@ export const IntervieweesPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Team Rankings Display */}
                         {(() => {
-                          if (applicant.subTeam && applicant.subTeam.length > 0) {
+                          if (
+                            applicant.subTeam &&
+                            applicant.subTeam.length > 0
+                          ) {
                             const displayItems = applicant.subTeam.slice(0, 2);
                             const remainingCount = applicant.subTeam.length - 2;
                             return (
                               <div className="space-y-1">
                                 {displayItems.map((pref, idx) => (
-                                  <div key={`${pref.name}-${idx}`} className="text-xs">
+                                  <div
+                                    key={`${pref.name}-${idx}`}
+                                    className="text-xs"
+                                  >
                                     {pref.name} ({pref.interest.toLowerCase()})
                                   </div>
                                 ))}
                                 {remainingCount > 0 && (
-                                  <div className="text-xs text-neutral-400">+{remainingCount} more</div>
+                                  <div className="text-xs text-neutral-400">
+                                    +{remainingCount} more
+                                  </div>
                                 )}
                               </div>
                             );
@@ -574,9 +602,7 @@ export const IntervieweesPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {applicant.major}
                       </div>
-                      <div className="flex-1 text-center">
-                        {applicant.year}
-                      </div>
+                      <div className="flex-1 text-center">{applicant.year}</div>
                       <div className="flex-1 text-center">
                         <button
                           onClick={() => toggleLock(applicant.id)}

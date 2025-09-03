@@ -36,8 +36,7 @@ export const qDCMember: Questions = {
       "For each selected team, rate your relative interest compared to other teams.",
     researchAreas:
       "For each selected research area, rate your relative interest compared to other research areas.",
-    referralSources:
-      "Where did you hear about us? (Select all that apply)",
+    referralSources: "Where did you hear about us? (Select all that apply)",
   },
 
   openEndedQuestions: {
@@ -53,6 +52,6 @@ export const qDCMember: Questions = {
     resumeId: "Resume Upload",
     signatureCommitment: "Commitment Signature",
     signatureAccountability: "Accountability Signature",
-    signatureQuality: "Quality Pledge Signature"
-  }
+    signatureQuality: "Quality Pledge Signature",
+  },
 };

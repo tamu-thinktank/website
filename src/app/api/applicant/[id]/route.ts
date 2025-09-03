@@ -1,18 +1,21 @@
-import { NextResponse } from "next/server"
-import { PrismaClient } from "@prisma/client"
-import { SchedulerCache } from "@/lib/redis"
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { SchedulerCache } from "@/lib/redis";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
-export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
   try {
-    const { id } = await params
-    
+    const { id } = await params;
+
     // Try to get cached applicant first
-    const cached = await SchedulerCache.getApplicant(id)
+    const cached = await SchedulerCache.getApplicant(id);
     if (cached) {
-      console.log(`Returning cached applicant data for ${id}`)
-      return NextResponse.json(cached)
+      console.log(`Returning cached applicant data for ${id}`);
+      return NextResponse.json(cached);
     }
 
     const applicant = await prisma.application.findUnique({
@@ -55,19 +58,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         learningInterests: true,
         previousParticipation: true,
       },
-    })
+    });
 
     if (!applicant) {
-      return NextResponse.json({ error: "Applicant not found" }, { status: 404 })
+      return NextResponse.json(
+        { error: "Applicant not found" },
+        { status: 404 },
+      );
     }
 
     // Cache the applicant data
-    await SchedulerCache.setApplicant(id, applicant)
-    console.log(`Cached applicant data for ${id}`)
+    await SchedulerCache.setApplicant(id, applicant);
+    console.log(`Cached applicant data for ${id}`);
 
-    return NextResponse.json(applicant)
+    return NextResponse.json(applicant);
   } catch (error) {
-    console.error("Error fetching applicant details:", error)
-    return NextResponse.json({ error: "Failed to fetch applicant details" }, { status: 500 })
+    console.error("Error fetching applicant details:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch applicant details" },
+      { status: 500 },
+    );
   }
 }

@@ -1,4 +1,9 @@
-import { Challenge, InterestLevel, ExperienceLevel, LearningInterestLevel } from "@prisma/client";
+import {
+  Challenge,
+  InterestLevel,
+  ExperienceLevel,
+  LearningInterestLevel,
+} from "@prisma/client";
 
 export const longAnswerLimit = 250;
 
@@ -7,12 +12,12 @@ export const challenges: {
   label: string;
   link: string;
 }[] = [
-    {
-      id: Challenge.TSGC,
-      label: "Texas Space Grant Consortium Design Challenge (TSGC)",
-      link: "https://ig.utexas.edu/tsgc/design-challenge/",
-    },
-  ];
+  {
+    id: Challenge.TSGC,
+    label: "Texas Space Grant Consortium Design Challenge (TSGC)",
+    link: "https://ig.utexas.edu/tsgc/design-challenge/",
+  },
+];
 
 // General member application questions
 export const q = {
@@ -20,11 +25,11 @@ export const q = {
     title: "Personal Information",
     fullName: "Full Name",
     preferredName: "Preferred Name",
-    pronouns: "Preferred Pronouns",  
+    pronouns: "Preferred Pronouns",
     gender: "Gender",
     uin: "UIN",
     email: "TAMU Email",
-    altEmail: "Additional Email Contact", 
+    altEmail: "Additional Email Contact",
     phone: "Contact Number",
   },
   academic: {
@@ -37,16 +42,19 @@ export const q = {
   thinkTankInfo: {
     title: "ThinkTank Information",
     meetings: "Are you able to attend a majority of meetings in-person?",
-    weeklyCommitment: "Are you able to commit 8-10 hours per week for the entire duration of the project?",
-    preferredTeams: "For each selected team, rate your relative interest compared to other teams.",
-    researchAreas: "For each selected research area, rate your relative interest compared to other research areas.",
+    weeklyCommitment:
+      "Are you able to commit 8-10 hours per week for the entire duration of the project?",
+    preferredTeams:
+      "For each selected team, rate your relative interest compared to other teams.",
+    researchAreas:
+      "For each selected research area, rate your relative interest compared to other research areas.",
     referralSources: "Where did you hear about us? (Select all that apply)",
   },
   interests: {
     title: "Interests & Challenges",
     interestedAnswer: "What interests you about ThinkTank?",
     challenges: "Which challenges are you interested in participating in?",
-    interestedChallenge: "Which challenge are you most interested in?", 
+    interestedChallenge: "Which challenge are you most interested in?",
     passionAnswer: "What are you passionate about?",
     isLeadership: "Are you interested in leadership opportunities?",
   },
@@ -56,12 +64,15 @@ export const q = {
     conflictsAnswer: "Describe any potential conflicts or constraints.",
     timeManagement: "How do you manage your time effectively?",
     relevantExperience: "Describe your relevant project or work experience.",
-    timeCommitment: "Describe your time commitments for the upcoming semesters.",
+    timeCommitment:
+      "Describe your time commitments for the upcoming semesters.",
   },
   openEndedQuestions: {
-    title: "Open-Ended Questions", 
-    firstQuestion: "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
-    secondQuestion: "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
+    title: "Open-Ended Questions",
+    firstQuestion:
+      "Describe an instance where you demonstrated your passion for a project, task, or subject matter.",
+    secondQuestion:
+      "Describe an instance where you worked with a team to accomplish a goal you were passionate about.",
   },
 };
 
@@ -88,14 +99,14 @@ export const TEAMS: Team[] = [
       {
         id: "AREA_1A",
         name: "Research Area 1A",
-        relatedTeams: ["TEAM_1"]
+        relatedTeams: ["TEAM_1"],
       },
       {
         id: "AREA_1B",
         name: "Research Area 1B",
-        relatedTeams: ["TEAM_1", "TEAM_2"]
-      }
-    ]
+        relatedTeams: ["TEAM_1", "TEAM_2"],
+      },
+    ],
   },
   {
     id: "TEAM_2",
@@ -104,14 +115,14 @@ export const TEAMS: Team[] = [
       {
         id: "AREA_2A",
         name: "Research Area 2A",
-        relatedTeams: ["TEAM_2"]
+        relatedTeams: ["TEAM_2"],
       },
       {
         id: "AREA_2B",
         name: "Research Area 2B",
-        relatedTeams: ["TEAM_2"]
-      }
-    ]
+        relatedTeams: ["TEAM_2"],
+      },
+    ],
   },
   {
     id: "TEAM_3",
@@ -120,22 +131,22 @@ export const TEAMS: Team[] = [
       {
         id: "AREA_3A",
         name: "Research Area 3A",
-        relatedTeams: ["TEAM_3"]
-      }
-    ]
-  }
+        relatedTeams: ["TEAM_3"],
+      },
+    ],
+  },
 ];
 
 // Flattened and deduplicated research areas
 export const RESEARCH_AREAS: ResearchArea[] = Array.from(
   new Map(
-    TEAMS.flatMap(team =>
-      team.researchAreas.map(ra => ({
+    TEAMS.flatMap((team) =>
+      team.researchAreas.map((ra) => ({
         ...ra,
-        relatedTeams: [...new Set([...ra.relatedTeams, team.id])]
-      }))
-    ).map(ra => [ra.id, ra])
-  ).values()
+        relatedTeams: [...new Set([...ra.relatedTeams, team.id])],
+      })),
+    ).map((ra) => [ra.id, ra]),
+  ).values(),
 );
 
 export const INTEREST_LEVELS = Object.values(InterestLevel).map((level) => ({
@@ -143,20 +154,24 @@ export const INTEREST_LEVELS = Object.values(InterestLevel).map((level) => ({
   label: level.charAt(0) + level.slice(1).toLowerCase(),
 }));
 
-export const EXPERIENCE_LEVELS = Object.values(ExperienceLevel).map((level) => ({
-  value: level as ExperienceLevel,
-  label: level.charAt(0) + level.slice(1).toLowerCase(),
-}));
+export const EXPERIENCE_LEVELS = Object.values(ExperienceLevel).map(
+  (level) => ({
+    value: level as ExperienceLevel,
+    label: level.charAt(0) + level.slice(1).toLowerCase(),
+  }),
+);
 
-export const LEARNING_INTEREST_LEVELS = Object.values(LearningInterestLevel).map((level) => {
+export const LEARNING_INTEREST_LEVELS = Object.values(
+  LearningInterestLevel,
+).map((level) => {
   const label = level
-    .split('_')
-    .map(word => word.charAt(0) + word.slice(1).toLowerCase())
-    .join(' ');
-  
+    .split("_")
+    .map((word) => word.charAt(0) + word.slice(1).toLowerCase())
+    .join(" ");
+
   return {
     value: level as LearningInterestLevel,
-    label
+    label,
   };
 });
 
@@ -164,22 +179,28 @@ export const PRONOUN_OPTIONS = [
   { value: "HE_HIM", label: "He/Him" },
   { value: "SHE_HER", label: "She/Her" },
   { value: "THEY_THEM", label: "They/Them" },
-  { value: "OTHER", label: "Other" }
+  { value: "OTHER", label: "Other" },
 ];
 
 export const GENDER_OPTIONS = [
   { value: "MALE", label: "Male" },
   { value: "FEMALE", label: "Female" },
   { value: "NON_BINARY", label: "Non-Binary" },
-  { value: "OTHER", label: "Other" }
+  { value: "OTHER", label: "Other" },
 ];
 
 export const MATEROV_SUBTEAM_OPTIONS = [
-  { value: "COMPUTATION_COMMUNICATIONS", label: "Computation and Communications" },
+  {
+    value: "COMPUTATION_COMMUNICATIONS",
+    label: "Computation and Communications",
+  },
   { value: "ELECTRICAL_POWER", label: "Electrical and Power Systems" },
   { value: "FLUIDS_PROPULSION", label: "Fluids and Propulsion" },
   { value: "GNC", label: "Guidance, Navigation, and Control" },
-  { value: "THERMAL_MECHANISMS_STRUCTURES", label: "Thermal, Mechanisms, and Structures" },
+  {
+    value: "THERMAL_MECHANISMS_STRUCTURES",
+    label: "Thermal, Mechanisms, and Structures",
+  },
   { value: "LEADERSHIP", label: "MATE ROV Leadership" },
 ];
 

@@ -41,7 +41,6 @@ export interface ApplicantData {
   status: string; // PENDING, INTERVIEWING, ACCEPTED, REJECTED
   officerpos: PositionPreference[];
   subTeam: SubTeamPreference[];
-  
 }
 
 export interface FilterState {
@@ -50,7 +49,7 @@ export interface FilterState {
   interests: string;
   major: string;
   position: string;
-  status: string
+  status: string;
 }
 
 export interface DropdownProps {

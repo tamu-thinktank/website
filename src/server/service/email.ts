@@ -24,15 +24,17 @@ export default async function sendEmail({
 }) {
   console.log(`📧 [EMAIL-SERVICE] Attempting to send email:`);
   console.log(`📧 [EMAIL-SERVICE] From: ${env.APP_EMAIL}`);
-  console.log(`📧 [EMAIL-SERVICE] To: ${to.join(', ')}`);
+  console.log(`📧 [EMAIL-SERVICE] To: ${to.join(", ")}`);
   console.log(`📧 [EMAIL-SERVICE] Subject: ${subject}`);
-  console.log(`📧 [EMAIL-SERVICE] CC: ${cc?.join(', ') ?? 'None'}`);
-  
+  console.log(`📧 [EMAIL-SERVICE] CC: ${cc?.join(", ") ?? "None"}`);
+
   return new Promise((resolve, reject) => {
     try {
       const htmlContent = render(template);
-      console.log(`📧 [EMAIL-SERVICE] Template rendered successfully (${htmlContent.length} chars)`);
-      
+      console.log(
+        `📧 [EMAIL-SERVICE] Template rendered successfully (${htmlContent.length} chars)`,
+      );
+
       transporter.sendMail(
         {
           from: `"ThinkTank" <${env.APP_EMAIL}>`,
@@ -46,20 +48,29 @@ export default async function sendEmail({
             console.error(`❌ [EMAIL-SERVICE] Failed to send email:`, error);
             return reject(`Unable to send email: ${error.message}`);
           }
-          
+
           console.log(`✅ [EMAIL-SERVICE] Email sent successfully!`);
           console.log(`📧 [EMAIL-SERVICE] Message ID: ${info.messageId}`);
-          console.log(`📧 [EMAIL-SERVICE] Accepted: ${info.accepted?.toString()}`);
-          console.log(`📧 [EMAIL-SERVICE] Rejected: ${info.rejected?.toString()}`);
+          console.log(
+            `📧 [EMAIL-SERVICE] Accepted: ${info.accepted?.toString()}`,
+          );
+          console.log(
+            `📧 [EMAIL-SERVICE] Rejected: ${info.rejected?.toString()}`,
+          );
           console.log(`📧 [EMAIL-SERVICE] Response: ${info.response}`);
-          
-          const message = `Message delivered to ${info.accepted?.toString() ?? 'recipients'}`;
+
+          const message = `Message delivered to ${info.accepted?.toString() ?? "recipients"}`;
           return resolve(message);
         },
       );
     } catch (renderError) {
-      console.error(`❌ [EMAIL-SERVICE] Failed to render template:`, renderError);
-      reject(`Failed to render email template: ${renderError instanceof Error ? renderError.message : 'Unknown error'}`);
+      console.error(
+        `❌ [EMAIL-SERVICE] Failed to render template:`,
+        renderError,
+      );
+      reject(
+        `Failed to render email template: ${renderError instanceof Error ? renderError.message : "Unknown error"}`,
+      );
     }
   });
 }
