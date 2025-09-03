@@ -7,6 +7,37 @@ import Container from "@/components/Container";
 const Challenges = () => {
   const teams = [
     {
+      teamName: "Daedalus",
+      shortOverview: "Hands-On NASA Research Project",
+      competitionOverview:
+        "Texas Space Grant Consortium (TSGC) offers unique, hands-on challenges sponsored by NASA mentors which rotate each year. We can’t guarantee what you will be working on, but we can guarantee it will be an amazing experience!",
+      duration: "1 Semester",
+      teamSize: "6",
+      admissionTimeline: [
+        { date: "Applications", description: "11/21/25" },
+        { date: "Interviews", description: "1/17/26" },
+        { date: "Acceptance", description: "1/26/26" },
+      ],
+      pastTeams: [
+        "Astronaut Tracking System",
+        "Microgravity Water Filtration",
+        "Lunar Cellular Infrastructure",
+      ],
+      mentors: {
+        peer: "Anoushka Kaushik",
+        faculty: "TBD",
+      },
+      competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
+      imageUrl: "/images/Daedalus.png",
+      image: "/images/avatars/anoushkakaushik2526",
+      major: "Aerospace",
+      year: "28",
+      description: "About Me",
+      facultyImage: "blank.webp",
+      prize: "$6,000 for 1st place",
+      dtype: "Showcase",
+    },
+    {
       teamName: "Atlas",
       shortOverview: "Design ThinkTank’s Next-Gen Website",
       competitionOverview:
@@ -42,7 +73,8 @@ const Challenges = () => {
     },
     {
       teamName: "Nova",
-      shortOverview: "Develop a lunar sample return mission from acquisition to transportation.",
+      shortOverview:
+        "Develop a lunar sample return mission from acquisition to transportation.",
       competitionOverview:
         "NASA is seeking innovative concepts for a lunar sample return mission to collect, preserve, and transport 10s–100s of kilograms of geological and human research samples in various conditions from the Moon to Earth. Proposals should detail operations for identifying, acquiring, storing, and moving samples on the lunar surface, along with system requirements, technology needs, costs, and timelines. Concepts should also consider adaptability to Mars or other planetary missions.",
       duration: "2 Semesters",
@@ -72,8 +104,7 @@ const Challenges = () => {
       description: "About Me",
       facultyImage: "/images/avatars/blank.webp",
       field: "N/A",
-      interest:
-        "N/A",
+      interest: "N/A",
       prize: "$7,000 travel stipend for finalists",
       dtype: "Proposal",
     },
@@ -108,17 +139,15 @@ const Challenges = () => {
       description: "About Me",
       facultyImage: "/images/avatars/blank.webp",
       field: "N/A",
-      interest:
-        "N/A",
+      interest: "N/A",
       prize: "$7,000 travel stipend for finalists",
       dtype: "Proposal",
     },
-
     {
       teamName: "Solara",
-      shortOverview: "Explores lowering environmental impact through reducing emissions and sustainable aviation",
-      competitionOverview:
-        "No details until early September",
+      shortOverview:
+        "Explores lowering environmental impact through reducing emissions and sustainable aviation",
+      competitionOverview: "No details until early September",
       duration: "2 Semesters",
       teamSize: "6",
       admissionTimeline: [
@@ -148,10 +177,10 @@ const Challenges = () => {
       prize: "$8,000 travel stipend for finalists",
       dtype: "Proposal",
     },
-
     {
       teamName: "Voltaris",
-      shortOverview: "Design and model a solar energy grid for an assigned collegiate campus.",
+      shortOverview:
+        "Design and model a solar energy grid for an assigned collegiate campus.",
       competitionOverview:
         "The Solar District Cup challenges student teams to design solar energy systems for campuses or districts that maximize energy offset and financial savings over the system’s lifetime. Teams act as renewable energy developers, creating proposals under PPA, lease, or cash purchase models while analyzing grid interactions",
       duration: "2 Semesters",
@@ -187,7 +216,8 @@ const Challenges = () => {
       shortOverview:
         "Design a space mission to send a spacecraft to monitor space weather and provide communication to Mars.",
       competitionOverview:
-        "AIAA has asked research teams to create an innovative mission concept of operations and system designs to support the next decade of Heliophysics science investigation, space weather monitoring and analysis, as well as provide communication support for crewed missions to the lunar and Martian surface. This will provide the crew with early warnings for space weather events.",      duration: "2 Semesters",
+        "AIAA has asked research teams to create an innovative mission concept of operations and system designs to support the next decade of Heliophysics science investigation, space weather monitoring and analysis, as well as provide communication support for crewed missions to the lunar and Martian surface. This will provide the crew with early warnings for space weather events.",
+      duration: "2 Semesters",
       teamSize: "10",
       admissionTimeline: [
         { date: "Applications", description: "9/6/24" },
@@ -213,8 +243,7 @@ const Challenges = () => {
       description: "About Me",
       facultyImage: "/images/avatars/blank.webp",
       field: "N/A",
-      interest:
-        "N/A",
+      interest: "N/A",
       prize: "$750 for 1st place",
       dtype: "Proposal",
     },
@@ -222,8 +251,7 @@ const Challenges = () => {
       teamName: "Electra",
       shortOverview:
         "Design an affordable EV charger to meet competition specifications.",
-      competitionOverview:
-        "Details have not come out yet.",      
+      competitionOverview: "Details have not come out yet.",
       duration: "2 Semesters",
       teamSize: "TBD",
       admissionTimeline: [
@@ -241,8 +269,7 @@ const Challenges = () => {
         peer: "Rithvik Gogula",
         faculty: "TBD",
       },
-      competitionLink:
-        "https://energychallenge.weebly.com",
+      competitionLink: "https://energychallenge.weebly.com",
       imageUrl: "03Qi7SZgiYjO1OLFnklCfog-3.webp",
       image: "/images/rithvikgogula2526",
       major: "Industrial Engineering",
@@ -250,42 +277,10 @@ const Challenges = () => {
       description: "About Me",
       facultyImage: "/images/avatars/blank.webp",
       field: "N/A",
-      interest:
-        "N/A",
-      prize: "Grand Prize of $10,000 and three additional awards granted at $5,000, $3,000 and $1,000 each",
+      interest: "N/A",
+      prize:
+        "Grand Prize of $10,000 and three additional awards granted at $5,000, $3,000 and $1,000 each",
       dtype: "Proposal",
-    },
-    {
-      teamName: "Daedalus",
-      shortOverview: "Hands-On NASA Research Project",
-      competitionOverview:
-        "Texas Space Grant Consortium (TSGC) offers unique, hands-on challenges sponsored by NASA mentors which rotate each year. We can’t guarantee what you will be working on, but we can guarantee it will be an amazing experience!",
-      duration: "1 Semester",
-      teamSize: "6",
-      admissionTimeline: [
-        { date: "Applications", description: "11/21/25" },
-        { date: "Interviews", description: "1/17/26" },
-        { date: "Acceptance", description: "1/26/26" },
-      ],
-
-      pastTeams: [
-        "Astronaut Tracking System",
-        "Microgravity Water Filtration",
-        "Lunar Cellular Infrastructure",
-      ],
-      mentors: {
-        peer: "Anoushka Kaushik",
-        faculty: "TBD",
-      },
-      competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
-      imageUrl: "/images/Daedalus.png",
-      image: "/images/avatars/anoushkakaushik2526",
-      major: "Aerospace",
-      year: "28",
-      description: "About Me",
-      facultyImage: "blank.webp",
-      prize: "$6,000 for 1st place",
-      dtype: "Showcase",
     },
   ];
 
@@ -321,5 +316,3 @@ const Challenges = () => {
 };
 
 export default Challenges;
-
- 
