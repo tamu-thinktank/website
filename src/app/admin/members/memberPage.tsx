@@ -44,7 +44,7 @@ export const MembersPage: React.FC = () => {
       }
     };
 
-    fetchMemberData();
+    void fetchMemberData();
   }, []);
 
   const dcMemberHeaders = [
@@ -114,9 +114,9 @@ export const MembersPage: React.FC = () => {
     "Reset",
   ];
 
-  const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  const ratingOptions = ["1/5", "2/5", "3/5", "4/5", "5/5", "Reset"];
-  const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
+  const _teamOptions = ["Team A", "Team B", "Team C", "Reset"];
+  const _ratingOptions = ["1/5", "2/5", "3/5", "4/5", "5/5", "Reset"];
+  const _interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
   const majorOptions = [
     "Computer Science",
     "Electrical Engineering",
@@ -145,22 +145,22 @@ export const MembersPage: React.FC = () => {
         switch (selectedCategory) {
           case "OFFICER":
             return (
-              (applicant as any).officerpos?.some(
-                (pos: any) => pos.position === filters.team,
-              ) || false
+              ((applicant as Record<string, unknown>).officerpos as unknown[] | undefined)?.some(
+                (pos) => (pos as Record<string, unknown>).position === filters.team,
+              ) ?? false
             );
           case "MATEROV":
             return (
-              (applicant as any).subTeam?.some(
-                (team: any) => team.name === filters.team,
-              ) || false
+              ((applicant as Record<string, unknown>).subTeam as unknown[] | undefined)?.some(
+                (team) => (team as Record<string, unknown>).name === filters.team,
+              ) ?? false
             );
           case "DCMEMBER":
           case "MINIDC":
             return (
-              (applicant as any).subTeam?.some(
-                (team: any) => team.name === filters.team,
-              ) || false
+              ((applicant as Record<string, unknown>).subTeam as unknown[] | undefined)?.some(
+                (team) => (team as Record<string, unknown>).name === filters.team,
+              ) ?? false
             );
           default:
             return true;
@@ -347,7 +347,6 @@ export const MembersPage: React.FC = () => {
                         {/* Research Interests Display */}
                         {(() => {
                           if (
-                            applicant.interests &&
                             applicant.interests.length > 0
                           ) {
                             const displayItems = applicant.interests.slice(
@@ -381,7 +380,6 @@ export const MembersPage: React.FC = () => {
                         {/* Team Rankings Display */}
                         {(() => {
                           if (
-                            applicant.teamRankings &&
                             applicant.teamRankings.length > 0
                           ) {
                             const displayItems = applicant.teamRankings.slice(

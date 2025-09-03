@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { FormField, FormMessage } from "@/components/ui/form";
 import type { Mode } from "@/consts/availability-grid";
-import { palette, times } from "@/consts/availability-grid";
+import { palette as _palette, times } from "@/consts/availability-grid";
 import type useCalculateTable from "@/hooks/useCalculateTable";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { cn } from "@/lib/utils";

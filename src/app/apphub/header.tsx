@@ -44,7 +44,7 @@ const linksData = [
 const LinkCollectionPage: React.FC = () => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
-  const handleExpand = (index: number) => {
+  const _handleExpand = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 

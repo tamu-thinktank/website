@@ -332,7 +332,7 @@ function ApplyTab({
     if (!isChecked) return;
     if (currentTab === "start") return;
 
-    const sub = form.watch((values: any, { name }: any) => {
+    const sub = form.watch((values: RouterInputs["officer"]["OfficerApplyForm"], { name }: { name?: string }) => {
       if (name?.startsWith(currentTab)) {
         form
           .trigger(currentTab)
@@ -341,7 +341,7 @@ function ApplyTab({
       }
     });
 
-    return () => sub.unsubscribe();
+    return () => { void sub.unsubscribe(); };
   }, [form.watch, isChecked]);
 
   return (

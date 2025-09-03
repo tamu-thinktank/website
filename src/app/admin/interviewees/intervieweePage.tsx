@@ -121,9 +121,9 @@ export const IntervieweesPage: React.FC = () => {
     "Reset",
   ];
 
-  const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  const ratingOptions = ["High", "Medium", "Low", "Reset"];
-  const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
+  const _teamOptions = ["Team A", "Team B", "Team C", "Reset"];
+  const _ratingOptions = ["High", "Medium", "Low", "Reset"];
+  const _interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
   const dcMemberTeams = ["TSGC", "AIAA", "Reset"];
   const miniDcTeams = ["MINI_DC_TEAM_1", "MINI_DC_TEAM_2", "Reset"];
   const materovsubteams = [
@@ -169,7 +169,7 @@ export const IntervieweesPage: React.FC = () => {
     "Reset",
   ];
 
-  const statusOptions = [
+  const _statusOptions = [
     "PENDING",
     "INTERVIEWING",
     "ACCEPTED",
@@ -178,7 +178,7 @@ export const IntervieweesPage: React.FC = () => {
     "Reset",
   ];
 
-  const getStatusColor = (status: string) => {
+  const _getStatusColor = (status: string) => {
     switch (status) {
       case "PENDING":
         return "text-orange-400";
@@ -243,7 +243,7 @@ export const IntervieweesPage: React.FC = () => {
         const result = (await response.json()) as { error?: string };
 
         if (!response.ok) {
-          throw new Error(result.error || "Transfer failed");
+          throw new Error(result.error ?? "Transfer failed");
         }
 
         console.log("Transfer response:", result);
@@ -439,21 +439,21 @@ export const IntervieweesPage: React.FC = () => {
                 }
               })()}
               onOptionSelect={handleFilterChange("team")}
-              selected={filters.team ?? "Team"}
+              selected={filters.team || "Team"}
             />
             {selectedCategory === "MATEROV" && (
               <FilterButton
                 label="Interests"
                 options={mateinterests}
                 onOptionSelect={handleFilterChange("interests")}
-                selected={filters.interests ?? "Interests"}
+                selected={filters.interests || "Interests"}
               />
             )}
             <FilterButton
               label="Major"
               options={majorOptions}
               onOptionSelect={handleFilterChange("major")}
-              selected={filters.major ?? "Major"}
+              selected={filters.major || "Major"}
             />
             <button
               className="rounded-[48px] border border-solid bg-stone-600 px-6 py-3 text-white transition-colors hover:bg-stone-500 disabled:cursor-not-allowed disabled:opacity-50"
@@ -509,7 +509,6 @@ export const IntervieweesPage: React.FC = () => {
                         {(() => {
                           if (
                             selectedCategory === "OFFICER" &&
-                            applicant.officerpos &&
                             applicant.officerpos.length > 0
                           ) {
                             // For officer applications, show position preferences
@@ -538,7 +537,6 @@ export const IntervieweesPage: React.FC = () => {
                               </div>
                             );
                           } else if (
-                            applicant.interests &&
                             applicant.interests.length > 0
                           ) {
                             // For other applications, show research interests
@@ -573,7 +571,6 @@ export const IntervieweesPage: React.FC = () => {
                         {/* Team Rankings Display */}
                         {(() => {
                           if (
-                            applicant.subTeam &&
                             applicant.subTeam.length > 0
                           ) {
                             const displayItems = applicant.subTeam.slice(0, 2);

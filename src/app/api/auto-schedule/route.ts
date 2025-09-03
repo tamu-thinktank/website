@@ -4,7 +4,6 @@ import {
   autoScheduleInterview,
   findAvailableSlots,
 } from "@/server/services/auto-scheduler";
-import { Challenge } from "@prisma/client";
 
 const AutoScheduleSchema = z.object({
   intervieweeId: z.string().cuid(),

@@ -95,15 +95,15 @@ export async function POST(request: Request) {
             location: validatedData.location,
             interviewerName: validatedData.officerName,
             team: validatedData.team,
-            applicationType: validatedData.applicationType || "General",
+            applicationType: validatedData.applicationType ?? "General",
           }),
         });
 
-        emailResults.push(`Interviewer email: ${interviewerEmailResult}`);
+        emailResults.push(`Interviewer email: ${String(interviewerEmailResult)}`);
         console.log("✅ [EMAIL] Interviewer email sent successfully:", interviewerEmailResult);
       } catch (emailError) {
         console.error("❌ [EMAIL] Failed to send interviewer email:", emailError);
-        throw new Error(`Failed to send interviewer email: ${emailError}`);
+        throw new Error(`Failed to send interviewer email: ${String(emailError)}`);
       }
     }
 
@@ -130,15 +130,15 @@ export async function POST(request: Request) {
             location: validatedData.location,
             interviewerName: validatedData.officerName,
             team: validatedData.team,
-            applicationType: validatedData.applicationType || "General",
+            applicationType: validatedData.applicationType ?? "General",
           }),
         });
 
-        emailResults.push(`Interviewee email: ${intervieweeEmailResult}`);
+        emailResults.push(`Interviewee email: ${String(intervieweeEmailResult)}`);
         console.log("✅ [EMAIL] Interviewee email sent successfully:", intervieweeEmailResult);
       } catch (emailError) {
         console.error("❌ [EMAIL] Failed to send interviewee email:", emailError);
-        throw new Error(`Failed to send interviewee email: ${emailError}`);
+        throw new Error(`Failed to send interviewee email: ${String(emailError)}`);
       }
     }
 

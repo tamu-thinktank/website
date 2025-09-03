@@ -33,7 +33,7 @@ export async function POST(request: Request) {
       case "interviews":
         if (dates && Array.isArray(dates)) {
           for (const date of dates) {
-            await SchedulerCache.invalidateInterviews(date as string);
+            await SchedulerCache.invalidateInterviews(String(date));
           }
         } else {
           await SchedulerCache.invalidateInterviews();

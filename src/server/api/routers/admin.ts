@@ -6,7 +6,7 @@ import {
 import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap";
 import { AvailabilityMapSchema } from "@/lib/validations/apply";
 import {
-  ApplicantSchema,
+  ApplicantSchema as _ApplicantSchema,
   ApplicantsSchema,
 } from "@/lib/validations/applicants";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";

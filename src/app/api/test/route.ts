@@ -5,13 +5,13 @@ const prisma = new PrismaClient();
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const applicationType = searchParams.get("applicationType") || "DCMEMBER";
+  const applicationType = searchParams.get("applicationType") ?? "DCMEMBER";
 
   try {
     // Fetch applications filtered by applicationType
     const applications = await prisma.application.findMany({
       where: {
-        applicationType: applicationType as any, // Cast to any since we know the values match the enum
+        applicationType: applicationType as "OFFICER" | "MATEROV" | "DCMEMBER" | "DCMINICHALLENGE", // Cast to the correct enum type
       },
       select: {
         id: true,
@@ -25,17 +25,18 @@ export async function GET(request: Request) {
     });
 
     // Helper function to count occurrences
-    const countOccurrences = (arr: any[], key: string) => {
+    const countOccurrences = (arr: Record<string, unknown>[], key: string) => {
       return arr.reduce(
         (acc, obj) => {
           // Handle array fields like referral which is ReferralSource[]
           if (Array.isArray(obj[key])) {
             obj[key].forEach((value: unknown) => {
-              acc[value as string] = (acc[value as string] || 0) + 1;
+              const stringValue = String(value);
+              acc[stringValue] = ((acc[stringValue] as number) || 0) + 1;
             });
           } else {
-            const value = obj[key] || "Unknown"; // Handle null values
-            acc[value] = (acc[value] || 0) + 1;
+            const value = String(obj[key] ?? "Unknown"); // Handle null values
+            acc[value] = ((acc[value] as number) || 0) + 1;
           }
           return acc;
         },
@@ -46,8 +47,8 @@ export async function GET(request: Request) {
     // Count applications by status
     const statusCounts = applications.reduce(
       (acc, app) => {
-        const status = app.status || "Unknown";
-        acc[status] = (acc[status] || 0) + 1;
+        const status = String(app.status);
+        acc[status] = (acc[status] ?? 0) + 1;
         return acc;
       },
       {} as Record<string, number>,
@@ -57,10 +58,11 @@ export async function GET(request: Request) {
     const createDetailedData = (key: string) => {
       return applications.map((app) => {
         let value;
-        if (Array.isArray(app[key as keyof typeof app])) {
-          value = (app[key as keyof typeof app] as any[]).join(", ");
+        const appValue = app[key as keyof typeof app];
+        if (Array.isArray(appValue)) {
+          value = (appValue as unknown[]).join(", ");
         } else {
-          value = app[key as keyof typeof app] || "Unknown";
+          value = appValue ?? "Unknown";
         }
         return {
           name: app.fullName,

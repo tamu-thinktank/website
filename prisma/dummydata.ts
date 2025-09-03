@@ -579,6 +579,6 @@ async function main() {
 }
 
 // Run if this file is executed directly
-if (process.argv[1] && process.argv[1].endsWith("dummydata.ts")) {
+if (process.argv[1]?.endsWith("dummydata.ts")) {
   main().catch(console.error);
 }

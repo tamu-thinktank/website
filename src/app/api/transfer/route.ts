@@ -7,7 +7,7 @@ export async function PUT(req: Request) {
   try {
     const transfer = (await req.json()) as { applicantIds: string[] };
 
-    if (!transfer.applicantIds || transfer.applicantIds.length === 0) {
+    if (!transfer.applicantIds.length) {
       return NextResponse.json(
         { error: "No applicants provided." },
         { status: 400 },

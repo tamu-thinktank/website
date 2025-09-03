@@ -524,9 +524,9 @@ async function createInterviewRecord(
     startTime: result.startTime,
     endTime: result.endTime,
     location: result.location,
-    teamId: result.teamId || undefined,
+    teamId: result.teamId ?? undefined,
     applicantName: result.applicant?.fullName ?? applicantName,
-    interviewerName: result.interviewer.name ?? interviewer.name,
+    interviewerName: result.interviewer.name,
   };
 }
 

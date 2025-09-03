@@ -10,7 +10,7 @@ interface FilterButtonProps {
 }
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
-  label,
+  label: _label,
   options,
   selected,
   onOptionSelect,

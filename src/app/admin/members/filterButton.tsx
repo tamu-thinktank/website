@@ -3,7 +3,7 @@ import { Dropdown } from "./dropdown";
 import type { FilterButtonProps } from "./membertypes";
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
-  label,
+  label: _label,
   options = [],
   onOptionSelect,
   selected = "",

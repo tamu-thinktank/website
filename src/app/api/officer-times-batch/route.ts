@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
@@ -9,7 +10,7 @@ export async function POST(request: NextRequest) {
     };
     const { interviewerIds, timeSlots } = body;
 
-    if (!interviewerIds || !timeSlots) {
+    if (!interviewerIds.length || !timeSlots.length) {
       return NextResponse.json(
         { error: "Missing interviewerIds or timeSlots" },
         { status: 400 },
@@ -52,8 +53,9 @@ export async function POST(request: NextRequest) {
 
     // Mark the slots that exist in the database
     for (const officerTime of officerTimes) {
-      if (grouped[officerTime.officerId]) {
-        grouped[officerTime.officerId]![officerTime.gridTime] = true;
+      const groupedEntry = grouped[officerTime.officerId];
+      if (groupedEntry) {
+        groupedEntry[officerTime.gridTime] = true;
       }
     }
 

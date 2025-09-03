@@ -87,7 +87,7 @@ export function StatisticsVisualizer() {
   // Make sure the useEffect dependency array includes selectedCategory
   useEffect(() => {
     console.log(`Selected category changed to: ${selectedCategory}`);
-    fetchStatisticsForTeam(selectedCategory);
+    void fetchStatisticsForTeam(selectedCategory);
   }, [selectedCategory]);
 
   if (loading) {
@@ -98,14 +98,14 @@ export function StatisticsVisualizer() {
     );
   }
 
-  const totalApplicants = Object.values(stats?.genders || {}).reduce(
+  const totalApplicants = Object.values(stats?.genders ?? {}).reduce(
     (a, b) => a + b,
     0,
   );
-  const acceptedCount = stats?.statusCounts.ACCEPTED || 0;
-  const rejectedCount = stats?.statusCounts.REJECTED || 0;
-  const pendingCount = stats?.statusCounts.PENDING || 0;
-  const interviewingCount = stats?.statusCounts.INTERVIEWING || 0;
+  const acceptedCount = stats?.statusCounts.ACCEPTED ?? 0;
+  const rejectedCount = stats?.statusCounts.REJECTED ?? 0;
+  const pendingCount = stats?.statusCounts.PENDING ?? 0;
+  const interviewingCount = stats?.statusCounts.INTERVIEWING ?? 0;
 
   return (
     <div className="flex flex-col overflow-hidden bg-neutral-950 text-xl font-medium shadow-[0px_4px_4px_rgba(0,0,0,0.25)]">
@@ -269,7 +269,7 @@ function StatCard({
   color?: string;
 }) {
   return (
-    <Card className={`${color || ""}`}>
+    <Card className={`${color ?? ""}`}>
       <CardHeader className="pb-2">
         <CardTitle className="text-base">{title}</CardTitle>
       </CardHeader>
@@ -334,7 +334,7 @@ function PieChartCard({
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, percent }) =>
+                    label={({ name, percent }: { name: string; percent: number }) =>
                       name.length > 10
                         ? `${name.substring(0, 10)}...: ${(percent * 100).toFixed(0)}%`
                         : `${name}: ${(percent * 100).toFixed(0)}%`

@@ -10,7 +10,7 @@ const CreateBusyTimeSchema = z.object({
   reason: z.string().optional(),
 });
 
-const UpdateBusyTimeSchema = z.object({
+const _UpdateBusyTimeSchema = z.object({
   startTime: z.string().datetime().optional(),
   endTime: z.string().datetime().optional(),
   reason: z.string().optional(),
@@ -25,14 +25,14 @@ export async function GET(request: Request) {
     const endDate = searchParams.get("endDate");
 
     // Build where clause
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     if (interviewerId) {
-      where.interviewerId = interviewerId;
+      (where as { interviewerId?: string }).interviewerId = interviewerId;
     }
 
     if (startDate && endDate) {
-      where.OR = [
+      (where as { OR?: unknown[] }).OR = [
         // Busy time starts within the range
         {
           startTime: {

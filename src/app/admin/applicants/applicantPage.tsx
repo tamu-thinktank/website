@@ -5,7 +5,6 @@ import { FilterButton } from "./filterButton";
 import { TableHeader } from "./tableHeader";
 import type { ApplicantData, FilterState } from "./types";
 import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
-import { Button } from "@/components/ui/button";
 
 export const ApplicantsPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -69,7 +68,7 @@ export const ApplicantsPage: React.FC = () => {
   };
 
   // Auto-schedule an applicant
-  const autoScheduleApplicant = async (
+  const _autoScheduleApplicant = async (
     applicantId: string,
     applicantName: string,
   ) => {
@@ -84,7 +83,7 @@ export const ApplicantsPage: React.FC = () => {
         throw new Error("Failed to fetch applicant details");
       }
 
-      const applicant = (await applicantResponse.json()) as any;
+      const applicant = (await applicantResponse.json()) as Record<string, unknown>;
 
       // Extract team preferences based on application type
       let preferredTeams: string[] = [];
@@ -94,16 +93,16 @@ export const ApplicantsPage: React.FC = () => {
         applicant.preferredPositions
       ) {
         preferredTeams =
-          applicant?.preferredPositions?.map((pos: any) => pos?.position) || [];
+          ((applicant?.preferredPositions as unknown[]) || []).map((pos) => (pos as Record<string, unknown>)?.position as string) || [];
       } else if (
         applicant.applicationType === "MATEROV" &&
         applicant.subteamPreferences
       ) {
         preferredTeams =
-          applicant?.subteamPreferences?.map((sub: any) => sub?.name) || [];
+          ((applicant?.subteamPreferences as unknown[]) || []).map((sub) => (sub as Record<string, unknown>)?.name as string) || [];
       } else if (applicant.preferredTeams) {
         preferredTeams =
-          applicant?.preferredTeams?.map((team: any) => team?.teamId) || [];
+          ((applicant?.preferredTeams as unknown[]) || []).map((team) => (team as Record<string, unknown>)?.teamId as string) || [];
       }
 
       // Generate available time slots for the next 1 week (business hours)
@@ -162,10 +161,12 @@ export const ApplicantsPage: React.FC = () => {
         throw new Error("Failed to auto-schedule interview");
       }
 
-      const result = (await response.json()) as any;
+      const result = (await response.json()) as Record<string, unknown>;
 
       if (result.success && result.suggestedSlot) {
-        const { interviewer, slot } = result?.suggestedSlot || {};
+        const suggestedSlot = result?.suggestedSlot as Record<string, unknown>;
+        const interviewer = suggestedSlot?.interviewer as Record<string, unknown>;
+        const slot = suggestedSlot?.slot as Record<string, unknown>;
 
         // Schedule the interview immediately
         const scheduleResponse = await fetch("/api/schedule-interview", {
@@ -175,10 +176,10 @@ export const ApplicantsPage: React.FC = () => {
           },
           body: JSON.stringify({
             applicantId: applicantId,
-            interviewerId: interviewer?.interviewerId,
-            time: new Date(slot?.date).toISOString(),
+            interviewerId: interviewer?.interviewerId as string,
+            time: new Date(slot?.date as string).toISOString(),
             location: "To be determined",
-            teamId: preferredTeams[0] || null,
+            teamId: preferredTeams[0] ?? null,
           }),
         });
 
@@ -212,7 +213,7 @@ export const ApplicantsPage: React.FC = () => {
 
         // Success notification
         alert(
-          `✅ Auto-scheduled interview for ${applicantName} with ${interviewer.name} on ${new Date(slot.date).toLocaleDateString()} at ${slot.hour}:${slot.minute.toString().padStart(2, "0")}`,
+          `✅ Auto-scheduled interview for ${applicantName} with ${interviewer.name as string} on ${new Date(slot.date as string).toLocaleDateString()} at ${slot.hour as number}:${(slot.minute as number).toString().padStart(2, "0")}`,
         );
 
         // Refresh applicant data with a slight delay to ensure DB update is propagated
@@ -221,9 +222,10 @@ export const ApplicantsPage: React.FC = () => {
         }, 1000);
       } else {
         // Show available matches but couldn't auto-schedule
-        if (result?.matches && result?.matches?.length > 0) {
+        const matches = result?.matches as unknown[];
+        if (matches?.length > 0) {
           alert(
-            `⚠️ Found ${result?.matches?.length} potential interviewer(s) for ${applicantName}, but couldn't auto-schedule. Please use manual scheduling.`,
+            `⚠️ Found ${matches?.length} potential interviewer(s) for ${applicantName}, but couldn't auto-schedule. Please use manual scheduling.`,
           );
         } else {
           alert(
@@ -296,9 +298,6 @@ export const ApplicantsPage: React.FC = () => {
     "Reset",
   ];
 
-  const _teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  const _ratingOptions = ["High", "Medium", "Low", "Reset"];
-  const _interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
 
   // Team options for each application type
   const dcMemberTeams = ["TSGC", "AIAA", "No Preference", "Reset"];
@@ -474,7 +473,7 @@ export const ApplicantsPage: React.FC = () => {
         const matchesRating = (() => {
           if (!filters.rating) return true;
           if (filters.rating === "Unrated") {
-            return applicant.rating === null || applicant.rating === undefined;
+            return applicant.rating == null;
           }
           return applicant.rating?.toString() === filters.rating;
         })();
@@ -655,33 +654,33 @@ export const ApplicantsPage: React.FC = () => {
                 }
               })()}
               onOptionSelect={handleFilterChange("team")}
-              selected={filters.team ?? "Team"}
+              selected={filters.team || "Team"}
             />
             {selectedCategory === "MATEROV" && (
               <FilterButton
                 label="Interests"
                 options={mateinterests}
                 onOptionSelect={handleFilterChange("interests")}
-                selected={filters.interests ?? "Interests"}
+                selected={filters.interests || "Interests"}
               />
             )}
             <FilterButton
               label="Major"
               options={majorOptions}
               onOptionSelect={handleFilterChange("major")}
-              selected={filters.major ?? "Major"}
+              selected={filters.major || "Major"}
             />
             <FilterButton
               label="Status"
               options={statusOptions}
               onOptionSelect={handleFilterChange("status")}
-              selected={filters.status ?? "Status"}
+              selected={filters.status || "Status"}
             />
             <FilterButton
               label="Rating"
               options={ratingOptions}
               onOptionSelect={handleFilterChange("rating")}
-              selected={filters.rating ?? "Rating"}
+              selected={filters.rating || "Rating"}
             />
           </div>
 
@@ -728,8 +727,7 @@ export const ApplicantsPage: React.FC = () => {
                         {(() => {
                           if (
                             selectedCategory === "OFFICER" &&
-                            applicant.officerpos &&
-                            applicant.officerpos.length > 0
+                            applicant.officerpos?.length > 0
                           ) {
                             // For officer applications, show position preferences
                             const displayItems = applicant.officerpos.slice(
@@ -757,8 +755,7 @@ export const ApplicantsPage: React.FC = () => {
                               </div>
                             );
                           } else if (
-                            applicant.interests &&
-                            applicant.interests.length > 0
+                            applicant.interests?.length > 0
                           ) {
                             // For other applications, show research interests
                             const displayItems = applicant.interests.slice(
@@ -792,8 +789,7 @@ export const ApplicantsPage: React.FC = () => {
                         {/* Team Rankings Display */}
                         {(() => {
                           if (
-                            applicant.subTeam &&
-                            applicant.subTeam.length > 0
+                            applicant.subTeam?.length > 0
                           ) {
                             const displayItems = applicant.subTeam.slice(0, 2);
                             const remainingCount = applicant.subTeam.length - 2;

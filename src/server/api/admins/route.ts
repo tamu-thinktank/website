@@ -8,8 +8,8 @@ export async function GET(request: Request) {
   try {
     // Parse URL to get query parameters
     const { searchParams } = new URL(request.url);
-    const season = searchParams.get("season") || "2024-2025";
-    const team = searchParams.get("team") || "DC";
+    const _season = searchParams.get("season") ?? "2024-2025";
+    const team = searchParams.get("team") ?? "DC";
 
     // Get all applications with their relationships
     const applications = await prisma.application.findMany({

@@ -51,14 +51,14 @@ export default async function sendEmail({
           console.log(`✅ [EMAIL-SERVICE] Email sent successfully!`);
           console.log(`📧 [EMAIL-SERVICE] Message ID: ${info.messageId}`);
           console.log(
-            `📧 [EMAIL-SERVICE] Accepted: ${info.accepted?.toString()}`,
+            `📧 [EMAIL-SERVICE] Accepted: ${info.accepted.toString()}`,
           );
           console.log(
-            `📧 [EMAIL-SERVICE] Rejected: ${info.rejected?.toString()}`,
+            `📧 [EMAIL-SERVICE] Rejected: ${info.rejected.toString()}`,
           );
           console.log(`📧 [EMAIL-SERVICE] Response: ${info.response}`);
 
-          const message = `Message delivered to ${info.accepted?.toString() ?? "recipients"}`;
+          const message = `Message delivered to ${info.accepted.toString()}`;
           return resolve(message);
         },
       );

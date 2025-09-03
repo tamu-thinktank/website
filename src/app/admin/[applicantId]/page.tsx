@@ -63,7 +63,7 @@ function getQAs(answers: RouterOutputs["admin"]["getApplicant"]) {
       if (qkey === "title") return;
 
       const question = (q[section] as Record<string, unknown>)[qkey] as string;
-      const answer = (answers as any)[section]?.[qkey];
+      const answer = (answers as Record<string, unknown>)[section]?.[qkey] as unknown;
       if (qkey === "challenges") {
         currSection?.push([
           question,
@@ -110,12 +110,10 @@ export default function ApplicantPage() {
   const { data: officerTimes } = api.admin.getAvailabilities.useQuery(
     {
       targetTeam:
-        ((applicant as any)?.interests?.interestedChallenge as
-          | "TSGC"
-          | "AIAA") ?? "TSGC",
+        ((applicant as Record<string, unknown>).interests as Record<string, unknown>).interestedChallenge as "TSGC" | "AIAA" | undefined ?? "TSGC",
     },
     {
-      enabled: !!(applicant as any)?.interests?.interestedChallenge,
+      enabled: !!((applicant as Record<string, unknown>).interests as Record<string, unknown>).interestedChallenge,
       staleTime: 60000, // Officer availability is less frequently updated
     },
   );
@@ -132,7 +130,7 @@ export default function ApplicantPage() {
 
   const getResumeURL = new URL("/api/get-resume", window.location.origin);
   const params = new URLSearchParams({
-    resumeId: applicant?.resume?.resumeId ?? "",
+    resumeId: applicant?.resume.resumeId ?? "",
     userEmail: session?.user.email ?? "",
   });
   getResumeURL.search = params.toString();
@@ -151,7 +149,7 @@ export default function ApplicantPage() {
     isLoading: isResumeLoading,
     isError: isResumeError,
   } = useQuery({
-    queryKey: ["get-resume", applicant?.resume?.resumeId, session?.user.email],
+    queryKey: ["get-resume", applicant?.resume.resumeId, session?.user.email],
     queryFn: getResume,
     enabled: !!applicant && !!session,
     staleTime: 5 * 60 * 1000, // Consider resume data fresh for 5 minutes
@@ -195,9 +193,9 @@ export default function ApplicantPage() {
             applicantName={applicant.personal.fullName}
             applicantEmail={applicant.personal.email}
             meetingTimes={applicant.meetingTimes}
-            resumeId={applicant.resume?.resumeId}
+            resumeId={applicant.resume.resumeId}
             interestedChallenge={
-              (applicant as any).interests?.interestedChallenge
+              ((applicant as Record<string, unknown>).interests as Record<string, unknown>).interestedChallenge as Challenge
             }
             officerTimes={officerTimes}
           />
@@ -220,7 +218,7 @@ export default function ApplicantPage() {
             </CardContent>
           )) ?? null}
         </Card>
-        {(applicant as any).interests?.isLeadership ? (
+        {((applicant as Record<string, unknown>).interests as Record<string, unknown>).isLeadership ? (
           <Card className="mb-4">
             <CardHeader>
               <H3>{q.leadership.title}</H3>

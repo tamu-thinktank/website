@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     // Get the applicationType from the URL query parameters
     const url = new URL(request.url);
     const applicationType =
-      url.searchParams.get("applicationType") || "OFFICER";
+      url.searchParams.get("applicationType") ?? "OFFICER";
 
     console.log(`Fetching statistics for application type: ${applicationType}`);
 
@@ -67,34 +67,26 @@ export async function GET(request: Request) {
     applications.forEach((app) => {
       // Count genders
       if (app.gender) {
-        genders[app.gender] = (genders[app.gender] || 0) + 1;
+        genders[app.gender] = (genders[app.gender] ?? 0) + 1;
         detailedData.genders.push({ name: app.fullName, value: app.gender });
       }
 
       // Count years
-      if (app.year) {
-        years[app.year] = (years[app.year] || 0) + 1;
-        detailedData.years.push({ name: app.fullName, value: app.year });
-      }
+      years[app.year] = (years[app.year] ?? 0) + 1;
+      detailedData.years.push({ name: app.fullName, value: app.year });
 
       // Count majors
-      if (app.major) {
-        majors[app.major] = (majors[app.major] || 0) + 1;
-        detailedData.majors.push({ name: app.fullName, value: app.major });
-      }
+      majors[app.major] = (majors[app.major] ?? 0) + 1;
+      detailedData.majors.push({ name: app.fullName, value: app.major });
 
       // Count referral sources
-      if (app.referral && Array.isArray(app.referral)) {
-        app.referral.forEach((ref) => {
-          referrals[ref] = (referrals[ref] || 0) + 1;
-          detailedData.referrals.push({ name: app.fullName, value: ref });
-        });
-      }
+      app.referral.forEach((ref) => {
+        referrals[ref] = (referrals[ref] ?? 0) + 1;
+        detailedData.referrals.push({ name: app.fullName, value: ref });
+      });
 
       // Count statuses
-      if (app.status) {
-        statusCounts[app.status] = (statusCounts[app.status] || 0) + 1;
-      }
+      statusCounts[app.status] = (statusCounts[app.status] ?? 0) + 1;
     });
 
     return NextResponse.json({

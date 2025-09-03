@@ -21,8 +21,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const validatedData = BatchBusyTimeSchema.parse(body);
 
-    const results: any[] = [];
-    const errors: any[] = [];
+    const results: Record<string, unknown>[] = [];
+    const errors: Record<string, unknown>[] = [];
 
     // Process operations in a transaction for consistency
     await db.$transaction(async (tx) => {
@@ -146,7 +146,7 @@ export async function POST(request: Request) {
               success: true,
               data: busyTime,
             });
-          } else if (op === "delete") {
+          } else {
             if (startTime && endTime) {
               // Delete specific time range
               const start = new Date(startTime);
@@ -280,7 +280,7 @@ export async function PUT(request: Request) {
       );
     }
 
-    const results: any[] = [];
+    const results: Record<string, unknown>[] = [];
 
     // Process in larger batches to handle multiple columns efficiently
     const BATCH_SIZE = 2000; // Process max 2000 slots at a time (can handle ~35 columns of 56 cells each)
@@ -325,7 +325,7 @@ export async function PUT(request: Request) {
                   interviewerId,
                   startTime: slotTime,
                   endTime: slotEndTime,
-                  reason: reason || "Busy",
+                  reason: reason ?? "Busy",
                 });
 
                 results.push({
@@ -359,7 +359,7 @@ export async function PUT(request: Request) {
               return slotTime;
             });
 
-            const deleted = await tx.interviewerBusyTime.deleteMany({
+            const _deleted = await tx.interviewerBusyTime.deleteMany({
               where: {
                 interviewerId,
                 startTime: { in: batchStartTimes },

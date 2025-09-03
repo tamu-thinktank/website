@@ -44,7 +44,7 @@ const BoxComponent: React.FC<BoxProps> = ({
     "Thermal, Mechanisms, and Structures",
     "MATE ROV Leadership",
   ];
-  const isOpen = openTeams.includes(teamName);
+  const _isOpen = openTeams.includes(teamName);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -194,8 +194,8 @@ const BoxComponent: React.FC<BoxProps> = ({
                 className={`
                   w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
                   text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                  ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
-                  ${isExpanded ? "max-w-[200px]" : "max-w-[420px]"}
+                  pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50
+                  max-w-[420px]
                 `}
               >
                 {/*{isOpen ? "Open" : "Closed"}*/}
@@ -311,8 +311,8 @@ const BoxComponent: React.FC<BoxProps> = ({
                   className={`
                     w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
                     text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                    ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
-                    ${isExpanded ? "max-w-[200px]" : "max-w-[420px]"}
+                    pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50
+                    max-w-[420px]
                   `}
                 >
                   {/*{isOpen ? "Open" : "Closed"}*/}

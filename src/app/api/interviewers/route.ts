@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { Challenge } from "@prisma/client";
 
 export async function GET() {
   try {
@@ -28,7 +27,7 @@ export async function GET() {
     );
     interviewers.forEach((interviewer) => {
       console.log(
-        `  - ${interviewer.name} (${interviewer.email}) - Teams: [${interviewer.targetTeams?.join(", ") || "none"}]`,
+        `  - ${interviewer.name} (${interviewer.email}) - Teams: [${interviewer.targetTeams.length > 0 ? interviewer.targetTeams.join(", ") : "none"}]`,
       );
     });
 
@@ -88,7 +87,7 @@ export async function PATCH(request: Request) {
     const updatedInterviewer = await db.user.update({
       where: { id: interviewerId },
       data: {
-        targetTeams: validTargetTeams || [], // Ensure we always provide an array
+        targetTeams: validTargetTeams ?? [], // Ensure we always provide an array
       },
       select: {
         id: true,

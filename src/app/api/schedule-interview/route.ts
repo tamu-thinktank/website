@@ -163,7 +163,7 @@ export async function POST(request: Request) {
               id: interview.id,
               startTime: interview.startTime,
               endTime: interview.endTime,
-              interviewerName: interview.interviewer?.name,
+              interviewerName: interview.interviewer.name,
               location: interview.location,
             })),
           },
@@ -262,7 +262,7 @@ export async function POST(request: Request) {
         teamId,
         isPlaceholder,
         placeholderName: isPlaceholder
-          ? applicantName || "Reserved Slot"
+          ? applicantName ?? "Reserved Slot"
           : null,
       },
       include: {
@@ -279,8 +279,8 @@ export async function POST(request: Request) {
 
     // Log the scheduling
     const logName = isPlaceholder
-      ? `Reserved slot (${applicantName || "No name"})`
-      : interview.applicant?.fullName || "Unknown applicant";
+      ? `Reserved slot (${applicantName ?? "No name"})`
+      : interview.applicant?.fullName ?? "Unknown applicant";
 
     console.log(
       `Interview scheduled for ${logName} with ${interviewer.name} at ${startTime.toLocaleString()} in ${location}`,
@@ -289,7 +289,7 @@ export async function POST(request: Request) {
     // Send emails to both interviewer and interviewee (if not a placeholder)
     if (!isPlaceholder && interview.applicant) {
       try {
-        const emailResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/send-interview-email`, {
+        const emailResponse = await fetch(`${process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/send-interview-email`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -300,7 +300,7 @@ export async function POST(request: Request) {
             applicantEmail: interview.applicant.email,
             startTime: startTime.toISOString(),
             location: location,
-            team: teamId || "General",
+            team: teamId ?? "General",
             applicationType: "General",
             sendToInterviewer: true,
             sendToInterviewee: true,
@@ -322,7 +322,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ...interview,
       applicantName: isPlaceholder
-        ? applicantName || "Reserved Slot"
+        ? applicantName ?? "Reserved Slot"
         : interview.applicant?.fullName,
     });
   } catch (error) {

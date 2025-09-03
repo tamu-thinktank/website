@@ -30,7 +30,7 @@ export async function POST(request: Request) {
         subject: "ThinkTank Application Update",
         template: RejectAppEmail({
           userFirstname:
-            validatedData.applicantName.split(" ")[0] ||
+            validatedData.applicantName.split(" ")[0] ??
             validatedData.applicantName,
         }),
       });

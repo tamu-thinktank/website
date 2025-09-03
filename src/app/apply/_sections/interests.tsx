@@ -16,7 +16,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { challenges, q } from "@/consts/apply-form";
-import type { RouterInputs } from "@/lib/trpc/shared";
+import type { RouterInputs as _RouterInputs } from "@/lib/trpc/shared";
 import Link from "next/link";
 import { useFormContext } from "react-hook-form";
 
@@ -94,17 +94,17 @@ export default function Interests() {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id={`checkbox-${challenge.id}`}
-                                checked={field.value.some(
+                                checked={(field.value as string[] | undefined)?.some(
                                   (value: string) => value === challenge.id,
-                                )}
+                                ) ?? false}
                                 onCheckedChange={(checked) => {
                                   return checked
                                     ? field.onChange([
-                                        ...field.value,
+                                        ...(field.value as string[] || []),
                                         challenge.id,
                                       ])
                                     : field.onChange(
-                                        field.value.filter(
+                                        (field.value as string[] || []).filter(
                                           (value: string) =>
                                             value !== challenge.id,
                                         ),
@@ -151,7 +151,7 @@ export default function Interests() {
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
-                    value={field.value}
+                    value={(field.value as string) || ""}
                   >
                     {challenges.map((challenge) => (
                       <FormItem>

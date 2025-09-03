@@ -74,7 +74,7 @@ export async function PATCH(
     }
 
     // Prepare update data with existing values as fallback
-    const updateData: any = {};
+    const updateData: Record<string, unknown> = {};
 
     if (validatedData.startTime !== undefined) {
       updateData.startTime = new Date(validatedData.startTime);
@@ -89,8 +89,8 @@ export async function PATCH(
     }
 
     // Validate time range if both times are provided or being updated
-    const finalStartTime = updateData.startTime || existingBusyTime.startTime;
-    const finalEndTime = updateData.endTime || existingBusyTime.endTime;
+    const finalStartTime = updateData.startTime ? updateData.startTime as Date : existingBusyTime.startTime;
+    const finalEndTime = updateData.endTime ? updateData.endTime as Date : existingBusyTime.endTime;
 
     if (finalStartTime >= finalEndTime) {
       return NextResponse.json(

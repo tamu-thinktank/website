@@ -37,7 +37,7 @@ import { ApplicationStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { api } from "@/lib/trpc/react";
+import { api as _api } from "@/lib/trpc/react";
 import {
   Popover,
   PopoverContent,
@@ -114,6 +114,32 @@ interface InterviewNote {
   id: string;
   applicantId: string;
   content: string;
+}
+
+interface InterviewData {
+  interviewer: {
+    id: string;
+    name: string;
+    email?: string;
+  };
+  startTime: string;
+  location?: string;
+}
+
+interface ErrorResponse {
+  error?: string;
+}
+
+interface AutoScheduleResult {
+  success?: boolean;
+  errors?: string[];
+  createdInterview?: {
+    id: string;
+    startTime: string;
+    interviewer: {
+      name: string;
+    };
+  };
 }
 
 interface ApplicantDetailsModalProps {
@@ -438,8 +464,8 @@ export const ApplicantDetailsModal = ({
     if (!selectedDate || !selectedTime) return "";
 
     const [hoursStr, minutesStr] = selectedTime.split(":");
-    const hours = Number.parseInt(hoursStr!, 10) || 0; // Default to 0 if parsing fails
-    const minutes = Number.parseInt(minutesStr!, 10) || 0; // Default to 0 if parsing fails
+    const hours = Number.parseInt(hoursStr ?? "0", 10) || 0; // Default to 0 if parsing fails
+    const minutes = Number.parseInt(minutesStr ?? "0", 10) || 0; // Default to 0 if parsing fails
 
     const dateTime = new Date(selectedDate);
     dateTime.setHours(hours, minutes, 0, 0);
@@ -697,7 +723,7 @@ export const ApplicantDetailsModal = ({
       }
 
       // Use fallback data if interview details are not available
-      if (!interviewData || !(interviewData as any).interviewer) {
+      if (!interviewData || !(interviewData as InterviewData).interviewer) {
         interviewData = {
           interviewer: {
             id: "fallback",
@@ -714,14 +740,14 @@ export const ApplicantDetailsModal = ({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          officerId: (interviewData as any).interviewer.id,
-          officerName: (interviewData as any).interviewer.name,
+          officerId: (interviewData as InterviewData).interviewer.id,
+          officerName: (interviewData as InterviewData).interviewer.name,
           officerEmail: "lucasvad123@gmail.com", // Updated to use test email
           applicantName: applicant.fullName,
           applicantEmail: applicant.email,
-          startTime: (interviewData as any).startTime,
-          location: (interviewData as any).location || "TBD",
-          team: applicant.assignedTeam || "",
+          startTime: (interviewData as InterviewData).startTime,
+          location: (interviewData as InterviewData).location ?? "TBD",
+          team: applicant.assignedTeam ?? "",
           applicationType: applicant.applicationType ?? "General",
         }),
       });
@@ -959,7 +985,7 @@ export const ApplicantDetailsModal = ({
         // Try to get more detailed error from response
         let errorMessage = "Failed to auto-schedule interview";
         try {
-          const errorData = (await response.json()) as any;
+          const errorData = (await response.json()) as ErrorResponse;
           if (errorData.error) {
             errorMessage = errorData.error;
           }
@@ -969,7 +995,7 @@ export const ApplicantDetailsModal = ({
         throw new Error(errorMessage);
       }
 
-      const result = (await response.json()) as any;
+      const result = (await response.json()) as AutoScheduleResult;
 
       // Check for errors in successful response
       if (result.errors && result.errors.length > 0) {

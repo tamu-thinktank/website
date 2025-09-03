@@ -15,7 +15,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { q } from "@/consts/apply-form";
-import type { RouterInputs } from "@/lib/trpc/shared";
+import type { RouterInputs as _RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
 export default function Leadership() {
@@ -49,7 +49,7 @@ export default function Leadership() {
                   <Textarea
                     placeholder="Long answer text"
                     {...field}
-                    value={field.value ?? ""}
+                    value={(field.value as string) || ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -78,7 +78,7 @@ export default function Leadership() {
                   <Textarea
                     placeholder="Long answer text"
                     {...field}
-                    value={field.value ?? ""}
+                    value={(field.value as string) || ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -108,7 +108,7 @@ export default function Leadership() {
                   <Textarea
                     placeholder="Long answer text"
                     {...field}
-                    value={field.value ?? ""}
+                    value={(field.value as string) || ""}
                   />
                 </FormControl>
                 <FormMessage />
@@ -135,7 +135,7 @@ export default function Leadership() {
                   <Textarea
                     placeholder="Long answer text"
                     {...field}
-                    value={field.value ?? ""}
+                    value={(field.value as string) || ""}
                   />
                 </FormControl>
                 <FormMessage />
