@@ -2,6 +2,31 @@
 
 The Interview Scheduler is the most complex component of the admin system, providing comprehensive tools for managing interview scheduling across multiple interviewers, time slots, and applicants.
 
+## How the Scheduler Works (Simple Explanation)
+
+Think of the scheduler like a big calendar grid where each row is a different interviewer and each column represents a day of the week. Each cell in this grid represents a 15-minute time slot.
+
+### The Basic Concept
+- **Time Slots**: Each day is divided into 15-minute chunks from 8:00 AM to 10:00 PM
+- **Interviews**: Each interview takes exactly 45 minutes (3 consecutive 15-minute slots)
+- **Color System**: 
+  - Green = Available for interviews
+  - Red = Already has an interview scheduled
+  - Yellow = Interviewer marked as busy
+  - Gray = Outside business hours or weekends
+
+### What Admins Can Do
+1. **Click and Schedule**: Click on any green slot to schedule an interview
+2. **Mark Busy**: Right-click to mark times when interviewers aren't available
+3. **Bulk Select**: Select multiple slots at once to mark many times busy/available
+4. **View Details**: Click on red slots to see interview information
+
+### The Smart Features
+- **Conflict Prevention**: System won't let you double-book anyone
+- **Email Magic**: Automatically sends different times to interviewer vs interviewee (15-minute buffer)
+- **Real-time Updates**: Changes appear immediately for all users
+- **Mobile Friendly**: Works on phones and tablets for on-the-go scheduling
+
 ## Overview
 
 **Location**: `/src/app/admin/scheduler/`  
@@ -309,21 +334,75 @@ const [contextMenu, setContextMenu] = useState<{
 
 ## Troubleshooting Common Issues
 
-### Scheduling Problems
-1. **"Cannot schedule in past" errors**: Check timezone handling
-2. **Conflict detection failures**: Verify database indexes
-3. **Email offset issues**: Test edge cases near business hours
+### Quick Fixes for Common Problems
 
-### Performance Issues  
-1. **Slow calendar loading**: Check Redis cache hit rates
-2. **UI lag during selection**: Profile React renders
-3. **API timeouts**: Analyze database query performance
+#### "Cannot Schedule Interviews in the Past" Error
+**What it means**: The system thinks you're trying to schedule an interview for a time that has already passed.
 
-### Data Consistency
-1. **Missing interviews**: Check transaction rollback scenarios
-2. **Duplicate emails**: Verify idempotency in email service
-3. **Cache staleness**: Review cache invalidation logic
+**Common causes**:
+- Your computer's clock is wrong
+- Timezone confusion (server vs local time)  
+- Clicking on a slot that's actually in the past due to page not refreshing
+
+**How to fix**:
+1. Refresh the page and try again
+2. Check your computer's date/time settings
+3. Make sure you're clicking on future time slots
+4. If problem persists, contact IT support
+
+#### Interviews Not Showing Up
+**What to check**:
+1. Make sure you're looking at the right date/week
+2. Check if the interviewer filter is set correctly
+3. Refresh the page - sometimes cache needs updating
+4. Verify the interview was actually saved (check for confirmation message)
+
+#### Emails Not Being Sent
+**Possible reasons**:
+1. Email service might be temporarily down
+2. Invalid email addresses in the system
+3. Emails might be going to spam folders
+4. Network connectivity issues
+
+**Solutions**:
+1. Check spam/junk folders first
+2. Verify email addresses are correct
+3. Try resending from the admin interface
+4. Contact system administrator if problem continues
+
+#### Slow Loading or Freezing
+**Performance tips**:
+1. Close other browser tabs to free up memory
+2. Clear browser cache and cookies
+3. Try using a different browser
+4. Check internet connection speed
+5. Avoid having multiple admin users modifying schedule simultaneously
+
+### Technical Troubleshooting
+
+#### For Developers/IT Support
+
+**Scheduling Problems**
+1. **"Cannot schedule in past" errors**: Check timezone handling in API validation
+2. **Conflict detection failures**: Verify database indexes on Interview table
+3. **Email offset issues**: Test edge cases near business hours (9:45 PM interviews)
+
+**Performance Issues**  
+1. **Slow calendar loading**: Check Redis cache hit rates and TTL settings
+2. **UI lag during selection**: Profile React renders and component re-mounting
+3. **API timeouts**: Analyze database query performance and connection pooling
+
+**Data Consistency**
+1. **Missing interviews**: Check transaction rollback scenarios and error handling
+2. **Duplicate emails**: Verify idempotency in email service and retry logic
+3. **Cache staleness**: Review cache invalidation logic and timing
+
+#### Emergency Procedures
+1. **System completely down**: Check server status, database connectivity, and Redis cache
+2. **Critical interview lost**: Check database backups and transaction logs
+3. **Mass email failure**: Verify email service credentials and rate limits
+4. **Data corruption**: Restore from latest backup and replay transactions if possible
 
 ---
 
-*The scheduler system is complex but well-architected. When making changes, always test the full interview workflow from scheduling to email delivery.*
+*The scheduler system is complex but well-architected. When making changes, always test the full interview workflow from scheduling to email delivery. For urgent issues during application season, contact system administrator immediately.*

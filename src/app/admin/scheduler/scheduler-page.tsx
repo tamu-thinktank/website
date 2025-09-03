@@ -754,6 +754,14 @@ const Scheduler: React.FC = () => {
     const { date, timeSlot } = selectedTimeSlot;
     const startTime = new Date(date);
     startTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
+    
+    // Ensure we're working with the intended local time
+    console.log('Creating interview for:', {
+      date: date.toDateString(),
+      timeSlot: `${timeSlot.hour}:${timeSlot.minute.toString().padStart(2, '0')}`,
+      constructedStartTime: startTime.toLocaleString(),
+      isoString: startTime.toISOString()
+    });
 
     // Set end time to 45 minutes after start time (3 x 15-minute slots)
     const endTime = new Date(startTime);

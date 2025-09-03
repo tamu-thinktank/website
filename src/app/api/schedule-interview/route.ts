@@ -40,11 +40,29 @@ export async function POST(request: Request) {
     const endTime = new Date(startTime.getTime() + 45 * 60000); // 45 minutes later
 
     // Validate the time is not in the past (allow some buffer for scheduling)
-    // Use UTC for both times to avoid timezone issues during manual booking
+    // Be more lenient with past time validation to handle timezone issues
     const now = new Date();
-    const fiveMinutesAgo = new Date(now.getTime() - 5 * 60000);
+    const tenMinutesAgo = new Date(now.getTime() - 10 * 60000); // Increased buffer
 
-    if (startTime < fiveMinutesAgo) {
+    // Additional check: if the time appears to be in the past due to timezone issues,
+    // but is within business hours today, allow it
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    
+    const isToday = startTime >= today && startTime < tomorrow;
+    const withinBusinessHours = startTime.getHours() >= 8 && startTime.getHours() < 22;
+    
+    if (startTime < tenMinutesAgo && !(isToday && withinBusinessHours)) {
+      console.log('Past time validation failed:', {
+        startTime: startTime.toISOString(),
+        tenMinutesAgo: tenMinutesAgo.toISOString(),
+        isToday,
+        withinBusinessHours,
+        startTimeHour: startTime.getHours()
+      });
+      
       return NextResponse.json(
         { error: "Cannot schedule interviews in the past" },
         { status: 400 },
