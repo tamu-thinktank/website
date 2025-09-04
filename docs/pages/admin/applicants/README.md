@@ -143,4 +143,4 @@ The Applicants admin page provides comprehensive tools for reviewing, filtering,
 
 ---
 
-*The Applicants page handles sensitive student information. Always prioritize data privacy and provide clear audit trails for all administrative actions.*
+_The Applicants page handles sensitive student information. Always prioritize data privacy and provide clear audit trails for all administrative actions._

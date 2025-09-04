@@ -50,19 +50,20 @@ export async function POST(request: Request) {
     today.setHours(0, 0, 0, 0);
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     const isToday = startTime >= today && startTime < tomorrow;
-    const withinBusinessHours = startTime.getHours() >= 8 && startTime.getHours() < 22;
-    
+    const withinBusinessHours =
+      startTime.getHours() >= 8 && startTime.getHours() < 22;
+
     if (startTime < tenMinutesAgo && !(isToday && withinBusinessHours)) {
-      console.log('Past time validation failed:', {
+      console.log("Past time validation failed:", {
         startTime: startTime.toISOString(),
         tenMinutesAgo: tenMinutesAgo.toISOString(),
         isToday,
         withinBusinessHours,
-        startTimeHour: startTime.getHours()
+        startTimeHour: startTime.getHours(),
       });
-      
+
       return NextResponse.json(
         { error: "Cannot schedule interviews in the past" },
         { status: 400 },
@@ -73,7 +74,7 @@ export async function POST(request: Request) {
     // Convert to local time for business hours validation
     const localStartTime = new Date(startTime.getTime());
     const localEndTime = new Date(endTime.getTime());
-    
+
     const hour = localStartTime.getHours();
     if (hour < 8 || hour >= 22) {
       return NextResponse.json(
@@ -262,16 +263,16 @@ export async function POST(request: Request) {
         teamId,
         isPlaceholder,
         placeholderName: isPlaceholder
-          ? applicantName ?? "Reserved Slot"
+          ? (applicantName ?? "Reserved Slot")
           : null,
       },
       include: {
         applicant: isPlaceholder
           ? false
           : {
-              select: { 
+              select: {
                 fullName: true,
-                email: true
+                email: true,
               },
             },
       },
@@ -280,7 +281,7 @@ export async function POST(request: Request) {
     // Log the scheduling
     const logName = isPlaceholder
       ? `Reserved slot (${applicantName ?? "No name"})`
-      : interview.applicant?.fullName ?? "Unknown applicant";
+      : (interview.applicant?.fullName ?? "Unknown applicant");
 
     console.log(
       `Interview scheduled for ${logName} with ${interviewer.name} at ${startTime.toLocaleString()} in ${location}`,
@@ -289,27 +290,33 @@ export async function POST(request: Request) {
     // Send emails to both interviewer and interviewee (if not a placeholder)
     if (!isPlaceholder && interview.applicant) {
       try {
-        const emailResponse = await fetch(`${process.env.NEXTAUTH_URL ?? 'http://localhost:3000'}/api/send-interview-email`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            officerId: interviewer.id,
-            officerName: interviewer.name,
-            officerEmail: interviewer.email,
-            applicantName: interview.applicant.fullName,
-            applicantEmail: interview.applicant.email,
-            startTime: startTime.toISOString(),
-            location: location,
-            team: teamId ?? "General",
-            applicationType: "General",
-            sendToInterviewer: true,
-            sendToInterviewee: true,
-            intervieweeTimeOffset: 15, // 15-minute offset for interviewee
-          }),
-        });
+        const emailResponse = await fetch(
+          `${process.env.NEXTAUTH_URL ?? "http://localhost:3000"}/api/send-interview-email`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              officerId: interviewer.id,
+              officerName: interviewer.name,
+              officerEmail: interviewer.email,
+              applicantName: interview.applicant.fullName,
+              applicantEmail: interview.applicant.email,
+              startTime: startTime.toISOString(),
+              location: location,
+              team: teamId ?? "General",
+              applicationType: "General",
+              sendToInterviewer: true,
+              sendToInterviewee: true,
+              intervieweeTimeOffset: 15, // 15-minute offset for interviewee
+            }),
+          },
+        );
 
         if (!emailResponse.ok) {
-          console.error("Failed to send interview emails:", await emailResponse.text());
+          console.error(
+            "Failed to send interview emails:",
+            await emailResponse.text(),
+          );
         } else {
           console.log("✅ Interview emails sent successfully");
         }
@@ -322,7 +329,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       ...interview,
       applicantName: isPlaceholder
-        ? applicantName ?? "Reserved Slot"
+        ? (applicantName ?? "Reserved Slot")
         : interview.applicant?.fullName,
     });
   } catch (error) {

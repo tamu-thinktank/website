@@ -131,15 +131,55 @@ interface ErrorResponse {
 }
 
 interface AutoScheduleResult {
-  success?: boolean;
-  errors?: string[];
-  createdInterview?: {
-    id: string;
-    startTime: string;
+  success: boolean;
+  matches: {
+    interviewerId: string;
+    name: string;
+    email?: string;
+    targetTeams: string[];
+    matchScore: number;
+    availableSlots: {
+      hour: number;
+      minute: number;
+      date: string; // serialized Date from API
+      timestamp?: number;
+    }[];
+    conflicts: string[];
+  }[];
+  suggestedSlot?: {
     interviewer: {
+      interviewerId: string;
       name: string;
+      email?: string;
+      targetTeams: string[];
+      matchScore: number;
+      availableSlots: {
+        hour: number;
+        minute: number;
+        date: string;
+        timestamp?: number;
+      }[];
+      conflicts: string[];
+    };
+    slot: {
+      hour: number;
+      minute: number;
+      date: string; // serialized Date from API
+      timestamp?: number;
     };
   };
+  createdInterview?: {
+    id: string;
+    applicantId: string;
+    interviewerId: string;
+    startTime: string; // serialized Date from API
+    endTime: string; // serialized Date from API
+    location: string;
+    teamId?: string;
+    applicantName: string;
+    interviewerName: string;
+  };
+  errors: string[];
 }
 
 interface ApplicantDetailsModalProps {
@@ -284,7 +324,7 @@ export const ApplicantDetailsModal = ({
   useEffect(() => {
     if (applicant) {
       setAssignedTeam(applicant.assignedTeam ?? "NONE");
-      setApplicantRating(applicant.rating || null);
+      setApplicantRating(applicant.rating ?? null);
     }
   }, [applicant]);
 
@@ -723,7 +763,7 @@ export const ApplicantDetailsModal = ({
       }
 
       // Use fallback data if interview details are not available
-      if (!interviewData || !(interviewData as InterviewData).interviewer) {
+      if (!interviewData) {
         interviewData = {
           interviewer: {
             id: "fallback",
@@ -858,8 +898,8 @@ export const ApplicantDetailsModal = ({
         if (!prev) return null;
         return {
           ...prev,
-          assignedTeam: newTeam || undefined,
-          status: (newStatus as typeof prev.status) || prev.status,
+          assignedTeam: newTeam ?? undefined,
+          status: prev.status,
         };
       });
 
@@ -998,7 +1038,7 @@ export const ApplicantDetailsModal = ({
       const result = (await response.json()) as AutoScheduleResult;
 
       // Check for errors in successful response
-      if (result.errors && result.errors.length > 0) {
+      if (result.errors.length > 0) {
         const errorMessage = result.errors.join(", ");
         throw new Error(errorMessage);
       }
@@ -1028,37 +1068,39 @@ export const ApplicantDetailsModal = ({
         const { interviewer, slot } = result.suggestedSlot;
 
         // Auto-fill the form with the suggested slot
-        setSelectedInterviewer(interviewer?.interviewerId);
-        setSelectedDate(new Date(slot?.date));
+        setSelectedInterviewer(interviewer.interviewerId);
+        setSelectedDate(new Date(slot.date));
         setSelectedTime(
-          `${slot?.hour}:${slot?.minute?.toString().padStart(2, "0")}`,
+          `${slot.hour}:${slot.minute.toString().padStart(2, "0")}`,
         );
 
         toast({
           title: "Auto-Schedule Suggestion",
-          description: `Found match with ${interviewer?.name} on ${new Date(slot?.date).toLocaleDateString()} at ${slot?.hour}:${slot?.minute?.toString().padStart(2, "0")}. Please review and confirm manually.`,
+          description: `Found match with ${interviewer.name} on ${new Date(slot.date).toLocaleDateString()} at ${slot.hour}:${slot.minute.toString().padStart(2, "0")}. Please review and confirm manually.`,
           variant: "default",
         });
       } else {
         // Show all available matches
-        if (result?.matches && result?.matches?.length > 0) {
-          const topMatch = result.matches[0];
-          if (topMatch?.availableSlots?.length > 0) {
-            const firstSlot = topMatch.availableSlots[0];
-            setSelectedInterviewer(topMatch?.interviewerId);
-            setSelectedDate(new Date(firstSlot?.date));
+        const matches = result.matches;
+        const [topMatch] = matches;
+        if (topMatch) {
+          const slots = topMatch.availableSlots;
+          const [firstSlot] = slots;
+          if (firstSlot) {
+            setSelectedInterviewer(topMatch.interviewerId);
+            setSelectedDate(new Date(firstSlot.date));
             setSelectedTime(
-              `${firstSlot?.hour}:${firstSlot?.minute?.toString().padStart(2, "0")}`,
+              `${firstSlot.hour}:${firstSlot.minute.toString().padStart(2, "0")}`,
             );
 
             toast({
               title: "Auto-Schedule Suggestion",
-              description: `Found partial match with ${topMatch?.name}. ${result?.matches?.length} interviewer(s) available. Please review the suggestion.`,
+              description: `Found partial match with ${topMatch.name}. ${matches.length} interviewer(s) available. Please review the suggestion.`,
             });
           } else {
             toast({
               title: "No Available Slots",
-              description: `Found ${result?.matches?.length} matching interviewer(s) but no available time slots. Please schedule manually.`,
+              description: `Found ${matches.length} matching interviewer(s) but no available time slots. Please schedule manually.`,
               variant: "destructive",
             });
           }
@@ -1787,7 +1829,7 @@ export const ApplicantDetailsModal = ({
                   </Button>
 
                   {/* Send Interview Email button - always show if interview is scheduled */}
-                  {applicant &&
+                  {
                     applicant.status === ApplicationStatus.INTERVIEWING && (
                       <Button
                         variant="outline"

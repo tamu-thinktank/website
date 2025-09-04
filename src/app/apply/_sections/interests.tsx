@@ -94,17 +94,21 @@ export default function Interests() {
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id={`checkbox-${challenge.id}`}
-                                checked={(field.value as string[] | undefined)?.some(
-                                  (value: string) => value === challenge.id,
-                                ) ?? false}
+                                checked={
+                                  (field.value as string[] | undefined)?.some(
+                                    (value: string) => value === challenge.id,
+                                  ) ?? false
+                                }
                                 onCheckedChange={(checked) => {
                                   return checked
                                     ? field.onChange([
-                                        ...(field.value as string[] || []),
+                                        ...((field.value as string[]) || []),
                                         challenge.id,
                                       ])
                                     : field.onChange(
-                                        (field.value as string[] || []).filter(
+                                        (
+                                          (field.value as string[]) || []
+                                        ).filter(
                                           (value: string) =>
                                             value !== challenge.id,
                                         ),

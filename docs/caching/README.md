@@ -21,7 +21,7 @@ const redis = new Redis({
   password: process.env.REDIS_PASSWORD,
   retryDelayOnFailover: 100,
   maxRetriesPerRequest: 3,
-  lazyConnect: true
+  lazyConnect: true,
 });
 ```
 
@@ -33,7 +33,7 @@ Redis Cache
 │   ├── applicants:pending-rejected (TTL: 5min)
 │   ├── applicants:interviewing (TTL: 10min)
 │   └── applicants:count:* (TTL: 1hour)
-├── Interview Scheduling  
+├── Interview Scheduling
 │   ├── interviews:${date}:${interviewerId} (TTL: 1hour)
 │   ├── busy-times:${date}:${interviewerId} (TTL: 30min)
 │   └── scheduler:conflicts:${hash} (TTL: 5min)
@@ -54,23 +54,37 @@ Redis Cache
 // /src/lib/redis.ts
 export class SchedulerCache {
   private static redis = new Redis(config);
-  
+
   // Applicant data caching
-  static async getApplicants(status: string): Promise<any[] | null>
-  static async setApplicants(status: string, data: any[], ttl?: number): Promise<void>
-  
+  static async getApplicants(status: string): Promise<any[] | null>;
+  static async setApplicants(
+    status: string,
+    data: any[],
+    ttl?: number,
+  ): Promise<void>;
+
   // Interview scheduling cache
-  static async getInterviewSchedule(date: string, interviewerId: string): Promise<any[] | null>
-  static async setInterviewSchedule(date: string, interviewerId: string, data: any[]): Promise<void>
-  
+  static async getInterviewSchedule(
+    date: string,
+    interviewerId: string,
+  ): Promise<any[] | null>;
+  static async setInterviewSchedule(
+    date: string,
+    interviewerId: string,
+    data: any[],
+  ): Promise<void>;
+
   // Statistics caching
-  static async getStats(key: string): Promise<any | null>
-  static async setStats(key: string, data: any, ttl: number): Promise<void>
-  
+  static async getStats(key: string): Promise<any | null>;
+  static async setStats(key: string, data: any, ttl: number): Promise<void>;
+
   // Cache invalidation
-  static async invalidatePattern(pattern: string): Promise<void>
-  static async invalidateApplicants(): Promise<void>
-  static async invalidateScheduler(date?: string, interviewerId?: string): Promise<void>
+  static async invalidatePattern(pattern: string): Promise<void>;
+  static async invalidateApplicants(): Promise<void>;
+  static async invalidateScheduler(
+    date?: string,
+    interviewerId?: string,
+  ): Promise<void>;
 }
 ```
 
@@ -252,25 +266,25 @@ await SchedulerCache.invalidatePattern("busy-times:*");
 // Implementation example
 export async function POST(request: Request) {
   const { type, keys } = await request.json();
-  
+
   switch (type) {
-    case 'applicants':
+    case "applicants":
       await SchedulerCache.invalidateApplicants();
       break;
-    case 'scheduler':
-      await SchedulerCache.invalidatePattern('interviews:*');
-      await SchedulerCache.invalidatePattern('busy-times:*');
+    case "scheduler":
+      await SchedulerCache.invalidatePattern("interviews:*");
+      await SchedulerCache.invalidatePattern("busy-times:*");
       break;
-    case 'stats':
-      await SchedulerCache.invalidatePattern('stats:*');
+    case "stats":
+      await SchedulerCache.invalidatePattern("stats:*");
       break;
-    case 'specific':
+    case "specific":
       for (const key of keys) {
         await SchedulerCache.redis.del(key);
       }
       break;
   }
-  
+
   return NextResponse.json({ success: true });
 }
 ```
@@ -286,10 +300,14 @@ export async function POST(request: Request) {
 class CacheMetrics {
   static hits = 0;
   static misses = 0;
-  
-  static recordHit() { this.hits++; }
-  static recordMiss() { this.misses++; }
-  
+
+  static recordHit() {
+    this.hits++;
+  }
+  static recordMiss() {
+    this.misses++;
+  }
+
   static getHitRate() {
     return this.hits / (this.hits + this.misses);
   }
@@ -314,11 +332,11 @@ class CacheMetrics {
 // Cache monitoring wrapper
 static async getWithMetrics<T>(key: string): Promise<T | null> {
   const startTime = performance.now();
-  
+
   try {
     const result = await this.redis.get(key);
     const duration = performance.now() - startTime;
-  
+
     if (result) {
       CacheMetrics.recordHit();
       console.log(`Cache HIT for ${key} (${duration.toFixed(2)}ms)`);
@@ -346,10 +364,10 @@ static async getWithMetrics<T>(key: string): Promise<T | null> {
 static async setOptimized(key: string, data: any, ttl: number) {
   // Remove unnecessary fields before caching
   const optimizedData = this.stripUnnecessaryFields(data);
-  
+
   // Compress large datasets
   const compressed = this.compress(JSON.stringify(optimizedData));
-  
+
   await this.redis.setex(key, ttl, compressed);
 }
 
@@ -375,17 +393,17 @@ private static stripUnnecessaryFields(data: any[]) {
 class CacheWarmer {
   static async warmCriticalData() {
     // Pre-load today's interviews for all active interviewers
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     const interviewers = await getActiveInterviewers();
-  
+
     for (const interviewer of interviewers) {
       await this.preloadInterviewSchedule(today, interviewer.id);
     }
-  
+
     // Pre-load pending applicants for admin dashboard
     await this.preloadPendingApplicants();
   }
-  
+
   static async preloadInterviewSchedule(date: string, interviewerId: string) {
     const interviews = await getInterviewsFromDB(date, interviewerId);
     await SchedulerCache.setInterviewSchedule(date, interviewerId, interviews);
@@ -401,7 +419,7 @@ class CacheWarmer {
 // Hot data - frequently accessed, short TTL
 const HOT_CACHE_TTL = 300; // 5 minutes
 
-// Warm data - moderately accessed, medium TTL  
+// Warm data - moderately accessed, medium TTL
 const WARM_CACHE_TTL = 3600; // 1 hour
 
 // Cold data - rarely accessed, long TTL
@@ -409,10 +427,10 @@ const COLD_CACHE_TTL = 86400; // 24 hours
 
 // Usage example
 static async setWithTier(key: string, data: any, tier: 'hot' | 'warm' | 'cold') {
-  const ttl = tier === 'hot' ? HOT_CACHE_TTL : 
-               tier === 'warm' ? WARM_CACHE_TTL : 
+  const ttl = tier === 'hot' ? HOT_CACHE_TTL :
+               tier === 'warm' ? WARM_CACHE_TTL :
                COLD_CACHE_TTL;
-  
+
   await this.redis.setex(`${tier}:${key}`, ttl, JSON.stringify(data));
 }
 ```
@@ -432,18 +450,18 @@ static async getWithFallback<T>(key: string, fallbackFn: () => Promise<T>): Prom
   } catch (cacheError) {
     console.warn(`Cache read failed for ${key}:`, cacheError);
   }
-  
+
   // Fallback to database
   try {
     const fresh = await fallbackFn();
-  
+
     // Try to cache the result (don't fail if cache write fails)
     try {
       await this.setWithTTL(key, fresh, 300);
     } catch (cacheWriteError) {
       console.warn(`Cache write failed for ${key}:`, cacheWriteError);
     }
-  
+
     return fresh;
   } catch (dbError) {
     console.error(`Both cache and database failed for ${key}:`, dbError);
@@ -482,11 +500,11 @@ static async getWithFallback<T>(key: string, fallbackFn: () => Promise<T>): Prom
 
 ```typescript
 // Pattern: {category}:{subcategory}:{identifier}
-'applicants:pending-rejected'           // Application lists
-'interviews:2024-03-15:user123'        // Interview schedules  
-'busy-times:2024-03-15:user123'        // Busy time blocks
-'stats:daily:2024-03-15'               // Daily statistics
-'session:user123'                      // User sessions
+"applicants:pending-rejected"; // Application lists
+"interviews:2024-03-15:user123"; // Interview schedules
+"busy-times:2024-03-15:user123"; // Busy time blocks
+"stats:daily:2024-03-15"; // Daily statistics
+"session:user123"; // User sessions
 ```
 
 ### TTL Selection Guidelines
@@ -501,18 +519,18 @@ static async getWithFallback<T>(key: string, fallbackFn: () => Promise<T>): Prom
 
 ```typescript
 // Mock Redis for testing
-jest.mock('ioredis', () => {
+jest.mock("ioredis", () => {
   return class MockRedis {
     private store = new Map();
-  
+
     async get(key: string) {
       return this.store.get(key) || null;
     }
-  
+
     async setex(key: string, ttl: number, value: string) {
       this.store.set(key, value);
     }
-  
+
     async del(key: string) {
       this.store.delete(key);
     }
@@ -522,4 +540,4 @@ jest.mock('ioredis', () => {
 
 ---
 
-*Effective caching is crucial for application performance. Monitor cache hit rates and adjust TTL values based on usage patterns.*
+_Effective caching is crucial for application performance. Monitor cache hit rates and adjust TTL values based on usage patterns._

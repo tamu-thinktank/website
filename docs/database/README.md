@@ -5,7 +5,7 @@ Complete guide to the database architecture, schema design, and common operation
 ## Database Overview
 
 **Database**: PostgreSQL 15+
-**ORM**: Prisma 
+**ORM**: Prisma
 **Schema Location**: `/prisma/schema.prisma`
 **Migrations**: `/prisma/migrations/`
 
@@ -42,7 +42,7 @@ model User {
   role                 UserRole   @default(USER)
   createdAt            DateTime   @default(now())
   updatedAt            DateTime   @updatedAt
-  
+
   // Relations
   accounts             Account[]
   sessions             Session[]
@@ -53,7 +53,7 @@ model User {
 
 enum UserRole {
   USER          // Regular applicant
-  INTERVIEWER   // Can conduct interviews  
+  INTERVIEWER   // Can conduct interviews
   OFFICER       // Team leadership
   ADMIN         // Full system access
 }
@@ -80,24 +80,24 @@ model Application {
   assignedTeam         String?
   submittedAt          DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
-  
+
   // Application-specific fields
   resumeUrl            String?
   portfolioUrl         String?
   linkedinUrl          String?
   githubUrl            String?
   personalWebsite      String?
-  
+
   // Experience and motivation
   previousExperience   String?
   whyJoinThinkTank    String?
   designExperience     String?
   programmingLanguages String[]
   softwareTools        String[]
-  
+
   // Availability matrix (JSON)
   availability         Json?
-  
+
   // Relations
   interviews           Interview[]
   subteamPreferences   SubteamPreference[]
@@ -128,10 +128,10 @@ model SubteamPreference {
   applicationId String
   subteam       OfficerPosition
   priority      Int
-  
-  // Relations  
+
+  // Relations
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  
+
   @@unique([applicationId, subteam])
   @@index([applicationId, priority])
 }
@@ -157,12 +157,12 @@ model Interview {
   placeholderName String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
-  
+
   // Relations
   applicant       Application? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
   interviewer     User         @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
   notes          InterviewNote[]
-  
+
   @@index([interviewerId, startTime, endTime])
   @@index([applicantId, startTime])
   @@index([startTime])
@@ -183,10 +183,10 @@ model InterviewerBusyTime {
   endTime       DateTime
   reason        String?
   createdAt     DateTime @default(now())
-  
+
   // Relations
   interviewer   User     @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
-  
+
   @@index([interviewerId, startTime, endTime])
 }
 ```
@@ -202,10 +202,10 @@ model InterviewerTeamPriority {
   interviewerId String
   teamId        OfficerPosition
   priority      Int
-  
+
   // Relations
   interviewer   User           @relation(fields: [interviewerId], references: [id], onDelete: Cascade)
-  
+
   @@unique([interviewerId, teamId])
   @@index([interviewerId, priority])
 }
@@ -225,11 +225,11 @@ model InterviewNote {
   rating        Int?        // 1-10 scale
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  
+
   // Relations
   interview     Interview   @relation(fields: [interviewId], references: [id], onDelete: Cascade)
   application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  
+
   @@index([interviewId])
   @@index([applicationId])
 }
@@ -249,21 +249,21 @@ enum OfficerPosition {
   VICE_PRESIDENT
   SECRETARY
   TREASURER
-  
+
   // Technical Teams
   SOFTWARE_TEAM
-  ELECTRICAL_TEAM  
+  ELECTRICAL_TEAM
   MECHANICAL_TEAM
   MATEROV_TEAM
-  
+
   // Functional Teams
   MARKETING_TEAM
   OPERATIONS_TEAM
   OUTREACH_TEAM
-  
+
   // Competition-specific
   MINIDC_TEAM
-  
+
   // Special Roles
   GENERAL_MEMBER
 }
@@ -282,14 +282,14 @@ User (Interviewer)
 ├── InterviewerBusyTime (many) - Availability management
 └── InterviewerTeamPriority (many) - Team assignments
 
-Application (Applicant)  
+Application (Applicant)
 ├── Interview (many) - Scheduled interviews
 ├── SubteamPreference (many) - Team preferences
 └── InterviewNote (many) - Interview feedback
 
 Interview
 ├── Application (one) - Applicant being interviewed
-├── User (one) - Interviewer conducting  
+├── User (one) - Interviewer conducting
 └── InterviewNote (many) - Interview feedback
 ```
 
@@ -308,14 +308,14 @@ Interview
 ```typescript
 const pendingApplicants = await prisma.application.findMany({
   where: {
-    status: 'PENDING'
+    status: "PENDING",
   },
   include: {
     subteamPreferences: {
-      orderBy: { priority: 'asc' }
-    }
+      orderBy: { priority: "asc" },
+    },
   },
-  orderBy: { submittedAt: 'asc' }
+  orderBy: { submittedAt: "asc" },
 });
 ```
 
@@ -325,10 +325,10 @@ const pendingApplicants = await prisma.application.findMany({
 const updatedApplication = await prisma.application.update({
   where: { id: applicationId },
   data: {
-    status: 'INTERVIEWING',
+    status: "INTERVIEWING",
     assignedTeam: teamId,
-    updatedAt: new Date()
-  }
+    updatedAt: new Date(),
+  },
 });
 ```
 
@@ -340,16 +340,13 @@ const updatedApplication = await prisma.application.update({
 const conflicts = await prisma.interview.findMany({
   where: {
     interviewerId: interviewerId,
-    AND: [
-      { startTime: { lt: endTime } },
-      { endTime: { gt: startTime } }
-    ]
+    AND: [{ startTime: { lt: endTime } }, { endTime: { gt: startTime } }],
   },
   include: {
     applicant: {
-      select: { fullName: true }
-    }
-  }
+      select: { fullName: true },
+    },
+  },
 });
 ```
 
@@ -361,15 +358,15 @@ const schedule = await prisma.interview.findMany({
     interviewerId: interviewerId,
     startTime: {
       gte: startOfDay,
-      lt: endOfDay
-    }
+      lt: endOfDay,
+    },
   },
   include: {
     applicant: {
-      select: { fullName: true, email: true }
-    }
+      select: { fullName: true, email: true },
+    },
   },
-  orderBy: { startTime: 'asc' }
+  orderBy: { startTime: "asc" },
 });
 ```
 
@@ -381,12 +378,9 @@ const schedule = await prisma.interview.findMany({
 const busyTimes = await prisma.interviewerBusyTime.findMany({
   where: {
     interviewerId: interviewerId,
-    AND: [
-      { startTime: { gte: startOfWeek } },
-      { endTime: { lte: endOfWeek } }
-    ]
+    AND: [{ startTime: { gte: startOfWeek } }, { endTime: { lte: endOfWeek } }],
   },
-  orderBy: { startTime: 'asc' }
+  orderBy: { startTime: "asc" },
 });
 ```
 
@@ -399,17 +393,17 @@ await prisma.$transaction([
     where: {
       interviewerId: interviewerId,
       // Complex date range conditions
-    }
+    },
   }),
   // Insert new busy times
   prisma.interviewerBusyTime.createMany({
-    data: busyTimeSlots.map(slot => ({
+    data: busyTimeSlots.map((slot) => ({
       interviewerId: interviewerId,
       startTime: slot.startTime,
       endTime: slot.endTime,
-      reason: 'Marked as busy'
-    }))
-  })
+      reason: "Marked as busy",
+    })),
+  }),
 ]);
 ```
 
@@ -448,9 +442,9 @@ CREATE INDEX idx_application_submitted ON Application (submittedAt, status);
 const applications = await prisma.application.findMany({
   include: {
     subteamPreferences: {
-      select: { subteam: true, priority: true }
-    }
-  }
+      select: { subteam: true, priority: true },
+    },
+  },
 });
 
 // Bad - Includes unnecessary data
@@ -458,8 +452,8 @@ const applications = await prisma.application.findMany({
   include: {
     subteamPreferences: true,
     interviews: true,
-    notes: true
-  }
+    notes: true,
+  },
 });
 ```
 
@@ -469,7 +463,7 @@ const applications = await prisma.application.findMany({
 const applications = await prisma.application.findMany({
   skip: page * pageSize,
   take: pageSize,
-  orderBy: { submittedAt: 'desc' }
+  orderBy: { submittedAt: "desc" },
 });
 ```
 
@@ -479,9 +473,9 @@ const applications = await prisma.application.findMany({
 // Use aggregate for counts
 const stats = await prisma.application.aggregate({
   _count: {
-    id: true
+    id: true,
   },
-  where: { status: 'PENDING' }
+  where: { status: "PENDING" },
 });
 ```
 
@@ -495,30 +489,27 @@ const interview = await prisma.$transaction(async (tx) => {
   const conflicts = await tx.interview.findMany({
     where: {
       interviewerId: data.interviewerId,
-      AND: [
-        { startTime: { lt: endTime } },
-        { endTime: { gt: startTime } }
-      ]
-    }
+      AND: [{ startTime: { lt: endTime } }, { endTime: { gt: startTime } }],
+    },
   });
-  
+
   if (conflicts.length > 0) {
-    throw new Error('Time conflict detected');
+    throw new Error("Time conflict detected");
   }
-  
+
   // Create interview
   const newInterview = await tx.interview.create({
-    data: interviewData
+    data: interviewData,
   });
-  
+
   // Update application status if needed
   if (!data.isPlaceholder) {
     await tx.application.update({
       where: { id: data.applicantId },
-      data: { status: 'INTERVIEWING' }
+      data: { status: "INTERVIEWING" },
     });
   }
-  
+
   return newInterview;
 });
 ```
@@ -529,15 +520,15 @@ const interview = await prisma.$transaction(async (tx) => {
 await prisma.$transaction([
   // Multiple related operations
   prisma.interviewerBusyTime.deleteMany({
-    where: { interviewerId: id }
+    where: { interviewerId: id },
   }),
   prisma.interviewerBusyTime.createMany({
-    data: newBusyTimes
+    data: newBusyTimes,
   }),
   prisma.interviewerTeamPriority.updateMany({
     where: { interviewerId: id },
-    data: { priority: newPriority }
-  })
+    data: { priority: newPriority },
+  }),
 ]);
 ```
 
@@ -557,10 +548,10 @@ await prisma.$transaction([
 const seedData = async () => {
   await prisma.officerPosition.createMany({
     data: [
-      { name: 'SOFTWARE_TEAM', displayName: 'Software Team' },
-      { name: 'MECHANICAL_TEAM', displayName: 'Mechanical Team' },
+      { name: "SOFTWARE_TEAM", displayName: "Software Team" },
+      { name: "MECHANICAL_TEAM", displayName: "Mechanical Team" },
       // ... more teams
-    ]
+    ],
   });
 };
 ```
@@ -579,7 +570,7 @@ const seedData = async () => {
 # Create backup
 pg_dump -h host -U user -d database > backup.sql
 
-# Restore backup  
+# Restore backup
 psql -h host -U user -d database < backup.sql
 ```
 
@@ -601,4 +592,4 @@ psql -h host -U user -d database < backup.sql
 
 ---
 
-*Database schema changes should always be reviewed by the team and tested thoroughly before deployment to production.*
+_Database schema changes should always be reviewed by the team and tested thoroughly before deployment to production._

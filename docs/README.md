@@ -95,4 +95,4 @@ For questions or issues:
 
 ---
 
-*Last updated: $(date)*
+_Last updated: $(date)_

@@ -536,9 +536,7 @@ export const IntervieweesPage: React.FC = () => {
                                 )}
                               </div>
                             );
-                          } else if (
-                            applicant.interests.length > 0
-                          ) {
+                          } else if (applicant.interests.length > 0) {
                             // For other applications, show research interests
                             const displayItems = applicant.interests.slice(
                               0,
@@ -570,9 +568,7 @@ export const IntervieweesPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Team Rankings Display */}
                         {(() => {
-                          if (
-                            applicant.subTeam.length > 0
-                          ) {
+                          if (applicant.subTeam.length > 0) {
                             const displayItems = applicant.subTeam.slice(0, 2);
                             const remainingCount = applicant.subTeam.length - 2;
                             return (

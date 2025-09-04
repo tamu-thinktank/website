@@ -83,7 +83,10 @@ export const ApplicantsPage: React.FC = () => {
         throw new Error("Failed to fetch applicant details");
       }
 
-      const applicant = (await applicantResponse.json()) as Record<string, unknown>;
+      const applicant = (await applicantResponse.json()) as Record<
+        string,
+        unknown
+      >;
 
       // Extract team preferences based on application type
       let preferredTeams: string[] = [];
@@ -93,16 +96,22 @@ export const ApplicantsPage: React.FC = () => {
         applicant.preferredPositions
       ) {
         preferredTeams =
-          ((applicant?.preferredPositions as unknown[]) || []).map((pos) => (pos as Record<string, unknown>)?.position as string) || [];
+          ((applicant?.preferredPositions as unknown[]) || []).map(
+            (pos) => (pos as Record<string, unknown>)?.position as string,
+          ) || [];
       } else if (
         applicant.applicationType === "MATEROV" &&
         applicant.subteamPreferences
       ) {
         preferredTeams =
-          ((applicant?.subteamPreferences as unknown[]) || []).map((sub) => (sub as Record<string, unknown>)?.name as string) || [];
+          ((applicant?.subteamPreferences as unknown[]) || []).map(
+            (sub) => (sub as Record<string, unknown>)?.name as string,
+          ) || [];
       } else if (applicant.preferredTeams) {
         preferredTeams =
-          ((applicant?.preferredTeams as unknown[]) || []).map((team) => (team as Record<string, unknown>)?.teamId as string) || [];
+          ((applicant?.preferredTeams as unknown[]) || []).map(
+            (team) => (team as Record<string, unknown>)?.teamId as string,
+          ) || [];
       }
 
       // Generate available time slots for the next 1 week (business hours)
@@ -165,7 +174,10 @@ export const ApplicantsPage: React.FC = () => {
 
       if (result.success && result.suggestedSlot) {
         const suggestedSlot = result?.suggestedSlot as Record<string, unknown>;
-        const interviewer = suggestedSlot?.interviewer as Record<string, unknown>;
+        const interviewer = suggestedSlot?.interviewer as Record<
+          string,
+          unknown
+        >;
         const slot = suggestedSlot?.slot as Record<string, unknown>;
 
         // Schedule the interview immediately
@@ -297,7 +309,6 @@ export const ApplicantsPage: React.FC = () => {
     "DC_PROGRAM_MANAGER",
     "Reset",
   ];
-
 
   // Team options for each application type
   const dcMemberTeams = ["TSGC", "AIAA", "No Preference", "Reset"];
@@ -754,9 +765,7 @@ export const ApplicantsPage: React.FC = () => {
                                 )}
                               </div>
                             );
-                          } else if (
-                            applicant.interests?.length > 0
-                          ) {
+                          } else if (applicant.interests?.length > 0) {
                             // For other applications, show research interests
                             const displayItems = applicant.interests.slice(
                               0,
@@ -788,9 +797,7 @@ export const ApplicantsPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Team Rankings Display */}
                         {(() => {
-                          if (
-                            applicant.subTeam?.length > 0
-                          ) {
+                          if (applicant.subTeam?.length > 0) {
                             const displayItems = applicant.subTeam.slice(0, 2);
                             const remainingCount = applicant.subTeam.length - 2;
                             return (

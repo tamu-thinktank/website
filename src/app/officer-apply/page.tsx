@@ -332,16 +332,23 @@ function ApplyTab({
     if (!isChecked) return;
     if (currentTab === "start") return;
 
-    const sub = form.watch((values: RouterInputs["officer"]["OfficerApplyForm"], { name }: { name?: string }) => {
-      if (name?.startsWith(currentTab)) {
-        form
-          .trigger(currentTab)
-          .then((isValid) => setIsValid(isValid))
-          .catch(() => setIsValid(false));
-      }
-    });
+    const sub = form.watch(
+      (
+        values: RouterInputs["officer"]["OfficerApplyForm"],
+        { name }: { name?: string },
+      ) => {
+        if (name?.startsWith(currentTab)) {
+          form
+            .trigger(currentTab)
+            .then((isValid) => setIsValid(isValid))
+            .catch(() => setIsValid(false));
+        }
+      },
+    );
 
-    return () => { void sub.unsubscribe(); };
+    return () => {
+      void sub.unsubscribe();
+    };
   }, [form.watch, isChecked]);
 
   return (

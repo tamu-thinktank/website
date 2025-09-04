@@ -89,8 +89,12 @@ export async function PATCH(
     }
 
     // Validate time range if both times are provided or being updated
-    const finalStartTime = updateData.startTime ? updateData.startTime as Date : existingBusyTime.startTime;
-    const finalEndTime = updateData.endTime ? updateData.endTime as Date : existingBusyTime.endTime;
+    const finalStartTime = updateData.startTime
+      ? (updateData.startTime as Date)
+      : existingBusyTime.startTime;
+    const finalEndTime = updateData.endTime
+      ? (updateData.endTime as Date)
+      : existingBusyTime.endTime;
 
     if (finalStartTime >= finalEndTime) {
       return NextResponse.json(

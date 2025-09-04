@@ -2,7 +2,7 @@
 
 **Route**: `/challenges`  
 **Component**: `/src/app/challenges/page.tsx`  
-**Purpose**: Overview of design challenges and competitions Think Tank participates in  
+**Purpose**: Overview of design challenges and competitions Think Tank participates in
 
 ## Page Overview
 
@@ -11,6 +11,7 @@ The Challenges page showcases the various engineering design competitions and ch
 ## Competition Categories
 
 ### Major Annual Competitions
+
 - Comprehensive overview of primary competitions
 - Competition dates, locations, and registration requirements
 - Team formation and preparation timeline
@@ -18,6 +19,7 @@ The Challenges page showcases the various engineering design competitions and ch
 - Prize structure and recognition opportunities
 
 ### Design Challenge Types
+
 - Engineering problem-solving competitions
 - Innovation and entrepreneurship challenges
 - Technical skill competitions and hackathons
@@ -25,6 +27,7 @@ The Challenges page showcases the various engineering design competitions and ch
 - Collaborative multi-disciplinary challenges
 
 ### Competition Examples
+
 - MATE ROV underwater robotics competition
 - Various engineering design challenges
 - Innovation competitions and case studies
@@ -34,6 +37,7 @@ The Challenges page showcases the various engineering design competitions and ch
 ## Preparation Process
 
 ### Team Formation
+
 - How teams are assembled for different challenges
 - Role assignments and skill matching
 - Timeline from formation to competition
@@ -41,6 +45,7 @@ The Challenges page showcases the various engineering design competitions and ch
 - Resource allocation and budget management
 
 ### Skill Development
+
 - Technical skills required for different competitions
 - Training programs and workshops provided
 - Practice sessions and mock competitions
@@ -48,6 +53,7 @@ The Challenges page showcases the various engineering design competitions and ch
 - Professional development through competition experience
 
 ### Project Management
+
 - Timeline management for competition deadlines
 - Milestone tracking and progress evaluation
 - Documentation and presentation preparation
@@ -57,6 +63,7 @@ The Challenges page showcases the various engineering design competitions and ch
 ## Member Benefits
 
 ### Learning Opportunities
+
 - Real-world engineering problem solving
 - Project management and teamwork skills
 - Technical presentation and communication
@@ -64,6 +71,7 @@ The Challenges page showcases the various engineering design competitions and ch
 - Innovation and creative thinking development
 
 ### Professional Development
+
 - Portfolio building through competition projects
 - Networking with industry professionals and judges
 - Resume enhancement through achievements
@@ -71,6 +79,7 @@ The Challenges page showcases the various engineering design competitions and ch
 - Career exploration through diverse challenges
 
 ### Recognition and Awards
+
 - Individual and team recognition opportunities
 - Scholarship and prize money possibilities
 - University and organizational recognition
@@ -79,4 +88,4 @@ The Challenges page showcases the various engineering design competitions and ch
 
 ---
 
-*Competition participation is a core value proposition for Think Tank membership. Ensure this page clearly communicates the exciting opportunities and professional benefits of challenge participation.*
+_Competition participation is a core value proposition for Think Tank membership. Ensure this page clearly communicates the exciting opportunities and professional benefits of challenge participation._

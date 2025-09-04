@@ -145,21 +145,36 @@ export const MembersPage: React.FC = () => {
         switch (selectedCategory) {
           case "OFFICER":
             return (
-              ((applicant as Record<string, unknown>).officerpos as unknown[] | undefined)?.some(
-                (pos) => (pos as Record<string, unknown>).position === filters.team,
+              (
+                (applicant as Record<string, unknown>).officerpos as
+                  | unknown[]
+                  | undefined
+              )?.some(
+                (pos) =>
+                  (pos as Record<string, unknown>).position === filters.team,
               ) ?? false
             );
           case "MATEROV":
             return (
-              ((applicant as Record<string, unknown>).subTeam as unknown[] | undefined)?.some(
-                (team) => (team as Record<string, unknown>).name === filters.team,
+              (
+                (applicant as Record<string, unknown>).subTeam as
+                  | unknown[]
+                  | undefined
+              )?.some(
+                (team) =>
+                  (team as Record<string, unknown>).name === filters.team,
               ) ?? false
             );
           case "DCMEMBER":
           case "MINIDC":
             return (
-              ((applicant as Record<string, unknown>).subTeam as unknown[] | undefined)?.some(
-                (team) => (team as Record<string, unknown>).name === filters.team,
+              (
+                (applicant as Record<string, unknown>).subTeam as
+                  | unknown[]
+                  | undefined
+              )?.some(
+                (team) =>
+                  (team as Record<string, unknown>).name === filters.team,
               ) ?? false
             );
           default:
@@ -346,9 +361,7 @@ export const MembersPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Research Interests Display */}
                         {(() => {
-                          if (
-                            applicant.interests.length > 0
-                          ) {
+                          if (applicant.interests.length > 0) {
                             const displayItems = applicant.interests.slice(
                               0,
                               2,
@@ -379,9 +392,7 @@ export const MembersPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Team Rankings Display */}
                         {(() => {
-                          if (
-                            applicant.teamRankings.length > 0
-                          ) {
+                          if (applicant.teamRankings.length > 0) {
                             const displayItems = applicant.teamRankings.slice(
                               0,
                               2,

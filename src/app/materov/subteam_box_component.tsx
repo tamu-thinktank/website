@@ -192,10 +192,10 @@ const BoxComponent: React.FC<BoxProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`
-                  w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
-                  text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                  pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50
-                  max-w-[420px]
+                  pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px]
+                  border-white bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold 
+                  text-white no-underline opacity-50 md:px-[20px] md:py-[10px]
+                  md:text-[16px]
                 `}
               >
                 {/*{isOpen ? "Open" : "Closed"}*/}
@@ -203,7 +203,7 @@ const BoxComponent: React.FC<BoxProps> = ({
               </a>
               <button
                 onClick={handleToggle}
-                className="w-full max-w-[420px] rounded-[50px] border border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
+                className="w-full max-w-[420px] rounded-[50px] border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
               >
                 See More
               </button>
@@ -300,7 +300,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                   href={competitionLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full max-w-[420px] rounded-[50px] border border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-center text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
+                  className="w-full max-w-[420px] rounded-[50px] border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-center text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
                 >
                   Competition Link
                 </a>
@@ -309,10 +309,10 @@ const BoxComponent: React.FC<BoxProps> = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`
-                    w-full max-w-[420px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
-                    text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
-                    pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50
-                    max-w-[420px]
+                    pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px]
+                    border-white bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold 
+                    text-white no-underline opacity-50 md:px-[20px] md:py-[10px]
+                    md:text-[16px]
                   `}
                 >
                   {/*{isOpen ? "Open" : "Closed"}*/}
@@ -322,7 +322,7 @@ const BoxComponent: React.FC<BoxProps> = ({
               <div className="mt-[15px] flex w-full justify-center">
                 <button
                   onClick={handleToggle}
-                  className="w-full max-w-[420px] rounded-[50px] border border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
+                  className="w-full max-w-[420px] rounded-[50px] border-[0.5px] border-[rgba(255,255,255,1)] px-[8px] py-[8px] text-[16px] font-bold text-white transition-transform duration-300 ease-in-out hover:scale-105 md:px-[10px] md:py-[10px]"
                 >
                   See Less
                 </button>

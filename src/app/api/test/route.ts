@@ -11,7 +11,11 @@ export async function GET(request: Request) {
     // Fetch applications filtered by applicationType
     const applications = await prisma.application.findMany({
       where: {
-        applicationType: applicationType as "OFFICER" | "MATEROV" | "DCMEMBER" | "DCMINICHALLENGE", // Cast to the correct enum type
+        applicationType: applicationType as
+          | "OFFICER"
+          | "MATEROV"
+          | "DCMEMBER"
+          | "DCMINICHALLENGE", // Cast to the correct enum type
       },
       select: {
         id: true,

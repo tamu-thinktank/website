@@ -49,6 +49,36 @@ import PdfViewer from "./pdf-viewer";
 /**
  * @returns Array of string Q&A pairs for each section, make sure questions and answers object share the same key names
  */
+interface BufferJSON { type: "Buffer"; data: number[] }
+
+function isBufferJSON(v: unknown): v is BufferJSON {
+  return (
+    !!v &&
+    typeof v === "object" &&
+    (v as { type?: unknown }).type === "Buffer" &&
+    Array.isArray((v as { data?: unknown }).data)
+  );
+}
+
+function toUint8ArrayStrict(data: unknown): Uint8Array {
+  if (data instanceof Uint8Array) return data;
+  if (data instanceof ArrayBuffer) return new Uint8Array(data);
+  if (isBufferJSON(data)) return Uint8Array.from(data.data);
+
+  // Add more shapes here if your API returns other variants
+  throw new Error("Unsupported fileContent type");
+}
+
+/**
+ * Ensures we hand a true ArrayBuffer (not SharedArrayBuffer) to Blob/File.
+ * `bytes.slice().buffer` always returns an ArrayBuffer.
+ */
+function toPdfFile(content: unknown, name: string): File {
+  const bytes = toUint8ArrayStrict(content);
+  const ab: ArrayBuffer = bytes.slice().buffer; // force ArrayBuffer, not SAB
+  return new File([ab], name, { type: "application/pdf" });
+}
+
 function getQAs(answers: RouterOutputs["admin"]["getApplicant"]) {
   type Section = keyof typeof q;
   const QAs = new Map<Section, [string, string][]>();
@@ -59,31 +89,40 @@ function getQAs(answers: RouterOutputs["admin"]["getApplicant"]) {
       QAs.set(section, []);
       currSection = QAs.get(section);
     }
-    Object.keys(q[section]).forEach((qkey) => {
+
+    const sectionQuestions = q[section] as Record<string, unknown>;
+    // Narrow answers to a map of sections -> record
+    const sectionAnswers = (answers as unknown as Partial<
+      Record<Section, Record<string, unknown>>
+    >)[section];
+
+    Object.keys(sectionQuestions).forEach((qkey) => {
       if (qkey === "title") return;
 
-      const question = (q[section] as Record<string, unknown>)[qkey] as string;
-      const answer = (answers as Record<string, unknown>)[section]?.[qkey] as unknown;
+      const question = String(sectionQuestions[qkey]);
+      const answer = sectionAnswers ? sectionAnswers[qkey] : undefined;
+
       if (qkey === "challenges") {
         currSection?.push([
           question,
-          (answer as Challenge[])
-            .map((c) => challenges.find((ch) => ch.id === c)?.label ?? "")
-            .join(", "),
+          (answer as Challenge[] | undefined)?.map(
+            (c) => challenges.find((ch) => ch.id === c)?.label ?? ""
+          ).join(", ") ?? "",
         ]);
       } else if (qkey === "interestedChallenge") {
         currSection?.push([
           question,
-          challenges.find((ch) => ch.id === answer)?.label ?? "",
+          challenges.find((ch) => ch.id === (answer))?.label ?? "",
         ]);
       } else {
-        currSection?.push([question, String(answer)]);
+        currSection?.push([question, String(answer ?? "")]);
       }
     });
   });
 
   return QAs;
 }
+
 
 export default function ApplicantPage() {
   const { toast } = useToast();
@@ -110,10 +149,20 @@ export default function ApplicantPage() {
   const { data: officerTimes } = api.admin.getAvailabilities.useQuery(
     {
       targetTeam:
-        ((applicant as Record<string, unknown>).interests as Record<string, unknown>).interestedChallenge as "TSGC" | "AIAA" | undefined ?? "TSGC",
+        ((
+          (applicant as Record<string, unknown>).interests as Record<
+            string,
+            unknown
+          >
+        ).interestedChallenge as "TSGC" | "AIAA" | undefined) ?? "TSGC",
     },
     {
-      enabled: !!((applicant as Record<string, unknown>).interests as Record<string, unknown>).interestedChallenge,
+      enabled: !!(
+        (applicant as Record<string, unknown>).interests as Record<
+          string,
+          unknown
+        >
+      ).interestedChallenge,
       staleTime: 60000, // Officer availability is less frequently updated
     },
   );
@@ -159,6 +208,8 @@ export default function ApplicantPage() {
     retryDelay: 2000, // Wait 2 seconds before retry
   });
 
+
+
   useEffect(() => {
     if (isApplicantError || isResumeError) {
       toast({
@@ -195,7 +246,12 @@ export default function ApplicantPage() {
             meetingTimes={applicant.meetingTimes}
             resumeId={applicant.resume.resumeId}
             interestedChallenge={
-              ((applicant as Record<string, unknown>).interests as Record<string, unknown>).interestedChallenge as Challenge
+              (
+                (applicant as Record<string, unknown>).interests as Record<
+                  string,
+                  unknown
+                >
+              ).interestedChallenge as Challenge
             }
             officerTimes={officerTimes}
           />
@@ -218,7 +274,12 @@ export default function ApplicantPage() {
             </CardContent>
           )) ?? null}
         </Card>
-        {((applicant as Record<string, unknown>).interests as Record<string, unknown>).isLeadership ? (
+        {(
+          (applicant as Record<string, unknown>).interests as Record<
+            string,
+            unknown
+          >
+        ).isLeadership ? (
           <Card className="mb-4">
             <CardHeader>
               <H3>{q.leadership.title}</H3>
@@ -236,10 +297,15 @@ export default function ApplicantPage() {
           <Skeleton className="my-6 h-[26rem] w-full" />
         ) : (
           <PdfViewer
-            file={resumeFileData?.fileContent}
+            file={
+              resumeFileData?.fileContent
+                ? toPdfFile(resumeFileData.fileContent, resumeFileData.fileName || "resume.pdf")
+                : undefined
+            }
             fileName={resumeFileData?.fileName}
             webViewLink={resumeFileData?.fileViewLink}
           />
+
         )}
       </CardContent>
     </Card>

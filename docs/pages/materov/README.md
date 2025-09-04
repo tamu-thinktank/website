@@ -2,7 +2,7 @@
 
 **Route**: `/materov`  
 **Component**: `/src/app/materov/page.tsx`  
-**Purpose**: Information page about the MateROV team and underwater robotics competition  
+**Purpose**: Information page about the MateROV team and underwater robotics competition
 
 ## Page Overview
 
@@ -11,6 +11,7 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 ## Content Focus
 
 ### MATE ROV Competition
+
 - Overview of the international MATE ROV competition
 - Competition format, challenges, and scoring criteria
 - Annual themes and mission scenarios
@@ -18,6 +19,7 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 - Past Think Tank performance and achievements
 
 ### Team Structure
+
 - MateROV team organization and roles
 - Technical specializations (mechanical, electrical, software, pilot)
 - Team size and member requirements
@@ -25,6 +27,7 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 - Collaboration with other Think Tank teams
 
 ### Technical Projects
+
 - ROV design and construction process
 - Underwater vehicle engineering challenges
 - Sensor integration and control systems
@@ -32,6 +35,7 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 - Documentation and presentation requirements
 
 ### Skills Development
+
 - Underwater robotics engineering principles
 - Waterproofing and pressure resistance design
 - Remote operation and control systems
@@ -39,6 +43,7 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 - Competition presentation and documentation skills
 
 ### Requirements and Expectations
+
 - Time commitment and meeting schedules
 - Technical skill prerequisites (or training provided)
 - Competition travel and participation expectations
@@ -48,6 +53,7 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 ## Call to Action
 
 ### Application Process
+
 - Direct links to MateROV-specific application
 - Application deadlines and timeline
 - Required materials and portfolio examples
@@ -55,6 +61,7 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 - Contact information for team questions
 
 ### Information Sessions
+
 - Schedule of MateROV information meetings
 - Lab tours and hands-on demonstrations
 - Meet current team members and mentors
@@ -63,4 +70,4 @@ The MateROV page provides detailed information about Think Tank's underwater rob
 
 ---
 
-*MateROV represents a unique specialization within Think Tank. Ensure content accurately reflects the technical challenges and exciting opportunities of underwater robotics competition.*
+_MateROV represents a unique specialization within Think Tank. Ensure content accurately reflects the technical challenges and exciting opportunities of underwater robotics competition._

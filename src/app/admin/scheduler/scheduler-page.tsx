@@ -276,19 +276,22 @@ const Scheduler: React.FC = () => {
       const formattedInterviewers: Interviewer[] = data.map((interviewer) => {
         // Process interviews if they exist
         const interviewsData = interviewer.interviews ?? [];
-        const interviews = interviewsData.map((interview: Record<string, unknown>) => ({
-          id: interview.id,
-          applicantName: interview.isPlaceholder
-            ? (interview.placeholderName as string) || "Reserved Slot"
-            : ((interview.applicant as {fullName?: string}).fullName) ?? "Unknown",
-          applicantId: interview.applicantId as string | undefined,
-          startTime: new Date(interview.startTime as string),
-          endTime: new Date(interview.endTime as string),
-          teamId: interview.teamId as string | undefined,
-          location: interview.location as string,
-          interviewerId: interview.interviewerId as string,
-          isPlaceholder: interview.isPlaceholder ?? false,
-        }));
+        const interviews = interviewsData.map(
+          (interview: Record<string, unknown>) => ({
+            id: interview.id,
+            applicantName: interview.isPlaceholder
+              ? (interview.placeholderName as string) || "Reserved Slot"
+              : ((interview.applicant as { fullName?: string }).fullName ??
+                "Unknown"),
+            applicantId: interview.applicantId as string | undefined,
+            startTime: new Date(interview.startTime as string),
+            endTime: new Date(interview.endTime as string),
+            teamId: interview.teamId as string | undefined,
+            location: interview.location as string,
+            interviewerId: interview.interviewerId as string,
+            isPlaceholder: interview.isPlaceholder ?? false,
+          }),
+        );
 
         return {
           id: interviewer.id,
@@ -552,7 +555,10 @@ const Scheduler: React.FC = () => {
               errorData.conflictingInterviews &&
               (errorData.conflictingInterviews as unknown[]).length > 0
             ) {
-              const conflicts = errorData.conflictingInterviews as Record<string, unknown>[];
+              const conflicts = errorData.conflictingInterviews as Record<
+                string,
+                unknown
+              >[];
               const conflictDetails = conflicts
                 .map(
                   (conflict: Record<string, unknown>) =>
@@ -697,9 +703,8 @@ const Scheduler: React.FC = () => {
     const maxInterviews = isWeekendDay ? 6 : 4;
 
     // Count interviews for this date
-    const interviewsOnDate = interviewer.interviews.filter(
-      (interview) =>
-        isSameDay(interview.startTime, date),
+    const interviewsOnDate = interviewer.interviews.filter((interview) =>
+      isSameDay(interview.startTime, date),
     ).length;
 
     if (interviewsOnDate >= maxInterviews) {
@@ -754,13 +759,13 @@ const Scheduler: React.FC = () => {
     const { date, timeSlot } = selectedTimeSlot;
     const startTime = new Date(date);
     startTime.setHours(timeSlot.hour, timeSlot.minute, 0, 0);
-    
+
     // Ensure we're working with the intended local time
-    console.log('Creating interview for:', {
+    console.log("Creating interview for:", {
       date: date.toDateString(),
-      timeSlot: `${timeSlot.hour}:${timeSlot.minute.toString().padStart(2, '0')}`,
+      timeSlot: `${timeSlot.hour}:${timeSlot.minute.toString().padStart(2, "0")}`,
       constructedStartTime: startTime.toLocaleString(),
-      isoString: startTime.toISOString()
+      isoString: startTime.toISOString(),
     });
 
     // Set end time to 45 minutes after start time (3 x 15-minute slots)
@@ -1674,7 +1679,10 @@ const Scheduler: React.FC = () => {
         const error = await response.json();
         console.error("Batch API error response:", error);
         console.error("Response status:", response.status);
-        throw new Error(String((error as Record<string, unknown>).error) || "Failed to update busy times");
+        throw new Error(
+          String((error as Record<string, unknown>).error) ||
+            "Failed to update busy times",
+        );
       }
     } catch (error) {
       console.error("Error toggling busy status:", error);
@@ -2621,18 +2629,19 @@ const Scheduler: React.FC = () => {
                               </Button>
                               <Button
                                 size="sm"
-                                onClick={() =>
-                                  {
-                                    const firstSelection = perInterviewerSelections[interviewer.id]?.[0];
-                                    if (firstSelection) {
-                                      openScheduleModal(
-                                        interviewer.id,
-                                        firstSelection.date,
-                                        firstSelection.timeSlot,
-                                      );
-                                    }
+                                onClick={() => {
+                                  const firstSelection =
+                                    perInterviewerSelections[
+                                      interviewer.id
+                                    ]?.[0];
+                                  if (firstSelection) {
+                                    openScheduleModal(
+                                      interviewer.id,
+                                      firstSelection.date,
+                                      firstSelection.timeSlot,
+                                    );
                                   }
-                                }
+                                }}
                                 className="bg-blue-600 text-xs hover:bg-blue-700"
                               >
                                 Schedule Interview
@@ -3032,8 +3041,7 @@ const Scheduler: React.FC = () => {
                 <div className="col-span-3 text-neutral-200">
                   <>
                     {format(selectedInterview.startTime, "MMMM d, yyyy")} at{" "}
-                    {format(selectedInterview.startTime, "h:mm a")}{" "}
-                    -
+                    {format(selectedInterview.startTime, "h:mm a")} -
                     {format(selectedInterview.endTime, "h:mm a")}
                   </>
                 </div>

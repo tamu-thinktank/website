@@ -2,7 +2,7 @@
 
 **Route**: `/admin/interviewees`  
 **Component**: `/src/app/admin/interviewees/page.tsx`  
-**Purpose**: Management interface for applicants who have progressed to the interview stage  
+**Purpose**: Management interface for applicants who have progressed to the interview stage
 
 ## Page Overview
 
@@ -11,6 +11,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 ## Core Functionality
 
 ### Interview Pipeline Management
+
 - Focused view of all applicants in interview stage
 - Interview scheduling status and coordination
 - Interview completion tracking and follow-up
@@ -18,6 +19,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Post-interview status transition workflow
 
 ### Interview Details
+
 - Scheduled interview information (date, time, location)
 - Assigned interviewer(s) and team preferences
 - Interview type (team-specific, general, officer)
@@ -25,6 +27,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Special accommodations or requirements
 
 ### Decision Support
+
 - Interview notes and ratings compilation
 - Interviewer feedback aggregation
 - Team fit assessment and recommendations
@@ -34,6 +37,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 ## Interview Information
 
 ### Candidate Profile
+
 - Application summary and key highlights
 - Team preferences with ranking and justification
 - Technical skills and experience overview
@@ -41,6 +45,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Previous interview history and notes
 
 ### Scheduling Details
+
 - Current interview schedule and status
 - Available time slots and interviewer assignments
 - Rescheduling requests and accommodations
@@ -48,6 +53,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Calendar integration and conflict management
 
 ### Assessment Data
+
 - Interview scores and ratings by category
 - Qualitative feedback from interviewers
 - Team-specific evaluation criteria
@@ -57,6 +63,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 ## Interview Process Management
 
 ### Scheduling Coordination
+
 - Integration with scheduler system for interview booking
 - Automatic email notifications to candidates and interviewers
 - Calendar conflict detection and resolution
@@ -64,6 +71,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Virtual meeting setup and technical requirements
 
 ### Interviewer Assignment
+
 - Matching interviewers to candidates based on expertise
 - Load balancing across available interviewers
 - Team-specific interviewer preferences
@@ -71,6 +79,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Interview panel composition for complex evaluations
 
 ### Progress Tracking
+
 - Interview completion status and timeline
 - Follow-up task assignment and completion
 - Decision deadline tracking and reminders
@@ -80,6 +89,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 ## Decision Making Tools
 
 ### Evaluation Framework
+
 - Standardized scoring rubrics and criteria
 - Team-specific evaluation guidelines
 - Comparative analysis tools and rankings
@@ -87,6 +97,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Bias reduction tools and best practices
 
 ### Collaboration Features
+
 - Multi-user access for team decision making
 - Comment and discussion threads on candidates
 - Decision history and rationale documentation
@@ -94,6 +105,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Integration with member management systems
 
 ### Communication Management
+
 - Interview outcome notifications to candidates
 - Status update emails and timeline communication
 - Rejection letters with constructive feedback
@@ -103,6 +115,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 ## Reporting and Analytics
 
 ### Interview Metrics
+
 - Interview completion rates and timelines
 - Interviewer performance and consistency
 - Candidate satisfaction and feedback
@@ -110,6 +123,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Outcome prediction and success correlation
 
 ### Decision Analysis
+
 - Accept/reject ratios by team and criteria
 - Diversity and inclusion metrics
 - Time-to-decision analysis and optimization
@@ -117,6 +131,7 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 - Predictive modeling for candidate success
 
 ### Process Improvement
+
 - Feedback collection from candidates and interviewers
 - Process bottleneck identification and resolution
 - Best practice documentation and sharing
@@ -125,4 +140,4 @@ The Interviewees admin page focuses specifically on applicants with INTERVIEWING
 
 ---
 
-*The interview process is crucial for candidate experience and organizational reputation. Maintain professionalism and fairness while ensuring efficient decision making.*
+_The interview process is crucial for candidate experience and organizational reputation. Maintain professionalism and fairness while ensuring efficient decision making._

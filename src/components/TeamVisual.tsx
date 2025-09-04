@@ -334,7 +334,13 @@ function PieChartCard({
                     outerRadius={100}
                     fill="#8884d8"
                     dataKey="value"
-                    label={({ name, percent }: { name: string; percent: number }) =>
+                    label={({
+                      name,
+                      percent,
+                    }: {
+                      name: string;
+                      percent: number;
+                    }) =>
                       name.length > 10
                         ? `${name.substring(0, 10)}...: ${(percent * 100).toFixed(0)}%`
                         : `${name}: ${(percent * 100).toFixed(0)}%`

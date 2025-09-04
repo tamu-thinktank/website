@@ -2,7 +2,7 @@
 
 **Route**: `/apphub`  
 **Component**: `/src/app/apphub/page.tsx`  
-**Purpose**: Central navigation hub for all application types and processes  
+**Purpose**: Central navigation hub for all application types and processes
 
 ## Page Overview
 
@@ -11,6 +11,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 ## Application Types
 
 ### General Member Applications
+
 - Standard entry path for most prospective members
 - Focus on design challenge team participation
 - Comprehensive multi-step application process
@@ -18,6 +19,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 - Technical skill assessment and development potential
 
 ### Officer Applications
+
 - Leadership positions within the organization
 - Higher responsibility and time commitment
 - Additional leadership experience requirements
@@ -25,6 +27,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 - Team management and organizational responsibilities
 
 ### MateROV Applications
+
 - Specialized underwater robotics team
 - Unique technical focus and competition preparation
 - Specific skill requirements and interests
@@ -32,6 +35,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 - Competition travel and intensive preparation commitment
 
 ### Mini Design Challenge Applications
+
 - Entry-level or shorter-term commitment option
 - Focused project-based participation
 - Skills development and exploration opportunity
@@ -41,6 +45,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 ## Navigation Features
 
 ### Application Comparison
+
 - Side-by-side comparison of different application types
 - Time commitment and responsibility level indicators
 - Prerequisites and skill requirements for each type
@@ -48,6 +53,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 - Clear guidance for choosing appropriate application type
 
 ### Process Overview
+
 - Step-by-step breakdown of each application process
 - Timeline expectations and deadlines
 - Required materials and preparation guidance
@@ -55,6 +61,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 - Status tracking and communication methods
 
 ### Support Resources
+
 - FAQ section for common application questions
 - Contact information for application support
 - Information session schedules and locations
@@ -64,6 +71,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 ## User Experience
 
 ### Decision Support
+
 - Interactive questionnaire to help choose application type
 - Clear descriptions of time commitments and expectations
 - Success stories from different member types
@@ -71,6 +79,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 - Career outcome information and statistics
 
 ### Application Status
+
 - Login functionality for application tracking
 - Status updates and next step notifications
 - Interview scheduling integration
@@ -78,6 +87,7 @@ The Application Hub serves as the central entry point for all Think Tank applica
 - Document upload and requirement verification
 
 ### Responsive Design
+
 - Mobile-optimized application selection interface
 - Accessible navigation for all users
 - Fast loading and intuitive user flow
@@ -86,4 +96,4 @@ The Application Hub serves as the central entry point for all Think Tank applica
 
 ---
 
-*The Application Hub is the primary conversion point for prospective members. Ensure clear navigation and compelling presentation of all available opportunities.*
+_The Application Hub is the primary conversion point for prospective members. Ensure clear navigation and compelling presentation of all available opportunities._
