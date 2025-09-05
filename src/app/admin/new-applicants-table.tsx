@@ -173,7 +173,7 @@ export default function ApplicantsTable() {
           More
         </Button>
       </div>
-      <div className="w-[70%] rounded-lg border border-[0.75px] border-white">
+      <div className="w-[70%] rounded-lg border-[0.75px] border-white">
         <Table>
           <TableHeader>
             <TableRow className="border-b border-white border-opacity-25 bg-zinc-700">
