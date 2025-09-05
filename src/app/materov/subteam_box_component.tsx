@@ -164,13 +164,13 @@ const BoxComponent: React.FC<BoxProps> = ({
         >
           <span
             className={`
-              mr-[10px] text-center font-[Poppins,sans-serif] text-white 
-              ${isExpanded ? "pt-0 text-[1.5rem]" : "pt-[10px] text-[2rem]"}
+              text-center font-[Poppins,sans-serif] text-white 
+              ${isExpanded ? "pt-0 text-[1.5rem]" : "pt-[10px] text-[1.5rem] lg:text-[2rem] md:text-[1.2rem]"}
             `}
           >
             {teamName.toUpperCase()}
           </span>
-          <span className="mx-[10px] font-[Poppins,sans-serif] text-[1.2rem] font-bold uppercase text-white">
+          <span className="mx-[10px] font-[Poppins,sans-serif] text-[1rem] font-bold uppercase text-white">
             |
           </span>
           <span
