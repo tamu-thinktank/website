@@ -76,7 +76,7 @@ export default function Apply() {
     },
   );
 
-  const { mutateAsync: submitForm } = api.public.applyForm.useMutation({
+  const submitFormMutation = api.public.applyForm.useMutation({
     onSuccess: () => {
       // Reset form and local storage first
       form.reset();
@@ -102,12 +102,14 @@ export default function Apply() {
     },
   });
 
-  const { mutateAsync: uploadResume } = useMutation<
+  const submitForm = submitFormMutation.mutateAsync;
+
+  const uploadResumeMutation = useMutation<
     UploadResumeResponse,
     unknown,
     FormData
   >({
-    mutationFn: (formData) => {
+    mutationFn: (formData: FormData) => {
       return fetch("/api/upload-resume", {
         method: "POST",
         body: formData,
@@ -115,7 +117,10 @@ export default function Apply() {
     },
   });
 
-  const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
+  const uploadResume = uploadResumeMutation.mutateAsync;
+
+  const deleteResumeMutation = api.public.deleteResume.useMutation();
+  const deleteResume = deleteResumeMutation.mutateAsync;
 
   const onFormSubmit = useCallback(
     async (data: RouterInputs["public"]["applyForm"]) => {
@@ -133,7 +138,7 @@ export default function Apply() {
 
       try {
         const uploadResult = await uploadResume(formData);
-        const updatedData = {
+        const updatedData: RouterInputs["public"]["applyForm"] = {
           ...data,
           resume: {
             ...data.resume,
@@ -143,10 +148,11 @@ export default function Apply() {
 
         await submitForm(updatedData);
       } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
         toast({
           variant: "destructive",
           title: "Error",
-          description: (err as Error).message,
+          description: errorMessage,
         });
 
         // Clean up resume if upload failed
@@ -335,17 +341,21 @@ function ApplyTab({
     if (!isChecked) return;
     if (currentTab === "start") return;
 
-    const sub = form.watch((values, { name }) => {
-      if (name?.startsWith(currentTab)) {
-        form
+    const subscription = form.watch((values, { name }) => {
+      if (name && typeof name === "string" && name.startsWith(currentTab)) {
+        void form
           .trigger(currentTab)
-          .then((isValid) => setIsValid(isValid))
+          .then((isValid: boolean) => setIsValid(isValid))
           .catch(() => setIsValid(false));
       }
     });
 
-    return () => sub.unsubscribe();
-  }, [form.watch, isChecked]);
+    return () => {
+      if (typeof subscription.unsubscribe === "function") {
+        subscription.unsubscribe();
+      }
+    };
+  }, [form, currentTab, isChecked]);
 
   return (
     <TabsContent className="space-y-2" value={currentTab}>
