@@ -95,23 +95,14 @@ export const ApplicantsPage: React.FC = () => {
         applicant.applicationType === "OFFICER" &&
         applicant.preferredPositions
       ) {
-        preferredTeams =
-          ((applicant?.preferredPositions as unknown[]) || []).map(
-            (pos) => (pos as Record<string, unknown>)?.position as string,
-          ) || [];
+        preferredTeams = [];
       } else if (
         applicant.applicationType === "MATEROV" &&
         applicant.subteamPreferences
       ) {
-        preferredTeams =
-          ((applicant?.subteamPreferences as unknown[]) || []).map(
-            (sub) => (sub as Record<string, unknown>)?.name as string,
-          ) || [];
+        preferredTeams = [];
       } else if (applicant.preferredTeams) {
-        preferredTeams =
-          ((applicant?.preferredTeams as unknown[]) || []).map(
-            (team) => (team as Record<string, unknown>)?.teamId as string,
-          ) || [];
+        preferredTeams = [];
       }
 
       // Generate available time slots for the next 1 week (business hours)
@@ -173,12 +164,12 @@ export const ApplicantsPage: React.FC = () => {
       const result = (await response.json()) as Record<string, unknown>;
 
       if (result.success && result.suggestedSlot) {
-        const suggestedSlot = result?.suggestedSlot as Record<string, unknown>;
-        const interviewer = suggestedSlot?.interviewer as Record<
+        const suggestedSlot = result.suggestedSlot as Record<string, unknown>;
+        const interviewer = suggestedSlot.interviewer as Record<
           string,
           unknown
         >;
-        const slot = suggestedSlot?.slot as Record<string, unknown>;
+        const slot = suggestedSlot.slot as Record<string, unknown>;
 
         // Schedule the interview immediately
         const scheduleResponse = await fetch("/api/schedule-interview", {
@@ -188,8 +179,8 @@ export const ApplicantsPage: React.FC = () => {
           },
           body: JSON.stringify({
             applicantId: applicantId,
-            interviewerId: interviewer?.interviewerId as string,
-            time: new Date(slot?.date as string).toISOString(),
+            interviewerId: interviewer.interviewerId as string,
+            time: new Date(slot.date as string).toISOString(),
             location: "To be determined",
             teamId: preferredTeams[0] ?? null,
           }),
@@ -200,7 +191,7 @@ export const ApplicantsPage: React.FC = () => {
         }
 
         // If the applicant was PENDING, update their status to INTERVIEWING
-        if (applicant?.status === "PENDING") {
+        if (applicant.status === "PENDING") {
           try {
             const updateStatusResponse = await fetch(
               `/api/applicant/${applicantId}/status`,
@@ -234,10 +225,10 @@ export const ApplicantsPage: React.FC = () => {
         }, 1000);
       } else {
         // Show available matches but couldn't auto-schedule
-        const matches = result?.matches as unknown[];
-        if (matches?.length > 0) {
+        const matches = result.matches as unknown[];
+        if (matches.length > 0) {
           alert(
-            `⚠️ Found ${matches?.length} potential interviewer(s) for ${applicantName}, but couldn't auto-schedule. Please use manual scheduling.`,
+            `⚠️ Found ${matches.length} potential interviewer(s) for ${applicantName}, but couldn't auto-schedule. Please use manual scheduling.`,
           );
         } else {
           alert(
@@ -738,7 +729,7 @@ export const ApplicantsPage: React.FC = () => {
                         {(() => {
                           if (
                             selectedCategory === "OFFICER" &&
-                            applicant.officerpos?.length > 0
+                            applicant.officerpos.length > 0
                           ) {
                             // For officer applications, show position preferences
                             const displayItems = applicant.officerpos.slice(
@@ -765,7 +756,7 @@ export const ApplicantsPage: React.FC = () => {
                                 )}
                               </div>
                             );
-                          } else if (applicant.interests?.length > 0) {
+                          } else if (applicant.interests.length > 0) {
                             // For other applications, show research interests
                             const displayItems = applicant.interests.slice(
                               0,
@@ -797,7 +788,7 @@ export const ApplicantsPage: React.FC = () => {
                       <div className="flex-1 text-center">
                         {/* Team Rankings Display */}
                         {(() => {
-                          if (applicant.subTeam?.length > 0) {
+                          if (applicant.subTeam.length > 0) {
                             const displayItems = applicant.subTeam.slice(0, 2);
                             const remainingCount = applicant.subTeam.length - 2;
                             return (

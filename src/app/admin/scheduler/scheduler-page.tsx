@@ -120,7 +120,7 @@ interface InterviewerResponse {
   name: string;
   email?: string;
   targetTeams?: string[];
-  interviews?: Record<string, unknown>[];
+  interviews?: InterviewResponse[];
 }
 
 interface InterviewResponse {
@@ -276,22 +276,19 @@ const Scheduler: React.FC = () => {
       const formattedInterviewers: Interviewer[] = data.map((interviewer) => {
         // Process interviews if they exist
         const interviewsData = interviewer.interviews ?? [];
-        const interviews = interviewsData.map(
-          (interview: Record<string, unknown>) => ({
-            id: interview.id,
-            applicantName: interview.isPlaceholder
-              ? (interview.placeholderName as string) || "Reserved Slot"
-              : ((interview.applicant as { fullName?: string }).fullName ??
-                "Unknown"),
-            applicantId: interview.applicantId as string | undefined,
-            startTime: new Date(interview.startTime as string),
-            endTime: new Date(interview.endTime as string),
-            teamId: interview.teamId as string | undefined,
-            location: interview.location as string,
-            interviewerId: interview.interviewerId as string,
-            isPlaceholder: interview.isPlaceholder ?? false,
-          }),
-        );
+        const interviews = interviewsData.map((interview) => ({
+          id: interview.id,
+          applicantName: interview.isPlaceholder
+            ? interview.placeholderName ?? "Reserved Slot"
+            : interview.applicant?.fullName ?? "Unknown",
+          applicantId: interview.applicantId,
+          startTime: new Date(interview.startTime),
+          endTime: new Date(interview.endTime),
+          teamId: interview.teamId,
+          location: interview.location,
+          interviewerId: interview.interviewerId,
+          isPlaceholder: interview.isPlaceholder ?? false,
+        }));
 
         return {
           id: interviewer.id,
@@ -503,11 +500,11 @@ const Scheduler: React.FC = () => {
         { id: string; startTime: Date; endTime: Date; reason?: string }[]
       > = {};
 
-      data.forEach((busyTime: Record<string, unknown>) => {
+      data.forEach((busyTime) => {
         if (!groupedBusyTimes[busyTime.interviewerId]) {
           groupedBusyTimes[busyTime.interviewerId] = [];
         }
-        groupedBusyTimes[busyTime.interviewerId as string]?.push({
+        groupedBusyTimes[busyTime.interviewerId].push({
           id: busyTime.id,
           startTime: new Date(busyTime.startTime),
           endTime: new Date(busyTime.endTime),
