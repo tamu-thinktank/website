@@ -143,7 +143,7 @@ export default function Apply() {
         const uploadResult = await uploadResume(formData);
         
         // Transform data for database submission
-        const transformedData: any = {
+        const transformedData: RouterInputs["public"]["applyForm"] = {
           ...data,
           academic: {
             year: data.academic.year,
@@ -212,7 +212,7 @@ export default function Apply() {
           <div className="flex w-screen items-center justify-center">
             <Tabs
               value={activeTab}
-              onValueChange={setActiveTab}
+              onValueChange={(value: string) => setActiveTab(value as ApplyTabType)}
               className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
             >
               <FormIntroTab />
