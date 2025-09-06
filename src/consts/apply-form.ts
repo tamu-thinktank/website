@@ -34,6 +34,8 @@ export const q: Questions = {
     major: "Major",
     currentClasses: "Current Semester Classes",
     nextClasses: "Next Semester Classes",
+    currentCommitmentHours: "Current Time Commitment Hours",
+    plannedCommitmentHours: "Planned Time Commitment Hours",
     timeCommitment: "Time Commitments",
   },
 
@@ -206,65 +208,48 @@ interface ResearchArea {
   relatedTeams: string[];
 }
 
-// Hardcoded Teams and Research Areas
+// Design Challenge Teams for /apply application only
 // Must run 'prisma db seed' to update the database with these values
 export const TEAMS: Team[] = [
   {
-    id: "TEAM_1",
-    name: "Team 1",
-    researchAreas: [
-      {
-        id: "AREA_1A",
-        name: "Research Area 1A",
-        relatedTeams: ["TEAM_1"],
-      },
-      {
-        id: "AREA_1B",
-        name: "Research Area 1B",
-        relatedTeams: ["TEAM_1", "TEAM_2"],
-      },
-    ],
+    id: "ATLAS",
+    name: "Atlas",
+    researchAreas: [], // No research areas for design challenges
   },
   {
-    id: "TEAM_2",
-    name: "Team 2",
-    researchAreas: [
-      {
-        id: "AREA_2A",
-        name: "Research Area 2A",
-        relatedTeams: ["TEAM_2"],
-      },
-      {
-        id: "AREA_2B",
-        name: "Research Area 2B",
-        relatedTeams: ["TEAM_2"],
-      },
-    ],
+    id: "NOVA", 
+    name: "Nova",
+    researchAreas: [],
   },
   {
-    id: "TEAM_3",
-    name: "Team 3",
-    researchAreas: [
-      {
-        id: "AREA_3A",
-        name: "Research Area 3A",
-        relatedTeams: ["TEAM_3"],
-      },
-    ],
+    id: "SERVUS",
+    name: "Servus", 
+    researchAreas: [],
+  },
+  {
+    id: "SOLARA",
+    name: "Solara",
+    researchAreas: [],
+  },
+  {
+    id: "VOLTARIS",
+    name: "Voltaris",
+    researchAreas: [],
+  },
+  {
+    id: "ORION",
+    name: "Orion",
+    researchAreas: [],
+  },
+  {
+    id: "ELECTRA",
+    name: "Electra",
+    researchAreas: [],
   },
 ];
 
-// Flattened and deduplicated research areas
-export const RESEARCH_AREAS: ResearchArea[] = Array.from(
-  new Map(
-    TEAMS.flatMap((team) =>
-      team.researchAreas.map((ra) => ({
-        ...ra,
-        relatedTeams: [...new Set([...ra.relatedTeams, team.id])],
-      })),
-    ).map((ra) => [ra.id, ra]),
-  ).values(),
-);
+// Research areas are not used for design challenge applications (/apply)
+export const RESEARCH_AREAS: ResearchArea[] = [];
 
 export const INTEREST_LEVELS = Object.values(InterestLevel).map((level) => ({
   value: level as InterestLevel,

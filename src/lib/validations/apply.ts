@@ -11,7 +11,6 @@ import {
   ExperienceLevel,
   LearningInterestLevel,
 } from "@prisma/client";
-import { TEAMS } from "@/consts/apply-form";
 
 const statusSchema = z.nativeEnum(ApplicationStatus);
 const yearSchema = z.nativeEnum(Year);
@@ -93,25 +92,67 @@ export const ApplyFormSchema = z
       year: yearSchema,
       major: majorSchema,
       currentClasses: z
-        .array(z.string())
+        .array(z.string().nullable().default(""))
         .min(2, "Enter at least two classes")
+        .max(7, "Maximum 7 classes allowed")
+        .refine((classes) => {
+          const nonEmptyClasses = classes.filter(
+            (cls) => cls && cls.trim() !== "",
+          );
+          return nonEmptyClasses.length >= 2;
+        }, "Enter at least two valid current classes")
         .refine(
           (classes) =>
-            classes.every((cls) =>
-              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+            classes.every(
+              (cls) =>
+                !cls ||
+                cls.trim() === "" ||
+                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
-          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
-        ),
+          "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
+        )
+        .transform((classes) => classes.map((cls) => cls ?? "")),
       nextClasses: z
-        .array(z.string())
+        .array(z.string().nullable().default(""))
         .min(2, "Enter at least two classes")
+        .max(7, "Maximum 7 classes allowed")
+        .refine((classes) => {
+          const nonEmptyClasses = classes.filter(
+            (cls) => cls && cls.trim() !== "",
+          );
+          return nonEmptyClasses.length >= 2;
+        }, "Enter at least two valid planned classes")
         .refine(
           (classes) =>
-            classes.every((cls) =>
-              /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{3}|NULL 101)$/.test(cls),
+            classes.every(
+              (cls) =>
+                !cls ||
+                cls.trim() === "" ||
+                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
-          "All classes must be in format 'XXXX 123' or 'XXXXb1234' (for courses at Blinn) or 'NULL 101' if courses are withheld.",
-        ),
+          "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
+        )
+        .transform((classes) => classes.map((cls) => cls ?? "")),
+      currentCommitmentHours: z
+        .union([
+          z.string().transform((val) => (val === "" ? 0 : Number(val))),
+          z.number(),
+        ])
+        .refine(
+          (val) => val >= 0 && val <= 40,
+          "Must be between 0 and 40 hours",
+        )
+        .optional(),
+      plannedCommitmentHours: z
+        .union([
+          z.string().transform((val) => (val === "" ? 0 : Number(val))),
+          z.number(),
+        ])
+        .refine(
+          (val) => val >= 0 && val <= 40,
+          "Must be between 0 and 40 hours",
+        )
+        .optional(),
       timeCommitment: z
         .array(
           z.object({
@@ -119,7 +160,7 @@ export const ApplyFormSchema = z
             hours: z
               .number()
               .min(1, "Minimum 1 hour required")
-              .max(15, "Cannot exceed 15 hours"),
+              .max(40, "Cannot exceed 40 hours"),
             type: z.enum(["CURRENT", "PLANNED"]),
           }),
         )
@@ -136,11 +177,12 @@ export const ApplyFormSchema = z
         .array(
           z.object({
             teamId: z.string(),
-            interestLevel: z.nativeEnum(InterestLevel),
+            ranking: z.number().min(1, "Ranking must be at least 1"),
           }),
         )
         .min(1, "Select at least one team"),
 
+      // Remove research areas validation for design challenges
       researchAreas: z
         .array(
           z.object({
@@ -148,7 +190,8 @@ export const ApplyFormSchema = z
             interestLevel: z.nativeEnum(InterestLevel),
           }),
         )
-        .max(3, "You can select up to three research areas"),
+        .optional()
+        .default([]),
 
       referralSources: z
         .array(z.nativeEnum(ReferralSource))
@@ -220,25 +263,34 @@ export const ApplyFormSchema = z
   })
 
   .superRefine((data, ctx) => {
-    // Validate that research areas belong to selected teams
-    const selectedTeamIds = data.thinkTankInfo.preferredTeams.map(
-      (team) => team.teamId,
-    );
-    const validResearchAreaIds = TEAMS.filter((team) =>
-      selectedTeamIds.includes(team.id),
-    )
-      .flatMap((team) => team.researchAreas)
-      .map((ra) => ra.id);
+    // Validate team rankings are unique and sequential
+    const selectedTeams = data.thinkTankInfo.preferredTeams;
+    if (selectedTeams.length > 0) {
+      const rankings = selectedTeams.map((t) => t.ranking);
+      const uniqueRankings = new Set(rankings);
 
-    data.thinkTankInfo.researchAreas.forEach((ra, index) => {
-      if (!validResearchAreaIds.includes(ra.researchAreaId)) {
+      // Check for duplicate rankings
+      if (uniqueRankings.size !== rankings.length) {
         ctx.addIssue({
           code: "custom",
-          path: ["thinkTankInfo", "researchAreas", index, "researchAreaId"],
-          message: "Selected research area must belong to chosen teams",
+          path: ["thinkTankInfo", "preferredTeams"],
+          message: "Each team must have a unique ranking",
         });
       }
-    });
+
+      // Check rankings are sequential starting from 1
+      const sortedRankings = [...rankings].sort((a, b) => a - b);
+      for (let i = 0; i < sortedRankings.length; i++) {
+        if (sortedRankings[i] !== i + 1) {
+          ctx.addIssue({
+            code: "custom",
+            path: ["thinkTankInfo", "preferredTeams"],
+            message: "Team rankings must be sequential starting from 1",
+          });
+          break;
+        }
+      }
+    }
 
     const fullName = data.personal.fullName.toLowerCase();
     const signatures = [

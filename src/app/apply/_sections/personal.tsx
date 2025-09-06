@@ -19,10 +19,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { q, PRONOUN_OPTIONS, GENDER_OPTIONS } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 export default function PersonalInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+  const pronounsValue = useWatch({ control: form.control, name: "personal.pronouns" });
+  const genderValue = useWatch({ control: form.control, name: "personal.gender" });
 
   return (
     <div className="flex flex-col gap-4">
@@ -46,7 +48,12 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input type="text" placeholder="John Doe" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="John Doe"
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
@@ -132,7 +139,7 @@ export default function PersonalInfo() {
                 </RadioGroup>
 
                 {(field.value?.startsWith("OTHER:") ??
-                  form.watch("personal.pronouns") === "OTHER") && (
+                  pronounsValue === "OTHER") && (
                   <Input
                     value={
                       field.value?.startsWith("OTHER:")
@@ -200,7 +207,7 @@ export default function PersonalInfo() {
                 </RadioGroup>
 
                 {(field.value?.startsWith("OTHER:") ??
-                  form.watch("personal.gender") === "OTHER") && (
+                  genderValue === "OTHER") && (
                   <Input
                     value={
                       field.value?.startsWith("OTHER:")
@@ -230,13 +237,17 @@ export default function PersonalInfo() {
                   {q.personal.uin} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  If you have a special UIN that doesn't match the format
-                  123004567, please contact us at: tamuthinktank@gmail.com
+                  If you have a special UIN that doesn't match the format 123004567,
+                  please contact us at: tamuthinktank@gmail.com
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input placeholder="123004567" {...field} />
+                  <Input
+                    placeholder="123004567"
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
@@ -258,7 +269,12 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input type="text" placeholder="mail@tamu.edu" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="mail@tamu.edu"
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
@@ -276,8 +292,8 @@ export default function PersonalInfo() {
               <CardHeader>
                 <CardTitle>{q.personal.altEmail}</CardTitle>
                 <CardDescription>
-                  Provide any other email that is a good point of contact in
-                  addition to your TAMU email
+                  Provide any other email that is a good point of contact in addition
+                  to your TAMU email
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -311,7 +327,12 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input type="text" placeholder="123-456-7890" {...field} />
+                  <Input
+                    type="text"
+                    placeholder="123-456-7890"
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>

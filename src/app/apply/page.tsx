@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import type { PropsWithChildren, RefObject } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../../hooks/usePersistForm";
 
@@ -31,6 +31,7 @@ import SubmissionConfirmation from "./_sections/confirmation";
 export default function Apply() {
   const { toast } = useToast();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [activeTab, setActiveTab] = useState<ApplyTabType>("start");
   const [userTimezone, setUserTimezone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
@@ -50,8 +51,10 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: [""],
-          nextClasses: [""],
+          currentClasses: ["", ""],
+          nextClasses: ["", ""],
+          currentCommitmentHours: "",
+          plannedCommitmentHours: "",
           timeCommitment: [],
         },
         thinkTankInfo: {
@@ -84,9 +87,9 @@ export default function Apply() {
 
       // Then show toast and confirmation
       toast({
-        title: "Form Submitted!",
+        title: "Application Submitted Successfully!",
         description:
-          "Contact tamuthinktank@gmail.com if you do not receive an email by April 2nd.",
+          "A confirmation email has been sent to your TAMU email. Check your inbox and spam folder. Contact tamuthinktank@gmail.com if you don't receive it within 10 minutes.",
         duration: 10000,
       });
       setShowConfirmation(true);
@@ -138,17 +141,52 @@ export default function Apply() {
 
       try {
         const uploadResult = await uploadResume(formData);
-        const updatedData: RouterInputs["public"]["applyForm"] = {
+
+        // Transform data for database submission
+        const transformedData: RouterInputs["public"]["applyForm"] = {
           ...data,
+          academic: {
+            year: data.academic.year,
+            major: data.academic.major,
+            currentClasses: data.academic.currentClasses.filter(
+              (cls) => cls && cls.trim() !== "",
+            ),
+            nextClasses: data.academic.nextClasses.filter(
+              (cls) => cls && cls.trim() !== "",
+            ),
+            timeCommitment: [
+              ...(data.academic.currentCommitmentHours &&
+              Number(data.academic.currentCommitmentHours) > 0
+                ? [
+                    {
+                      name: "Current Time Commitments",
+                      hours: Number(data.academic.currentCommitmentHours),
+                      type: "CURRENT" as const,
+                    },
+                  ]
+                : []),
+              ...(data.academic.plannedCommitmentHours &&
+              Number(data.academic.plannedCommitmentHours) > 0
+                ? [
+                    {
+                      name: "Planned Time Commitments",
+                      hours: Number(data.academic.plannedCommitmentHours),
+                      type: "PLANNED" as const,
+                    },
+                  ]
+                : []),
+            ],
+          },
           resume: {
             ...data.resume,
             resumeId: uploadResult.resumeId,
           },
         };
 
-        await submitForm(updatedData);
+        await submitForm(transformedData);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+        const errorMessage =
+          err instanceof Error ? err.message : "An unknown error occurred";
         toast({
           variant: "destructive",
           title: "Error",
@@ -188,7 +226,10 @@ export default function Apply() {
         <ScrollArea viewportRef={viewportRef} className="h-full">
           <div className="flex w-screen items-center justify-center">
             <Tabs
-              defaultValue="start"
+              value={activeTab}
+              onValueChange={(value: string) =>
+                setActiveTab(value as ApplyTabType)
+              }
               className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
             >
               <FormIntroTab />
@@ -197,6 +238,7 @@ export default function Apply() {
                 currentTab="personal"
                 nextTab="academic"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <PersonalInfo />
               </ApplyTab>
@@ -206,6 +248,7 @@ export default function Apply() {
                 currentTab="academic"
                 nextTab="thinkTankInfo"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <AcademicInfo />
               </ApplyTab>
@@ -215,6 +258,7 @@ export default function Apply() {
                 currentTab="thinkTankInfo"
                 nextTab="openEndedQuestions"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <ThinkTankInfo />
               </ApplyTab>
@@ -224,6 +268,7 @@ export default function Apply() {
                 currentTab="openEndedQuestions"
                 nextTab="meetingTimes"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <OpenEndedQuestions />
               </ApplyTab>
@@ -233,6 +278,7 @@ export default function Apply() {
                 currentTab="meetingTimes"
                 nextTab="resume"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <Availability
                   userTimezone={userTimezone}
@@ -297,85 +343,81 @@ function ApplyTab({
   currentTab,
   nextTab,
   viewportRef,
+  setActiveTab,
   children,
 }: {
   previousTab: ApplyTabType;
   currentTab: ApplyTabType;
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
+  setActiveTab: (tab: ApplyTabType) => void;
 } & PropsWithChildren) {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
     if (viewportRef.current) {
       viewportRef.current.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     }
-  };
+  }, [viewportRef]);
 
   const handleNext = useCallback(async () => {
     if (currentTab === "start") {
+      setIsValid(true);
+      setActiveTab(nextTab);
+      scrollToTop();
       return;
     }
 
+    // Clear previous validation state
+    setIsChecked(false);
+    
     const result = await form.trigger(currentTab, {
       shouldFocus: true,
     });
 
-    if (result) {
-      setIsValid(true);
-      scrollToTop();
-    } else {
-      setIsValid(false);
-    }
-
+    setIsValid(result);
     setIsChecked(true);
-  }, [currentTab, form, scrollToTop]);
+    
+    // Navigate if validation passes
+    if (result) {
+      setActiveTab(nextTab);
+      scrollToTop();
+    }
+  }, [currentTab, form, scrollToTop, nextTab, setActiveTab]);
 
-  useEffect(() => {
-    if (!isChecked) return;
-    if (currentTab === "start") return;
-
-    const subscription = form.watch((values, { name }) => {
-      if (name && typeof name === "string" && name.startsWith(currentTab)) {
-        void form
-          .trigger(currentTab)
-          .then((isValid: boolean) => setIsValid(isValid))
-          .catch(() => setIsValid(false));
-      }
-    });
-
-    return () => {
-      if (typeof subscription.unsubscribe === "function") {
-        subscription.unsubscribe();
-      }
-    };
-  }, [form, currentTab, isChecked]);
+  // Reset validation state when tab changes
+  const handleBack = useCallback(() => {
+    setIsValid(false);
+    setIsChecked(false);
+    setActiveTab(previousTab);
+    scrollToTop();
+  }, [scrollToTop, previousTab, setActiveTab]);
 
   return (
     <TabsContent className="space-y-2" value={currentTab}>
       <Card className="p-4">{children}</Card>
       <TabsList className="flex w-full justify-between bg-transparent">
-        <TabsTrigger
-          className="bg-white text-black"
-          value={previousTab}
-          onMouseDown={scrollToTop}
+        <Button
+          type="button"
+          className="bg-white text-black hover:bg-gray-100"
+          onClick={handleBack}
         >
           Back
-        </TabsTrigger>
-        <TabsTrigger
-          onMouseDown={handleNext}
-          value={isValid ? nextTab : currentTab}
+        </Button>
+        <Button
+          type="button"
+          onClick={handleNext}
           disabled={isChecked && !isValid}
-          className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
+          className="bg-white text-black hover:bg-gray-100"
         >
           Next
-        </TabsTrigger>
+        </Button>
       </TabsList>
     </TabsContent>
   );
