@@ -45,14 +45,28 @@ export const publicRouter = createTRPCRouter({
           meetings: input.thinkTankInfo.meetings,
           weeklyCommitment: input.thinkTankInfo.weeklyCommitment,
           preferredTeams: {
-            create: input.thinkTankInfo.preferredTeams.map((pt) => ({
-              // Map ranking to interest level: 1st choice = HIGH, 2nd = MEDIUM, 3rd+ = LOW
-              interest:
-                pt.ranking === 1 ? "HIGH" : pt.ranking === 2 ? "MEDIUM" : "LOW",
-              team: {
-                connect: { id: pt.teamId },
-              },
-            })),
+            create: input.thinkTankInfo.preferredTeams.map((pt) => {
+              const team = TEAMS.find((t) => t.id === pt.teamId);
+              if (!team) {
+                throw new Error(`Team with id ${pt.teamId} not found`);
+              }
+              return {
+                // Map ranking to interest level: 1st choice = HIGH, 2nd = MEDIUM, 3rd+ = LOW
+                interest:
+                  pt.ranking === 1 ? "HIGH" : pt.ranking === 2 ? "MEDIUM" : "LOW",
+                team: {
+                  connectOrCreate: {
+                    where: { id: pt.teamId },
+                    create: {
+                      id: pt.teamId,
+                      name: team.name,
+                      description: `${team.name} team for Design Challenge`,
+                      challenge: "TSGC", // Default challenge
+                    },
+                  },
+                },
+              };
+            }),
           },
           researchAreas: {
             create: input.thinkTankInfo.researchAreas.map((ra) => ({
