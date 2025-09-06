@@ -93,7 +93,8 @@ export const ApplyFormSchema = z
       major: majorSchema,
       currentClasses: z
         .array(z.string().nullable().default(""))
-        .length(7)
+        .min(2, "Enter at least two classes")
+        .max(7, "Maximum 7 classes allowed")
         .refine(
           (classes) => {
             const nonEmptyClasses = classes.filter(cls => cls && cls.trim() !== "");
@@ -111,7 +112,8 @@ export const ApplyFormSchema = z
         .transform(classes => classes.map(cls => cls || "")),
       nextClasses: z
         .array(z.string().nullable().default(""))
-        .length(7)
+        .min(2, "Enter at least two classes")
+        .max(7, "Maximum 7 classes allowed")
         .refine(
           (classes) => {
             const nonEmptyClasses = classes.filter(cls => cls && cls.trim() !== "");
@@ -142,7 +144,7 @@ export const ApplyFormSchema = z
             hours: z
               .number()
               .min(1, "Minimum 1 hour required")
-              .max(15, "Cannot exceed 15 hours"),
+              .max(40, "Cannot exceed 40 hours"),
             type: z.enum(["CURRENT", "PLANNED"]),
           }),
         )

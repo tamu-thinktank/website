@@ -31,6 +31,7 @@ import SubmissionConfirmation from "./_sections/confirmation";
 export default function Apply() {
   const { toast } = useToast();
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [activeTab, setActiveTab] = useState<ApplyTabType>("start");
   const [userTimezone, setUserTimezone] = useState(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
   );
@@ -50,8 +51,8 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: ["", "", "", "", "", "", ""],
-          nextClasses: ["", "", "", "", "", "", ""],
+          currentClasses: ["", ""],
+          nextClasses: ["", ""],
           currentCommitmentHours: "",
           plannedCommitmentHours: "",
           timeCommitment: [],
@@ -210,7 +211,8 @@ export default function Apply() {
         <ScrollArea viewportRef={viewportRef} className="h-full">
           <div className="flex w-screen items-center justify-center">
             <Tabs
-              defaultValue="start"
+              value={activeTab}
+              onValueChange={setActiveTab}
               className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
             >
               <FormIntroTab />
@@ -219,6 +221,7 @@ export default function Apply() {
                 currentTab="personal"
                 nextTab="academic"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <PersonalInfo />
               </ApplyTab>
@@ -228,6 +231,7 @@ export default function Apply() {
                 currentTab="academic"
                 nextTab="thinkTankInfo"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <AcademicInfo />
               </ApplyTab>
@@ -237,6 +241,7 @@ export default function Apply() {
                 currentTab="thinkTankInfo"
                 nextTab="openEndedQuestions"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <ThinkTankInfo />
               </ApplyTab>
@@ -246,6 +251,7 @@ export default function Apply() {
                 currentTab="openEndedQuestions"
                 nextTab="meetingTimes"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <OpenEndedQuestions />
               </ApplyTab>
@@ -255,6 +261,7 @@ export default function Apply() {
                 currentTab="meetingTimes"
                 nextTab="resume"
                 viewportRef={viewportRef}
+                setActiveTab={setActiveTab}
               >
                 <Availability
                   userTimezone={userTimezone}
@@ -319,12 +326,14 @@ function ApplyTab({
   currentTab,
   nextTab,
   viewportRef,
+  setActiveTab,
   children,
 }: {
   previousTab: ApplyTabType;
   currentTab: ApplyTabType;
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
+  setActiveTab: (tab: ApplyTabType) => void;
 } & PropsWithChildren) {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
@@ -343,6 +352,8 @@ function ApplyTab({
   const handleNext = useCallback(async () => {
     if (currentTab === "start") {
       setIsValid(true);
+      setActiveTab(nextTab);
+      scrollToTop();
       return;
     }
 
@@ -356,38 +367,40 @@ function ApplyTab({
     setIsValid(result);
     setIsChecked(true);
     
-    // Only scroll if validation passes
+    // Navigate if validation passes
     if (result) {
+      setActiveTab(nextTab);
       scrollToTop();
     }
-  }, [currentTab, form, scrollToTop]);
+  }, [currentTab, form, scrollToTop, nextTab, setActiveTab]);
 
   // Reset validation state when tab changes
   const handleBack = useCallback(() => {
     setIsValid(false);
     setIsChecked(false);
+    setActiveTab(previousTab);
     scrollToTop();
-  }, [scrollToTop]);
+  }, [scrollToTop, previousTab, setActiveTab]);
 
   return (
     <TabsContent className="space-y-2" value={currentTab}>
       <Card className="p-4">{children}</Card>
       <TabsList className="flex w-full justify-between bg-transparent">
-        <TabsTrigger
-          className="bg-white text-black"
-          value={previousTab}
+        <Button
+          type="button"
+          className="bg-white text-black hover:bg-gray-100"
           onClick={handleBack}
         >
           Back
-        </TabsTrigger>
-        <TabsTrigger
+        </Button>
+        <Button
+          type="button"
           onClick={handleNext}
-          value={isValid ? nextTab : currentTab}
           disabled={isChecked && !isValid}
-          className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"
+          className="bg-white text-black hover:bg-gray-100"
         >
           Next
-        </TabsTrigger>
+        </Button>
       </TabsList>
     </TabsContent>
   );
