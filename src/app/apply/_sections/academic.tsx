@@ -28,39 +28,9 @@ import { q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Plus, X } from "lucide-react";
 
 export default function AcademicInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
-  const currentClasses = form.watch("academic.currentClasses");
-  const nextClasses = form.watch("academic.nextClasses");
-
-  const addCurrentClass = () => {
-    if (currentClasses.length < 7) {
-      form.setValue("academic.currentClasses", [...currentClasses, ""]);
-    }
-  };
-
-  const removeCurrentClass = (index: number) => {
-    if (currentClasses.length > 2) {
-      const updated = currentClasses.filter((_, i) => i !== index);
-      form.setValue("academic.currentClasses", updated);
-    }
-  };
-
-  const addNextClass = () => {
-    if (nextClasses.length < 7) {
-      form.setValue("academic.nextClasses", [...nextClasses, ""]);
-    }
-  };
-
-  const removeNextClass = (index: number) => {
-    if (nextClasses.length > 2) {
-      const updated = nextClasses.filter((_, i) => i !== index);
-      form.setValue("academic.nextClasses", updated);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -151,60 +121,29 @@ export default function AcademicInfo() {
             Current Semester Classes <span className="text-red-500">*</span>
           </CardTitle>
           <CardDescription className="text-gray-500">
-            If you have more than 7 classes, please list your main/core classes
-            here. At least 2 classes are required.
+            List your classes for the current semester. At least 2 classes are required.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {currentClasses.map((_, index) => (
+          {Array(7).fill(null).map((_, index) => (
             <FormField
               key={index}
               control={form.control}
               name={`academic.currentClasses.${index}`}
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value ?? ""}
-                        placeholder={
-                          index < 2
-                            ? `Class ${index + 1} (Required): e.g., ENGR 102`
-                            : `Class ${index + 1} (Optional): e.g., PHYS 206`
-                        }
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                      />
-                    </FormControl>
-                    {currentClasses.length > 2 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeCurrentClass(index)}
-                        className="flex-shrink-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  <FormMessage />
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder={`Class ${index + 1}: e.g., ENGR 102`}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
           ))}
-          
-          {currentClasses.length < 7 && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={addCurrentClass}
-              className="w-full"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Another Class ({currentClasses.length}/7)
-            </Button>
-          )}
         </CardContent>
       </Card>
 
@@ -215,60 +154,29 @@ export default function AcademicInfo() {
             Next Semester Classes <span className="text-red-500">*</span>
           </CardTitle>
           <CardDescription className="text-gray-500">
-            If you have more than 7 classes planned, please list your main/core
-            classes here. At least 2 classes are required.
+            List your planned classes for next semester. At least 2 classes are required.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {nextClasses.map((_, index) => (
+          {Array(7).fill(null).map((_, index) => (
             <FormField
               key={index}
               control={form.control}
               name={`academic.nextClasses.${index}`}
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex gap-2">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value ?? ""}
-                        placeholder={
-                          index < 2
-                            ? `Class ${index + 1} (Required): e.g., ENGR 216`
-                            : `Class ${index + 1} (Optional): e.g., PHYS 207`
-                        }
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                      />
-                    </FormControl>
-                    {nextClasses.length > 2 && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => removeNextClass(index)}
-                        className="flex-shrink-0"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                  <FormMessage />
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder={`Class ${index + 1}: e.g., ENGR 216`}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
           ))}
-          
-          {nextClasses.length < 7 && (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={addNextClass}
-              className="w-full"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Another Class ({nextClasses.length}/7)
-            </Button>
-          )}
         </CardContent>
       </Card>
 

@@ -97,7 +97,7 @@ export const ApplyFormSchema = z
         .max(7, "Maximum 7 classes allowed")
         .refine((classes) => {
           const nonEmptyClasses = classes.filter(
-            (cls) => cls && cls.trim() !== "",
+            (cls) => cls && cls.trim() !== "" && cls !== "none",
           );
           return nonEmptyClasses.length >= 2;
         }, "Enter at least two valid current classes")
@@ -107,6 +107,7 @@ export const ApplyFormSchema = z
               (cls) =>
                 !cls ||
                 cls.trim() === "" ||
+                cls === "none" ||
                 /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
@@ -118,7 +119,7 @@ export const ApplyFormSchema = z
         .max(7, "Maximum 7 classes allowed")
         .refine((classes) => {
           const nonEmptyClasses = classes.filter(
-            (cls) => cls && cls.trim() !== "",
+            (cls) => cls && cls.trim() !== "" && cls !== "none",
           );
           return nonEmptyClasses.length >= 2;
         }, "Enter at least two valid planned classes")
@@ -128,6 +129,7 @@ export const ApplyFormSchema = z
               (cls) =>
                 !cls ||
                 cls.trim() === "" ||
+                cls === "none" ||
                 /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",

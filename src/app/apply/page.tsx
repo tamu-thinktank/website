@@ -51,8 +51,8 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: ["", ""],
-          nextClasses: ["", ""],
+          currentClasses: Array(7).fill(""),
+          nextClasses: Array(7).fill(""),
           currentCommitmentHours: "",
           plannedCommitmentHours: "",
           timeCommitment: [],
@@ -148,11 +148,11 @@ export default function Apply() {
           academic: {
             year: data.academic.year,
             major: data.academic.major,
-            currentClasses: data.academic.currentClasses.filter(
-              (cls) => cls && cls.trim() !== "",
+            currentClasses: data.academic.currentClasses.map(cls => 
+              cls && cls.trim() !== "" ? cls : "none"
             ),
-            nextClasses: data.academic.nextClasses.filter(
-              (cls) => cls && cls.trim() !== "",
+            nextClasses: data.academic.nextClasses.map(cls => 
+              cls && cls.trim() !== "" ? cls : "none"
             ),
             timeCommitment: [
               ...(data.academic.currentCommitmentHours &&
@@ -374,20 +374,58 @@ function ApplyTab({
       return;
     }
 
-    // Clear previous validation state
+    // Clear previous validation state and reset button
     setIsChecked(false);
+    setIsValid(false);
     
-    const result = await form.trigger(currentTab, {
-      shouldFocus: true,
-    });
-
-    setIsValid(result);
-    setIsChecked(true);
-    
-    // Navigate if validation passes
-    if (result) {
+    // Custom validation for academic section
+    if (currentTab === "academic") {
+      const formData = form.getValues();
+      const currentClasses = formData.academic.currentClasses.filter(c => c && c.trim() !== "" && c !== "none");
+      const nextClasses = formData.academic.nextClasses.filter(c => c && c.trim() !== "" && c !== "none");
+      
+      if (currentClasses.length < 2 || nextClasses.length < 2) {
+        setIsValid(false);
+        setIsChecked(true);
+        return;
+      }
+      
+      // Check format validation for non-empty classes
+      const classPattern = /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/;
+      const invalidCurrent = currentClasses.some(cls => cls && !classPattern.test(cls));
+      const invalidNext = nextClasses.some(cls => cls && !classPattern.test(cls));
+      
+      if (invalidCurrent || invalidNext) {
+        setIsValid(false);
+        setIsChecked(true);
+        return;
+      }
+      
+      setIsValid(true);
+      setIsChecked(true);
       setActiveTab(nextTab);
       scrollToTop();
+      return;
+    }
+    
+    // Standard validation for other sections
+    try {
+      const result = await form.trigger(currentTab, {
+        shouldFocus: true,
+      });
+
+      setIsValid(result);
+      setIsChecked(true);
+      
+      // Navigate if validation passes
+      if (result) {
+        setActiveTab(nextTab);
+        scrollToTop();
+      }
+    } catch (error) {
+      // Reset states on error to ensure button becomes clickable again
+      setIsValid(false);
+      setIsChecked(true);
     }
   }, [currentTab, form, scrollToTop, nextTab, setActiveTab]);
 

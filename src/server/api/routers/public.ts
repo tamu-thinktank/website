@@ -22,7 +22,10 @@ export const publicRouter = createTRPCRouter({
           ...input.personal,
 
           // Academic Info
-          ...input.academic,
+          year: input.academic.year,
+          major: input.academic.major,
+          currentClasses: input.academic.currentClasses,
+          nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
               .filter((tc): tc is Required<typeof tc> => {
@@ -60,8 +63,6 @@ export const publicRouter = createTRPCRouter({
                     create: {
                       id: pt.teamId,
                       name: team.name,
-                      description: `${team.name} team for Design Challenge`,
-                      challenge: "TSGC", // Default challenge
                     },
                   },
                 },
@@ -141,7 +142,11 @@ export const publicRouter = createTRPCRouter({
           ...input.personal,
 
           // Academic Info (includes officer-specific fields)
-          ...input.academic,
+          year: input.academic.year,
+          major: input.academic.major,
+          currentClasses: input.academic.currentClasses,
+          nextClasses: input.academic.nextClasses,
+          summerPlans: input.academic.summerPlans,
           timeCommitment: {
             create: input.academic.timeCommitment
               .filter((tc): tc is Required<typeof tc> => {
@@ -204,7 +209,10 @@ export const publicRouter = createTRPCRouter({
           ...input.personal,
 
           // Academic Info
-          ...input.academic,
+          year: input.academic.year,
+          major: input.academic.major,
+          currentClasses: input.academic.currentClasses,
+          nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
               .filter((tc): tc is Required<typeof tc> => {
@@ -283,7 +291,10 @@ export const publicRouter = createTRPCRouter({
           ...input.personal,
 
           // Academic Info
-          ...input.academic,
+          year: input.academic.year,
+          major: input.academic.major,
+          currentClasses: input.academic.currentClasses,
+          nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
               .filter((tc): tc is Required<typeof tc> => {
