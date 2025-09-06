@@ -141,26 +141,40 @@ export default function Apply() {
 
       try {
         const uploadResult = await uploadResume(formData);
-        
+
         // Transform data for database submission
         const transformedData: RouterInputs["public"]["applyForm"] = {
           ...data,
           academic: {
             year: data.academic.year,
             major: data.academic.major,
-            currentClasses: data.academic.currentClasses.filter(cls => cls && cls.trim() !== ""),
-            nextClasses: data.academic.nextClasses.filter(cls => cls && cls.trim() !== ""),
+            currentClasses: data.academic.currentClasses.filter(
+              (cls) => cls && cls.trim() !== "",
+            ),
+            nextClasses: data.academic.nextClasses.filter(
+              (cls) => cls && cls.trim() !== "",
+            ),
             timeCommitment: [
-              ...(data.academic.currentCommitmentHours && Number(data.academic.currentCommitmentHours) > 0 ? [{
-                name: "Current Time Commitments",
-                hours: Number(data.academic.currentCommitmentHours),
-                type: "CURRENT" as const,
-              }] : []),
-              ...(data.academic.plannedCommitmentHours && Number(data.academic.plannedCommitmentHours) > 0 ? [{
-                name: "Planned Time Commitments", 
-                hours: Number(data.academic.plannedCommitmentHours),
-                type: "PLANNED" as const,
-              }] : []),
+              ...(data.academic.currentCommitmentHours &&
+              Number(data.academic.currentCommitmentHours) > 0
+                ? [
+                    {
+                      name: "Current Time Commitments",
+                      hours: Number(data.academic.currentCommitmentHours),
+                      type: "CURRENT" as const,
+                    },
+                  ]
+                : []),
+              ...(data.academic.plannedCommitmentHours &&
+              Number(data.academic.plannedCommitmentHours) > 0
+                ? [
+                    {
+                      name: "Planned Time Commitments",
+                      hours: Number(data.academic.plannedCommitmentHours),
+                      type: "PLANNED" as const,
+                    },
+                  ]
+                : []),
             ],
           },
           resume: {
@@ -171,7 +185,8 @@ export default function Apply() {
 
         await submitForm(transformedData);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
+        const errorMessage =
+          err instanceof Error ? err.message : "An unknown error occurred";
         toast({
           variant: "destructive",
           title: "Error",
@@ -212,7 +227,9 @@ export default function Apply() {
           <div className="flex w-screen items-center justify-center">
             <Tabs
               value={activeTab}
-              onValueChange={(value: string) => setActiveTab(value as ApplyTabType)}
+              onValueChange={(value: string) =>
+                setActiveTab(value as ApplyTabType)
+              }
               className="my-4 w-11/12 md:w-3/4 lg:w-1/2"
             >
               <FormIntroTab />

@@ -47,10 +47,22 @@ export default function FormIntroTab() {
           </CardHeader>
           <CardContent className="text-left space-y-2">
             <ul className="text-sm space-y-1">
-              <li>• <strong>Classes:</strong> Fill out one class at a time - you can't add the next class until the current one is valid</li>
-              <li>• <strong>Auto-save:</strong> Your progress is automatically saved as you type</li>
-              <li>• <strong>Required fields:</strong> Make sure all fields marked with (*) are completed</li>
-              <li>• <strong>Time commitments:</strong> You can specify whether each commitment is current or planned</li>
+              <li>
+                • <strong>Classes:</strong> Fill out one class at a time - you can't
+                add the next class until the current one is valid
+              </li>
+              <li>
+                • <strong>Auto-save:</strong> Your progress is automatically saved as
+                you type
+              </li>
+              <li>
+                • <strong>Required fields:</strong> Make sure all fields marked with
+                (*) are completed
+              </li>
+              <li>
+                • <strong>Time commitments:</strong> You can specify whether each
+                commitment is current or planned
+              </li>
             </ul>
           </CardContent>
         </Card>
@@ -75,17 +87,21 @@ export default function FormIntroTab() {
               
               <div className="bg-amber-100 p-3 rounded">
                 <p className="font-medium mb-1">Still having issues?</p>
-                <p>Join our{" "}
-                  <a 
-                    href="https://discord.gg/qUAuSraYV9" 
-                    target="_blank" 
+                <p>
+                  Join our{" "}
+                  <a
+                    href="https://discord.gg/qUAuSraYV9"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800 underline font-medium"
                   >
                     Discord server
                   </a>{" "}
                   and message an officer for help, or email us at{" "}
-                  <a href="mailto:tamuthinktank@gmail.com" className="text-blue-600 hover:text-blue-800 underline">
+                  <a
+                    href="mailto:tamuthinktank@gmail.com"
+                    className="text-blue-600 hover:text-blue-800 underline"
+                  >
                     tamuthinktank@gmail.com
                   </a>
                 </p>

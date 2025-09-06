@@ -147,26 +147,33 @@ export default function AcademicInfo() {
       {/* Current Semester Classes */}
       <Card>
         <CardHeader>
-          <CardTitle>Current Semester Classes <span className="text-red-500">*</span></CardTitle>
+          <CardTitle>
+            Current Semester Classes <span className="text-red-500">*</span>
+          </CardTitle>
           <CardDescription className="text-gray-500">
-            If you have more than 7 classes, please list your main/core classes here. At least 2 classes are required.
+            If you have more than 7 classes, please list your main/core classes
+            here. At least 2 classes are required.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {currentClasses.map((_, index) => (
-            <FormField 
+            <FormField
               key={index}
-              control={form.control} 
-              name={`academic.currentClasses.${index}`} 
+              control={form.control}
+              name={`academic.currentClasses.${index}`}
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2">
                     <FormControl>
-                      <Input 
-                        {...field} 
-                        value={field.value ?? ""} 
-                        placeholder={index < 2 ? `Class ${index + 1} (Required): e.g., ENGR 102` : `Class ${index + 1} (Optional): e.g., PHYS 206`}
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())} 
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        placeholder={
+                          index < 2
+                            ? `Class ${index + 1} (Required): e.g., ENGR 102`
+                            : `Class ${index + 1} (Optional): e.g., PHYS 206`
+                        }
+                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                       />
                     </FormControl>
                     {currentClasses.length > 2 && (
@@ -204,26 +211,33 @@ export default function AcademicInfo() {
       {/* Next Semester Classes */}
       <Card>
         <CardHeader>
-          <CardTitle>Next Semester Classes <span className="text-red-500">*</span></CardTitle>
+          <CardTitle>
+            Next Semester Classes <span className="text-red-500">*</span>
+          </CardTitle>
           <CardDescription className="text-gray-500">
-            If you have more than 7 classes planned, please list your main/core classes here. At least 2 classes are required.
+            If you have more than 7 classes planned, please list your main/core
+            classes here. At least 2 classes are required.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {nextClasses.map((_, index) => (
-            <FormField 
+            <FormField
               key={index}
-              control={form.control} 
-              name={`academic.nextClasses.${index}`} 
+              control={form.control}
+              name={`academic.nextClasses.${index}`}
               render={({ field }) => (
                 <FormItem>
                   <div className="flex gap-2">
                     <FormControl>
-                      <Input 
-                        {...field} 
-                        value={field.value ?? ""} 
-                        placeholder={index < 2 ? `Class ${index + 1} (Required): e.g., ENGR 216` : `Class ${index + 1} (Optional): e.g., PHYS 207`}
-                        onChange={(e) => field.onChange(e.target.value.toUpperCase())} 
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        placeholder={
+                          index < 2
+                            ? `Class ${index + 1} (Required): e.g., ENGR 216`
+                            : `Class ${index + 1} (Optional): e.g., PHYS 207`
+                        }
+                        onChange={(e) => field.onChange(e.target.value.toUpperCase())}
                       />
                     </FormControl>
                     {nextClasses.length > 2 && (
@@ -263,29 +277,52 @@ export default function AcademicInfo() {
         <CardHeader>
           <CardTitle>Time Commitments (Optional)</CardTitle>
           <CardDescription className="text-gray-500">
-            Please estimate the total combined hours per week (on average) for all your current and planned commitments. 
-            This includes work, organizations, sports, volunteering, etc. Maximum 40 hours total.
+            Please estimate the total combined hours per week (on average) for all
+            your current and planned commitments. This includes work, organizations,
+            sports, volunteering, etc. Maximum 40 hours total.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-4">
-          <FormField control={form.control} name="academic.currentCommitmentHours" render={({ field }) => (
-            <FormItem>
-              <FormLabel>Current Total Hours/Week</FormLabel>
-              <FormControl>
-                <Input {...field} type="number" placeholder="0" min={0} max={40} value={field.value ?? ""} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
-          <FormField control={form.control} name="academic.plannedCommitmentHours" render={({ field }) => (
-            <FormItem>
-              <FormLabel>Planned Total Hours/Week</FormLabel>
-              <FormControl>
-                <Input {...field} type="number" placeholder="0" min={0} max={40} value={field.value ?? ""} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )} />
+          <FormField
+            control={form.control}
+            name="academic.currentCommitmentHours"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Current Total Hours/Week</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="0"
+                    min={0}
+                    max={40}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="academic.plannedCommitmentHours"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Planned Total Hours/Week</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="0"
+                    min={0}
+                    max={40}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </CardContent>
       </Card>
     </div>

@@ -48,9 +48,9 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input 
-                    type="text" 
-                    placeholder="John Doe" 
+                  <Input
+                    type="text"
+                    placeholder="John Doe"
                     {...field}
                     value={field.value || ""}
                   />
@@ -237,14 +237,14 @@ export default function PersonalInfo() {
                   {q.personal.uin} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  If you have a special UIN that doesn't match the format
-                  123004567, please contact us at: tamuthinktank@gmail.com
+                  If you have a special UIN that doesn't match the format 123004567,
+                  please contact us at: tamuthinktank@gmail.com
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input 
-                    placeholder="123004567" 
+                  <Input
+                    placeholder="123004567"
                     {...field}
                     value={field.value || ""}
                   />
@@ -269,9 +269,9 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input 
-                    type="text" 
-                    placeholder="mail@tamu.edu" 
+                  <Input
+                    type="text"
+                    placeholder="mail@tamu.edu"
                     {...field}
                     value={field.value || ""}
                   />
@@ -292,8 +292,8 @@ export default function PersonalInfo() {
               <CardHeader>
                 <CardTitle>{q.personal.altEmail}</CardTitle>
                 <CardDescription>
-                  Provide any other email that is a good point of contact in
-                  addition to your TAMU email
+                  Provide any other email that is a good point of contact in addition
+                  to your TAMU email
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -327,9 +327,9 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input 
-                    type="text" 
-                    placeholder="123-456-7890" 
+                  <Input
+                    type="text"
+                    placeholder="123-456-7890"
                     {...field}
                     value={field.value || ""}
                   />

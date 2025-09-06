@@ -91,10 +91,10 @@ export const publicRouter = createTRPCRouter({
           .sort((a, b) => a.ranking - b.ranking)
           .map((pt) => {
             const team = TEAMS.find((t) => t.id === pt.teamId);
-            return team?.name || pt.teamId;
+            return team?.name ?? pt.teamId;
           });
 
-        const firstName = input.personal.fullName.split(' ')[0] || input.personal.preferredName || 'there';
+        const firstName = input.personal.fullName.split(' ')[0] ?? input.personal.preferredName ?? 'there';
 
         await sendEmail({
           to: [input.personal.email],

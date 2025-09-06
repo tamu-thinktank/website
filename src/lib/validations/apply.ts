@@ -109,7 +109,7 @@ export const ApplyFormSchema = z
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
         )
-        .transform(classes => classes.map(cls => cls || "")),
+        .transform(classes => classes.map(cls => cls ?? "")),
       nextClasses: z
         .array(z.string().nullable().default(""))
         .min(2, "Enter at least two classes")
@@ -128,7 +128,7 @@ export const ApplyFormSchema = z
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
         )
-        .transform(classes => classes.map(cls => cls || "")),
+        .transform(classes => classes.map(cls => cls ?? "")),
       currentCommitmentHours: z.union([
         z.string().transform(val => val === "" ? 0 : Number(val)), 
         z.number()

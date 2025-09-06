@@ -31,7 +31,7 @@ export const usePersistForm = <TFieldValues extends FieldValues = FieldValues>(
         // Use setTimeout to avoid render conflicts
         setTimeout(() => form.reset(parsedData as TFieldValues), 0);
       } catch (error) {
-        console.warn('Failed to parse saved form data:', error);
+        console.warn("Failed to parse saved form data:", error);
       }
     }
   }, [name]); // Remove form from dependencies to prevent re-runs
@@ -39,7 +39,7 @@ export const usePersistForm = <TFieldValues extends FieldValues = FieldValues>(
   // Save to storage periodically instead of on every change
   useEffect(() => {
     if (typeof window === "undefined") return;
-    
+
     const interval = setInterval(() => {
       const currentValues = form.getValues();
       window.sessionStorage.setItem(name, JSON.stringify(currentValues));

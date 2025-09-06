@@ -56,7 +56,7 @@ export default function ThinkTankInfo() {
               <CardContent>
                 <RadioGroup
                   onValueChange={(value) => field.onChange(value === "true")}
-                  value={field.value.toString() ?? ""}
+                  value={field.value.toString()}
                 >
                   <div className="space-y-2">
                     <FormItem>
@@ -100,7 +100,7 @@ export default function ThinkTankInfo() {
               <CardContent>
                 <RadioGroup
                   onValueChange={(value) => field.onChange(value === "true")}
-                  value={field.value.toString() ?? ""}
+                  value={field.value.toString()}
                 >
                   <div className="space-y-2">
                     <FormItem>
@@ -140,7 +140,8 @@ export default function ThinkTankInfo() {
                   Preferred Teams <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Select and rank your preferred teams in order of preference. You can reorder them after selection.
+                  Select and rank your preferred teams in order of preference. You
+                  can reorder them after selection.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -149,7 +150,9 @@ export default function ThinkTankInfo() {
                 <div className="space-y-3">
                   <h4 className="text-sm font-medium">Available Teams:</h4>
                   <div className="grid grid-cols-2 gap-2">
-                    {TEAMS.filter((team) => !selectedTeams.some((t) => t.teamId === team.id)).map((team) => (
+                    {TEAMS.filter((team) =>
+                      !selectedTeams.some((t) => t.teamId === team.id),
+                    ).map((team) => (
                       <Button
                         key={team.id}
                         type="button"
@@ -175,7 +178,9 @@ export default function ThinkTankInfo() {
                 {/* Selected Teams with Ranking */}
                 {selectedTeams.length > 0 && (
                   <div className="space-y-3">
-                    <h4 className="text-sm font-medium">Your Team Preferences (in order):</h4>
+                    <h4 className="text-sm font-medium">
+                      Your Team Preferences (in order):
+                    </h4>
                     <div className="space-y-2">
                       {selectedTeams
                         .sort((a, b) => (a.ranking || 0) - (b.ranking || 0))
@@ -194,7 +199,11 @@ export default function ThinkTankInfo() {
                               <div className="flex-1">
                                 <span className="font-medium">{team.name}</span>
                                 <span className="ml-2 text-sm text-muted-foreground">
-                                  {index === 0 ? "(1st choice)" : index === 1 ? "(2nd choice)" : `(${index + 1}${index === 2 ? 'rd' : 'th'} choice)`}
+                                  {index === 0
+                                    ? "(1st choice)"
+                                    : index === 1
+                                      ? "(2nd choice)"
+                                      : `(${index + 1}${index === 2 ? "rd" : "th"} choice)`}
                                 </span>
                               </div>
                               <div className="flex items-center gap-1">
@@ -294,9 +303,9 @@ export default function ThinkTankInfo() {
                   <FormItem key={source}>
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        checked={field.value.includes(source) ?? false}
+                        checked={field.value.includes(source)}
                         onCheckedChange={(checked) => {
-                          const currentValues = field.value || [];
+                          const currentValues = field.value;
                           const updated = checked
                             ? [...currentValues, source]
                             : currentValues.filter((s) => s !== source);

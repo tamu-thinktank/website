@@ -73,10 +73,10 @@ export const ApplicationConfirmationEmail = ({
           </Section>
           <Text style={paragraph}>Howdy {userFirstname}!</Text>
           <Text style={paragraph}>
-            Thank you for applying to TAMU ThinkTank's Design Challenge program! 
+            Thank you for applying to TAMU ThinkTank's Design Challenge program!
             We have successfully received your application and are excited to review it.
           </Text>
-          
+
           <Text style={paragraph}>
             <strong>Application Details:</strong>
             <br />

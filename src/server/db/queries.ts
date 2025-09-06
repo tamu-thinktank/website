@@ -37,7 +37,7 @@ export const getTargetTeams = async (
     },
   });
   
-  return (result?.targetTeams ?? []) as Challenge[];
+  return result?.targetTeams ?? [];
 };
 
 export const getAllApplications = async () => {
