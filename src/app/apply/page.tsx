@@ -144,7 +144,6 @@ export default function Apply() {
 
         // Transform data for database submission
         const transformedData: RouterInputs["public"]["applyForm"] = {
-        const updatedData: RouterInputs["public"]["applyForm"] = {
           ...data,
           academic: {
             year: data.academic.year,
@@ -188,8 +187,6 @@ export default function Apply() {
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "An unknown error occurred";
-
-        const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
         toast({
           variant: "destructive",
           title: "Error",
@@ -401,28 +398,6 @@ function ApplyTab({
     setActiveTab(previousTab);
     scrollToTop();
   }, [scrollToTop, previousTab, setActiveTab]);
-    setIsChecked(true);
-  }, [currentTab, form, scrollToTop]);
-
-  useEffect(() => {
-    if (!isChecked) return;
-    if (currentTab === "start") return;
-
-    const subscription = form.watch((values, { name }) => {
-      if (name && typeof name === "string" && name.startsWith(currentTab)) {
-        void form
-          .trigger(currentTab)
-          .then((isValid: boolean) => setIsValid(isValid))
-          .catch(() => setIsValid(false));
-      }
-    });
-
-    return () => {
-      if (typeof subscription.unsubscribe === "function") {
-        subscription.unsubscribe();
-      }
-    };
-  }, [form, currentTab, isChecked]);
 
   return (
     <TabsContent className="space-y-2" value={currentTab}>
