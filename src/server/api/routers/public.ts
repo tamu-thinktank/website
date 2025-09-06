@@ -294,7 +294,6 @@ export const publicRouter = createTRPCRouter({
           year: input.academic.year,
           major: input.academic.major,
           currentClasses: input.academic.currentClasses,
-          nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
               .filter((tc): tc is Required<typeof tc> => {

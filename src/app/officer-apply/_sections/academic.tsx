@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -169,7 +170,7 @@ export default function AcademicInfo() {
       <FormField
         control={form.control}
         name="academic.currentClasses"
-        render={({ field }) => (
+        render={({ field: _field }) => (
           <FormItem>
             <Card>
               <CardHeader>
@@ -192,7 +193,7 @@ export default function AcademicInfo() {
                       <FormItem>
                         <Input
                           {...field}
-                          value={field.value ?? ""}
+                          value={field.value || ""}
                           placeholder={`Class ${index + 1}: e.g., XXXX 123`}
                           pattern="[A-Z]{4} \d{3}"
                         />
@@ -210,7 +211,7 @@ export default function AcademicInfo() {
       <FormField
         control={form.control}
         name="academic.nextClasses"
-        render={({ field }) => (
+        render={({ field: _field }) => (
           <FormItem>
             <Card>
               <CardHeader>
@@ -233,7 +234,7 @@ export default function AcademicInfo() {
                       <FormItem>
                         <Input
                           {...field}
-                          value={field.value ?? ""}
+                          value={field.value || ""}
                           placeholder={`Class ${index + 1}: e.g., XXXX 123`}
                           pattern="[A-Z]{4} \d{3}"
                         />
