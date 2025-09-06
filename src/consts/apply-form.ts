@@ -34,6 +34,8 @@ export const q: Questions = {
     major: "Major",
     currentClasses: "Current Semester Classes",
     nextClasses: "Next Semester Classes",
+    currentCommitmentHours: "Current Time Commitment Hours",
+    plannedCommitmentHours: "Planned Time Commitment Hours",
     timeCommitment: "Time Commitments",
   },
 

@@ -29,7 +29,7 @@ export const usePersistForm = <TFieldValues extends FieldValues = FieldValues>(
       try {
         const parsedData = JSON.parse(savedData);
         // Use setTimeout to avoid render conflicts
-        setTimeout(() => form.reset(parsedData), 0);
+        setTimeout(() => form.reset(parsedData as TFieldValues), 0);
       } catch (error) {
         console.warn('Failed to parse saved form data:', error);
       }

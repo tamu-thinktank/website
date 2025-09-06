@@ -50,8 +50,10 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: ["", "", "", "", ""],
-          nextClasses: ["", "", "", "", ""],
+          currentClasses: ["", "", "", "", "", "", ""],
+          nextClasses: ["", "", "", "", "", "", ""],
+          currentCommitmentHours: "",
+          plannedCommitmentHours: "",
           timeCommitment: [],
         },
         thinkTankInfo: {
@@ -138,15 +140,35 @@ export default function Apply() {
 
       try {
         const uploadResult = await uploadResume(formData);
-        const updatedData: RouterInputs["public"]["applyForm"] = {
+        
+        // Transform data for database submission
+        const transformedData: any = {
           ...data,
+          academic: {
+            year: data.academic.year,
+            major: data.academic.major,
+            currentClasses: data.academic.currentClasses.filter(cls => cls && cls.trim() !== ""),
+            nextClasses: data.academic.nextClasses.filter(cls => cls && cls.trim() !== ""),
+            timeCommitment: [
+              ...(data.academic.currentCommitmentHours && Number(data.academic.currentCommitmentHours) > 0 ? [{
+                name: "Current Time Commitments",
+                hours: Number(data.academic.currentCommitmentHours),
+                type: "CURRENT" as const,
+              }] : []),
+              ...(data.academic.plannedCommitmentHours && Number(data.academic.plannedCommitmentHours) > 0 ? [{
+                name: "Planned Time Commitments", 
+                hours: Number(data.academic.plannedCommitmentHours),
+                type: "PLANNED" as const,
+              }] : []),
+            ],
+          },
           resume: {
             ...data.resume,
             resumeId: uploadResult.resumeId,
           },
         };
 
-        await submitForm(updatedData);
+        await submitForm(transformedData);
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : "An unknown error occurred";
         toast({
@@ -309,14 +331,14 @@ function ApplyTab({
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
     if (viewportRef.current) {
       viewportRef.current.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     }
-  };
+  }, [viewportRef]);
 
   const handleNext = useCallback(async () => {
     if (currentTab === "start") {
@@ -324,6 +346,9 @@ function ApplyTab({
       return;
     }
 
+    // Clear previous validation state
+    setIsChecked(false);
+    
     const result = await form.trigger(currentTab, {
       shouldFocus: true,
     });
@@ -331,12 +356,18 @@ function ApplyTab({
     setIsValid(result);
     setIsChecked(true);
     
+    // Only scroll if validation passes
     if (result) {
       scrollToTop();
     }
   }, [currentTab, form, scrollToTop]);
 
-  // Remove problematic real-time validation - validation happens on Next button click only
+  // Reset validation state when tab changes
+  const handleBack = useCallback(() => {
+    setIsValid(false);
+    setIsChecked(false);
+    scrollToTop();
+  }, [scrollToTop]);
 
   return (
     <TabsContent className="space-y-2" value={currentTab}>
@@ -345,12 +376,12 @@ function ApplyTab({
         <TabsTrigger
           className="bg-white text-black"
           value={previousTab}
-          onMouseDown={scrollToTop}
+          onClick={handleBack}
         >
           Back
         </TabsTrigger>
         <TabsTrigger
-          onMouseDown={handleNext}
+          onClick={handleNext}
           value={isValid ? nextTab : currentTab}
           disabled={isChecked && !isValid}
           className="bg-white text-black data-[state=active]:bg-white data-[state=active]:text-black"

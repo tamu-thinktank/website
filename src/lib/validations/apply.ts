@@ -92,28 +92,29 @@ export const ApplyFormSchema = z
       year: yearSchema,
       major: majorSchema,
       currentClasses: z
-        .array(z.string())
-        .min(1, "At least one class is required")
+        .array(z.string().nullable().default(""))
+        .length(7)
         .refine(
           (classes) => {
-            const nonEmptyClasses = classes.filter(cls => cls.trim() !== "");
+            const nonEmptyClasses = classes.filter(cls => cls && cls.trim() !== "");
             return nonEmptyClasses.length >= 2;
           },
-          "Enter at least two valid classes",
+          "Enter at least two valid current classes",
         )
         .refine(
           (classes) =>
             classes.every((cls) =>
-              cls.trim() === "" || /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+              !cls || cls.trim() === "" || /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
-        ),
+        )
+        .transform(classes => classes.map(cls => cls || "")),
       nextClasses: z
-        .array(z.string())
-        .min(1, "At least one planned class is required")
+        .array(z.string().nullable().default(""))
+        .length(7)
         .refine(
           (classes) => {
-            const nonEmptyClasses = classes.filter(cls => cls.trim() !== "");
+            const nonEmptyClasses = classes.filter(cls => cls && cls.trim() !== "");
             return nonEmptyClasses.length >= 2;
           },
           "Enter at least two valid planned classes",
@@ -121,10 +122,19 @@ export const ApplyFormSchema = z
         .refine(
           (classes) =>
             classes.every((cls) =>
-              cls.trim() === "" || /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+              !cls || cls.trim() === "" || /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
-        ),
+        )
+        .transform(classes => classes.map(cls => cls || "")),
+      currentCommitmentHours: z.union([
+        z.string().transform(val => val === "" ? 0 : Number(val)), 
+        z.number()
+      ]).refine(val => val >= 0 && val <= 40, "Must be between 0 and 40 hours").optional(),
+      plannedCommitmentHours: z.union([
+        z.string().transform(val => val === "" ? 0 : Number(val)), 
+        z.number()
+      ]).refine(val => val >= 0 && val <= 40, "Must be between 0 and 40 hours").optional(),
       timeCommitment: z
         .array(
           z.object({
@@ -135,11 +145,6 @@ export const ApplyFormSchema = z
               .max(15, "Cannot exceed 15 hours"),
             type: z.enum(["CURRENT", "PLANNED"]),
           }),
-        )
-        .refine(
-          (commitments) => 
-            commitments.every(c => c.name.trim().length > 0 && c.hours > 0),
-          "All time commitments must have valid names and hours"
         )
         .optional()
         .default([]),
