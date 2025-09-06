@@ -19,6 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
+import { X } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -30,7 +31,6 @@ import { qOfficer } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
-import { X } from "lucide-react";
 
 const wordCount = (text: string) => {
   if (!text.trim()) return 0;
@@ -170,7 +170,7 @@ export default function AcademicInfo() {
       <FormField
         control={form.control}
         name="academic.currentClasses"
-        render={({ field }) => (
+        render={({ field: _field }) => (
           <FormItem>
             <Card>
               <CardHeader>
@@ -179,55 +179,28 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Enter at least two classes in one of the following formats:
-                  <br />
-                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-                  <br />
-                  - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-                  <br />
-                  If you have fewer than two courses, use 'NULL 101' as a
-                  placeholder and contact us.
+                  List your classes. At least 2 classes are required.
+                  Format: TAMU: 'XXXX 123' (e.g., ENGR 102) | Blinn: 'XXXXb1234' (e.g., MATHb2413)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {field.value.map((_, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name={`academic.currentClasses.${index}`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <Input
-                            {...field}
-                            placeholder="XXXX 123"
-                            pattern="[A-Z]{4} \d{3}"
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const updated = [...field.value];
-                        updated.splice(index, 1);
-                        field.onChange(updated);
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                {Array(7).fill(null).map((_, index) => (
+                  <FormField
+                    key={index}
+                    control={form.control}
+                    name={`academic.currentClasses.${index}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Input
+                          {...field}
+                          value={field.value || ""}
+                          placeholder={`Class ${index + 1}: e.g., XXXX 123`}
+                          pattern="[A-Z]{4} \d{3}"
+                        />
+                      </FormItem>
+                    )}
+                  />
                 ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => field.onChange([...field.value, ""])}
-                >
-                  Add Class
-                </Button>
-                <FormMessage />
               </CardContent>
             </Card>
           </FormItem>
@@ -238,7 +211,7 @@ export default function AcademicInfo() {
       <FormField
         control={form.control}
         name="academic.nextClasses"
-        render={({ field }) => (
+        render={({ field: _field }) => (
           <FormItem>
             <Card>
               <CardHeader>
@@ -247,55 +220,28 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Enter at least two classes in one of the following formats:
-                  <br />
-                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-                  <br />
-                  - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-                  <br />
-                  If you have fewer than two courses, use 'NULL 101' as a
-                  placeholder and contact us.
+                  List your classes. At least 2 classes are required.
+                  Format: TAMU: 'XXXX 123' (e.g., ENGR 102) | Blinn: 'XXXXb1234' (e.g., MATHb2413)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {field.value.map((_, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name={`academic.nextClasses.${index}`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <Input
-                            {...field}
-                            placeholder="XXXX 123"
-                            pattern="[A-Z]{4} \d{3}"
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const updated = [...field.value];
-                        updated.splice(index, 1);
-                        field.onChange(updated);
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
+                {Array(7).fill(null).map((_, index) => (
+                  <FormField
+                    key={index}
+                    control={form.control}
+                    name={`academic.nextClasses.${index}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <Input
+                          {...field}
+                          value={field.value || ""}
+                          placeholder={`Class ${index + 1}: e.g., XXXX 123`}
+                          pattern="[A-Z]{4} \d{3}"
+                        />
+                      </FormItem>
+                    )}
+                  />
                 ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => field.onChange([...field.value, ""])}
-                >
-                  Add Class
-                </Button>
-                <FormMessage />
               </CardContent>
             </Card>
           </FormItem>

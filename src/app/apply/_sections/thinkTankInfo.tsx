@@ -49,7 +49,7 @@ export default function ThinkTankInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Workshops: Thursdays 6-7pm in RICH 106, team meetings
+                  Workshops: Wednesdays 6:30-7:30pm, Location TBD, team meetings
                   scheduled post-Onboarding
                 </CardDescription>
               </CardHeader>
@@ -313,7 +313,9 @@ export default function ThinkTankInfo() {
                         }}
                       />
                       <FormLabel className="leading-none">
-                        {source.replace(/_/g, " ")}
+                        {source === "MSC_OPEN_HOUSE" 
+                          ? "MSC Open House (Club Crawl)" 
+                          : source.replace(/_/g, " ")}
                       </FormLabel>
                     </div>
                   </FormItem>
