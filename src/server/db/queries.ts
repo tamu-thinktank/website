@@ -36,7 +36,7 @@ export const getTargetTeams = async (
       targetTeams: true,
     },
   });
-  
+
   return result?.targetTeams ?? [];
 };
 

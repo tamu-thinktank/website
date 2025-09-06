@@ -95,48 +95,64 @@ export const ApplyFormSchema = z
         .array(z.string().nullable().default(""))
         .min(2, "Enter at least two classes")
         .max(7, "Maximum 7 classes allowed")
-        .refine(
-          (classes) => {
-            const nonEmptyClasses = classes.filter(cls => cls && cls.trim() !== "");
-            return nonEmptyClasses.length >= 2;
-          },
-          "Enter at least two valid current classes",
-        )
+        .refine((classes) => {
+          const nonEmptyClasses = classes.filter(
+            (cls) => cls && cls.trim() !== "",
+          );
+          return nonEmptyClasses.length >= 2;
+        }, "Enter at least two valid current classes")
         .refine(
           (classes) =>
-            classes.every((cls) =>
-              !cls || cls.trim() === "" || /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+            classes.every(
+              (cls) =>
+                !cls ||
+                cls.trim() === "" ||
+                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
         )
-        .transform(classes => classes.map(cls => cls ?? "")),
+        .transform((classes) => classes.map((cls) => cls ?? "")),
       nextClasses: z
         .array(z.string().nullable().default(""))
         .min(2, "Enter at least two classes")
         .max(7, "Maximum 7 classes allowed")
-        .refine(
-          (classes) => {
-            const nonEmptyClasses = classes.filter(cls => cls && cls.trim() !== "");
-            return nonEmptyClasses.length >= 2;
-          },
-          "Enter at least two valid planned classes",
-        )
+        .refine((classes) => {
+          const nonEmptyClasses = classes.filter(
+            (cls) => cls && cls.trim() !== "",
+          );
+          return nonEmptyClasses.length >= 2;
+        }, "Enter at least two valid planned classes")
         .refine(
           (classes) =>
-            classes.every((cls) =>
-              !cls || cls.trim() === "" || /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
+            classes.every(
+              (cls) =>
+                !cls ||
+                cls.trim() === "" ||
+                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
             ),
           "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
         )
-        .transform(classes => classes.map(cls => cls ?? "")),
-      currentCommitmentHours: z.union([
-        z.string().transform(val => val === "" ? 0 : Number(val)), 
-        z.number()
-      ]).refine(val => val >= 0 && val <= 40, "Must be between 0 and 40 hours").optional(),
-      plannedCommitmentHours: z.union([
-        z.string().transform(val => val === "" ? 0 : Number(val)), 
-        z.number()
-      ]).refine(val => val >= 0 && val <= 40, "Must be between 0 and 40 hours").optional(),
+        .transform((classes) => classes.map((cls) => cls ?? "")),
+      currentCommitmentHours: z
+        .union([
+          z.string().transform((val) => (val === "" ? 0 : Number(val))),
+          z.number(),
+        ])
+        .refine(
+          (val) => val >= 0 && val <= 40,
+          "Must be between 0 and 40 hours",
+        )
+        .optional(),
+      plannedCommitmentHours: z
+        .union([
+          z.string().transform((val) => (val === "" ? 0 : Number(val))),
+          z.number(),
+        ])
+        .refine(
+          (val) => val >= 0 && val <= 40,
+          "Must be between 0 and 40 hours",
+        )
+        .optional(),
       timeCommitment: z
         .array(
           z.object({
@@ -250,9 +266,9 @@ export const ApplyFormSchema = z
     // Validate team rankings are unique and sequential
     const selectedTeams = data.thinkTankInfo.preferredTeams;
     if (selectedTeams.length > 0) {
-      const rankings = selectedTeams.map(t => t.ranking);
+      const rankings = selectedTeams.map((t) => t.ranking);
       const uniqueRankings = new Set(rankings);
-      
+
       // Check for duplicate rankings
       if (uniqueRankings.size !== rankings.length) {
         ctx.addIssue({
@@ -261,7 +277,7 @@ export const ApplyFormSchema = z
           message: "Each team must have a unique ranking",
         });
       }
-      
+
       // Check rankings are sequential starting from 1
       const sortedRankings = [...rankings].sort((a, b) => a - b);
       for (let i = 0; i < sortedRankings.length; i++) {

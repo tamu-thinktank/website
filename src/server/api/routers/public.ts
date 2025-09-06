@@ -47,7 +47,8 @@ export const publicRouter = createTRPCRouter({
           preferredTeams: {
             create: input.thinkTankInfo.preferredTeams.map((pt) => ({
               // Map ranking to interest level: 1st choice = HIGH, 2nd = MEDIUM, 3rd+ = LOW
-              interest: pt.ranking === 1 ? "HIGH" : pt.ranking === 2 ? "MEDIUM" : "LOW",
+              interest:
+                pt.ranking === 1 ? "HIGH" : pt.ranking === 2 ? "MEDIUM" : "LOW",
               team: {
                 connect: { id: pt.teamId },
               },
@@ -94,7 +95,10 @@ export const publicRouter = createTRPCRouter({
             return team?.name ?? pt.teamId;
           });
 
-        const firstName = input.personal.fullName.split(' ')[0] ?? input.personal.preferredName ?? 'there';
+        const firstName =
+          input.personal.fullName.split(" ")[0] ??
+          input.personal.preferredName ??
+          "there";
 
         await sendEmail({
           to: [input.personal.email],
