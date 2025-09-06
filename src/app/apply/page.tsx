@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import type { PropsWithChildren, RefObject } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../../hooks/usePersistForm";
 
@@ -50,8 +50,8 @@ export default function Apply() {
           gender: "",
         },
         academic: {
-          currentClasses: [""],
-          nextClasses: [""],
+          currentClasses: ["", "", "", "", ""],
+          nextClasses: ["", "", "", "", ""],
           timeCommitment: [],
         },
         thinkTankInfo: {
@@ -84,9 +84,9 @@ export default function Apply() {
 
       // Then show toast and confirmation
       toast({
-        title: "Form Submitted!",
+        title: "Application Submitted Successfully!",
         description:
-          "Contact tamuthinktank@gmail.com if you do not receive an email by April 2nd.",
+          "A confirmation email has been sent to your TAMU email. Check your inbox and spam folder. Contact tamuthinktank@gmail.com if you don't receive it within 10 minutes.",
         duration: 10000,
       });
       setShowConfirmation(true);
@@ -320,6 +320,7 @@ function ApplyTab({
 
   const handleNext = useCallback(async () => {
     if (currentTab === "start") {
+      setIsValid(true);
       return;
     }
 
@@ -327,35 +328,15 @@ function ApplyTab({
       shouldFocus: true,
     });
 
-    if (result) {
-      setIsValid(true);
-      scrollToTop();
-    } else {
-      setIsValid(false);
-    }
-
+    setIsValid(result);
     setIsChecked(true);
+    
+    if (result) {
+      scrollToTop();
+    }
   }, [currentTab, form, scrollToTop]);
 
-  useEffect(() => {
-    if (!isChecked) return;
-    if (currentTab === "start") return;
-
-    const subscription = form.watch((values, { name }) => {
-      if (name && typeof name === "string" && name.startsWith(currentTab)) {
-        void form
-          .trigger(currentTab)
-          .then((isValid: boolean) => setIsValid(isValid))
-          .catch(() => setIsValid(false));
-      }
-    });
-
-    return () => {
-      if (typeof subscription.unsubscribe === "function") {
-        subscription.unsubscribe();
-      }
-    };
-  }, [form, currentTab, isChecked]);
+  // Remove problematic real-time validation - validation happens on Next button click only
 
   return (
     <TabsContent className="space-y-2" value={currentTab}>

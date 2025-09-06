@@ -28,11 +28,17 @@ import {
 import { q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import { X } from "lucide-react";
 
 export default function AcademicInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
+
+  // Stable validation function
+  const validateClass = (value: string) => {
+    if (!value.trim()) return false;
+    return /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(value);
+  };
 
   return (
     <div className="flex flex-col gap-4">
@@ -117,254 +123,339 @@ export default function AcademicInfo() {
       />
 
       {/* Current Semester Classes */}
-      <FormField
-        control={form.control}
-        name="academic.currentClasses"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {q.academic.currentClasses}
-                  <span className="text-red-500">*</span>
-                </CardTitle>
-                <CardDescription>
-                  Enter at least two classes in one of the following formats:
-                  <br />
-                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-                  <br />
-                  - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-                  <br />
-                  If you have fewer than two courses, use 'NULL 101' as a
-                  placeholder and contact us.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {field.value.map((_, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <FormField
-                      control={form.control}
-                      name={`academic.currentClasses.${index}`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <Input
-                            {...field}
-                            placeholder="XXXX 123"
-                            pattern="[A-Z]{4} \d{3}"
-                          />
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        const updated = [...field.value];
-                        updated.splice(index, 1);
-                        field.onChange(updated);
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => field.onChange([...field.value, ""])}
-                >
-                  Add Class
-                </Button>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {q.academic.currentClasses}
+            <span className="text-red-500">*</span>
+          </CardTitle>
+          <CardDescription>
+            Enter your current classes. Use format: XXXX 123 (e.g., ENGR 102) or XXXXb1234 (e.g., MATHb2413). Use 'NULL 101' if you prefer not to share.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <FormField
+            control={form.control}
+            name="academic.currentClasses.0"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">1</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
                 <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="academic.currentClasses.1"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">2</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="academic.currentClasses.2"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">3</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234 (optional)"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="academic.currentClasses.3"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">4</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234 (optional)"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="academic.currentClasses.4"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">5</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234 (optional)"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </CardContent>
+      </Card>
 
       {/* Next Semester Classes */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            {q.academic.nextClasses}
+            <span className="text-red-500">*</span>
+          </CardTitle>
+          <CardDescription>
+            Enter your planned classes for next semester. Use format: XXXX 123 (e.g., ENGR 102) or XXXXb1234 (e.g., MATHb2413). Use 'NULL 101' if you prefer not to share.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <FormField
+            control={form.control}
+            name="academic.nextClasses.0"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">1</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="academic.nextClasses.1"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">2</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="academic.nextClasses.2"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">3</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234 (optional)"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="academic.nextClasses.3"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">4</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234 (optional)"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="academic.nextClasses.4"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-center w-6 h-6 rounded-full bg-gray-100 text-sm font-medium">5</div>
+                  <Input
+                    {...field}
+                    value={field.value || ""}
+                    placeholder="XXXX 123 or XXXXb1234 (optional)"
+                    onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                  />
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Time Commitments - Unified System */}
       <FormField
         control={form.control}
-        name="academic.nextClasses"
+        name="academic.timeCommitment"
         render={({ field }) => (
           <FormItem>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {q.academic.nextClasses}
-                  <span className="text-red-500">*</span>
-                </CardTitle>
+                <CardTitle>Time Commitments</CardTitle>
                 <CardDescription>
-                  Enter at least two classes in one of the following formats:
-                  <br />
-                  - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-                  <br />
-                  - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-                  <br />
-                  If you have fewer than two courses, use 'NULL 101' as a
-                  placeholder and contact us.
+                  Add your current and planned time commitments (optional). Helps us understand your availability.
+                  Hours should be between 1-15 per week per commitment.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-2">
-                {field.value.map((_, index) => (
-                  <div key={index} className="flex items-center gap-2">
+              <CardContent className="space-y-4">
+                {(field.value ?? []).map((commitment, index) => (
+                  <div
+                    key={`commitment-${index}`}
+                    className="grid grid-cols-[2fr_120px_120px_40px] items-start gap-4 p-3 border rounded-lg"
+                  >
                     <FormField
                       control={form.control}
-                      name={`academic.nextClasses.${index}`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
+                      name={`academic.timeCommitment.${index}.name`}
+                      render={({ field: nameField }) => (
+                        <FormItem>
                           <Input
-                            {...field}
-                            placeholder="XXXX 123"
-                            pattern="[A-Z]{4} \d{3}"
+                            {...nameField}
+                            value={nameField.value || ""}
+                            placeholder="Commitment name (e.g., SAE, Work, Tutoring)"
+                            onChange={(e) => {
+                              nameField.onChange(e.target.value);
+                            }}
                           />
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+                    
+                    <FormField
+                      control={form.control}
+                      name={`academic.timeCommitment.${index}.hours`}
+                      render={({ field: hoursField }) => (
+                        <FormItem>
+                          <Input
+                            type="number"
+                            placeholder="Hours/week"
+                            value={hoursField.value || ""}
+                            min={0}
+                            max={15}
+                            onChange={(e) => {
+                              const value = e.target.value === "" ? "" : Number(e.target.value);
+                              hoursField.onChange(value);
+                            }}
+                          />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name={`academic.timeCommitment.${index}.type`}
+                      render={({ field: typeField }) => (
+                        <FormItem>
+                          <select
+                            {...typeField}
+                            value={typeField.value || "CURRENT"}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
+                          >
+                            <option value="CURRENT">Current</option>
+                            <option value="PLANNED">Planned</option>
+                          </select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <Button
                       type="button"
                       variant="outline"
                       size="icon"
                       onClick={() => {
-                        const updated = [...field.value];
+                        const updated = [...(field.value ?? [])];
                         updated.splice(index, 1);
                         field.onChange(updated);
                       }}
+                      title="Remove commitment"
                     >
                       <X className="h-4 w-4" />
                     </Button>
                   </div>
                 ))}
+
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => field.onChange([...field.value, ""])}
+                  onClick={() => {
+                    const currentValue = field.value ?? [];
+                    const newCommitment = {
+                      name: "",
+                      hours: 1,
+                      type: "CURRENT" as "CURRENT" | "PLANNED",
+                    };
+                    field.onChange([...currentValue, newCommitment]);
+                  }}
+                  className="w-full"
                 >
-                  Add Class
+                  + Add Time Commitment
                 </Button>
+
                 <FormMessage />
               </CardContent>
             </Card>
           </FormItem>
         )}
       />
-
-      {/* Time Commitments */}
-      {["CURRENT", "PLANNED"].map((type) => (
-        <FormField
-          key={type}
-          control={form.control}
-          name="academic.timeCommitment"
-          render={({ field }) => (
-            <FormItem>
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    {type === "CURRENT"
-                      ? "Current Time Commitments"
-                      : "Planned Time Commitments"}
-                  </CardTitle>
-                  <CardDescription>
-                    Enter commitments between 1-15 hours per week
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {(field.value ?? [])
-                    .filter((c) => c.type === type)
-                    .map((commitment, idx) => {
-                      const globalIndex = (field.value ?? []).findIndex(
-                        (c) =>
-                          c.type === type &&
-                          (field.value ?? [])
-                            .filter((fc) => fc.type === type)
-                            .indexOf(c) === idx,
-                      );
-                      return (
-                        <div
-                          key={globalIndex}
-                          className="grid grid-cols-[1fr_100px_40px] items-start gap-4"
-                        >
-                          <FormField
-                            control={form.control}
-                            name={`academic.timeCommitment.${globalIndex}.name`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Input
-                                  {...field}
-                                  placeholder="Commitment name"
-                                  onBlur={async () => {
-                                    field.onBlur();
-                                    if (field.value) {
-                                      await form.trigger(
-                                        `academic.timeCommitment.${globalIndex}.name`,
-                                      );
-                                    }
-                                  }}
-                                />
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name={`academic.timeCommitment.${globalIndex}.hours`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Input
-                                  type="number"
-                                  {...field}
-                                  min={1}
-                                  max={15}
-                                  onChange={(e) =>
-                                    field.onChange(Number(e.target.value))
-                                  }
-                                />
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => {
-                              const currentValue = field.value ?? [];
-                              const updated = [...currentValue];
-                              updated.splice(globalIndex, 1);
-                              form.setValue("academic.timeCommitment", updated);
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      );
-                    })}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      const currentValue = field.value ?? [];
-                      form.setValue("academic.timeCommitment", [
-                        ...currentValue,
-                        {
-                          name: "Commitment Name",
-                          hours: 1,
-                          type: type as "CURRENT" | "PLANNED",
-                        },
-                      ]);
-                    }}
-                  >
-                    Add Commitment
-                  </Button>
-                </CardContent>
-              </Card>
-            </FormItem>
-          )}
-        />
-      ))}
     </div>
   );
 }

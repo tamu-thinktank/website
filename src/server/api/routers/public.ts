@@ -6,6 +6,9 @@ import {
 } from "@/lib/validations/apply";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import DriveService from "@/server/service/google-drive";
+import sendEmail from "@/server/service/email";
+import ApplicationConfirmationEmail from "emails/application-confirmation";
+import { TEAMS } from "@/consts/apply-form";
 import { z } from "zod";
 
 export const publicRouter = createTRPCRouter({
@@ -13,7 +16,7 @@ export const publicRouter = createTRPCRouter({
   applyForm: publicProcedure
     .input(ApplyFormSchema)
     .mutation(async ({ input, ctx }) => {
-      await ctx.db.application.create({
+      const application = await ctx.db.application.create({
         data: {
           // Personal Info
           ...input.personal,
@@ -43,7 +46,8 @@ export const publicRouter = createTRPCRouter({
           weeklyCommitment: input.thinkTankInfo.weeklyCommitment,
           preferredTeams: {
             create: input.thinkTankInfo.preferredTeams.map((pt) => ({
-              interest: pt.interestLevel,
+              // Map ranking to interest level: 1st choice = HIGH, 2nd = MEDIUM, 3rd+ = LOW
+              interest: pt.ranking === 1 ? "HIGH" : pt.ranking === 2 ? "MEDIUM" : "LOW",
               team: {
                 connect: { id: pt.teamId },
               },
@@ -77,9 +81,36 @@ export const publicRouter = createTRPCRouter({
           signatureCommitment: input.resume.signatureCommitment,
           signatureAccountability: input.resume.signatureAccountability,
           signatureQuality: input.resume.signatureQuality,
-          applicationType: "OFFICER",
+          applicationType: "DCMEMBER",
         },
       });
+
+      // Send confirmation email
+      try {
+        const selectedTeamNames = input.thinkTankInfo.preferredTeams
+          .sort((a, b) => a.ranking - b.ranking)
+          .map((pt) => {
+            const team = TEAMS.find((t) => t.id === pt.teamId);
+            return team?.name || pt.teamId;
+          });
+
+        const firstName = input.personal.fullName.split(' ')[0] || input.personal.preferredName || 'there';
+
+        await sendEmail({
+          to: [input.personal.email],
+          subject: "ThinkTank Application Confirmation - Design Challenge",
+          template: ApplicationConfirmationEmail({
+            userFirstname: firstName,
+            applicationId: application.id,
+            submittedAt: application.submittedAt.toLocaleDateString(),
+            applicationType: "Design Challenge",
+            selectedTeams: selectedTeamNames,
+          }),
+        });
+      } catch (emailError) {
+        console.error("Failed to send confirmation email:", emailError);
+        // Don't fail the application submission if email fails
+      }
     }),
 
   // Officer application procedure

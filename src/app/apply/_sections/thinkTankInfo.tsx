@@ -17,30 +17,15 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { q, TEAMS, RESEARCH_AREAS, INTEREST_LEVELS } from "@/consts/apply-form";
+import { q, TEAMS } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import type { InterestLevel } from "@prisma/client";
 import { ReferralSource } from "@prisma/client";
 import { useFormContext } from "react-hook-form";
-import { X } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { X, ArrowUp, ArrowDown } from "lucide-react";
 
 export default function ThinkTankInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
   const selectedTeams = form.watch("thinkTankInfo.preferredTeams");
-
-  // Get available research areas based on selected teams
-  const availableResearch = RESEARCH_AREAS.filter((ra) =>
-    ra.relatedTeams.some((teamId) =>
-      selectedTeams.map((t) => t.teamId).includes(teamId),
-    ),
-  );
 
   return (
     <div className="flex flex-col gap-4">
@@ -71,7 +56,7 @@ export default function ThinkTankInfo() {
               <CardContent>
                 <RadioGroup
                   onValueChange={(value) => field.onChange(value === "true")}
-                  value={field.value.toString()}
+                  value={field.value.toString() ?? ""}
                 >
                   <div className="space-y-2">
                     <FormItem>
@@ -115,7 +100,7 @@ export default function ThinkTankInfo() {
               <CardContent>
                 <RadioGroup
                   onValueChange={(value) => field.onChange(value === "true")}
-                  value={field.value.toString()}
+                  value={field.value.toString() ?? ""}
                 >
                   <div className="space-y-2">
                     <FormItem>
@@ -143,7 +128,7 @@ export default function ThinkTankInfo() {
         )}
       />
 
-      {/* Preferred Teams */}
+      {/* Preferred Teams - Ranking System */}
       <FormField
         control={form.control}
         name="thinkTankInfo.preferredTeams"
@@ -152,246 +137,137 @@ export default function ThinkTankInfo() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {q.thinkTankInfo.preferredTeams}{" "}
-                  <span className="text-red-500">*</span>
+                  Preferred Teams <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  Select at least one team and rate your interest
+                  Select and rank your preferred teams in order of preference. You can reorder them after selection.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {TEAMS.map((team) => {
-                  const isSelected = field.value.some(
-                    (t) => t.teamId === team.id,
-                  );
+                
+                {/* Team Selection */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium">Available Teams:</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {TEAMS.filter((team) => !selectedTeams.some((t) => t.teamId === team.id)).map((team) => (
+                      <Button
+                        key={team.id}
+                        type="button"
+                        variant="outline"
+                        onClick={() => {
+                          const updatedTeams = [
+                            ...field.value,
+                            {
+                              teamId: team.id,
+                              ranking: field.value.length + 1, // Next rank
+                            },
+                          ];
+                          form.setValue("thinkTankInfo.preferredTeams", updatedTeams);
+                        }}
+                        className="justify-start"
+                      >
+                        + {team.name}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
 
-                  return (
-                    <div
-                      key={team.id}
-                      className="relative flex flex-col gap-2 rounded-lg border p-4"
-                    >
-                      {/* Checkbox and Label Container */}
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-1 items-center gap-4">
-                          <Checkbox
-                            checked={isSelected}
-                            onCheckedChange={(checked) => {
-                              const updatedTeams = checked
-                                ? [
-                                    ...field.value,
-                                    {
-                                      teamId: team.id,
-                                      interestLevel: "MEDIUM" as InterestLevel,
-                                    },
-                                  ]
-                                : field.value.filter(
-                                    (t) => t.teamId !== team.id,
-                                  );
+                {/* Selected Teams with Ranking */}
+                {selectedTeams.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium">Your Team Preferences (in order):</h4>
+                    <div className="space-y-2">
+                      {selectedTeams
+                        .sort((a, b) => (a.ranking || 0) - (b.ranking || 0))
+                        .map((selectedTeam, index) => {
+                          const team = TEAMS.find((t) => t.id === selectedTeam.teamId);
+                          if (!team) return null;
 
-                              form.setValue(
-                                "thinkTankInfo.preferredTeams",
-                                updatedTeams,
-                              );
-
-                              const remainingTeamIds = updatedTeams.map(
-                                (t) => t.teamId,
-                              );
-                              const validResearchIds = TEAMS.filter((t) =>
-                                remainingTeamIds.includes(t.id),
-                              )
-                                .flatMap((t) => t.researchAreas)
-                                .map((ra) => ra.id);
-
-                              const updatedResearch = form
-                                .getValues("thinkTankInfo.researchAreas")
-                                .filter((ra) =>
-                                  validResearchIds.includes(ra.researchAreaId),
-                                );
-
-                              form.setValue(
-                                "thinkTankInfo.researchAreas",
-                                updatedResearch,
-                              );
-                            }}
-                          />
-                          <FormLabel className="m-0">{team.name}</FormLabel>
-                        </div>
-                        {isSelected && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="absolute right-4 top-1/2 -translate-y-1/2"
-                            onClick={() => {
-                              const updated = field.value.filter(
-                                (t) => t.teamId !== team.id,
-                              );
-                              form.setValue(
-                                "thinkTankInfo.preferredTeams",
-                                updated,
-                              );
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                      {isSelected && (
-                        <div className="mt-2">
-                          <Select
-                            value={
-                              field.value.find((t) => t.teamId === team.id)
-                                ?.interestLevel ?? "MEDIUM"
-                            }
-                            onValueChange={(value) => {
-                              const updated = field.value.map((t) =>
-                                t.teamId === team.id
-                                  ? {
-                                      ...t,
-                                      interestLevel: value as InterestLevel,
+                          return (
+                            <div
+                              key={selectedTeam.teamId}
+                              className="flex items-center gap-3 rounded-lg border p-3"
+                            >
+                              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary text-primary-foreground text-sm font-bold">
+                                {index + 1}
+                              </div>
+                              <div className="flex-1">
+                                <span className="font-medium">{team.name}</span>
+                                <span className="ml-2 text-sm text-muted-foreground">
+                                  {index === 0 ? "(1st choice)" : index === 1 ? "(2nd choice)" : `(${index + 1}${index === 2 ? 'rd' : 'th'} choice)`}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    if (index > 0) {
+                                      const updated = [...selectedTeams];
+                                      const currentItem = updated[index];
+                                      const previousItem = updated[index - 1];
+                                      if (currentItem && previousItem) {
+                                        // Swap rankings
+                                        const tempRanking = currentItem.ranking;
+                                        currentItem.ranking = previousItem.ranking;
+                                        previousItem.ranking = tempRanking;
+                                      }
+                                      form.setValue("thinkTankInfo.preferredTeams", updated);
                                     }
-                                  : t,
-                              );
-                              form.setValue(
-                                "thinkTankInfo.preferredTeams",
-                                updated,
-                              );
-                            }}
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue placeholder="Select level" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {INTEREST_LEVELS.map(({ value, label }) => (
-                                <SelectItem key={value} value={value}>
-                                  {label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-                <FormMessage />
-              </CardContent>
-            </Card>
-          </FormItem>
-        )}
-      />
-
-      {/* Research Areas */}
-      <FormField
-        control={form.control}
-        name="thinkTankInfo.researchAreas"
-        render={({ field }) => (
-          <FormItem>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {q.thinkTankInfo.researchAreas}{" "}
-                  <span className="text-red-500">*</span>
-                </CardTitle>
-                <CardDescription>
-                  Select up to 3 research areas from your chosen teams
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {availableResearch.map((area) => {
-                  const isSelected = field.value.some(
-                    (ra) => ra.researchAreaId === area.id,
-                  );
-
-                  return (
-                    <div
-                      key={area.id}
-                      className="relative flex flex-col gap-2 rounded-lg border p-4"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-1 items-center gap-4">
-                          <Checkbox
-                            checked={isSelected}
-                            onCheckedChange={(checked) => {
-                              const updated = checked
-                                ? [
-                                    ...field.value,
-                                    {
-                                      researchAreaId: area.id,
-                                      interestLevel: "MEDIUM" as InterestLevel,
-                                    },
-                                  ]
-                                : field.value.filter(
-                                    (ra) => ra.researchAreaId !== area.id,
-                                  );
-                              form.setValue(
-                                "thinkTankInfo.researchAreas",
-                                updated,
-                              );
-                            }}
-                            disabled={!isSelected && field.value.length >= 3}
-                          />
-                          <FormLabel className="m-0">{area.name}</FormLabel>
-                        </div>
-                        {isSelected && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="absolute right-4 top-1/2 -translate-y-1/2"
-                            onClick={() => {
-                              const updated = field.value.filter(
-                                (ra) => ra.researchAreaId !== area.id,
-                              );
-                              form.setValue(
-                                "thinkTankInfo.researchAreas",
-                                updated,
-                              );
-                            }}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        )}
-                      </div>
-                      {isSelected && (
-                        <div className="mt-2">
-                          <Select
-                            value={
-                              field.value.find(
-                                (ra) => ra.researchAreaId === area.id,
-                              )?.interestLevel ?? "MEDIUM"
-                            }
-                            onValueChange={(value) => {
-                              const updated = field.value.map((ra) =>
-                                ra.researchAreaId === area.id
-                                  ? {
-                                      ...ra,
-                                      interestLevel: value as InterestLevel,
+                                  }}
+                                  disabled={index === 0}
+                                >
+                                  <ArrowUp className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    if (index < selectedTeams.length - 1) {
+                                      const updated = [...selectedTeams];
+                                      const currentItem = updated[index];
+                                      const nextItem = updated[index + 1];
+                                      if (currentItem && nextItem) {
+                                        // Swap rankings
+                                        const tempRanking = currentItem.ranking;
+                                        currentItem.ranking = nextItem.ranking;
+                                        nextItem.ranking = tempRanking;
+                                      }
+                                      form.setValue("thinkTankInfo.preferredTeams", updated);
                                     }
-                                  : ra,
-                              );
-                              form.setValue(
-                                "thinkTankInfo.researchAreas",
-                                updated,
-                              );
-                            }}
-                          >
-                            <SelectTrigger className="w-[140px]">
-                              <SelectValue placeholder="Select level" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {INTEREST_LEVELS.map(({ value, label }) => (
-                                <SelectItem key={value} value={value}>
-                                  {label}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                                  }}
+                                  disabled={index === selectedTeams.length - 1}
+                                >
+                                  <ArrowDown className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    const updated = selectedTeams.filter(
+                                      (t) => t.teamId !== selectedTeam.teamId,
+                                    );
+                                    // Reindex rankings
+                                    const reindexed = updated.map((team, idx) => ({
+                                      ...team,
+                                      ranking: idx + 1,
+                                    }));
+                                    form.setValue("thinkTankInfo.preferredTeams", reindexed);
+                                  }}
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        })}
                     </div>
-                  );
-                })}
+                  </div>
+                )}
+
                 <FormMessage />
               </CardContent>
             </Card>
@@ -418,15 +294,13 @@ export default function ThinkTankInfo() {
                   <FormItem key={source}>
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        checked={field.value.includes(source)}
+                        checked={field.value.includes(source) ?? false}
                         onCheckedChange={(checked) => {
+                          const currentValues = field.value || [];
                           const updated = checked
-                            ? [...field.value, source]
-                            : field.value.filter((s) => s !== source);
-                          form.setValue(
-                            "thinkTankInfo.referralSources",
-                            updated,
-                          );
+                            ? [...currentValues, source]
+                            : currentValues.filter((s) => s !== source);
+                          form.setValue("thinkTankInfo.referralSources", updated);
                         }}
                       />
                       <FormLabel className="leading-none">

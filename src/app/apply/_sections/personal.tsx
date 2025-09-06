@@ -46,7 +46,12 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input type="text" placeholder="John Doe" {...field} />
+                  <Input 
+                    type="text" 
+                    placeholder="John Doe" 
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
@@ -236,7 +241,11 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input placeholder="123004567" {...field} />
+                  <Input 
+                    placeholder="123004567" 
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
@@ -258,7 +267,12 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input type="text" placeholder="mail@tamu.edu" {...field} />
+                  <Input 
+                    type="text" 
+                    placeholder="mail@tamu.edu" 
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
@@ -311,7 +325,12 @@ export default function PersonalInfo() {
               </CardHeader>
               <CardContent>
                 <FormControl>
-                  <Input type="text" placeholder="123-456-7890" {...field} />
+                  <Input 
+                    type="text" 
+                    placeholder="123-456-7890" 
+                    {...field}
+                    value={field.value || ""}
+                  />
                 </FormControl>
                 <FormMessage />
               </CardContent>
