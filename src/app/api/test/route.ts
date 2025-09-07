@@ -15,7 +15,7 @@ export async function GET(request: Request) {
           | "OFFICER"
           | "MATEROV"
           | "DCMEMBER"
-          | "DCMINICHALLENGE", // Cast to the correct enum type
+          | "MINIDC", // Cast to the correct enum type
       },
       select: {
         id: true,

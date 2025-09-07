@@ -146,7 +146,7 @@ export const MembersPage: React.FC = () => {
           case "OFFICER":
             return (
               (
-                (applicant as Record<string, unknown>).officerpos as
+                (applicant as unknown as Record<string, unknown>).officerpos as
                   | unknown[]
                   | undefined
               )?.some(
@@ -157,7 +157,7 @@ export const MembersPage: React.FC = () => {
           case "MATEROV":
             return (
               (
-                (applicant as Record<string, unknown>).subTeam as
+                (applicant as unknown as Record<string, unknown>).subTeam as
                   | unknown[]
                   | undefined
               )?.some(
@@ -169,7 +169,7 @@ export const MembersPage: React.FC = () => {
           case "MINIDC":
             return (
               (
-                (applicant as Record<string, unknown>).subTeam as
+                (applicant as unknown as Record<string, unknown>).subTeam as
                   | unknown[]
                   | undefined
               )?.some(

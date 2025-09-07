@@ -504,7 +504,7 @@ const Scheduler: React.FC = () => {
         if (!groupedBusyTimes[busyTime.interviewerId]) {
           groupedBusyTimes[busyTime.interviewerId] = [];
         }
-        groupedBusyTimes[busyTime.interviewerId].push({
+        groupedBusyTimes[busyTime.interviewerId]!.push({
           id: busyTime.id,
           startTime: new Date(busyTime.startTime),
           endTime: new Date(busyTime.endTime),
@@ -546,7 +546,7 @@ const Scheduler: React.FC = () => {
         try {
           const errorData = (await response.json()) as Record<string, unknown>;
           if (errorData.error) {
-            errorMessage = errorData.error;
+            errorMessage = String(errorData.error);
             // If there are conflicting interviews, show specific details
             if (
               errorData.conflictingInterviews &&
@@ -2366,7 +2366,7 @@ const Scheduler: React.FC = () => {
                 <span className="text-lg font-medium">
                   {viewMode === "day"
                     ? format(currentDate, "MMMM d, yyyy")
-                    : `${viewDates[0] ? format(viewDates[0], "MMM d") : ""} - ${viewDates[viewDates.length - 1] ? format(viewDates[viewDates.length - 1], "MMM d, yyyy") : ""}`}
+                    : `${viewDates[0] ? format(viewDates[0], "MMM d") : ""} - ${viewDates[viewDates.length - 1] ? format(viewDates[viewDates.length - 1]!, "MMM d, yyyy") : ""}`}
                 </span>
               </div>
 
