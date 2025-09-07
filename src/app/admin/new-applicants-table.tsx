@@ -28,13 +28,15 @@ const RatingDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          className="flex w-40 items-center justify-between rounded-full border-[0.75px] border-white bg-background px-4 py-2 text-white"
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-40 justify-between"
           aria-label="Select Rating"
         >
           {ratingFilter || "All Ratings"}
-          <ChevronDown className="ml-2 h-4 w-4 text-white" />
-        </button>
+          <ChevronDown className="ml-2 h-4 w-4" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
@@ -79,13 +81,15 @@ const TeamDropdown = ({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <button
-          className="flex w-40 items-center justify-between rounded-full border-[0.75px] border-white bg-background px-4 py-2 text-white"
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-40 justify-between"
           aria-label="Select Teams"
         >
           {teamFilter || "All Teams"}
-          <ChevronDown className="ml-2 h-4 w-4 text-white" />
-        </button>
+          <ChevronDown className="ml-2 h-4 w-4" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md"
@@ -169,9 +173,7 @@ export default function ApplicantsTable() {
           setRatingFilter={setRatingFilter}
         />
         <TeamDropdown teamFilter={teamFilter} setTeamFilter={setTeamFilter} />
-        <Button className="rounded-full border-[0.75px] border-white bg-background text-white">
-          More
-        </Button>
+        <Button variant="outline">More</Button>
       </div>
       <div className="w-[70%] rounded-lg border-[0.75px] border-white">
         <Table>

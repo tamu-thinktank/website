@@ -8,7 +8,7 @@ import { ApplicantDetailsModal } from "@/components/ApplicantDetailsModal";
 
 export const MembersPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState("OFFICER");
+  const [selectedCategory, setSelectedCategory] = React.useState("DCMEMBER");
   const [filters, setFilters] = React.useState<FilterState>({
     team: "",
     rating: "",
@@ -47,7 +47,7 @@ export const MembersPage: React.FC = () => {
     void fetchMemberData();
   }, []);
 
-  const tableHeaders = [
+  const dcMemberHeaders = [
     "Name",
     "Research Interests",
     "Team Rankings",
@@ -55,9 +55,68 @@ export const MembersPage: React.FC = () => {
     "Year",
   ];
 
-  const teamOptions = ["Team A", "Team B", "Team C", "Reset"];
-  // const ratingOptions = ["1/5", "2/5", "3/5", "4/5", "5/5", "Reset"];
-  const interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
+  const officerHeaders = [
+    "Name",
+    "Position Preferences",
+    "Team Rankings",
+    "Major",
+    "Year",
+  ];
+
+  const materovHeaders = [
+    "Name",
+    "Research Interests",
+    "Team Rankings",
+    "Major",
+    "Year",
+  ];
+
+  const miniDcHeaders = [
+    "Name",
+    "Research Interests",
+    "Team Rankings",
+    "Major",
+    "Year",
+  ];
+
+  const dcMemberTeams = ["TSGC", "AIAA", "Reset"];
+
+  const officerpositions = [
+    "VICE_PRESIDENT",
+    "PROJECT_MANAGER",
+    "MARKETING_SPECIALIST",
+    "GRAPHIC_DESIGNER",
+    "WEB_DEV_LEAD",
+    "TREASURER",
+    "DC_PROGRAM_MANAGER",
+    "Reset",
+  ];
+
+  const materovsubteams = [
+    "COMPUTATION_COMMUNICATIONS",
+    "ELECTRICAL_POWER",
+    "FLUIDS_PROPULSION",
+    "GNC",
+    "THERMAL_MECHANISMS_STRUCTURES",
+    "MATE_ROV_LEADERSHIP",
+    "Reset",
+  ];
+
+  const miniDcTeams = ["MINI_DC_TEAM_1", "MINI_DC_TEAM_2", "Reset"];
+
+  const mateinterests = [
+    "SOFTWARE",
+    "CAD",
+    "POWER",
+    "FLUIDS",
+    "GNC",
+    "OTHER",
+    "Reset",
+  ];
+
+  const _teamOptions = ["Team A", "Team B", "Team C", "Reset"];
+  const _ratingOptions = ["1/5", "2/5", "3/5", "4/5", "5/5", "Reset"];
+  const _interestOptions = ["AI", "Robotics", "Web Development", "Reset"];
   const majorOptions = [
     "Computer Science",
     "Electrical Engineering",
@@ -78,9 +137,50 @@ export const MembersPage: React.FC = () => {
         .includes(searchQuery.toLowerCase());
       const matchesMajor = !filters.major || applicant.major === filters.major;
       const matchesInterests =
-        !filters.interests || applicant.interests.includes(filters.interests);
-      const matchesTeam =
-        !filters.team || applicant.teamRankings.includes(filters.team);
+        !filters.interests ||
+        applicant.interests.some((interest) => interest === filters.interests);
+      const matchesTeam = (() => {
+        if (!filters.team) return true;
+
+        switch (selectedCategory) {
+          case "OFFICER":
+            return (
+              (
+                (applicant as Record<string, unknown>).officerpos as
+                  | unknown[]
+                  | undefined
+              )?.some(
+                (pos) =>
+                  (pos as Record<string, unknown>).position === filters.team,
+              ) ?? false
+            );
+          case "MATEROV":
+            return (
+              (
+                (applicant as Record<string, unknown>).subTeam as
+                  | unknown[]
+                  | undefined
+              )?.some(
+                (team) =>
+                  (team as Record<string, unknown>).name === filters.team,
+              ) ?? false
+            );
+          case "DCMEMBER":
+          case "MINIDC":
+            return (
+              (
+                (applicant as Record<string, unknown>).subTeam as
+                  | unknown[]
+                  | undefined
+              )?.some(
+                (team) =>
+                  (team as Record<string, unknown>).name === filters.team,
+              ) ?? false
+            );
+          default:
+            return true;
+        }
+      })();
       const matchesRating =
         !filters.rating || applicant.rating === filters.rating;
 
@@ -117,8 +217,19 @@ export const MembersPage: React.FC = () => {
 
           <div className="flex w-full overflow-hidden rounded-[48px] border border-solid border-neutral-200">
             <div
+              onClick={() => setSelectedCategory("DCMEMBER")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
+                selectedCategory === "DCMEMBER"
+                  ? "bg-stone-600 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
+              }`}
+            >
+              DC MEMBER
+            </div>
+            <div className="w-[1.5px] bg-neutral-200"></div>
+            <div
               onClick={() => setSelectedCategory("OFFICER")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[37px_0px_0px_37px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
                 selectedCategory === "OFFICER"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
@@ -128,14 +239,25 @@ export const MembersPage: React.FC = () => {
             </div>
             <div className="w-[1.5px] bg-neutral-200"></div>
             <div
-              onClick={() => setSelectedCategory("MATE ROV")}
-              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] py-2.5 pl-20 pr-5 text-center transition-colors max-md:max-w-full max-md:pl-5 ${
-                selectedCategory === "MATE ROV"
+              onClick={() => setSelectedCategory("MATEROV")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap px-4 py-2.5 text-center text-sm transition-colors ${
+                selectedCategory === "MATEROV"
                   ? "bg-stone-600 text-white"
                   : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
               }`}
             >
               MATE ROV
+            </div>
+            <div className="w-[1.5px] bg-neutral-200"></div>
+            <div
+              onClick={() => setSelectedCategory("MINIDC")}
+              className={`flex-1 cursor-pointer flex-wrap whitespace-nowrap rounded-[0px_37px_37px_0px] px-4 py-2.5 text-center text-sm transition-colors ${
+                selectedCategory === "MINIDC"
+                  ? "bg-stone-600 text-white"
+                  : "bg-neutral-950 text-gray-300 hover:bg-stone-500"
+              }`}
+            >
+              MINI DC
             </div>
           </div>
 
@@ -151,17 +273,45 @@ export const MembersPage: React.FC = () => {
             />
             <div className="h-12 w-[1px] bg-neutral-400"></div>
             <FilterButton
-              label="Team"
-              options={teamOptions}
+              label={(() => {
+                switch (selectedCategory) {
+                  case "OFFICER":
+                    return "Position";
+                  case "MATEROV":
+                    return "Sub-Team";
+                  case "DCMEMBER":
+                    return "Team";
+                  case "MINIDC":
+                    return "Team";
+                  default:
+                    return "Team";
+                }
+              })()}
+              options={(() => {
+                switch (selectedCategory) {
+                  case "OFFICER":
+                    return officerpositions;
+                  case "MATEROV":
+                    return materovsubteams;
+                  case "DCMEMBER":
+                    return dcMemberTeams;
+                  case "MINIDC":
+                    return miniDcTeams;
+                  default:
+                    return dcMemberTeams;
+                }
+              })()}
               onOptionSelect={handleFilterChange("team")}
               selected={filters.team || "Team"}
             />
-            <FilterButton
-              label="Interests"
-              options={interestOptions}
-              onOptionSelect={handleFilterChange("interests")}
-              selected={filters.interests || "Interests"}
-            />
+            {selectedCategory === "MATEROV" && (
+              <FilterButton
+                label="Interests"
+                options={mateinterests}
+                onOptionSelect={handleFilterChange("interests")}
+                selected={filters.interests || "Interests"}
+              />
+            )}
             <FilterButton
               label="Major"
               options={majorOptions}
@@ -171,7 +321,22 @@ export const MembersPage: React.FC = () => {
           </div>
 
           <div className="mt-7 flex w-full flex-col rounded-[48px] border border-solid border-neutral-200 tracking-wide max-md:max-w-full max-md:pb-24">
-            <TableHeader headers={tableHeaders} />
+            <TableHeader
+              headers={(() => {
+                switch (selectedCategory) {
+                  case "OFFICER":
+                    return officerHeaders;
+                  case "MATEROV":
+                    return materovHeaders;
+                  case "DCMEMBER":
+                    return dcMemberHeaders;
+                  case "MINIDC":
+                    return miniDcHeaders;
+                  default:
+                    return dcMemberHeaders;
+                }
+              })()}
+            />
             {loading ? (
               <div className="py-10 text-center text-neutral-200">
                 Loading member data...
@@ -194,10 +359,66 @@ export const MembersPage: React.FC = () => {
                         {applicant.name}
                       </div>
                       <div className="flex-1 text-center">
-                        {applicant.interests.join(", ")}
+                        {/* Research Interests Display */}
+                        {(() => {
+                          if (applicant.interests.length > 0) {
+                            const displayItems = applicant.interests.slice(
+                              0,
+                              2,
+                            );
+                            const remainingCount =
+                              applicant.interests.length - 2;
+                            return (
+                              <div className="space-y-1">
+                                {displayItems.map((interest, idx) => (
+                                  <div
+                                    key={`${interest}-${idx}`}
+                                    className="text-xs"
+                                  >
+                                    {interest}
+                                  </div>
+                                ))}
+                                {remainingCount > 0 && (
+                                  <div className="text-xs text-neutral-400">
+                                    +{remainingCount} more
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          return <div className="text-neutral-500">N/A</div>;
+                        })()}
                       </div>
                       <div className="flex-1 text-center">
-                        {applicant.teamRankings.join(", ")}
+                        {/* Team Rankings Display */}
+                        {(() => {
+                          if (applicant.teamRankings.length > 0) {
+                            const displayItems = applicant.teamRankings.slice(
+                              0,
+                              2,
+                            );
+                            const remainingCount =
+                              applicant.teamRankings.length - 2;
+                            return (
+                              <div className="space-y-1">
+                                {displayItems.map((team, idx) => (
+                                  <div
+                                    key={`${team}-${idx}`}
+                                    className="text-xs"
+                                  >
+                                    {team}
+                                  </div>
+                                ))}
+                                {remainingCount > 0 && (
+                                  <div className="text-xs text-neutral-400">
+                                    +{remainingCount} more
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          return <div className="text-neutral-500">N/A</div>;
+                        })()}
                       </div>
                       <div className="flex-1 text-center">
                         {applicant.major}

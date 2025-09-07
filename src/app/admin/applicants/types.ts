@@ -36,9 +36,9 @@ export interface ApplicantData {
   teamRankings: string[];
   major: string;
   year: string;
-  rating: string;
+  rating: number | null; // Actual rating from 1-5
   category: string;
-  status: string;
+  status: string; // PENDING, INTERVIEWING, ACCEPTED, REJECTED
   officerpos: PositionPreference[];
   subTeam: SubTeamPreference[];
 }
