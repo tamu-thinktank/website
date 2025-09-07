@@ -1,4 +1,4 @@
-import type { Prisma, Challenge } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { db } from "../../lib/db";
 
 export type dbAvailabilitiesType = Awaited<ReturnType<typeof getAvailabities>>;
@@ -27,17 +27,19 @@ export async function getAvailabities(officerIds?: string[]) {
 export const getTargetTeams = async (
   userId: string,
   tx?: Prisma.TransactionClient,
-): Promise<Challenge[]> => {
-  const result = await (tx ?? db).user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      targetTeams: true,
-    },
-  });
-
-  return result?.targetTeams ?? [];
+) => {
+  return (
+    (
+      await (tx ?? db).user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          targetTeams: true,
+        },
+      })
+    )?.targetTeams ?? []
+  );
 };
 
 export const getAllApplications = async () => {
