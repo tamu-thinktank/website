@@ -1,21 +1,18 @@
 import { NextResponse } from "next/server";
-import { SchedulerCache } from "@/lib/redis";
 
 export async function GET() {
   try {
-    const health = await SchedulerCache.healthCheck();
-    const stats = await SchedulerCache.getStats();
-
+    // Redis not available, return mock health status
     return NextResponse.json({
-      redis: health,
-      cache: stats,
+      redis: { status: "unavailable", message: "Redis not configured" },
+      cache: { status: "disabled" },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Redis health check error:", error);
+    console.error("Health check error:", error);
     return NextResponse.json(
       {
-        error: "Failed to check Redis health",
+        error: "Failed to check system health",
         details: error instanceof Error ? error.message : "Unknown error",
       },
       { status: 500 },

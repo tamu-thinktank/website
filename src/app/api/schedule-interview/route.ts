@@ -67,7 +67,7 @@ export async function POST(request: Request) {
         applicantId,
         interviewerId,
         startTime: startTime,
-        endTime: new Date(startTime.getTime() + 15 * 60000), // 15 minutes later
+        endTime: new Date(startTime.getTime() + 45 * 60000), // 45 minutes later
         location,
         teamId,
       },
