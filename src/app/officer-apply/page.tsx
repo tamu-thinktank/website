@@ -333,10 +333,7 @@ function ApplyTab({
     if (currentTab === "start") return;
 
     const sub = form.watch(
-      (
-        values: RouterInputs["officer"]["OfficerApplyForm"],
-        { name }: { name?: string },
-      ) => {
+      (values, { name }) => {
         if (name?.startsWith(currentTab)) {
           form
             .trigger(currentTab)
@@ -348,7 +345,8 @@ function ApplyTab({
 
     return () => {
       try {
-        sub?.unsubscribe?.();
+        const subscription = sub as unknown as { unsubscribe: () => void } | null;
+        subscription?.unsubscribe();
       } catch {
         // Ignore unsubscribe errors
       }
