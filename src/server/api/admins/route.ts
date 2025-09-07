@@ -127,9 +127,9 @@ function calculateReferralSources(applications: Application[]) {
 }
 
 // Calculate team preferences with interest scoring
-function calculateTeamPreferences(applications: Array<Application & {
-  preferredTeams: Array<{ team: Team; interest: string }>;
-}>) {
+function calculateTeamPreferences(applications: (Application & {
+  preferredTeams: { team: Team; interest: string }[];
+})[]) {
   const counts: Record<
     string,
     {
@@ -175,9 +175,9 @@ function calculateTeamPreferences(applications: Array<Application & {
 }
 
 // Calculate research interests for a specific team
-function calculateResearchInterests(applications: Array<Application & {
-  researchAreas: Array<{ researchArea: ResearchArea; interest: string }>;
-}>, _team: string) {
+function calculateResearchInterests(applications: (Application & {
+  researchAreas: { researchArea: ResearchArea; interest: string }[];
+})[], _team: string) {
   const counts: Record<
     string,
     {
