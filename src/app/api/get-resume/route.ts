@@ -20,5 +20,6 @@ export async function GET(req: NextRequest) {
   }
 
   const resumeFile = await DriveService.getFileData(resumeId);
+
   return NextResponse.json(resumeFile);
 }

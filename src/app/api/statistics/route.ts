@@ -14,8 +14,8 @@ export async function GET(request: Request) {
 
     // Validate the applicationType
     if (
-      !Object.values(ApplicationType as Record<string, string>).includes(
-        applicationType,
+      !Object.values(ApplicationType).includes(
+        applicationType as ApplicationType,
       )
     ) {
       return NextResponse.json(
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     // Get all applications of the specified type
     const applications = await prisma.application.findMany({
       where: {
-        applicationType: applicationType as keyof typeof ApplicationType,
+        applicationType: applicationType as ApplicationType,
       },
       select: {
         id: true,
@@ -72,7 +72,7 @@ export async function GET(request: Request) {
       }
 
       // Count years
-      years[app.year as string] = (years[app.year as string] ?? 0) + 1;
+      years[app.year] = (years[app.year] ?? 0) + 1;
       detailedData.years.push({ name: app.fullName, value: app.year });
 
       // Count majors
@@ -80,12 +80,10 @@ export async function GET(request: Request) {
       detailedData.majors.push({ name: app.fullName, value: app.major });
 
       // Count referral sources
-      if (Array.isArray(app.referral)) {
-        (app.referral as string[]).forEach((ref) => {
-          referrals[ref] = (referrals[ref] ?? 0) + 1;
-          detailedData.referrals.push({ name: app.fullName, value: ref });
-        });
-      }
+      app.referral.forEach((ref) => {
+        referrals[ref] = (referrals[ref] ?? 0) + 1;
+        detailedData.referrals.push({ name: app.fullName, value: ref });
+      });
 
       // Count statuses
       statusCounts[app.status] = (statusCounts[app.status] ?? 0) + 1;
