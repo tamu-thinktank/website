@@ -347,7 +347,9 @@ function ApplyTab({
     );
 
     return () => {
-      void sub.unsubscribe();
+      if (sub && typeof sub.unsubscribe === 'function') {
+        void sub.unsubscribe();
+      }
     };
   }, [form.watch, isChecked]);
 

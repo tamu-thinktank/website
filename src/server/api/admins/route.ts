@@ -1,6 +1,7 @@
 // app/api/statistics/route.ts
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import type { Application, Team, ResearchArea } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -79,12 +80,12 @@ export async function GET(request: Request) {
 }
 
 // Helper function to calculate ratios
-function calculateRatios(applications: any[], field: string) {
+function calculateRatios(applications: Application[], field: 'major' | 'year' | 'gender') {
   const counts: Record<string, number> = {};
 
   applications.forEach((app) => {
-    const value = app[field] || "Unknown";
-    counts[value] = (counts[value] || 0) + 1;
+    const value = app[field] ?? "Unknown";
+    counts[value] = (counts[value] ?? 0) + 1;
   });
 
   const total = applications.length;
@@ -101,13 +102,13 @@ function calculateRatios(applications: any[], field: string) {
 }
 
 // Calculate referral sources
-function calculateReferralSources(applications: any[]) {
+function calculateReferralSources(applications: Application[]) {
   const counts: Record<string, number> = {};
 
   applications.forEach((app) => {
     if (Array.isArray(app.referral)) {
       app.referral.forEach((source: string) => {
-        counts[source] = (counts[source] || 0) + 1;
+        counts[source] = (counts[source] ?? 0) + 1;
       });
     }
   });
@@ -126,7 +127,9 @@ function calculateReferralSources(applications: any[]) {
 }
 
 // Calculate team preferences with interest scoring
-function calculateTeamPreferences(applications: any[]) {
+function calculateTeamPreferences(applications: Array<Application & {
+  preferredTeams: Array<{ team: Team; interest: string }>;
+}>) {
   const counts: Record<
     string,
     {
@@ -139,7 +142,7 @@ function calculateTeamPreferences(applications: any[]) {
   > = {};
 
   applications.forEach((app) => {
-    app.preferredTeams.forEach((pref: any) => {
+    app.preferredTeams.forEach((pref) => {
       const teamName = pref.team.name;
 
       if (!counts[teamName]) {
@@ -172,7 +175,9 @@ function calculateTeamPreferences(applications: any[]) {
 }
 
 // Calculate research interests for a specific team
-function calculateResearchInterests(applications: any[], team: string) {
+function calculateResearchInterests(applications: Array<Application & {
+  researchAreas: Array<{ researchArea: ResearchArea; interest: string }>;
+}>, _team: string) {
   const counts: Record<
     string,
     {
@@ -185,7 +190,7 @@ function calculateResearchInterests(applications: any[], team: string) {
   > = {};
 
   applications.forEach((app) => {
-    app.researchAreas.forEach((pref: any) => {
+    app.researchAreas.forEach((pref) => {
       const researchName = pref.researchArea.name;
 
       if (!counts[researchName]) {

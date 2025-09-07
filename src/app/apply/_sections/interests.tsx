@@ -102,13 +102,11 @@ export default function Interests() {
                                 onCheckedChange={(checked) => {
                                   return checked
                                     ? field.onChange([
-                                        ...((field.value as string[]) || []),
+                                        ...(field.value as string[] ?? []),
                                         challenge.id,
                                       ])
                                     : field.onChange(
-                                        (
-                                          (field.value as string[]) || []
-                                        ).filter(
+                                        (field.value as string[] ?? []).filter(
                                           (value: string) =>
                                             value !== challenge.id,
                                         ),

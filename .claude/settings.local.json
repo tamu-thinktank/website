@@ -31,7 +31,8 @@
       "Bash(pnpm format:*)",
       "Bash(timeout 60 npx eslint . --max-warnings 0 --format compact)",
       "Bash(timeout 30 npx eslint src/server/services/auto-scheduler.ts --max-warnings 0 --format compact)",
-      "Bash(timeout 60 npx eslint prisma/dummydata.ts --max-warnings 0 --format compact)"
+      "Bash(timeout 60 npx eslint prisma/dummydata.ts --max-warnings 0 --format compact)",
+      "Bash(pnpm postinstall:*)"
     ],
     "deny": []
   }

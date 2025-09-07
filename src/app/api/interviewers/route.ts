@@ -3,8 +3,15 @@ import { db } from "@/lib/db";
 
 export async function GET() {
   try {
-    console.log("📋 [INTERVIEWERS API] Fetching all interviewers...");
+    console.log("📋 [INTERVIEWERS API] Fetching authenticated interviewers only...");
     const interviewers = await db.user.findMany({
+      where: {
+        OR: [
+          { emailVerified: { not: null } }, // User has verified their email (authenticated)
+          { sessions: { some: {} } }, // User has at least one session (has logged in)
+          { accounts: { some: {} } }, // User has at least one account (OAuth login)
+        ],
+      },
       select: {
         id: true,
         name: true,
@@ -33,7 +40,7 @@ export async function GET() {
 
     if (interviewers.length === 0) {
       console.warn(
-        "⚠️  [INTERVIEWERS API] No interviewers found. Users need to log in first to create interviewer accounts.",
+        "⚠️  [INTERVIEWERS API] No authenticated interviewers found. Users need to log in first to be eligible as interviewers.",
       );
     }
 
