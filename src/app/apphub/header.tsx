@@ -27,7 +27,7 @@ const linksData = [
     url: "#",
     description:
       "• Engineering capstone projects where members learn to design systems for real-world problems.\n• Freshmen/Sophomores preferred.",
-    status: "closed",
+    status: "open",
     seemore: "src/app/challenges",
   },
   {
