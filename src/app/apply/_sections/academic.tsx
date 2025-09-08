@@ -121,29 +121,34 @@ export default function AcademicInfo() {
             Current Semester Classes <span className="text-red-500">*</span>
           </CardTitle>
           <CardDescription className="text-gray-500">
-            List your classes for the current semester. At least 2 classes are required.
+            List your classes for the current semester. At least 2 classes are
+            required.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {Array(7).fill(null).map((_, index) => (
-            <FormField
-              key={index}
-              control={form.control}
-              name={`academic.currentClasses.${index}`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder={`Class ${index + 1}: e.g., ENGR 102`}
-                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          ))}
+          {Array(7)
+            .fill(null)
+            .map((_, index) => (
+              <FormField
+                key={index}
+                control={form.control}
+                name={`academic.currentClasses.${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        placeholder={`Class ${index + 1}: e.g., ENGR 102`}
+                        onChange={(e) =>
+                          field.onChange(e.target.value.toUpperCase())
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            ))}
         </CardContent>
       </Card>
 
@@ -154,29 +159,34 @@ export default function AcademicInfo() {
             Next Semester Classes <span className="text-red-500">*</span>
           </CardTitle>
           <CardDescription className="text-gray-500">
-            List your planned classes for next semester. At least 2 classes are required.
+            List your planned classes for next semester. At least 2 classes are
+            required.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {Array(7).fill(null).map((_, index) => (
-            <FormField
-              key={index}
-              control={form.control}
-              name={`academic.nextClasses.${index}`}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ""}
-                      placeholder={`Class ${index + 1}: e.g., ENGR 216`}
-                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          ))}
+          {Array(7)
+            .fill(null)
+            .map((_, index) => (
+              <FormField
+                key={index}
+                control={form.control}
+                name={`academic.nextClasses.${index}`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        placeholder={`Class ${index + 1}: e.g., ENGR 216`}
+                        onChange={(e) =>
+                          field.onChange(e.target.value.toUpperCase())
+                        }
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            ))}
         </CardContent>
       </Card>
 
@@ -185,9 +195,9 @@ export default function AcademicInfo() {
         <CardHeader>
           <CardTitle>Time Commitments (Optional)</CardTitle>
           <CardDescription className="text-gray-500">
-            Please estimate the total combined hours per week (on average) for all
-            your current and planned commitments. This includes work, organizations,
-            sports, volunteering, etc. Maximum 40 hours total.
+            Please estimate the total combined hours per week (on average) for
+            all your current and planned commitments. This includes work,
+            organizations, sports, volunteering, etc. Maximum 40 hours total.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-2 gap-4">

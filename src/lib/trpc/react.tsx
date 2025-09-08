@@ -2,6 +2,7 @@
 
 import type { toast } from "@/components/ui/use-toast";
 import type { AppRouter } from "@/server/api/root";
+import { env } from "@/env";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { TRPCClientErrorLike } from "@trpc/client";
 import { loggerLink, unstable_httpBatchStreamLink } from "@trpc/client";
@@ -23,7 +24,7 @@ export function TRPCReactProvider(props: {
       links: [
         loggerLink({
           enabled: (op) =>
-            process.env.NODE_ENV === "development" ||
+            env.NEXT_PUBLIC_NODE_ENV === "development" ||
             (op.direction === "down" && op.result instanceof Error),
         }),
         unstable_httpBatchStreamLink({

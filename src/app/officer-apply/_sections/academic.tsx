@@ -179,28 +179,31 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  List your classes. At least 2 classes are required.
-                  Format: TAMU: 'XXXX 123' (e.g., ENGR 102) | Blinn: 'XXXXb1234' (e.g., MATHb2413)
+                  List your classes. At least 2 classes are required. Format:
+                  TAMU: 'XXXX 123' (e.g., ENGR 102) | Blinn: 'XXXXb1234' (e.g.,
+                  MATHb2413)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {Array(7).fill(null).map((_, index) => (
-                  <FormField
-                    key={index}
-                    control={form.control}
-                    name={`academic.currentClasses.${index}`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <Input
-                          {...field}
-                          value={field.value || ""}
-                          placeholder={`Class ${index + 1}: e.g., XXXX 123`}
-                          pattern="[A-Z]{4} \d{3}"
-                        />
-                      </FormItem>
-                    )}
-                  />
-                ))}
+                {Array(7)
+                  .fill(null)
+                  .map((_, index) => (
+                    <FormField
+                      key={index}
+                      control={form.control}
+                      name={`academic.currentClasses.${index}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Input
+                            {...field}
+                            value={field.value || ""}
+                            placeholder={`Class ${index + 1}: e.g., XXXX 123`}
+                            pattern="[A-Z]{4} \d{3}"
+                          />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
               </CardContent>
             </Card>
           </FormItem>
@@ -220,28 +223,31 @@ export default function AcademicInfo() {
                   <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  List your classes. At least 2 classes are required.
-                  Format: TAMU: 'XXXX 123' (e.g., ENGR 102) | Blinn: 'XXXXb1234' (e.g., MATHb2413)
+                  List your classes. At least 2 classes are required. Format:
+                  TAMU: 'XXXX 123' (e.g., ENGR 102) | Blinn: 'XXXXb1234' (e.g.,
+                  MATHb2413)
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
-                {Array(7).fill(null).map((_, index) => (
-                  <FormField
-                    key={index}
-                    control={form.control}
-                    name={`academic.nextClasses.${index}`}
-                    render={({ field }) => (
-                      <FormItem>
-                        <Input
-                          {...field}
-                          value={field.value || ""}
-                          placeholder={`Class ${index + 1}: e.g., XXXX 123`}
-                          pattern="[A-Z]{4} \d{3}"
-                        />
-                      </FormItem>
-                    )}
-                  />
-                ))}
+                {Array(7)
+                  .fill(null)
+                  .map((_, index) => (
+                    <FormField
+                      key={index}
+                      control={form.control}
+                      name={`academic.nextClasses.${index}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <Input
+                            {...field}
+                            value={field.value || ""}
+                            placeholder={`Class ${index + 1}: e.g., XXXX 123`}
+                            pattern="[A-Z]{4} \d{3}"
+                          />
+                        </FormItem>
+                      )}
+                    />
+                  ))}
               </CardContent>
             </Card>
           </FormItem>

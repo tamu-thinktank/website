@@ -8,13 +8,15 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { cookies } from "next/headers";
 import { Providers } from "./providers";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const font = Inter({
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(env.WEB_URL),
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: "TAMU ThinkTank",
   description: "The official website for TAMU ThinkTank.",
   keywords: [
@@ -71,6 +73,8 @@ export default async function RootLayout({
         <Providers>
           <TRPCReactProvider cookies={allCookies}>
             {children}
+            <Analytics />
+            <SpeedInsights />
             <Toaster />
             <Sonner />
           </TRPCReactProvider>

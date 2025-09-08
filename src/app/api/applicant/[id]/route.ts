@@ -1,14 +1,22 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { SchedulerCache } from "@/lib/redis";
 
 const prisma = new PrismaClient();
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
+
+    // Try to get cached applicant first
+    const cached = await SchedulerCache.getApplicant(id);
+    if (cached) {
+      console.log(`Returning cached applicant data for ${id}`);
+      return NextResponse.json(cached);
+    }
 
     const applicant = await prisma.application.findUnique({
       where: { id },
@@ -42,6 +50,7 @@ export async function GET(
         summerPlans: true,
         assignedTeam: true,
         resumeId: true,
+        rating: true,
         subteamPreferences: true,
         referral: true,
         officerCommitment: true,
@@ -57,6 +66,10 @@ export async function GET(
         { status: 404 },
       );
     }
+
+    // Cache the applicant data
+    await SchedulerCache.setApplicant(id, applicant);
+    console.log(`Cached applicant data for ${id}`);
 
     return NextResponse.json(applicant);
   } catch (error) {

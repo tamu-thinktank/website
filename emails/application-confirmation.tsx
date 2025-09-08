@@ -34,7 +34,8 @@ export const ApplicationConfirmationEmail = ({
     <Html>
       <Head />
       <Preview>
-        Your ThinkTank Design Challenge application has been successfully submitted!
+        Your ThinkTank Design Challenge application has been successfully
+        submitted!
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -74,7 +75,8 @@ export const ApplicationConfirmationEmail = ({
           <Text style={paragraph}>Howdy {userFirstname}!</Text>
           <Text style={paragraph}>
             Thank you for applying to TAMU ThinkTank's Design Challenge program!
-            We have successfully received your application and are excited to review it.
+            We have successfully received your application and are excited to
+            review it.
           </Text>
 
           <Text style={paragraph}>
@@ -88,7 +90,7 @@ export const ApplicationConfirmationEmail = ({
             {selectedTeams.length > 0 && (
               <>
                 <br />
-                <strong>Team Preferences:</strong> {selectedTeams.join(', ')}
+                <strong>Team Preferences:</strong> {selectedTeams.join(", ")}
               </>
             )}
           </Text>
@@ -97,9 +99,10 @@ export const ApplicationConfirmationEmail = ({
             <strong>What's Next?</strong>
           </Text>
           <Text style={paragraph}>
-            Our admissions team will review your application along with all other submissions.
-            If your application is selected for the next stage, you will receive an interview 
-            invitation via email. This process typically takes 1-2 weeks.
+            Our admissions team will review your application along with all
+            other submissions. If your application is selected for the next
+            stage, you will receive an interview invitation via email. This
+            process typically takes 1-2 weeks.
           </Text>
 
           <Text style={paragraph}>
@@ -108,8 +111,8 @@ export const ApplicationConfirmationEmail = ({
             • Join our Discord server for updates and community engagement
             <br />
             • Follow us on social media for the latest news
-            <br />
-            • Prepare for potential technical interviews by reviewing your coursework
+            <br />• Prepare for potential technical interviews by reviewing your
+            coursework
           </Text>
 
           <Button
@@ -141,14 +144,15 @@ export const ApplicationConfirmationEmail = ({
           </Button>
 
           <Text style={paragraph}>
-            <strong>Important:</strong> Please save this email for your records. 
-            If you have any questions or need to make changes to your application, 
-            please contact us as soon as possible.
+            <strong>Important:</strong> Please save this email for your records.
+            If you have any questions or need to make changes to your
+            application, please contact us as soon as possible.
           </Text>
 
           <Text style={paragraph}>
-            We appreciate your interest in ThinkTank and look forward to potentially 
-            welcoming you to our community of innovators and problem-solvers!
+            We appreciate your interest in ThinkTank and look forward to
+            potentially welcoming you to our community of innovators and
+            problem-solvers!
           </Text>
 
           <Text style={paragraph}>

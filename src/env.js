@@ -33,12 +33,16 @@ export const env = createEnv({
       process.env.NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
+    // NEXTAUTH_URL: z.preprocess(
+    //   // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
+    //   // Since NextAuth.js automatically uses the VERCEL_URL if present.
+    //   (str) => process.env.VERCEL_URL ?? str,
+    //   // VERCEL_URL doesn't include `https` so it cant be validated as a URL
+    //   process.env.VERCEL ? z.string() : z.string().url(),
+    // ),
     NEXTAUTH_URL: z.preprocess(
-      // This makes Vercel deployments not fail if you don't set NEXTAUTH_URL
-      // Since NextAuth.js automatically uses the VERCEL_URL if present.
-      (str) => process.env.VERCEL_URL ?? str,
-      // VERCEL_URL doesn't include `https` so it cant be validated as a URL
-      process.env.VERCEL ? z.string() : z.string().url(),
+      (str) => (process.env.VERCEL ? `https://${process.env.VERCEL_URL}` : str),
+      z.string().url(),
     ),
 
     // Add ` on ID and SECRET if you want to make sure they're not empty
@@ -68,6 +72,10 @@ export const env = createEnv({
 
     GOOGLE_CLIENT_ID: z.string(),
     GOOGLE_CLIENT_SECRET: z.string(),
+
+    UPSTASH_REDIS_REST_URL: z.string().url(),
+    UPSTASH_REDIS_REST_TOKEN: z.string(),
+
     GCP_CREDENTIALS: z.string().transform((input, ctx) => {
       const creds = JSON.parse(Buffer.from(input, "base64").toString());
       const parsedCreds = gcpCredentialsSchema.safeParse(creds);
@@ -92,6 +100,12 @@ export const env = createEnv({
    */
   client: {
     NEXT_PUBLIC_SITE_URL: z.string().url(),
+    NEXT_PUBLIC_EMAILJS_SERVICE_ID: z.string(),
+    NEXT_PUBLIC_EMAILJS_TEMPLATE_ID: z.string(),
+    NEXT_PUBLIC_EMAILJS_USER_ID: z.string(),
+    NEXT_PUBLIC_NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
   },
 
   /**
@@ -109,11 +123,18 @@ export const env = createEnv({
     WEB_URL: process.env.WEB_URL,
     SITE_URL: process.env.SITE_URL,
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+    NEXT_PUBLIC_EMAILJS_SERVICE_ID: process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+    NEXT_PUBLIC_EMAILJS_TEMPLATE_ID:
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+    NEXT_PUBLIC_EMAILJS_USER_ID: process.env.NEXT_PUBLIC_EMAILJS_USER_ID,
+    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
     APP_EMAIL: process.env.APP_EMAIL,
     APP_PW: process.env.APP_PW,
     ALLOWED_EMAILS: process.env.ALLOWED_EMAILS,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+    UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
+    UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     GCP_CREDENTIALS: process.env.GCP_CREDENTIALS,
   },
   /**

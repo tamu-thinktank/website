@@ -4,10 +4,11 @@ import {
   RESUME_REJECTED_ID,
 } from "@/consts/google-things";
 import { getAvailabilityMap } from "@/lib/utils/availability-grid/getAvailabilityMap";
+import { AvailabilityMapSchema } from "@/lib/validations/apply";
 import {
+  ApplicantSchema as _ApplicantSchema,
   ApplicantsSchema,
-  AvailabilityMapSchema,
-} from "@/lib/validations/apply";
+} from "@/lib/validations/applicants";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import {
   getAllApplications,
@@ -16,6 +17,8 @@ import {
 } from "@/server/db/queries";
 import sendEmail from "@/server/service/email";
 import DriveService from "@/server/service/google-drive";
+import { SchedulerCache, CacheTTL } from "@/lib/redis";
+import { Temporal } from "@js-temporal/polyfill";
 import { Challenge } from "@prisma/client";
 import InterviewEmail from "emails/interview";
 import RejectAppEmail from "emails/reject-app";
@@ -35,7 +38,7 @@ export const adminRouter = createTRPCRouter({
     )
     .output(teamsSchema)
     .query(async ({ ctx }) => {
-      return await getTargetTeams(ctx.session.user.id);
+      return (await getTargetTeams(ctx.session.user.id)) as ("TSGC" | "AIAA")[];
     }),
   updateTargetTeams: protectedProcedure
     .input(
@@ -94,13 +97,26 @@ export const adminRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const officers = await ctx.db.user.findMany({
-        where: input?.targetTeam
-          ? {
-              targetTeams: {
-                has: input.targetTeam,
-              },
-            }
-          : undefined,
+        where: {
+          AND: [
+            // Only authenticated users
+            {
+              OR: [
+                { emailVerified: { not: null } },
+                { sessions: { some: {} } },
+                { accounts: { some: {} } },
+              ],
+            },
+            // Optional team filter
+            input?.targetTeam
+              ? {
+                  targetTeams: {
+                    has: input.targetTeam,
+                  },
+                }
+              : {},
+          ],
+        },
         select: {
           id: true,
           name: true,
@@ -158,9 +174,110 @@ export const adminRouter = createTRPCRouter({
           submittedAt: true,
           status: true,
         },
+        orderBy: {
+          submittedAt: "desc",
+        },
       });
 
+      // Cache the result
+      await SchedulerCache.setApplicants(applications, "all", CacheTTL.SHORT);
+
       return applications;
+    }),
+  getApplicant: protectedProcedure
+    .input(z.string().cuid2())
+    .query(async ({ input, ctx }) => {
+      const application = await ctx.db.application.findUnique({
+        where: {
+          id: input,
+        },
+        include: {
+          meetingTimes: {
+            orderBy: {
+              gridTime: "asc",
+            },
+          },
+        },
+      });
+
+      if (!application) {
+        throw new Error("Application not found");
+      }
+
+      const result = {
+        // Top level fields
+        id: application.id,
+        submittedAt: application.submittedAt,
+        status: application.status,
+        location: application.location,
+
+        // Nested personal section
+        personal: {
+          fullName: application.fullName,
+          preferredName: application.preferredName,
+          pronouns: application.pronouns,
+          gender: application.gender,
+          uin: application.uin,
+          email: application.email,
+          altEmail: application.altEmail,
+          phone: application.phone,
+        },
+
+        // Nested academic section
+        academic: {
+          year: application.year,
+          major: application.major,
+          currentClasses: application.currentClasses,
+          nextClasses: application.nextClasses,
+          // timeCommitment: [], // Not available on this model
+        },
+
+        // Nested thinkTankInfo section
+        thinkTankInfo: {
+          meetings: application.meetings,
+          weeklyCommitment: application.weeklyCommitment,
+          // preferredTeams: [], // Not available on this model
+          // researchAreas: [], // Not available on this model
+          referralSources: application.referral,
+        },
+
+        // Nested interests/challenges section
+        interests: {
+          interestedChallenge: application.challengePreference,
+        },
+
+        // Nested leadership section (using available fields)
+        leadership: {
+          // These fields might not exist for all application types
+        },
+
+        // Nested open ended questions section
+        openEndedQuestions: {
+          firstQuestion: application.firstQuestion,
+          secondQuestion: application.secondQuestion,
+        },
+
+        // Resume section
+        resume: {
+          resumeId: application.resumeId,
+          signatureCommitment: application.signatureCommitment,
+          signatureAccountability: application.signatureAccountability,
+          signatureQuality: application.signatureQuality,
+        },
+
+        // Meeting times
+        meetingTimes: application.meetingTimes
+          .map((meetingTime) =>
+            Temporal.ZonedDateTime.from(meetingTime.gridTime),
+          )
+          .sort((a, b) => Temporal.ZonedDateTime.compare(a, b))
+          .map((meetingTime) => meetingTime.toString()),
+      };
+
+      // Cache the result for future requests
+      await SchedulerCache.setApplicant(input, result, CacheTTL.MEDIUM);
+
+      return result;
     }),
   updateApplicant: protectedProcedure
     .input(
@@ -193,6 +310,12 @@ export const adminRouter = createTRPCRouter({
         } catch (e) {
           throw new Error("Failed to move resume: " + (e as Error).message);
         }
+
+        // Invalidate caches after successful update
+        await Promise.all([
+          SchedulerCache.invalidateApplicant(applicantId),
+          SchedulerCache.invalidateApplicants(),
+        ]);
 
         return true;
       },

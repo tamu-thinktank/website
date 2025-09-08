@@ -2,6 +2,7 @@
 import type { ChangeEvent, FormEvent } from "react";
 import React, { useState } from "react";
 import emailjs from "@emailjs/browser";
+import { env } from "@/env";
 
 interface FormData {
   name: string;
@@ -87,9 +88,9 @@ const ContactForm: React.FC = () => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-    const userId = process.env.NEXT_PUBLIC_EMAILJS_USER_ID;
+    const serviceId = env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+    const templateId = env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+    const userId = env.NEXT_PUBLIC_EMAILJS_USER_ID;
 
     if (!serviceId || !templateId || !userId) {
       console.error("EmailJS environment variables are not defined.");

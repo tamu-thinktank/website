@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { qOfficer } from "@/consts/apply-form";
+import { qOfficer } from "@/consts/officer-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext } from "react-hook-form";
 
@@ -28,7 +28,7 @@ const wordCount = (text: string) => {
 };
 
 export default function OpenEndedQuestions() {
-  const form = useFormContext<RouterInputs["public"]["applyOfficer"]>();
+  const form = useFormContext<RouterInputs["officer"]["OfficerApplyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">

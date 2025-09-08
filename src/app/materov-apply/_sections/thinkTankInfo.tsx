@@ -18,7 +18,6 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  qMateROV,
   INTEREST_LEVELS,
   MATEROV_SUBTEAM_OPTIONS,
   SKILL_OPTIONS,
@@ -26,6 +25,7 @@ import {
   EXPERIENCE_LEVELS,
   LEARNING_INTEREST_LEVELS,
 } from "@/consts/apply-form";
+import { qMateROV } from "@/consts/materov-apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import type {
   InterestLevel,
@@ -44,7 +44,7 @@ import {
 } from "@/components/ui/select";
 
 export default function MateROVThinkTankInfo() {
-  const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
+  const form = useFormContext<RouterInputs["mateROV"]["MateROVApplyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">
@@ -564,8 +564,8 @@ export default function MateROVThinkTankInfo() {
                         }}
                       />
                       <FormLabel className="leading-none">
-                        {source === "MSC_OPEN_HOUSE" 
-                          ? "MSC Open House (Club Crawl)" 
+                        {source === "MSC_OPEN_HOUSE"
+                          ? "MSC Open House (Club Crawl)"
                           : source.replace(/_/g, " ")}
                       </FormLabel>
                     </div>

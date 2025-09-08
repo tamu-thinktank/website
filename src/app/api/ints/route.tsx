@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-// import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 // We'll keep prisma for future use
-// const prisma = new PrismaClient();
+const _prisma = new PrismaClient();
 
 // Define the interview type
 interface Interview {

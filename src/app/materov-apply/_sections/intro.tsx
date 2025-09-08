@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { TabsContent } from "@/components/ui/tabs";
-import { TabsList } from "@/components/ui/tabs";
+import { TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function FormIntroTab() {
   return (
@@ -45,9 +44,9 @@ export default function FormIntroTab() {
         </CardContent>
       </Card>
       <TabsList className="float-right bg-transparent">
-        {/* <TabsTrigger className="bg-white text-black" value="personal">
+        <TabsTrigger className="bg-white text-black" value="personal">
           Closed
-        </TabsTrigger> */}
+        </TabsTrigger>
       </TabsList>
     </TabsContent>
   );

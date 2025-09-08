@@ -10,7 +10,7 @@ interface FilterButtonProps {
 }
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
-  label,
+  label: _label,
   options,
   selected,
   onOptionSelect,
@@ -23,7 +23,7 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center justify-between gap-2 rounded-[48px] border border-solid border-neutral-200 bg-transparent px-6 py-3 transition-colors hover:bg-stone-800"
       >
-        <span>{selected || label}</span>
+        <span>{selected || _label}</span>
         <span className="text-xs">▼</span>
       </button>
 

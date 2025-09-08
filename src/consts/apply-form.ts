@@ -217,13 +217,13 @@ export const TEAMS: Team[] = [
     researchAreas: [], // No research areas for design challenges
   },
   {
-    id: "NOVA", 
+    id: "NOVA",
     name: "Nova",
     researchAreas: [],
   },
   {
     id: "SERVUS",
-    name: "Servus", 
+    name: "Servus",
     researchAreas: [],
   },
   {

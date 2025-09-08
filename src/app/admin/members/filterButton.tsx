@@ -3,7 +3,7 @@ import { Dropdown } from "./dropdown";
 import type { FilterButtonProps } from "./membertypes";
 
 export const FilterButton: React.FC<FilterButtonProps> = ({
-  label,
+  label: _label,
   options = [],
   onOptionSelect,
   selected = "",
@@ -22,7 +22,7 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
   return (
     <Dropdown
       options={options}
-      value={selected || label}
+      value={selected || _label}
       onChange={handleChange}
       isOpen={isOpen}
       onToggle={() => setIsOpen(!isOpen)}

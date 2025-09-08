@@ -1,29 +1,24 @@
-import {
-  ApplyFormSchema,
-  OfficerApplyFormSchema,
-  MATEROVApplyFormSchema,
-  MiniDCApplyFormSchema,
-} from "@/lib/validations/apply";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import DriveService from "@/server/service/google-drive";
-import sendEmail from "@/server/service/email";
-import ApplicationConfirmationEmail from "emails/application-confirmation";
-import { TEAMS } from "@/consts/apply-form";
+import {
+  ApplyFormSchema,
+  MiniDCApplyFormSchema,
+} from "@/lib/validations/apply";
+import { OfficerApplyFormSchema } from "@/lib/validations/officer-apply";
+import { MATEROVApplyFormSchema } from "@/lib/validations/materov-apply";
 import { z } from "zod";
 
 export const publicRouter = createTRPCRouter({
-  // DC Member application procedure
   applyForm: publicProcedure
     .input(ApplyFormSchema)
     .mutation(async ({ input, ctx }) => {
-      const application = await ctx.db.application.create({
+      await ctx.db.application.create({
         data: {
           // Personal Info
           ...input.personal,
 
           // Academic Info
-          year: input.academic.year,
-          major: input.academic.major,
+          ...input.academic,
           currentClasses: input.academic.currentClasses,
           nextClasses: input.academic.nextClasses,
           timeCommitment: {
@@ -48,38 +43,18 @@ export const publicRouter = createTRPCRouter({
           meetings: input.thinkTankInfo.meetings,
           weeklyCommitment: input.thinkTankInfo.weeklyCommitment,
           preferredTeams: {
-            create: input.thinkTankInfo.preferredTeams.map((pt) => {
-              const team = TEAMS.find((t) => t.id === pt.teamId);
-              if (!team) {
-                throw new Error(`Team with id ${pt.teamId} not found`);
-              }
-              return {
-                // Map ranking to interest level: 1st choice = HIGH, 2nd = MEDIUM, 3rd+ = LOW
-                interest:
-                  pt.ranking === 1 ? "HIGH" : pt.ranking === 2 ? "MEDIUM" : "LOW",
-                team: {
-                  connectOrCreate: {
-                    where: { id: pt.teamId },
-                    create: {
-                      id: pt.teamId,
-                      name: team.name,
-                    },
-                  },
-                },
-              };
-            }),
+            create: input.thinkTankInfo.preferredTeams.map((pt) => ({
+              teamId: pt.teamId,
+              interest: "HIGH", // Default interest level, would need to be part of input
+            })),
           },
           researchAreas: {
             create: input.thinkTankInfo.researchAreas.map((ra) => ({
+              researchAreaId: ra.researchAreaId,
               interest: ra.interestLevel,
-              researchArea: {
-                connect: { id: ra.researchAreaId },
-              },
             })),
           },
-          referral: {
-            set: input.thinkTankInfo.referralSources,
-          },
+          referral: input.thinkTankInfo.referralSources,
 
           // Open-Ended Questions
           firstQuestion: input.openEndedQuestions.firstQuestion,
@@ -87,9 +62,9 @@ export const publicRouter = createTRPCRouter({
 
           // Meeting Times
           meetingTimes: {
-            createMany: {
-              data: input.meetingTimes.map((gridTime) => ({ gridTime })),
-            },
+            create: input.meetingTimes.map((mt) => ({
+              gridTime: mt,
+            })),
           },
 
           // Resume fields
@@ -100,53 +75,74 @@ export const publicRouter = createTRPCRouter({
           applicationType: "DCMEMBER",
         },
       });
-
-      // Send confirmation email
-      try {
-        const selectedTeamNames = input.thinkTankInfo.preferredTeams
-          .sort((a, b) => a.ranking - b.ranking)
-          .map((pt) => {
-            const team = TEAMS.find((t) => t.id === pt.teamId);
-            return team?.name ?? pt.teamId;
-          });
-
-        const firstName =
-          input.personal.fullName.split(" ")[0] ??
-          input.personal.preferredName ??
-          "there";
-
-        await sendEmail({
-          to: [input.personal.email],
-          subject: "ThinkTank Application Confirmation - Design Challenge",
-          template: ApplicationConfirmationEmail({
-            userFirstname: firstName,
-            applicationId: application.id,
-            submittedAt: application.submittedAt.toLocaleDateString(),
-            applicationType: "Design Challenge",
-            selectedTeams: selectedTeamNames,
-          }),
-        });
-      } catch (emailError) {
-        console.error("Failed to send confirmation email:", emailError);
-        // Don't fail the application submission if email fails
-      }
     }),
 
-  // Officer application procedure
+  applyMiniDC: publicProcedure
+    .input(MiniDCApplyFormSchema)
+    .mutation(async ({ input, ctx }) => {
+      await ctx.db.application.create({
+        data: {
+          // Personal Info
+          ...input.personal,
+
+          // Academic Info
+          ...input.academic,
+          currentClasses: input.academic.currentClasses,
+          timeCommitment: {
+            create: input.academic.timeCommitment
+              .filter((tc): tc is Required<typeof tc> => {
+                return (
+                  typeof tc.name === "string" &&
+                  typeof tc.hours === "number" &&
+                  tc.name.trim().length > 0 &&
+                  tc.hours >= 0
+                );
+              })
+              .map((tc) => ({
+                name: tc.name,
+                hours: tc.hours,
+                type: tc.type,
+              })),
+          },
+          summerPlans: "",
+          nextClasses: [],
+
+          // Mini DC specific info
+          meetings: true,
+          weeklyCommitment: input.academic.weeklyCommitment,
+          preferredTeams: { create: [] },
+          researchAreas: { create: [] },
+          referral: [],
+
+          // Open-Ended Questions
+          firstQuestion: input.openEndedQuestions.previousApplication,
+          secondQuestion: input.openEndedQuestions.goals,
+
+          // Meeting Times (minidc doesn't have meeting times)
+          meetingTimes: { create: [] },
+
+          // Resume fields
+          resumeId: input.resume.resumeId,
+          signatureCommitment: input.resume.signatureCommitment,
+          signatureAccountability: input.resume.signatureAccountability,
+          signatureQuality: input.resume.signatureQuality,
+          applicationType: "MINIDC",
+        },
+      });
+    }),
+
   applyOfficer: publicProcedure
     .input(OfficerApplyFormSchema)
     .mutation(async ({ input, ctx }) => {
       await ctx.db.application.create({
         data: {
-          // Personal Info (shared structure)
+          // Personal Info
           ...input.personal,
 
-          // Academic Info (includes officer-specific fields)
-          year: input.academic.year,
-          major: input.academic.major,
+          // Academic Info
+          ...input.academic,
           currentClasses: input.academic.currentClasses,
           nextClasses: input.academic.nextClasses,
-          summerPlans: input.academic.summerPlans,
           timeCommitment: {
             create: input.academic.timeCommitment
               .filter((tc): tc is Required<typeof tc> => {
@@ -163,9 +159,9 @@ export const publicRouter = createTRPCRouter({
                 type: tc.type,
               })),
           },
+          summerPlans: input.academic.summerPlans,
 
           // ThinkTank Info
-          // Note: Officers use officerCommitment instead of meetings/weeklyCommitment
           meetings: true,
           weeklyCommitment: true,
           officerCommitment: input.thinkTankInfo.officerCommitment,
@@ -175,6 +171,9 @@ export const publicRouter = createTRPCRouter({
               position: pp.position,
             })),
           },
+          preferredTeams: { create: [] },
+          researchAreas: { create: [] },
+          referral: [],
 
           // Open-Ended Questions
           firstQuestion: input.openEndedQuestions.firstQuestion,
@@ -182,9 +181,9 @@ export const publicRouter = createTRPCRouter({
 
           // Meeting Times
           meetingTimes: {
-            createMany: {
-              data: input.meetingTimes.map((gridTime) => ({ gridTime })),
-            },
+            create: input.meetingTimes.map((mt) => ({
+              gridTime: mt,
+            })),
           },
 
           // Resume fields
@@ -192,14 +191,11 @@ export const publicRouter = createTRPCRouter({
           signatureCommitment: input.resume.signatureCommitment,
           signatureAccountability: input.resume.signatureAccountability,
           signatureQuality: input.resume.signatureQuality,
-
-          // Set application type to officer
           applicationType: "OFFICER",
         },
       });
     }),
 
-  // MATE ROV application procedure
   applyMateROV: publicProcedure
     .input(MATEROVApplyFormSchema)
     .mutation(async ({ input, ctx }) => {
@@ -209,8 +205,7 @@ export const publicRouter = createTRPCRouter({
           ...input.personal,
 
           // Academic Info
-          year: input.academic.year,
-          major: input.academic.major,
+          ...input.academic,
           currentClasses: input.academic.currentClasses,
           nextClasses: input.academic.nextClasses,
           timeCommitment: {
@@ -234,16 +229,10 @@ export const publicRouter = createTRPCRouter({
           // ThinkTank Info
           meetings: input.thinkTankInfo.meetings,
           weeklyCommitment: input.thinkTankInfo.weeklyCommitment,
-          previousParticipation: input.thinkTankInfo.previousParticipation,
-          referral: {
-            set: input.thinkTankInfo.referralSources,
-          },
-
-          // MATE ROV specific fields
           subteamPreferences: {
-            create: input.thinkTankInfo.subteamPreferences.map((st) => ({
-              name: st.name,
-              interest: st.interest,
+            create: input.thinkTankInfo.subteamPreferences.map((sp) => ({
+              name: sp.name,
+              interest: sp.interest,
             })),
           },
           skills: {
@@ -253,11 +242,15 @@ export const publicRouter = createTRPCRouter({
             })),
           },
           learningInterests: {
-            create: input.thinkTankInfo.learningInterests.map((interest) => ({
-              area: interest.area,
-              interestLevel: interest.interestLevel,
+            create: input.thinkTankInfo.learningInterests.map((li) => ({
+              area: li.area,
+              interestLevel: li.interestLevel,
             })),
           },
+          previousParticipation: input.thinkTankInfo.previousParticipation,
+          preferredTeams: { create: [] },
+          researchAreas: { create: [] },
+          referral: input.thinkTankInfo.referralSources,
 
           // Open-Ended Questions
           firstQuestion: input.openEndedQuestions.firstQuestion,
@@ -266,9 +259,9 @@ export const publicRouter = createTRPCRouter({
 
           // Meeting Times
           meetingTimes: {
-            createMany: {
-              data: input.meetingTimes.map((gridTime) => ({ gridTime })),
-            },
+            create: input.meetingTimes.map((mt) => ({
+              gridTime: mt,
+            })),
           },
 
           // Resume fields
@@ -277,55 +270,6 @@ export const publicRouter = createTRPCRouter({
           signatureAccountability: input.resume.signatureAccountability,
           signatureQuality: input.resume.signatureQuality,
           applicationType: "MATEROV",
-        },
-      });
-    }),
-
-  // Mini DC application procedure
-  applyMiniDC: publicProcedure
-    .input(MiniDCApplyFormSchema)
-    .mutation(async ({ input, ctx }) => {
-      await ctx.db.application.create({
-        data: {
-          // Personal Info
-          ...input.personal,
-
-          // Academic Info
-          year: input.academic.year,
-          major: input.academic.major,
-          currentClasses: input.academic.currentClasses,
-          timeCommitment: {
-            create: input.academic.timeCommitment
-              .filter((tc): tc is Required<typeof tc> => {
-                return (
-                  typeof tc.name === "string" &&
-                  typeof tc.hours === "number" &&
-                  tc.name.trim().length > 0 &&
-                  tc.hours >= 0
-                );
-              })
-              .map((tc) => ({
-                name: tc.name,
-                hours: tc.hours,
-                type: tc.type,
-              })),
-          },
-          summerPlans: "",
-
-          // Mini DC specific info
-          meetings: true,
-          weeklyCommitment: input.academic.weeklyCommitment,
-
-          // Open-Ended Questions
-          firstQuestion: input.openEndedQuestions.previousApplication,
-          secondQuestion: input.openEndedQuestions.goals,
-
-          // Resume fields
-          resumeId: input.resume.resumeId,
-          signatureCommitment: input.resume.signatureCommitment,
-          signatureAccountability: input.resume.signatureAccountability,
-          signatureQuality: input.resume.signatureQuality,
-          applicationType: "MINIDC",
         },
       });
     }),
