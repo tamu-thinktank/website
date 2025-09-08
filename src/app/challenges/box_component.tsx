@@ -404,7 +404,7 @@ const BoxComponent: React.FC<BoxProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   // const isOpen = teamName === "Daedalus";
-  const isOpen = false;
+  const isOpen = true;
 
   useEffect(() => {
     setIsLoaded(true);
@@ -500,7 +500,7 @@ const BoxComponent: React.FC<BoxProps> = ({
           <span className="separator">|</span>
           <StatusIndicator isOpen={isOpen}>
             {/*{isOpen ? "Open" : "Closed"}*/}
-            Closed
+            Open
           </StatusIndicator>
         </Header>
         {!isExpanded && (
@@ -515,7 +515,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                 filled={isOpen}
               >
                 {/*{isOpen ? "Apply" : "Closed"}*/}
-                Closed
+                Open
               </ButtonStyle>
               <ToggleButton expanded={isExpanded} onClick={handleToggle}>
                 See More
@@ -672,7 +672,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                   style={{ backgroundColor: "white", color: "black" }}
                 >
                   {/*{isOpen ? "Apply" : "Closed"}*/}
-                  Closed
+                  Open
                 </ButtonStyle>
               </ButtonContainer>
               <ButtonContainer style={{ marginTop: "10px", width: "100%" }}>
