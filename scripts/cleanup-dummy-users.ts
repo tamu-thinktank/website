@@ -79,10 +79,11 @@ async function cleanupDummyUsers() {
         !user.emailVerified &&
         user._count.sessions === 0 &&
         user._count.accounts === 0 &&
-        DUMMY_USER_PATTERNS.some(
-          (pattern) =>
-            user.name?.toLowerCase().includes(pattern.toLowerCase()) ||
-            user.email?.toLowerCase().includes(pattern.toLowerCase()),
+        DUMMY_USER_PATTERNS.some((pattern) =>
+          Boolean(
+            user.name.toLowerCase().includes(pattern.toLowerCase()) ||
+              user.email.toLowerCase().includes(pattern.toLowerCase()),
+          ),
         ),
     );
 
