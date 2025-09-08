@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { FormField, FormMessage } from "@/components/ui/form";
 import type { Mode } from "@/consts/availability-grid";
-import { palette as _palette, times } from "@/consts/availability-grid";
+import { times } from "@/consts/availability-grid";
 import type useCalculateTable from "@/hooks/useCalculateTable";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { cn } from "@/lib/utils";
@@ -27,7 +27,7 @@ export default function Availability({
   setUserTimezone,
   table,
 }: AvailabilityProps) {
-  const form = useFormContext<RouterInputs["dcmember"]["DCMemberApplyForm"]>();
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
   const color = "#137522";
 
   // Ref and state required to rerender but also access static version in callbacks

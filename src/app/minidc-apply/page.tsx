@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { MiniDCApplyFormSchema } from "@/lib/validations/minidc-apply";
+import { MiniDCApplyFormSchema } from "@/lib/validations/apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -31,7 +31,7 @@ export default function ApplyMiniDC() {
   const [resumeFile, setResumeFile] = useState<File>();
   const viewportRef = useRef<HTMLDivElement>(null);
 
-  const form = usePersistForm<RouterInputs["minidc"]["MiniDCApplyForm"]>(
+  const form = usePersistForm<RouterInputs["public"]["applyMiniDC"]>(
     "apply-minidc-form-S2025-v1",
     {
       resolver: zodResolver(MiniDCApplyFormSchema),
@@ -43,7 +43,7 @@ export default function ApplyMiniDC() {
           gender: "",
         },
         academic: {
-          currentClasses: [{ value: "" }, { value: "" }],
+          currentClasses: Array(7).fill(""),
           timeCommitment: [],
           weeklyCommitment: false,
         },
@@ -61,7 +61,7 @@ export default function ApplyMiniDC() {
     },
   );
 
-  const { mutateAsync: submitForm } = api.minidc.MiniDCApplyForm.useMutation({
+  const { mutateAsync: submitForm } = api.public.applyMiniDC.useMutation({
     onSuccess: () => {
       // Reset form and local storage first
       form.reset();
@@ -103,7 +103,7 @@ export default function ApplyMiniDC() {
   const { mutateAsync: deleteResume } = api.public.deleteResume.useMutation();
 
   const onFormSubmit = useCallback(
-    async (data: RouterInputs["minidc"]["MiniDCApplyForm"]) => {
+    async (data: RouterInputs["public"]["applyMiniDC"]) => {
       if (!resumeFile) {
         toast({
           variant: "destructive",
@@ -199,10 +199,7 @@ export default function ApplyMiniDC() {
               </ApplyTab>
 
               <TabsContent className="space-y-2" value="resume">
-                <ResumeUpload
-                  resumeFile={resumeFile}
-                  setResumeFile={setResumeFile}
-                />
+                <ResumeUpload setResumeFile={setResumeFile} />
                 <TabsList className="flex w-full justify-between bg-transparent">
                   <TabsTrigger
                     className="bg-white text-black"
@@ -263,7 +260,7 @@ function ApplyTab({
   nextTab: ApplyTabType;
   viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
-  const form = useFormContext<RouterInputs["minidc"]["MiniDCApplyForm"]>();
+  const form = useFormContext<RouterInputs["public"]["applyMiniDC"]>();
 
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
@@ -282,18 +279,54 @@ function ApplyTab({
       return;
     }
 
-    const result = await form.trigger(currentTab, {
-      shouldFocus: true,
-    });
-
-    if (result) {
+    // Clear previous state and reset button
+    setIsChecked(false);
+    setIsValid(false);
+    
+    // Custom validation for academic section
+    if (currentTab === "academic") {
+      const formData = form.getValues();
+      const currentClasses = formData.academic.currentClasses.filter(c => c && c.trim() !== "");
+      
+      if (currentClasses.length < 2) {
+        setIsValid(false);
+        setIsChecked(true);
+        return;
+      }
+      
+      // Check format validation for non-empty classes
+      const classPattern = /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/;
+      const invalidCurrent = currentClasses.some(cls => !classPattern.test(cls));
+      
+      if (invalidCurrent) {
+        setIsValid(false);
+        setIsChecked(true);
+        return;
+      }
+      
       setIsValid(true);
+      setIsChecked(true);
       scrollToTop();
-    } else {
-      setIsValid(false);
+      return;
     }
+    
+    // Standard validation for other sections
+    try {
+      const result = await form.trigger(currentTab, {
+        shouldFocus: true,
+      });
 
-    setIsChecked(true);
+      if (result) {
+        setIsValid(true);
+        scrollToTop();
+      } else {
+        setIsValid(false);
+      }
+      setIsChecked(true);
+    } catch (error) {
+      setIsValid(false);
+      setIsChecked(true);
+    }
   }, [currentTab, form, scrollToTop]);
 
   useEffect(() => {

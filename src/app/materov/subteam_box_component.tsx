@@ -36,15 +36,15 @@ const BoxComponent: React.FC<BoxProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const openTeams = [
-    "Computation and Communications",
-    "Electrical and Power Systems",
-    "Fluids and Propulsion",
-    "Guidance, Navigation, and Control",
-    "Thermal, Mechanisms, and Structures",
-    "MATE ROV Leadership",
-  ];
-  const _isOpen = openTeams.includes(teamName);
+  // const openTeams = [
+  //   "Computation and Communications",
+  //   "Electrical and Power Systems",
+  //   "Fluids and Propulsion",
+  //   "Guidance, Navigation, and Control",
+  //   "Thermal, Mechanisms, and Structures",
+  //   "MATE ROV Leadership",
+  // ];
+  // const isOpen = openTeams.includes(teamName);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -192,10 +192,9 @@ const BoxComponent: React.FC<BoxProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`
-                  pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px]
-                  border-white bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold 
-                  text-white no-underline opacity-50 md:px-[20px] md:py-[10px]
-                  md:text-[16px]
+                  pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px] border-white
+                  bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold text-white 
+                  no-underline opacity-50 md:px-[20px] md:py-[10px] md:text-[16px]
                 `}
               >
                 {/*{isOpen ? "Open" : "Closed"}*/}
@@ -309,10 +308,9 @@ const BoxComponent: React.FC<BoxProps> = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   className={`
-                    pointer-events-none w-full max-w-[420px] cursor-not-allowed rounded-[50px] border-[0.5px]
-                    border-white bg-transparent px-[16px] py-[8px] text-center text-[16px] font-bold 
-                    text-white no-underline opacity-50 md:px-[20px] md:py-[10px]
-                    md:text-[16px]
+                    w-full max-w-[200px] rounded-[50px] border-[0.5px] border-white px-[16px] py-[8px]
+                    text-center text-[16px] font-bold no-underline md:px-[20px] md:py-[10px] md:text-[16px] 
+                    ${"pointer-events-none cursor-not-allowed bg-transparent text-white opacity-50"}
                   `}
                 >
                   {/*{isOpen ? "Open" : "Closed"}*/}

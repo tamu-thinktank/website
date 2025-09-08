@@ -564,7 +564,9 @@ export default function MateROVThinkTankInfo() {
                         }}
                       />
                       <FormLabel className="leading-none">
-                        {source.replace(/_/g, " ")}
+                        {source === "MSC_OPEN_HOUSE" 
+                          ? "MSC Open House (Club Crawl)" 
+                          : source.replace(/_/g, " ")}
                       </FormLabel>
                     </div>
                   </FormItem>

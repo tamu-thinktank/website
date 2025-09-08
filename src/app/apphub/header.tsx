@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+// import React, { useState } from "react";
 
 const linksData = [
   {
@@ -42,11 +42,11 @@ const linksData = [
 ];
 
 const LinkCollectionPage: React.FC = () => {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  // const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
-  const _handleExpand = (index: number) => {
-    setExpandedIndex(expandedIndex === index ? null : index);
-  };
+  // const handleExpand = (index: number) => {
+  //   setExpandedIndex(expandedIndex === index ? null : index);
+  // };
 
   const formatDescription = (description: string) => {
     return description.split("\n").map((line, index) => (

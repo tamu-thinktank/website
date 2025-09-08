@@ -16,17 +16,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { useFormContext, useWatch } from "react-hook-form";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export default function ResumeUpload({
-  resumeFile,
   setResumeFile,
 }: {
-  resumeFile?: File;
   setResumeFile: (file?: File) => void;
 }) {
-  const form = useFormContext<RouterInputs["mateROV"]["MateROVApplyForm"]>();
+  const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
   const fullName = useWatch({
     control: form.control,
     name: "personal.fullName",
@@ -59,58 +55,34 @@ export default function ResumeUpload({
           render={() => (
             <FormItem>
               <FormLabel>Upload Resume (PDF only, max 20MB)</FormLabel>
-              <div className="flex items-center gap-4 pt-2">
-                <Label
-                  htmlFor="resume-file-input"
-                  className={cn(
-                    buttonVariants({ variant: "outline" }),
-                    "cursor-pointer",
-                  )}
-                >
-                  Choose File
-                </Label>
-                <FormControl>
-                  <Input
-                    id="resume-file-input"
-                    type="file"
-                    className="hidden"
-                    accept=".pdf"
-                    onChange={(e) => {
-                      const resume = e.target.files?.[0];
-                      if (resume) {
-                        if (resume.size > 20 * 1024 * 1024) {
-                          // 20MB
-                          form.setError("resume.resumeId", {
-                            message: "File size must be less than 20MB",
-                          });
-                          setResumeFile(undefined);
-                          return;
-                        }
-                        if (resume.type !== "application/pdf") {
-                          form.setError("resume.resumeId", {
-                            message: "File must be a PDF",
-                          });
-                          setResumeFile(undefined);
-                          return;
-                        }
+              <FormControl>
+                <Input
+                  type="file"
+                  className="hover:cursor-pointer"
+                  accept=".pdf"
+                  onChange={(e) => {
+                    const resume = e.target.files?.[0];
+                    if (resume) {
+                      if (resume.size > 20 * 1024 * 1024) {
+                        // 20MB
+                        form.setError("resume.resumeId", {
+                          message: "File size must be less than 20MB",
+                        });
+                        setResumeFile(undefined);
+                        return;
                       }
-                      setResumeFile(resume);
-                    }}
-                  />
-                </FormControl>
-
-                {resumeFile ? (
-                  <p className="text-sm font-medium text-muted-foreground">
-                    <span className="font-bold text-green-500">✓ </span>
-                    {resumeFile.name} (
-                    {(resumeFile.size / 1024 / 1024).toFixed(2)} MB)
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No file chosen
-                  </p>
-                )}
-              </div>
+                      if (resume.type !== "application/pdf") {
+                        form.setError("resume.resumeId", {
+                          message: "File must be a PDF",
+                        });
+                        setResumeFile(undefined);
+                        return;
+                      }
+                    }
+                    setResumeFile(resume);
+                  }}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}

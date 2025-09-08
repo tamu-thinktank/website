@@ -17,7 +17,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -25,46 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { qDCMember as q } from "@/consts/dcmember-apply-form";
+import { q } from "@/consts/apply-form";
 import type { RouterInputs } from "@/lib/trpc/shared";
 import { Year, Major } from "@prisma/client";
-import type { CommitmentType } from "@prisma/client";
-import { useFormContext, useFieldArray } from "react-hook-form";
-import { X } from "lucide-react";
+import { useFormContext } from "react-hook-form";
 
 export default function AcademicInfo() {
-  const form = useFormContext<RouterInputs["dcmember"]["DCMemberApplyForm"]>();
-
-  const {
-    formState: { errors },
-  } = form;
-
-  const {
-    fields: currentClassesFields,
-    append: appendCurrentClass,
-    remove: removeCurrentClass,
-  } = useFieldArray({
-    control: form.control,
-    name: "academic.currentClasses",
-  });
-
-  const {
-    fields: nextClassesFields,
-    append: appendNextClass,
-    remove: removeNextClass,
-  } = useFieldArray({
-    control: form.control,
-    name: "academic.nextClasses",
-  });
-
-  const {
-    fields: commitmentFields,
-    append: appendCommitment,
-    remove: removeCommitment,
-  } = useFieldArray({
-    control: form.control,
-    name: "academic.timeCommitment",
-  });
+  const form = useFormContext<RouterInputs["public"]["applyForm"]>();
 
   return (
     <div className="flex flex-col gap-4">
@@ -151,208 +117,122 @@ export default function AcademicInfo() {
       {/* Current Semester Classes */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {q.academic.currentClasses}
-            <span className="text-red-500">*</span>
+          <CardTitle>
+            Current Semester Classes <span className="text-red-500">*</span>
           </CardTitle>
-          <CardDescription>
-            Enter at least two classes in one of the following formats:
-            <br />
-            - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-            <br />
-            - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-            <br />
-            If you have fewer than two courses, use 'NULL 101' as a placeholder
-            and contact us.
+          <CardDescription className="text-gray-500">
+            List your classes for the current semester. At least 2 classes are required.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2">
-          {currentClassesFields.map((item, index) => (
-            <div key={item.id} className="flex items-start gap-2">
-              <FormField
-                control={form.control}
-                name={`academic.currentClasses.${index}.value`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <Input {...field} placeholder="XXXX 123" />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => removeCurrentClass(index)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+        <CardContent className="space-y-3">
+          {Array(7).fill(null).map((_, index) => (
+            <FormField
+              key={index}
+              control={form.control}
+              name={`academic.currentClasses.${index}`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder={`Class ${index + 1}: e.g., ENGR 102`}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => appendCurrentClass({ value: "" })}
-          >
-            Add Class
-          </Button>
-          {errors.academic?.currentClasses?.message && (
-            <p className="mt-2 text-sm font-medium text-destructive">
-              {errors.academic.currentClasses.message}
-            </p>
-          )}
         </CardContent>
       </Card>
 
       {/* Next Semester Classes */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            {q.academic.nextClasses}
-            <span className="text-red-500">*</span>
+          <CardTitle>
+            Next Semester Classes <span className="text-red-500">*</span>
           </CardTitle>
-          <CardDescription>
-            Enter at least two classes in one of the following formats:
-            <br />
-            - TAMU format: 'XXXX 123' (e.g., ENGR 102)
-            <br />
-            - Blinn format: 'XXXXb1234' (e.g., MATHb2413)
-            <br />
-            If you have fewer than two courses, use 'NULL 101' as a placeholder
-            and contact us.
+          <CardDescription className="text-gray-500">
+            List your planned classes for next semester. At least 2 classes are required.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-2">
-          {nextClassesFields.map((item, index) => (
-            <div key={item.id} className="flex items-start gap-2">
-              <FormField
-                control={form.control}
-                name={`academic.nextClasses.${index}.value`}
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <Input {...field} placeholder="XXXX 123" />
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="icon"
-                onClick={() => removeNextClass(index)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
-            </div>
+        <CardContent className="space-y-3">
+          {Array(7).fill(null).map((_, index) => (
+            <FormField
+              key={index}
+              control={form.control}
+              name={`academic.nextClasses.${index}`}
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      value={field.value ?? ""}
+                      placeholder={`Class ${index + 1}: e.g., ENGR 216`}
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
           ))}
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => appendNextClass({ value: "" })}
-          >
-            Add Class
-          </Button>
-          {errors.academic?.nextClasses?.message && (
-            <p className="mt-2 text-sm font-medium text-destructive">
-              {errors.academic.nextClasses.message}
-            </p>
-          )}
         </CardContent>
       </Card>
 
       {/* Time Commitments */}
-      <FormField
-        control={form.control}
-        name="academic.timeCommitment"
-        render={() => (
-          <FormItem>
-            {["CURRENT", "PLANNED"].map((type) => (
-              <Card key={type}>
-                <CardHeader>
-                  <CardTitle>
-                    {type === "CURRENT"
-                      ? "Current Time Commitments"
-                      : "Planned Time Commitments"}
-                  </CardTitle>
-                  <CardDescription>
-                    Enter commitments between 1-15 hours per week
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {commitmentFields.map(
-                    (item, index) =>
-                      item.type === type && (
-                        <div
-                          key={item.id}
-                          className="grid grid-cols-[1fr_4rem_2.5rem] items-start gap-2"
-                        >
-                          <FormField
-                            control={form.control}
-                            name={`academic.timeCommitment.${index}.name`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Input
-                                  {...field}
-                                  placeholder="Commitment Name"
-                                />
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={form.control}
-                            name={`academic.timeCommitment.${index}.hours`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <Input
-                                  {...field}
-                                  type="number"
-                                  placeholder="Hours per week"
-                                  onChange={(e) =>
-                                    field.onChange(parseInt(e.target.value, 10))
-                                  }
-                                />
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="icon"
-                            onClick={() => removeCommitment(index)}
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ),
-                  )}
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() =>
-                      appendCommitment({
-                        name: "",
-                        hours: 1,
-                        type: type as CommitmentType,
-                      })
-                    }
-                  >
-                    Add Commitment
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-            {errors.academic?.timeCommitment?.message && (
-              <div className="px-6">
-                <p className="-mt-4 text-sm font-medium text-destructive">
-                  {errors.academic.timeCommitment.message}
-                </p>
-              </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Time Commitments (Optional)</CardTitle>
+          <CardDescription className="text-gray-500">
+            Please estimate the total combined hours per week (on average) for all
+            your current and planned commitments. This includes work, organizations,
+            sports, volunteering, etc. Maximum 40 hours total.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="academic.currentCommitmentHours"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Current Total Hours/Week</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="0"
+                    min={0}
+                    max={40}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </FormItem>
-        )}
-      />
+          />
+          <FormField
+            control={form.control}
+            name="academic.plannedCommitmentHours"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Planned Total Hours/Week</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="number"
+                    placeholder="0"
+                    min={0}
+                    max={40}
+                    value={field.value ?? ""}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }

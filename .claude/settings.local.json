@@ -1,40 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(pnpm prisma:*)",
-      "Bash(npx tsx:*)",
-      "Bash(pnpm build:*)",
-      "Bash(pnpm typecheck:*)",
+      "Bash(npm run dev:*)",
       "Bash(npx tsc:*)",
-      "Bash(rm:*)",
-      "Bash(powershell:*)",
-      "Bash(pnpm clean:*)",
-      "Bash(pnpm install:*)",
-      "Bash(pnpm dev:*)",
-      "Bash(curl:*)",
-      "Bash(npx prisma studio:*)",
-      "Bash(pnpm lint:*)",
-      "mcp__ide__getDiagnostics",
-      "Bash(npx prisma db seed:*)",
-      "Bash(timeout 30 npx tsx prisma/dummydata.ts)",
-      "Bash(npx prisma:*)",
-      "Bash(node:*)",
-      "Bash(git checkout:*)",
-      "Bash(timeout 10 pnpm dev)",
-      "Bash(git rm:*)",
-      "Bash(timeout 60 pnpm build)",
-      "Bash(pnpm lint:*)",
-      "Bash(pnpm typecheck:*)",
-      "Bash(pnpm build:*)",
+      "Bash(npm run lint)",
       "Bash(npx eslint:*)",
-      "Bash(if exist NUL del NUL)",
-      "Bash(pnpm format:*)",
-      "Bash(timeout 60 npx eslint . --max-warnings 0 --format compact)",
-      "Bash(timeout 30 npx eslint src/server/services/auto-scheduler.ts --max-warnings 0 --format compact)",
-      "Bash(timeout 60 npx eslint prisma/dummydata.ts --max-warnings 0 --format compact)",
-      "Bash(pnpm postinstall:*)",
-      "Bash(if exist .next rd /s /q .next)"
+      "Bash(git checkout:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)"
     ],
-    "deny": []
+    "deny": [],
+    "ask": []
   }
 }
