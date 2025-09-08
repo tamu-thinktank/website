@@ -14,9 +14,9 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "4-6",
       admissionTimeline: [
-        { date: "Applications", description: "9/6/24" },
-        { date: "Interviews End", description: "9/15/24" },
-        { date: "Acceptance", description: "9/16/24" },
+        { date: "Applications Close", description: "9/14/25" },
+        { date: "Interviews End", description: "9/21/25" },
+        { date: "Acceptance", description: "9/22/25" },
       ],
       researchAreas: [
         "Full Stack Web Development",
@@ -36,7 +36,7 @@ const Challenges = () => {
       major: "Aerospace",
       year: "27",
       description: "About Me",
-      facultyImage: "blank.webp",
+      facultyImage: "/images/avatars/blank.webp",
       prize: "Potential Research Lab Positions",
       dtype: "Functional Website",
     },
@@ -49,8 +49,8 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "12-20",
       admissionTimeline: [
-        { date: "Applications", description: "9/6/25" },
-        { date: "Interviews End", description: "9/14/25" },
+        { date: "Applications Close", description: "9/14/25" },
+        { date: "Interviews End", description: "9/21/25" },
         { date: "Acceptance", description: "9/22/25" },
       ],
       researchAreas: [
@@ -86,8 +86,8 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "12-20",
       admissionTimeline: [
-        { date: "Applications", description: "9/6/25" },
-        { date: "Interviews End", description: "9/14/25" },
+        { date: "Applications Close", description: "9/14/25" },
+        { date: "Interviews End", description: "9/21/25" },
         { date: "Acceptance", description: "9/22/25" },
       ],
       researchAreas: [
@@ -120,8 +120,8 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "6",
       admissionTimeline: [
-        { date: "Applications", description: "9/6/25" },
-        { date: "Interviews End", description: "9/14/25" },
+        { date: "Applications Close", description: "9/14/25" },
+        { date: "Interviews End", description: "9/21/25" },
         { date: "Acceptance", description: "9/22/25" },
       ],
       researchAreas: [
@@ -155,9 +155,9 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "12-14",
       admissionTimeline: [
-        { date: "Applications", description: "9/6/24" },
-        { date: "Interviews End", description: "9/15/24" },
-        { date: "Acceptance", description: "9/16/24" },
+        { date: "Applications Close", description: "9/14/25" },
+        { date: "Interviews End", description: "9/21/25" },
+        { date: "Acceptance", description: "9/22/25" },
       ],
       researchAreas: [
         "Integration of renewable energy systems",
@@ -189,9 +189,9 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "10",
       admissionTimeline: [
-        { date: "Applications", description: "9/6/24" },
-        { date: "Interviews End", description: "9/15/24" },
-        { date: "Acceptance", description: "9/16/24" },
+        { date: "Applications Close", description: "9/14/25" },
+        { date: "Interviews End", description: "9/21/25" },
+        { date: "Acceptance", description: "9/22/25" },
       ],
       researchAreas: [
         "Space Mission Design and Planning",
@@ -206,7 +206,7 @@ const Challenges = () => {
       competitionLink:
         "https://www.aiaa.org/get-involved/students-educators/Design-Competitions#design-competition-rfps",
       imageUrl: "03Qi7SZgiYjO1OLFnklCfog-3.webp",
-      image: "/images/mokshshah2526.webp",
+      image: "/images/avatars/mokshshah2526.webp",
       major: "Aerospace",
       year: "27",
       description: "About Me",
@@ -224,8 +224,8 @@ const Challenges = () => {
       duration: "2 Semesters",
       teamSize: "TBD",
       admissionTimeline: [
-        { date: "Applications", description: "9/6/25" },
-        { date: "Interviews End", description: "9/14/25" },
+        { date: "Applications Close", description: "9/14/25" },
+        { date: "Interviews End", description: "9/21/25" },
         { date: "Acceptance", description: "9/22/25" },
       ],
       researchAreas: [
@@ -239,8 +239,8 @@ const Challenges = () => {
         faculty: "TBD",
       },
       competitionLink: "https://energychallenge.weebly.com",
-      imageUrl: "03Qi7SZgiYjO1OLFnklCfog-3.webp",
-      image: "/images/rithvikgogula2526",
+      imageUrl: "/images/electra_challengeimg.webp",
+      image: "/images/avatars/rithvikgogula2526",
       major: "Industrial Engineering",
       year: "27",
       description: "About Me",
@@ -259,7 +259,7 @@ const Challenges = () => {
       duration: "1 Semester",
       teamSize: "6",
       admissionTimeline: [
-        { date: "Applications", description: "11/21/25" },
+        { date: "Applications Close", description: "11/21/25" },
         { date: "Interviews", description: "1/17/26" },
         { date: "Acceptance", description: "1/26/26" },
       ],

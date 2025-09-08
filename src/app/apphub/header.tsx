@@ -24,11 +24,11 @@ const linksData = [
   {
     type: "General",
     name: "Design Challenges Application",
-    url: "#",
+    url: "/apply",
     description:
       "• Engineering capstone projects where members learn to design systems for real-world problems.\n• Freshmen/Sophomores preferred.",
-    status: "closed",
-    seemore: "src/app/challenges",
+    status: "open",
+    seemore: "/challenges",
   },
   {
     type: "MiniDC",
