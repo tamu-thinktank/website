@@ -82,6 +82,7 @@ export default function FormIntroTab() {
                   <li>Clear your browser cache and reload</li>
                   <li>Make sure all required fields (*) are filled out completely</li>
                   <li>Check that all classes are in the correct format (XXXX 123)</li>
+                  <li>If the NEXT button isn't working, click BACK and try again.</li>
                 </ol>
               </div>
               
