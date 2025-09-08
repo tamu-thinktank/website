@@ -2369,7 +2369,10 @@ const Scheduler: React.FC = () => {
                 <span className="text-lg font-medium">
                   {viewMode === "day"
                     ? format(currentDate, "MMMM d, yyyy")
-                    : `${viewDates[0] ? format(viewDates[0], "MMM d") : ""} - ${viewDates[viewDates.length - 1] ? format(viewDates[viewDates.length - 1], "MMM d, yyyy") : ""}`}
+                    : `${viewDates[0] ? format(viewDates[0], "MMM d") : ""} - ${(() => {
+                        const lastDate = viewDates[viewDates.length - 1];
+                        return lastDate ? format(lastDate, "MMM d, yyyy") : "";
+                      })()}`}
                 </span>
               </div>
 
