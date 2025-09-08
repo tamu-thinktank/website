@@ -36,7 +36,7 @@ const Challenges = () => {
       major: "Aerospace",
       year: "27",
       description: "About Me",
-      facultyImage: "blank.webp",
+      facultyImage: "/images/avatars/blank.webp",
       prize: "Potential Research Lab Positions",
       dtype: "Functional Website",
     },
