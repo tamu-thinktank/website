@@ -97,13 +97,26 @@ export const adminRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const officers = await ctx.db.user.findMany({
-        where: input?.targetTeam
-          ? {
-              targetTeams: {
-                has: input.targetTeam,
-              },
-            }
-          : undefined,
+        where: {
+          AND: [
+            // Only authenticated users
+            {
+              OR: [
+                { emailVerified: { not: null } },
+                { sessions: { some: {} } },
+                { accounts: { some: {} } },
+              ],
+            },
+            // Optional team filter
+            input?.targetTeam
+              ? {
+                  targetTeams: {
+                    has: input.targetTeam,
+                  },
+                }
+              : {},
+          ],
+        },
         select: {
           id: true,
           name: true,

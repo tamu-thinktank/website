@@ -600,9 +600,16 @@ export async function autoScheduleInterview(
 
     console.log(`✓ [AUTO-SCHEDULER] Found applicant: ${interviewee.fullName}`);
 
-    // Get all interviewers
-    console.log(`👥 [AUTO-SCHEDULER] Fetching interviewers...`);
+    // Get all authenticated interviewers only
+    console.log(`👥 [AUTO-SCHEDULER] Fetching authenticated interviewers...`);
     const interviewers = await db.user.findMany({
+      where: {
+        OR: [
+          { emailVerified: { not: null } }, // User has verified their email (authenticated)
+          { sessions: { some: {} } }, // User has at least one session (has logged in)
+          { accounts: { some: {} } }, // User has at least one account (OAuth login)
+        ],
+      },
       select: {
         id: true,
         name: true,
