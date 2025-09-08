@@ -332,20 +332,20 @@ function ApplyTab({
     if (!isChecked) return;
     if (currentTab === "start") return;
 
-    const sub = form.watch(
-      (values, { name }) => {
-        if (name?.startsWith(currentTab)) {
-          form
-            .trigger(currentTab)
-            .then((isValid) => setIsValid(isValid))
-            .catch(() => setIsValid(false));
-        }
-      },
-    );
+    const sub = form.watch((values, { name }) => {
+      if (name?.startsWith(currentTab)) {
+        form
+          .trigger(currentTab)
+          .then((isValid) => setIsValid(isValid))
+          .catch(() => setIsValid(false));
+      }
+    });
 
     return () => {
       try {
-        const subscription = sub as unknown as { unsubscribe: () => void } | null;
+        const subscription = sub as unknown as {
+          unsubscribe: () => void;
+        } | null;
         subscription?.unsubscribe();
       } catch {
         // Ignore unsubscribe errors

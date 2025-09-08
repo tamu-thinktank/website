@@ -3,7 +3,9 @@ import { db } from "@/lib/db";
 
 export async function GET() {
   try {
-    console.log("📋 [INTERVIEWERS API] Fetching authenticated interviewers only...");
+    console.log(
+      "📋 [INTERVIEWERS API] Fetching authenticated interviewers only...",
+    );
     const interviewers = await db.user.findMany({
       where: {
         OR: [

@@ -80,7 +80,10 @@ export async function GET(request: Request) {
 }
 
 // Helper function to calculate ratios
-function calculateRatios(applications: Application[], field: 'major' | 'year' | 'gender') {
+function calculateRatios(
+  applications: Application[],
+  field: "major" | "year" | "gender",
+) {
   const counts: Record<string, number> = {};
 
   applications.forEach((app) => {
@@ -127,9 +130,11 @@ function calculateReferralSources(applications: Application[]) {
 }
 
 // Calculate team preferences with interest scoring
-function calculateTeamPreferences(applications: (Application & {
-  preferredTeams: { team: Team; interest: string }[];
-})[]) {
+function calculateTeamPreferences(
+  applications: (Application & {
+    preferredTeams: { team: Team; interest: string }[];
+  })[],
+) {
   const counts: Record<
     string,
     {
@@ -175,9 +180,12 @@ function calculateTeamPreferences(applications: (Application & {
 }
 
 // Calculate research interests for a specific team
-function calculateResearchInterests(applications: (Application & {
-  researchAreas: { researchArea: ResearchArea; interest: string }[];
-})[], _team: string) {
+function calculateResearchInterests(
+  applications: (Application & {
+    researchAreas: { researchArea: ResearchArea; interest: string }[];
+  })[],
+  _team: string,
+) {
   const counts: Record<
     string,
     {

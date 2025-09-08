@@ -1829,19 +1829,18 @@ export const ApplicantDetailsModal = ({
                   </Button>
 
                   {/* Send Interview Email button - always show if interview is scheduled */}
-                  {
-                    applicant.status === ApplicationStatus.INTERVIEWING && (
-                      <Button
-                        variant="outline"
-                        onClick={() => void sendInterviewEmailOnly()}
-                        className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
-                        disabled={isSendingEmail}
-                      >
-                        {isSendingEmail
-                          ? "Sending Email..."
-                          : "Send Interview Email"}
-                      </Button>
-                    )}
+                  {applicant.status === ApplicationStatus.INTERVIEWING && (
+                    <Button
+                      variant="outline"
+                      onClick={() => void sendInterviewEmailOnly()}
+                      className="border-green-500 text-green-500 hover:bg-green-500 hover:text-white"
+                      disabled={isSendingEmail}
+                    >
+                      {isSendingEmail
+                        ? "Sending Email..."
+                        : "Send Interview Email"}
+                    </Button>
+                  )}
 
                   <Button
                     variant="outline"

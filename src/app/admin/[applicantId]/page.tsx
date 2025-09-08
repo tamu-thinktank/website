@@ -49,7 +49,10 @@ import PdfViewer from "./pdf-viewer";
 /**
  * @returns Array of string Q&A pairs for each section, make sure questions and answers object share the same key names
  */
-interface BufferJSON { type: "Buffer"; data: number[] }
+interface BufferJSON {
+  type: "Buffer";
+  data: number[];
+}
 
 function isBufferJSON(v: unknown): v is BufferJSON {
   return (
@@ -92,9 +95,9 @@ function getQAs(answers: RouterOutputs["admin"]["getApplicant"]) {
 
     const sectionQuestions = q[section] as Record<string, unknown>;
     // Narrow answers to a map of sections -> record
-    const sectionAnswers = (answers as unknown as Partial<
-      Record<Section, Record<string, unknown>>
-    >)[section];
+    const sectionAnswers = (
+      answers as unknown as Partial<Record<Section, Record<string, unknown>>>
+    )[section];
 
     Object.keys(sectionQuestions).forEach((qkey) => {
       if (qkey === "title") return;
@@ -105,14 +108,14 @@ function getQAs(answers: RouterOutputs["admin"]["getApplicant"]) {
       if (qkey === "challenges") {
         currSection?.push([
           question,
-          (answer as Challenge[] | undefined)?.map(
-            (c) => challenges.find((ch) => ch.id === c)?.label ?? ""
-          ).join(", ") ?? "",
+          (answer as Challenge[] | undefined)
+            ?.map((c) => challenges.find((ch) => ch.id === c)?.label ?? "")
+            .join(", ") ?? "",
         ]);
       } else if (qkey === "interestedChallenge") {
         currSection?.push([
           question,
-          challenges.find((ch) => ch.id === (answer))?.label ?? "",
+          challenges.find((ch) => ch.id === answer)?.label ?? "",
         ]);
       } else {
         currSection?.push([question, String(answer ?? "")]);
@@ -122,7 +125,6 @@ function getQAs(answers: RouterOutputs["admin"]["getApplicant"]) {
 
   return QAs;
 }
-
 
 export default function ApplicantPage() {
   const { toast } = useToast();
@@ -207,8 +209,6 @@ export default function ApplicantPage() {
     retry: 1, // Retry once for resume fetching
     retryDelay: 2000, // Wait 2 seconds before retry
   });
-
-
 
   useEffect(() => {
     if (isApplicantError || isResumeError) {
@@ -299,13 +299,15 @@ export default function ApplicantPage() {
           <PdfViewer
             file={
               resumeFileData?.fileContent
-                ? toPdfFile(resumeFileData.fileContent, resumeFileData.fileName || "resume.pdf")
+                ? toPdfFile(
+                    resumeFileData.fileContent,
+                    resumeFileData.fileName || "resume.pdf",
+                  )
                 : undefined
             }
             fileName={resumeFileData?.fileName}
             webViewLink={resumeFileData?.fileViewLink}
           />
-
         )}
       </CardContent>
     </Card>

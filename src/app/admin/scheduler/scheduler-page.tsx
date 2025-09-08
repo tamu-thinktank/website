@@ -279,8 +279,8 @@ const Scheduler: React.FC = () => {
         const interviews = interviewsData.map((interview) => ({
           id: interview.id,
           applicantName: interview.isPlaceholder
-            ? interview.placeholderName ?? "Reserved Slot"
-            : interview.applicant?.fullName ?? "Unknown",
+            ? (interview.placeholderName ?? "Reserved Slot")
+            : (interview.applicant?.fullName ?? "Unknown"),
           applicantId: interview.applicantId,
           startTime: new Date(interview.startTime),
           endTime: new Date(interview.endTime),
@@ -504,12 +504,15 @@ const Scheduler: React.FC = () => {
         if (!groupedBusyTimes[busyTime.interviewerId]) {
           groupedBusyTimes[busyTime.interviewerId] = [];
         }
-        groupedBusyTimes[busyTime.interviewerId]!.push({
-          id: busyTime.id,
-          startTime: new Date(busyTime.startTime),
-          endTime: new Date(busyTime.endTime),
-          reason: busyTime.reason,
-        });
+        const interviewerBusyTimes = groupedBusyTimes[busyTime.interviewerId];
+        if (interviewerBusyTimes) {
+          interviewerBusyTimes.push({
+            id: busyTime.id,
+            startTime: new Date(busyTime.startTime),
+            endTime: new Date(busyTime.endTime),
+            reason: busyTime.reason,
+          });
+        }
       });
 
       setBusyTimes(groupedBusyTimes);
@@ -2366,7 +2369,7 @@ const Scheduler: React.FC = () => {
                 <span className="text-lg font-medium">
                   {viewMode === "day"
                     ? format(currentDate, "MMMM d, yyyy")
-                    : `${viewDates[0] ? format(viewDates[0], "MMM d") : ""} - ${viewDates[viewDates.length - 1] ? format(viewDates[viewDates.length - 1]!, "MMM d, yyyy") : ""}`}
+                    : `${viewDates[0] ? format(viewDates[0], "MMM d") : ""} - ${viewDates[viewDates.length - 1] ? format(viewDates[viewDates.length - 1], "MMM d, yyyy") : ""}`}
                 </span>
               </div>
 
