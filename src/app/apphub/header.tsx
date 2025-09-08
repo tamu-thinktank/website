@@ -28,7 +28,7 @@ const linksData = [
     description:
       "• Engineering capstone projects where members learn to design systems for real-world problems.\n• Freshmen/Sophomores preferred.",
     status: "open",
-    seemore: "src/app/challenges",
+    seemore: "/challenges",
   },
   {
     type: "MiniDC",
