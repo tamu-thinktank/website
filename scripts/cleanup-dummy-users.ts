@@ -81,8 +81,8 @@ async function cleanupDummyUsers() {
         user._count.accounts === 0 &&
         DUMMY_USER_PATTERNS.some(
           (pattern) =>
-            user.name?.toLowerCase()?.includes(pattern.toLowerCase()) ||
-            user.email?.toLowerCase()?.includes(pattern.toLowerCase()),
+            user.name?.toLowerCase().includes(pattern.toLowerCase()) ||
+            user.email?.toLowerCase().includes(pattern.toLowerCase()),
         ),
     );
 
