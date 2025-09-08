@@ -103,6 +103,9 @@ export const env = createEnv({
     NEXT_PUBLIC_EMAILJS_SERVICE_ID: z.string(),
     NEXT_PUBLIC_EMAILJS_TEMPLATE_ID: z.string(),
     NEXT_PUBLIC_EMAILJS_USER_ID: z.string(),
+    NEXT_PUBLIC_NODE_ENV: z
+      .enum(["development", "test", "production"])
+      .default("development"),
   },
 
   /**
@@ -124,6 +127,7 @@ export const env = createEnv({
     NEXT_PUBLIC_EMAILJS_TEMPLATE_ID:
       process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
     NEXT_PUBLIC_EMAILJS_USER_ID: process.env.NEXT_PUBLIC_EMAILJS_USER_ID,
+    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV,
     APP_EMAIL: process.env.APP_EMAIL,
     APP_PW: process.env.APP_PW,
     ALLOWED_EMAILS: process.env.ALLOWED_EMAILS,

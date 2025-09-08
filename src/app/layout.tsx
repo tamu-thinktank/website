@@ -16,7 +16,7 @@ const font = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(env.WEB_URL),
+  metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: "TAMU ThinkTank",
   description: "The official website for TAMU ThinkTank.",
   keywords: [
