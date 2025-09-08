@@ -4,12 +4,13 @@ import { NextResponse } from "next/server";
 // The system now only works with real authenticated users who log in through OAuth.
 // Real users automatically become available as interviewers when they authenticate.
 
-export async function GET() {
+export function GET() {
   return NextResponse.json(
-    { 
-      error: "Endpoint disabled", 
-      message: "This system only works with authenticated users. Please log in to become an available interviewer." 
+    {
+      error: "Endpoint disabled",
+      message:
+        "This system only works with authenticated users. Please log in to become an available interviewer.",
     },
-    { status: 410 } // 410 Gone - indicates the resource is intentionally no longer available
+    { status: 410 }, // 410 Gone - indicates the resource is intentionally no longer available
   );
 }
