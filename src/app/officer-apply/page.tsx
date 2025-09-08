@@ -51,8 +51,8 @@ export default function Apply() {
         },
         academic: {
           summerPlans: "",
-          currentClasses: [{ value: "" }],
-          nextClasses: [{ value: "" }],
+          currentClasses: [""],
+          nextClasses: [""],
           timeCommitment: [],
         },
         thinkTankInfo: {

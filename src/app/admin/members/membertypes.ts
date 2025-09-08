@@ -4,6 +4,7 @@ export interface FilterButtonProps {
   onClick?: () => void;
   options?: string[];
   onOptionSelect?: (option: string) => void;
+  selected?: string;
 }
 
 export interface TableHeaderProps {
@@ -34,13 +35,4 @@ export interface DropdownProps {
   onChange: (value: string) => void;
   isOpen: boolean;
   onToggle: () => void;
-}
-
-export interface FilterButtonProps {
-  label: string;
-  isActive?: boolean;
-  onClick?: () => void;
-  options?: string[];
-  onOptionSelect?: (option: string) => void;
-  selected?: string;
 }

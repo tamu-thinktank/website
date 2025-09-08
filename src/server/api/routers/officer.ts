@@ -13,8 +13,8 @@ export const officerRouter = createTRPCRouter({
 
           // Academic Info
           ...input.academic,
-          currentClasses: input.academic.currentClasses.map((c) => c.value),
-          nextClasses: input.academic.nextClasses.map((c) => c.value),
+          currentClasses: input.academic.currentClasses,
+          nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
               .filter((tc): tc is Required<typeof tc> => {

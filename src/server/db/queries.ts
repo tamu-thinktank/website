@@ -27,7 +27,7 @@ export async function getAvailabities(officerIds?: string[]) {
 export const getTargetTeams = async (
   userId: string,
   tx?: Prisma.TransactionClient,
-): Promise<Challenge[]> => {
+): Promise<string[]> => {
   const result = await (tx ?? db).user.findUnique({
     where: {
       id: userId,
