@@ -865,17 +865,19 @@ export const ApplicantDetailsModal = ({
                 <div className="mt-4">
                   <Label className="text-neutral-400">Current Classes</Label>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    {applicant.currentClasses.filter(cls => cls !== "none" && cls.trim() !== "").length > 0 ? (
+                    {applicant.currentClasses.filter(
+                      (cls) => cls !== "none" && cls.trim() !== "",
+                    ).length > 0 ? (
                       applicant.currentClasses
-                        .filter(cls => cls !== "none" && cls.trim() !== "")
+                        .filter((cls) => cls !== "none" && cls.trim() !== "")
                         .map((cls, idx) => (
-                        <span
-                          key={idx}
-                          className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
-                        >
-                          {cls}
-                        </span>
-                      ))
+                          <span
+                            key={idx}
+                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                          >
+                            {cls}
+                          </span>
+                        ))
                     ) : (
                       <span className="text-neutral-500">None listed</span>
                     )}
@@ -887,17 +889,19 @@ export const ApplicantDetailsModal = ({
                     Next Semester Classes
                   </Label>
                   <div className="mt-1 flex flex-wrap gap-2">
-                    {applicant.nextClasses.filter(cls => cls !== "none" && cls.trim() !== "").length > 0 ? (
+                    {applicant.nextClasses.filter(
+                      (cls) => cls !== "none" && cls.trim() !== "",
+                    ).length > 0 ? (
                       applicant.nextClasses
-                        .filter(cls => cls !== "none" && cls.trim() !== "")
+                        .filter((cls) => cls !== "none" && cls.trim() !== "")
                         .map((cls, idx) => (
-                        <span
-                          key={idx}
-                          className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
-                        >
-                          {cls}
-                        </span>
-                      ))
+                          <span
+                            key={idx}
+                            className="rounded-full bg-neutral-700 px-2 py-1 text-xs"
+                          >
+                            {cls}
+                          </span>
+                        ))
                     ) : (
                       <span className="text-neutral-500">None listed</span>
                     )}

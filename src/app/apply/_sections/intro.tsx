@@ -41,66 +41,70 @@ export default function FormIntroTab() {
       <div className="space-y-3">
         <Card>
           <CardHeader>
-            <CardTitle className="text-left text-lg flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-left text-lg">
               💡 Application Tips
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-left space-y-2">
-            <ul className="text-sm space-y-1">
+          <CardContent className="space-y-2 text-left">
+            <ul className="space-y-1 text-sm">
               <li>
-                • <strong>Classes:</strong> Fill out one class at a time - you can't
-                add the next class until the current one is valid
+                • <strong>Classes:</strong> Fill out one class at a time - you
+                can't add the next class until the current one is valid
               </li>
               <li>
-                • <strong>Auto-save:</strong> Your progress is automatically saved as
-                you type
+                • <strong>Auto-save:</strong> Your progress is automatically
+                saved as you type
               </li>
               <li>
-                • <strong>Required fields:</strong> Make sure all fields marked with
-                (*) are completed
+                • <strong>Required fields:</strong> Make sure all fields marked
+                with (*) are completed
               </li>
               <li>
-                • <strong>Time commitments:</strong> You can specify whether each
-                commitment is current or planned
+                • <strong>Time commitments:</strong> You can specify whether
+                each commitment is current or planned
               </li>
             </ul>
           </CardContent>
         </Card>
-        
+
         <Card className="border-amber-200 bg-amber-50">
           <CardHeader>
-            <CardTitle className="text-left text-lg flex items-center gap-2 text-amber-900">
+            <CardTitle className="flex items-center gap-2 text-left text-lg text-amber-900">
               ⚠️ Having Trouble Submitting?
             </CardTitle>
           </CardHeader>
           <CardContent className="text-left">
-            <div className="text-sm text-amber-800 space-y-3">
+            <div className="space-y-3 text-sm text-amber-800">
               <div>
-                <p className="font-medium mb-2">Try these steps:</p>
-                <ol className="list-decimal list-inside space-y-1 ml-2">
+                <p className="mb-2 font-medium">Try these steps:</p>
+                <ol className="ml-2 list-inside list-decimal space-y-1">
                   <li>Refresh the page and try submitting again</li>
                   <li>Clear your browser cache and reload</li>
-                  <li>Make sure all required fields (*) are filled out completely</li>
-                  <li>Check that all classes are in the correct format (XXXX 123)</li>
+                  <li>
+                    Make sure all required fields (*) are filled out completely
+                  </li>
+                  <li>
+                    Check that all classes are in the correct format (XXXX 123)
+                  </li>
                 </ol>
               </div>
-              
-              <div className="bg-amber-100 p-3 rounded">
-                <p className="font-medium mb-1">Still having issues?</p>
+
+              <div className="rounded bg-amber-100 p-3">
+                <p className="mb-1 font-medium">Still having issues?</p>
                 <p>
                   Join our{" "}
                   <a
                     href="https://discord.gg/qUAuSraYV9"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline font-medium"
+                    className="font-medium text-blue-600 underline hover:text-blue-800"
                   >
                     Discord server
                   </a>{" "}
                   and message an officer for help, or email us at{" "}
                   <a
                     href="mailto:tamuthinktank@gmail.com"
-                    className="text-blue-600 hover:text-blue-800 underline"
+                    className="text-blue-600 underline hover:text-blue-800"
                   >
                     tamuthinktank@gmail.com
                   </a>

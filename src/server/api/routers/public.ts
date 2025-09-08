@@ -1,6 +1,9 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import DriveService from "@/server/service/google-drive";
-import { ApplyFormSchema, MiniDCApplyFormSchema } from "@/lib/validations/apply";
+import {
+  ApplyFormSchema,
+  MiniDCApplyFormSchema,
+} from "@/lib/validations/apply";
 import { OfficerApplyFormSchema } from "@/lib/validations/officer-apply";
 import { MATEROVApplyFormSchema } from "@/lib/validations/materov-apply";
 import { z } from "zod";
@@ -20,7 +23,7 @@ export const publicRouter = createTRPCRouter({
           nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
-              ?.filter((tc): tc is Required<typeof tc> => {
+              .filter((tc): tc is Required<typeof tc> => {
                 return (
                   typeof tc.name === "string" &&
                   typeof tc.hours === "number" &&
@@ -32,7 +35,7 @@ export const publicRouter = createTRPCRouter({
                 name: tc.name,
                 hours: tc.hours,
                 type: tc.type,
-              })) ?? [],
+              })),
           },
           summerPlans: "",
 
@@ -46,10 +49,10 @@ export const publicRouter = createTRPCRouter({
             })),
           },
           researchAreas: {
-            create: input.thinkTankInfo.researchAreas?.map((ra) => ({
+            create: input.thinkTankInfo.researchAreas.map((ra) => ({
               researchAreaId: ra.researchAreaId,
               interest: ra.interestLevel,
-            })) ?? [],
+            })),
           },
           referral: input.thinkTankInfo.referralSources,
 
@@ -87,7 +90,7 @@ export const publicRouter = createTRPCRouter({
           currentClasses: input.academic.currentClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
-              ?.filter((tc): tc is Required<typeof tc> => {
+              .filter((tc): tc is Required<typeof tc> => {
                 return (
                   typeof tc.name === "string" &&
                   typeof tc.hours === "number" &&
@@ -99,7 +102,7 @@ export const publicRouter = createTRPCRouter({
                 name: tc.name,
                 hours: tc.hours,
                 type: tc.type,
-              })) ?? [],
+              })),
           },
           summerPlans: "",
           nextClasses: [],
@@ -142,7 +145,7 @@ export const publicRouter = createTRPCRouter({
           nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
-              ?.filter((tc): tc is Required<typeof tc> => {
+              .filter((tc): tc is Required<typeof tc> => {
                 return (
                   typeof tc.name === "string" &&
                   typeof tc.hours === "number" &&
@@ -154,7 +157,7 @@ export const publicRouter = createTRPCRouter({
                 name: tc.name,
                 hours: tc.hours,
                 type: tc.type,
-              })) ?? [],
+              })),
           },
           summerPlans: input.academic.summerPlans,
 
@@ -207,7 +210,7 @@ export const publicRouter = createTRPCRouter({
           nextClasses: input.academic.nextClasses,
           timeCommitment: {
             create: input.academic.timeCommitment
-              ?.filter((tc): tc is Required<typeof tc> => {
+              .filter((tc): tc is Required<typeof tc> => {
                 return (
                   typeof tc.name === "string" &&
                   typeof tc.hours === "number" &&
@@ -219,11 +222,11 @@ export const publicRouter = createTRPCRouter({
                 name: tc.name,
                 hours: tc.hours,
                 type: tc.type,
-              })) ?? [],
+              })),
           },
           summerPlans: "",
 
-          // ThinkTank Info  
+          // ThinkTank Info
           meetings: input.thinkTankInfo.meetings,
           weeklyCommitment: input.thinkTankInfo.weeklyCommitment,
           subteamPreferences: {

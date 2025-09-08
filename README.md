@@ -7,6 +7,7 @@
 ## Install [pnpm](https://pnpm.io/installation)
 
 - Installation:
+
   - Windows Powershell:
 
     ```pwsh
@@ -111,6 +112,7 @@
   ```
 
 - If weird type/syntax errors (VSCode):
+
   - ctrl+shift+p → restart ts server
   - ctrl+shift+p → restart eslint server
 
@@ -131,4 +133,5 @@ pnpm dev
 ```
 
 - URL to view site: `http://localhost:3000/`
+
 # Force CI rerun

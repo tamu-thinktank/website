@@ -23,8 +23,14 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 export default function PersonalInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
-  const pronounsValue = useWatch({ control: form.control, name: "personal.pronouns" });
-  const genderValue = useWatch({ control: form.control, name: "personal.gender" });
+  const pronounsValue = useWatch({
+    control: form.control,
+    name: "personal.pronouns",
+  });
+  const genderValue = useWatch({
+    control: form.control,
+    name: "personal.gender",
+  });
 
   return (
     <div className="flex flex-col gap-4">
@@ -237,8 +243,8 @@ export default function PersonalInfo() {
                   {q.personal.uin} <span className="text-red-500">*</span>
                 </CardTitle>
                 <CardDescription>
-                  If you have a special UIN that doesn't match the format 123004567,
-                  please contact us at: tamuthinktank@gmail.com
+                  If you have a special UIN that doesn't match the format
+                  123004567, please contact us at: tamuthinktank@gmail.com
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -292,8 +298,8 @@ export default function PersonalInfo() {
               <CardHeader>
                 <CardTitle>{q.personal.altEmail}</CardTitle>
                 <CardDescription>
-                  Provide any other email that is a good point of contact in addition
-                  to your TAMU email
+                  Provide any other email that is a good point of contact in
+                  addition to your TAMU email
                 </CardDescription>
               </CardHeader>
               <CardContent>

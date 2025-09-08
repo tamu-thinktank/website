@@ -15,12 +15,20 @@ import {
 export const statusSchema = z.nativeEnum(ApplicationStatus);
 export const yearSchema = z.nativeEnum(Year);
 export const majorSchema = z.nativeEnum(Major);
-export const classSchema = z.string().regex(/^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/, "Class must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'");
+export const classSchema = z
+  .string()
+  .regex(
+    /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/,
+    "Class must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
+  );
 export const PRESET_PRONOUNS = ["HE_HIM", "SHE_HER", "THEY_THEM"] as const;
 export const PRESET_GENDERS = ["MALE", "FEMALE", "NON_BINARY"] as const;
 export const wordCount = (text: string) =>
   text.trim().split(/\s+/).filter(Boolean).length;
-export const validateSignature = (signature: string, fullName: string): boolean => {
+export const validateSignature = (
+  signature: string,
+  fullName: string,
+): boolean => {
   const [firstName = "", lastName = ""] = fullName.toLowerCase().split(" ");
   return (
     signature.toLowerCase().includes(firstName) ||
