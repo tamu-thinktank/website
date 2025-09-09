@@ -25,10 +25,7 @@ import { X, ArrowUp, ArrowDown } from "lucide-react";
 
 export default function ThinkTankInfo() {
   const form = useFormContext<RouterInputs["public"]["applyForm"]>();
-  const selectedTeams = form.watch("thinkTankInfo.preferredTeams") as Array<{
-    teamId: string;
-    ranking: number;
-  }>;
+  const selectedTeams = form.watch("thinkTankInfo.preferredTeams");
 
   return (
     <div className="flex flex-col gap-4">
@@ -59,7 +56,7 @@ export default function ThinkTankInfo() {
               <CardContent>
                 <RadioGroup
                   onValueChange={(value) => field.onChange(value === "true")}
-                  value={field.value?.toString() ?? "false"}
+                  value={field.value.toString()}
                 >
                   <div className="space-y-2">
                     <FormItem>
@@ -103,7 +100,7 @@ export default function ThinkTankInfo() {
               <CardContent>
                 <RadioGroup
                   onValueChange={(value) => field.onChange(value === "true")}
-                  value={field.value?.toString() ?? "false"}
+                  value={field.value.toString()}
                 >
                   <div className="space-y-2">
                     <FormItem>
@@ -154,19 +151,18 @@ export default function ThinkTankInfo() {
                   <div className="grid grid-cols-2 gap-2">
                     {TEAMS.filter(
                       (team) =>
-                        !selectedTeams?.some((t: { teamId: string; ranking: number }) => t.teamId === team.id),
+                        !selectedTeams.some((t) => t.teamId === team.id),
                     ).map((team) => (
                       <Button
                         key={team.id}
                         type="button"
                         variant="outline"
                         onClick={() => {
-                          const currentTeams = field.value as Array<{ teamId: string; ranking: number }> ?? [];
                           const updatedTeams = [
-                            ...currentTeams,
+                            ...field.value,
                             {
                               teamId: team.id,
-                              ranking: currentTeams.length + 1, // Next rank
+                              ranking: field.value.length + 1, // Next rank
                             },
                           ];
                           form.setValue(
@@ -183,14 +179,14 @@ export default function ThinkTankInfo() {
                 </div>
 
                 {/* Selected Teams with Ranking */}
-                {selectedTeams && selectedTeams.length > 0 && (
+                {selectedTeams.length > 0 && (
                   <div className="space-y-3">
                     <h4 className="text-sm font-medium">
                       Your Team Preferences (in order):
                     </h4>
                     <div className="space-y-2">
                       {selectedTeams
-                        .sort((a, b) => (a.ranking ?? 0) - (b.ranking ?? 0))
+                        .sort((a, b) => (a.ranking || 0) - (b.ranking || 0))
                         .map((selectedTeam, index) => {
                           const team = TEAMS.find(
                             (t) => t.id === selectedTeam.teamId,
@@ -324,9 +320,9 @@ export default function ThinkTankInfo() {
                   <FormItem key={source}>
                     <div className="flex items-center space-x-2">
                       <Checkbox
-                        checked={field.value?.includes(source) ?? false}
+                        checked={field.value.includes(source)}
                         onCheckedChange={(checked) => {
-                          const currentValues = field.value as string[] ?? [];
+                          const currentValues = field.value;
                           const updated = checked
                             ? [...currentValues, source]
                             : currentValues.filter((s) => s !== source);
