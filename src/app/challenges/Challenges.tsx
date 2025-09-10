@@ -273,7 +273,7 @@ const Challenges = () => {
         peer: "Diya Dev",
         faculty: "TBD",
       },
-      competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
+      competitionLink: "N/A",
       imageUrl: "/images/argus_challengeimg",
       image: "/images/avatars/diyadev2526",
       major: "Data Engineering",
