@@ -515,7 +515,7 @@ const BoxComponent: React.FC<BoxProps> = ({
                 filled={isOpen}
               >
                 {/*{isOpen ? "Apply" : "Closed"}*/}
-                Open
+                Apply
               </ButtonStyle>
               <ToggleButton expanded={isExpanded} onClick={handleToggle}>
                 See More
