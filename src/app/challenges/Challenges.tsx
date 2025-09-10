@@ -252,37 +252,6 @@ const Challenges = () => {
       dtype: "Proposal",
     },
     {
-      teamName: "Daedalus",
-      shortOverview: "Hands-On NASA Research Project",
-      competitionOverview:
-        "Texas Space Grant Consortium (TSGC) offers unique, hands-on challenges sponsored by NASA mentors which rotate each year. We can’t guarantee what you will be working on, but we can guarantee it will be an amazing experience!",
-      duration: "1 Semester",
-      teamSize: "6",
-      admissionTimeline: [
-        { date: "Applications Close", description: "11/21/25" },
-        { date: "Interviews", description: "1/17/26" },
-        { date: "Acceptance", description: "1/26/26" },
-      ],
-      pastTeams: [
-        "Astronaut Tracking System",
-        "Microgravity Water Filtration",
-        "Lunar Cellular Infrastructure",
-      ],
-      mentors: {
-        peer: "Anoushka Kaushik",
-        faculty: "TBD",
-      },
-      competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
-      imageUrl: "/images/Daedalus.png",
-      image: "/images/avatars/anoushkakaushik2526",
-      major: "Aerospace",
-      year: "28",
-      description: "About Me",
-      facultyImage: "blank.webp",
-      prize: "$6,000 for 1st place",
-      dtype: "Showcase",
-    },
-    {
       teamName: "Argus",
       shortOverview: "Design a simulation-based, data science-focused approach for coordinating drone swarms.",
       competitionOverview:
@@ -305,7 +274,7 @@ const Challenges = () => {
         faculty: "TBD",
       },
       competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
-      imageUrl: "/images/Daedalus.png",
+      imageUrl: "/images/argus_challengeimg",
       image: "/images/avatars/diyadev2526",
       major: "Data Engineering",
       year: "27",
