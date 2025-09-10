@@ -282,6 +282,38 @@ const Challenges = () => {
       prize: "$6,000 for 1st place",
       dtype: "Showcase",
     },
+    {
+      teamName: "Argus",
+      shortOverview: "Design a simulation-based, data science-focused approach for coordinating drone swarms.",
+      competitionOverview:
+        "Build an open and reproducible framework that makes multi-agent reinforcement learning for drone swarms more accessible, enabling researchers to explore and advance search-and-rescue applications more effectively.",
+      duration: "1 Semester",
+      teamSize: "12",
+      admissionTimeline: [
+        { date: "Applications Close", description: "9/6/25" },
+        { date: "Interviews", description: "9/14/26" },
+        { date: "Acceptance", description: "9/22/26" },
+      ],
+      pastTeams: [
+        "Multi-agent Reinforcement Learning (MARL)",
+        "Search and Rescue (SAR)",
+        "Language Used: Python; Visualization: Matplotlib and Seaborn",
+        "ML Libraries: Standard libraries such as PyTorch or TensorFlow",
+      ],
+      mentors: {
+        peer: "Diya Dev",
+        faculty: "TBD",
+      },
+      competitionLink: "https://ig.utexas.edu/tsgc/design-challenge/",
+      imageUrl: "/images/Daedalus.png",
+      image: "/images/avatars/diyadev2526",
+      major: "Data Engineering",
+      year: "27",
+      description: "About Me",
+      facultyImage: "blank.webp",
+      prize: "N/A",
+      dtype: "Research Paper and Github Repository",
+    },
   ];
 
   return (
