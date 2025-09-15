@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { TabsContent } from "@/components/ui/tabs";
-//import { TabsList } from "@/components/ui/tabs";
 
 export default function FormIntroTab() {
   return (
@@ -33,7 +32,7 @@ export default function FormIntroTab() {
             ON A LAPTOP/DESKTOP
           </strong>
           <br /> <br />
-          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong> 
+          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong>
         </CardContent>
       </Card>
 
