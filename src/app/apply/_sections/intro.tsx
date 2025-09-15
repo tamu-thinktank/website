@@ -33,11 +33,11 @@ export default function FormIntroTab() {
             ON A LAPTOP/DESKTOP
           </strong>
           <br /> <br />
-          {/* <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong> */}
+          <strong>❗❗❗❗❗❗ APPLICATIONS ARE NOW CLOSED❗❗❗❗❗❗</strong> 
         </CardContent>
       </Card>
 
-      {/* Helpful Notices */}
+      {/* Helpful Notices
       <div className="space-y-3">
         <Card>
           <CardHeader>
@@ -121,7 +121,7 @@ export default function FormIntroTab() {
         <TabsTrigger className="bg-white text-black" value="personal">
           Next
         </TabsTrigger>
-      </TabsList>
+      </TabsList> */}
     </TabsContent>
   );
 }
