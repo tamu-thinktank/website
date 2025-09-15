@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { TabsContent, TabsTrigger } from "@/components/ui/tabs";
-import { TabsList } from "@/components/ui/tabs";
+import { TabsContent } from "@/components/ui/tabs";
+//import { TabsList } from "@/components/ui/tabs";
 
 export default function FormIntroTab() {
   return (
