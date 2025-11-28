@@ -9,11 +9,11 @@ import {
 import {
   yearSchema,
   majorSchema,
-  classSchema,
   PRESET_PRONOUNS,
   PRESET_GENDERS,
   wordCount,
   validateSignature,
+  classListSchema,
 } from "./apply";
 
 export const MATEROVApplyFormSchema = z
@@ -73,15 +73,15 @@ export const MATEROVApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+      phone: z.string().regex(/^(\d{3}-\d{3}-\d{4}|\d{10})$/, "Invalid phone number"),
     }),
 
     // Academic Information Section
     academic: z.object({
       year: yearSchema,
       major: majorSchema,
-      currentClasses: z.array(classSchema).min(2, "Enter at least two classes"),
-      nextClasses: z.array(classSchema).min(2, "Enter at least two classes"),
+      currentClasses: classListSchema(2),
+      nextClasses: classListSchema(2),
       timeCommitment: z
         .array(
           z.object({

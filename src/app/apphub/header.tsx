@@ -9,7 +9,7 @@ const linksData = [
     url: "/officer-apply",
     description:
       "• Officer team dedicated to helping members learn, grow, and become passionate about engineering for the real world.\n• Alumni preferred.",
-    status: "closed",
+    status: "open",
     seemore: "about",
   },
   {
@@ -18,7 +18,7 @@ const linksData = [
     url: "/materov-apply",
     description:
       "• Underwater robotics team where members design and build an autonomous rover for the MATE ROV competition.\n• Sophomores/Juniors preferred.",
-    status: "closed",
+    status: "open",
     seemore: "/materov",
   },
   {
@@ -27,7 +27,7 @@ const linksData = [
     url: "/apply",
     description:
       "• Engineering capstone projects where members learn to design systems for real-world problems.\n• Freshmen/Sophomores preferred.",
-    status: "closed",
+    status: "open",
     seemore: "/challenges",
   },
   {
@@ -36,7 +36,7 @@ const linksData = [
     url: "/minidc-apply",
     description:
       "• Shorter, hands-on engineering projects curated by ThinkTank to teach basic engineering principles.\n• Open to everyone.",
-    status: "closed",
+    status: "open",
     seemore: "/MATE",
   },
 ];

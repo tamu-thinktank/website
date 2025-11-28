@@ -9,7 +9,7 @@ import {
 import { shuffleArray } from "@/lib/utils/shuffleArray";
 import Autoplay from "embla-carousel-autoplay";
 import Image from "next/image";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const orgImages = [
   "/images/photos/20230119_180722.webp",
@@ -69,7 +69,12 @@ export const ImageWithAspectRatio: React.FC<
 };
 
 export default function ProjectCarousel() {
-  const images = useMemo(() => shuffleArray(orgImages), []);
+  // Start with a stable order for SSR, then shuffle once on the client.
+  const [images, setImages] = useState(orgImages);
+
+  useEffect(() => {
+    setImages(shuffleArray(orgImages));
+  }, []);
 
   return (
     <Carousel

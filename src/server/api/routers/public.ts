@@ -1,11 +1,9 @@
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import DriveService from "@/server/service/google-drive";
-import {
-  ApplyFormSchema,
-  MiniDCApplyFormSchema,
-} from "@/lib/validations/apply";
+import { ApplyFormSchema } from "@/lib/validations/apply";
 import { OfficerApplyFormSchema } from "@/lib/validations/officer-apply";
 import { MATEROVApplyFormSchema } from "@/lib/validations/materov-apply";
+import { MiniDCApplyFormSchema } from "@/lib/validations/minidc-apply";
 import { z } from "zod";
 
 export const publicRouter = createTRPCRouter({

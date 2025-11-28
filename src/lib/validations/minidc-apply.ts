@@ -2,7 +2,7 @@ import { z } from "zod";
 import {
   yearSchema,
   majorSchema,
-  classSchema,
+  classListSchema,
   PRESET_PRONOUNS,
   PRESET_GENDERS,
   wordCount,
@@ -66,14 +66,14 @@ export const MiniDCApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+      phone: z.string().regex(/^(\d{3}-\d{3}-\d{4}|\d{10})$/, "Invalid phone number"),
     }),
 
     // Academic Information Section
     academic: z.object({
       year: yearSchema,
       major: majorSchema,
-      currentClasses: z.array(classSchema).min(2, "Enter at least two classes"),
+      currentClasses: classListSchema(2),
       timeCommitment: z
         .array(
           z.object({

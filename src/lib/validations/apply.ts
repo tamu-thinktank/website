@@ -11,6 +11,7 @@ import {
   ExperienceLevel,
   LearningInterestLevel,
 } from "@prisma/client";
+import { B } from "node_modules/@upstash/redis/zmscore-Cq_Bzgy4.mjs";
 
 export const statusSchema = z.nativeEnum(ApplicationStatus);
 export const yearSchema = z.nativeEnum(Year);
@@ -35,7 +36,36 @@ export const validateSignature = (
     signature.toLowerCase().includes(lastName)
   );
 };
+export const classListSchema = (min = 2) => 
+  z
+  .array(z.string().nullable().default(""))
+  .max(7, "If you're taking more than 7 classes, just pick 7 of them to put here.")
+  .transform((classes) => 
+    classes.map((cls) => (cls ?? "").trim().toUpperCase()),
+  )
+  .superRefine((classes, ctx) => {
+    const filled = classes.map((c) => c.trim()).filter(Boolean);
 
+    if (filled.length < min) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Please enter at least ${min} classes.`,
+        path: [],
+      });
+    }
+
+    classes.forEach((cls, i) => {
+      if (!cls.trim()) return;
+      const res = classSchema.safeParse(cls);
+      if (!res.success) {
+        ctx.addIssue({
+          code: "custom",
+          message: res.error.errors[0]?.message ?? classSchema._def.errorMap?.(null as any, null as any)?.message ?? "Invalid class format",
+          path: [i],
+        });
+    }
+  });
+  });
 export const ApplyFormSchema = z
   .object({
     // Personal info section
@@ -93,57 +123,16 @@ export const ApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+      phone: z.string().regex(/^(\d{3}-\d{3}-\d{4}|\d{10})$/, "Invalid phone number"),
     }),
 
     // Academic Information Section
     academic: z.object({
       year: yearSchema,
       major: majorSchema,
-      currentClasses: z
-        .array(z.string().nullable().default(""))
-        .min(2, "Enter at least two classes")
-        .max(7, "Maximum 7 classes allowed")
-        .refine((classes) => {
-          const nonEmptyClasses = classes.filter(
-            (cls) => cls && cls.trim() !== "" && cls !== "none",
-          );
-          return nonEmptyClasses.length >= 2;
-        }, "Enter at least two valid current classes")
-        .refine(
-          (classes) =>
-            classes.every(
-              (cls) =>
-                !cls ||
-                cls.trim() === "" ||
-                cls === "none" ||
-                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
-            ),
-          "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
-        )
-        .transform((classes) => classes.map((cls) => cls ?? "")),
-      nextClasses: z
-        .array(z.string().nullable().default(""))
-        .min(2, "Enter at least two classes")
-        .max(7, "Maximum 7 classes allowed")
-        .refine((classes) => {
-          const nonEmptyClasses = classes.filter(
-            (cls) => cls && cls.trim() !== "" && cls !== "none",
-          );
-          return nonEmptyClasses.length >= 2;
-        }, "Enter at least two valid planned classes")
-        .refine(
-          (classes) =>
-            classes.every(
-              (cls) =>
-                !cls ||
-                cls.trim() === "" ||
-                cls === "none" ||
-                /^(?:[A-Z]{4} \d{3}|[A-Z]{4}b\d{4}|NULL 101)$/.test(cls),
-            ),
-          "All non-empty classes must be in format 'XXXX 123', 'XXXXb1234' (Blinn), or 'NULL 101'",
-        )
-        .transform((classes) => classes.map((cls) => cls ?? "")),
+      currentClasses: classListSchema(2),
+
+      nextClasses: classListSchema(2),
       currentCommitmentHours: z
         .union([
           z.string().transform((val) => (val === "" ? 0 : Number(val))),
@@ -389,7 +378,7 @@ export const OfficerApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+      phone: z.string().regex(/^(\d{3}-\d{3}-\d{4}|\d{10})$/, "Invalid phone number"),
     }),
 
     // Academic Information Section
@@ -602,7 +591,7 @@ export const MATEROVApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+      phone: z.string().regex(/^(\d{3}-\d{3}-\d{4}|\d{10})$/, "Invalid phone number"),
     }),
 
     // Academic Information Section
@@ -835,7 +824,7 @@ export const MiniDCApplyFormSchema = z
             message: "Invalid email",
           },
         ),
-      phone: z.string().regex(/^\d{3}-\d{3}-\d{4}$/, "Invalid phone number"),
+      phone: z.string().regex(/^(\d{3}-\d{3}-\d{4}|\d{10})$/, "Invalid phone number"),
     }),
 
     // Academic Information Section

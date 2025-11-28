@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
@@ -40,7 +40,7 @@ export default function Apply() {
   const viewportRef = useRef<HTMLDivElement>(null);
 
   const form = usePersistForm<RouterInputs["public"]["applyForm"]>(
-    "apply-form-S2025-v1",
+    "apply-form-S2025-v1", // TODO: can we offload this to a config file?
     {
       resolver: zodResolver(ApplyFormSchema),
       defaultValues: {
@@ -156,24 +156,24 @@ export default function Apply() {
             ),
             timeCommitment: [
               ...(data.academic.currentCommitmentHours &&
-              Number(data.academic.currentCommitmentHours) > 0
+                Number(data.academic.currentCommitmentHours) > 0
                 ? [
-                    {
-                      name: "Current Time Commitments",
-                      hours: Number(data.academic.currentCommitmentHours),
-                      type: "CURRENT" as const,
-                    },
-                  ]
+                  {
+                    name: "Current Time Commitments",
+                    hours: Number(data.academic.currentCommitmentHours),
+                    type: "CURRENT" as const,
+                  },
+                ]
                 : []),
               ...(data.academic.plannedCommitmentHours &&
-              Number(data.academic.plannedCommitmentHours) > 0
+                Number(data.academic.plannedCommitmentHours) > 0
                 ? [
-                    {
-                      name: "Planned Time Commitments",
-                      hours: Number(data.academic.plannedCommitmentHours),
-                      type: "PLANNED" as const,
-                    },
-                  ]
+                  {
+                    name: "Planned Time Commitments",
+                    hours: Number(data.academic.plannedCommitmentHours),
+                    type: "PLANNED" as const,
+                  },
+                ]
                 : []),
             ],
           },
@@ -382,16 +382,33 @@ function ApplyTab({
     if (currentTab === "academic") {
       const formData = form.getValues();
       const currentClasses = formData.academic.currentClasses.filter(
-        (c) => c && c.trim() !== "" && c !== "none",
+        (c): c is string =>
+          typeof c === "string" && c.trim() !== "" && c !== "none",
       );
       const nextClasses = formData.academic.nextClasses.filter(
-        (c) => c && c.trim() !== "" && c !== "none",
+        (c): c is string =>
+          typeof c === "string" && c.trim() !== "" && c !== "none",
       );
 
-      if (currentClasses.length < 2 || nextClasses.length < 2) {
-        setIsValid(false);
-        setIsChecked(true);
-        return;
+      // Collect ALL errors before showing any
+      const errors: string[] = [];
+
+      // Check minimum class counts
+      if (currentClasses.length < 2) {
+        errors.push("Please enter at least two valid current semester classes. Use: XXXX 123, XXXXb1234 (Blinn), or NULL 101.");
+      }
+
+      if (nextClasses.length < 2) {
+        errors.push("Please enter at least two valid planned semester classes for the next semester. Use: XXXX 123, XXXXb1234 (Blinn), or NULL 101.");
+      }
+
+      // Check for duplicates
+      if (new Set(currentClasses).size !== currentClasses.length) {
+        errors.push("Please enter unique current semester classes (no duplicates).");
+      }
+
+      if (new Set(nextClasses).size !== nextClasses.length) {
+        errors.push("Please enter unique planned semester classes for the next semester (no duplicates).");
       }
 
       // Check format validation for non-empty classes
@@ -403,12 +420,29 @@ function ApplyTab({
         (cls) => cls && !classPattern.test(cls),
       );
 
-      if (invalidCurrent || invalidNext) {
+      if (invalidCurrent) {
+        errors.push("Invalid format in current semester classes. Use: XXXX 123, XXXXb1234 (Blinn), or NULL 101.");
+      }
+
+      if (invalidNext) {
+        errors.push("Invalid format in planned semester classes. Use: XXXX 123, XXXXb1234 (Blinn), or NULL 101.");
+      }
+
+      // If ANY errors exist, show ALL of them
+      if (errors.length > 0) {
+        errors.forEach((error) => {
+          toast({
+            variant: "destructive",
+            title: "Validation Error",
+            description: error,
+          });
+        });
         setIsValid(false);
         setIsChecked(true);
         return;
       }
 
+      // Only proceed if NO errors found
       setIsValid(true);
       setIsChecked(true);
       setActiveTab(nextTab);

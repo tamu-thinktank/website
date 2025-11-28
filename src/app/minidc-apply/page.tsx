@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { MiniDCApplyFormSchema } from "@/lib/validations/apply";
+import { MiniDCApplyFormSchema } from "@/lib/validations/minidc-apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
@@ -287,7 +287,7 @@ function ApplyTab({
     if (currentTab === "academic") {
       const formData = form.getValues();
       const currentClasses = formData.academic.currentClasses.filter(
-        (c) => c && c.trim() !== "",
+        (c): c is string => typeof c === "string" && c.trim() !== "",
       );
 
       if (currentClasses.length < 2) {

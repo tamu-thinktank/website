@@ -9,13 +9,13 @@ import { useToast } from "@/components/ui/use-toast";
 import useCalculateTable from "@/hooks/useCalculateTable";
 import { api } from "@/lib/trpc/react";
 import type { RouterInputs } from "@/lib/trpc/shared";
-import { MATEROVApplyFormSchema } from "@/lib/validations/apply";
+import { MATEROVApplyFormSchema } from "@/lib/validations/materov-apply";
 import type { UploadResumeResponse } from "@/types/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
 import type { PropsWithChildren, RefObject } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useFormContext } from "react-hook-form";
 import { usePersistForm } from "../../hooks/usePersistForm";
 
@@ -27,6 +27,7 @@ import ResumeUpload from "./_sections/resume";
 import MateROVThinkTankInfo from "./_sections/thinkTankInfo";
 import OpenEndedQuestions from "./_sections/openEndedQuestions";
 import SubmissionConfirmation from "./_sections/confirmation";
+import React from "react";
 
 export default function MateROVApply() {
   const { toast } = useToast();
@@ -302,7 +303,7 @@ function ApplyTab({
   viewportRef: RefObject<HTMLDivElement>;
 } & PropsWithChildren) {
   const form = useFormContext<RouterInputs["public"]["applyMateROV"]>();
-
+  const [isPending, startTransition] = React.useTransition();
   const [isValid, setIsValid] = useState(false);
   const [isChecked, setIsChecked] = useState(false);
 
@@ -328,10 +329,10 @@ function ApplyTab({
     if (currentTab === "academic") {
       const formData = form.getValues();
       const currentClasses = formData.academic.currentClasses.filter(
-        (c) => c && c.trim() !== "",
+        (c): c is string => typeof c === "string" && c.trim() !== "",
       );
       const nextClasses = formData.academic.nextClasses.filter(
-        (c) => c && c.trim() !== "",
+        (c): c is string => typeof c === "string" && c.trim() !== "",
       );
 
       if (currentClasses.length < 2 || nextClasses.length < 2) {
@@ -386,8 +387,16 @@ function ApplyTab({
       if (name?.startsWith(currentTab)) {
         form
           .trigger(currentTab)
-          .then((isValid) => setIsValid(isValid))
-          .catch(() => setIsValid(false));
+          .then((isValid) => {
+            startTransition(() => {
+              setIsValid(isValid);
+            });
+          })
+          .catch(() => {
+            startTransition(() => {
+              setIsValid(false);
+            });
+          });
       }
     });
 
